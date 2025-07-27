@@ -100,8 +100,75 @@ export const createCRUDAPI = (resource) => ({
   }),
 });
 
+// Staff API functions
+export const staffAPI = {
+  // Get all staff with pagination and search
+  getStaff: async (params = {}) => {
+    const searchParams = new URLSearchParams();
+    
+    if (params.page) searchParams.append('page', params.page);
+    if (params.limit) searchParams.append('limit', params.limit);
+    if (params.search) searchParams.append('search', params.search);
+    if (params.role) searchParams.append('role', params.role);
+    if (params.department) searchParams.append('department', params.department);
+
+    const queryString = searchParams.toString();
+    const endpoint = `/staff${queryString ? `?${queryString}` : ''}`;
+    
+    return apiCall(endpoint);
+  },
+
+  // Get single staff member by ID
+  getStaffMember: async (id) => {
+    return apiCall(`/staff/${id}`);
+  },
+
+  // Create new staff member
+  createStaff: async (staffData) => {
+    return apiCall('/staff', {
+      method: 'POST',
+      body: JSON.stringify(staffData),
+    });
+  },
+
+  // Update staff member
+  updateStaff: async (id, staffData) => {
+    return apiCall(`/staff/${id}`, {
+      method: 'PUT',
+      body: JSON.stringify(staffData),
+    });
+  },
+
+  // Delete staff member
+  deleteStaff: async (id) => {
+    return apiCall(`/staff/${id}`, {
+      method: 'DELETE',
+    });
+  },
+
+  // Get staff roles
+  getRoles: () => {
+    return {
+      'leader': 'หัวหน้า',
+      'coleader': 'รองหัวหน้า',
+      'employee': 'พนักงาน',
+      'employee_c1': 'พนักงาน C1',
+      'employee_c2': 'พนักงาน C2',
+      'employee_c3': 'พนักงาน C3',
+      'employee_c4': 'พนักงาน C4',
+      'employee_c5': 'พนักงาน C5',
+      'employee_c6': 'พนักงาน C6',
+      'employee_c7': 'พนักงาน C7',
+      'employee_c8': 'พนักงาน C8',
+      'employee_c9': 'พนักงาน C9',
+      'employee_c10': 'พนักงาน C10',
+    };
+  },
+};
+
 // Export for easy use
 export default {
   userAPI,
+  staffAPI,
   createCRUDAPI,
 };

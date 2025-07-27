@@ -22,3 +22,16 @@ model User {
 
   @@map("users")
 }
+
+model Staff {
+  id          Int      @id @default(autoincrement())
+  full_name   String   @db.VarChar(255)
+  phone       String?  @db.VarChar(20)
+  role        String   @db.VarChar(50)
+  department  String?  @db.VarChar(255)
+  img         String?  @db.VarChar(500)
+  created_at  DateTime @default(now())
+  updated_at  DateTime @updatedAt
+
+  @@map("staff")
+}
