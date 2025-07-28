@@ -16,12 +16,14 @@ import {
   TeamOutlined,
   BarChartOutlined,
   FileProtectOutlined,
+  FileTextOutlined,
 } from "@ant-design/icons";
 import DashboardStats from "./components/DashboardStats";
 import UserManagement from "./components/UserManagement";
 import StaffManagement from "./components/StaffManagement";
 import PerformanceResultsManagement from "./components/PerformanceResultsManagement";
 import ItaManagement from "./components/ItaManagement";
+import PostManagement from "./components/PostManagement";
 import styles from "./admin.module.css";
 import { useState, useEffect } from "react";
 import { useSession, signOut } from "next-auth/react";
@@ -153,6 +155,18 @@ export default function AdminPage() {
         },
       ],
     },
+    {
+      key: "content-management",
+      label: "เนื้อหา",
+      type: "group",
+      children: [
+        {
+          key: "post-management",
+          icon: <FileTextOutlined />,
+          label: "จัดการโพสต์",
+        },
+      ],
+    },
   ];
 
   const renderContent = () => {
@@ -171,6 +185,8 @@ export default function AdminPage() {
         return <PerformanceResultsManagement />;
       case "ita-management":
         return <ItaManagement />;
+      case "post-management":
+        return <PostManagement />;
       default:
         return (
           <Card>

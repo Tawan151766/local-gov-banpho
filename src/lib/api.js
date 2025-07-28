@@ -452,6 +452,105 @@ export const createItaTablesAPI = {
   },
 };
 
+// Post Types API functions
+export const postTypesAPI = {
+  getPostTypes: async (params = {}) => {
+    const searchParams = new URLSearchParams();
+
+    if (params.page) searchParams.append("page", params.page);
+    if (params.limit) searchParams.append("limit", params.limit);
+    if (params.search) searchParams.append("search", params.search);
+    if (params.withDetails)
+      searchParams.append("withDetails", params.withDetails);
+
+    const queryString = searchParams.toString();
+    const endpoint = `/post-types${queryString ? `?${queryString}` : ""}`;
+
+    return apiCall(endpoint);
+  },
+
+  getPostType: async (id, withDetails = false) => {
+    const params = withDetails ? "?withDetails=true" : "";
+    return apiCall(`/post-types/${id}${params}`);
+  },
+
+  createPostType: async (postTypeData) => {
+    return apiCall("/post-types", {
+      method: "POST",
+      body: JSON.stringify(postTypeData),
+    });
+  },
+
+  updatePostType: async (id, postTypeData) => {
+    return apiCall(`/post-types/${id}`, {
+      method: "PUT",
+      body: JSON.stringify(postTypeData),
+    });
+  },
+
+  deletePostType: async (id) => {
+    return apiCall(`/post-types/${id}`, {
+      method: "DELETE",
+    });
+  },
+};
+
+// Post Details API functions
+export const postDetailsAPI = {
+  getPostDetails: async (params = {}) => {
+    const searchParams = new URLSearchParams();
+
+    if (params.page) searchParams.append("page", params.page);
+    if (params.limit) searchParams.append("limit", params.limit);
+    if (params.search) searchParams.append("search", params.search);
+    if (params.postTypeId) searchParams.append("postTypeId", params.postTypeId);
+    if (params.withMedia) searchParams.append("withMedia", params.withMedia);
+
+    const queryString = searchParams.toString();
+    const endpoint = `/post-details${queryString ? `?${queryString}` : ""}`;
+
+    return apiCall(endpoint);
+  },
+
+  getPostDetail: async (id, withMedia = false) => {
+    const params = withMedia ? "?withMedia=true" : "";
+    return apiCall(`/post-details/${id}${params}`);
+  },
+
+  createPostDetail: async (postDetailData) => {
+    return apiCall("/post-details", {
+      method: "POST",
+      body: JSON.stringify(postDetailData),
+    });
+  },
+
+  updatePostDetail: async (id, postDetailData) => {
+    return apiCall(`/post-details/${id}`, {
+      method: "PUT",
+      body: JSON.stringify(postDetailData),
+    });
+  },
+
+  deletePostDetail: async (id) => {
+    return apiCall(`/post-details/${id}`, {
+      method: "DELETE",
+    });
+  },
+};
+
+// Create Post Tables API
+export const createPostTablesAPI = {
+  createTables: async () => {
+    return apiCall("/create-post-tables", {
+      method: "POST",
+    });
+  },
+
+  checkTables: async () => {
+    return apiCall("/create-post-tables");
+  },
+};
+
 // Export for easy use
 const apiExports = {
   userAPI,
@@ -463,6 +562,9 @@ const apiExports = {
   itaEvaluationsAPI,
   itaContentsAPI,
   createItaTablesAPI,
+  postTypesAPI,
+  postDetailsAPI,
+  createPostTablesAPI,
   createCRUDAPI,
 };
 
