@@ -183,7 +183,7 @@ export default function PostManagement() {
     if (tablesExist) {
       loadPostTypes();
     }
-  }, [tablesExist]);
+  }, [tablesExist]); // eslint-disable-line react-hooks/exhaustive-deps
 
   // Handle search
   const handleSearch = (value) => {

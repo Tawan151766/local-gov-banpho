@@ -136,6 +136,23 @@ export function handlePromoImageUpload() {
   }
 }
 
+// --- HERO SLIDER ---
+let currentSlide = 0;
+export function setSlide(index) {
+  const images = document.querySelectorAll(".hero-image");
+  const dots = document.querySelectorAll(".hero-dots .dot");
+  
+  // Remove active class from all images and dots
+  images.forEach((img) => img.classList.remove("active"));
+  dots.forEach((dot) => dot.classList.remove("active"));
+  
+  // Add active class to selected image and dot
+  if (images[index]) images[index].classList.add("active");
+  if (dots[index]) dots[index].classList.add("active");
+  
+  currentSlide = index;
+}
+
 // --- TOURISM SLIDER ---
 let currentTourismSlide = 0;
 export function showTourismSlide(index) {

@@ -174,7 +174,7 @@ export default function ProcurementPlanManagement() {
     if (tablesExist) {
       loadTypes();
     }
-  }, [tablesExist]);
+  }, [tablesExist]); // eslint-disable-line react-hooks/exhaustive-deps
 
   // Handle search
   const handleSearch = (value) => {

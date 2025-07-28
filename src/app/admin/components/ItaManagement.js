@@ -164,7 +164,7 @@ export default function ItaManagement() {
     if (tablesExist) {
       loadEvaluations();
     }
-  }, [tablesExist]);
+  }, [tablesExist]); // eslint-disable-line react-hooks/exhaustive-deps
 
   // Handle search
   const handleSearch = (value) => {

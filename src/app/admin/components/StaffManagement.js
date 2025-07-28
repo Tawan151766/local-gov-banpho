@@ -81,7 +81,7 @@ export default function StaffManagement() {
   // Initial load
   useEffect(() => {
     loadStaff();
-  }, []);
+  }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
   // Handle search
   const handleSearch = (value) => {

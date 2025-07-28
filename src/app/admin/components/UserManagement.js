@@ -69,7 +69,7 @@ export default function UserManagement() {
   // Initial load
   useEffect(() => {
     loadUsers();
-  }, []);
+  }, []); // eslint-disable-line react-hooks/exhaustive-deps
 
   // Handle search
   const handleSearch = (value) => {
