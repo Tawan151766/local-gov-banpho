@@ -17,6 +17,7 @@ import {
   BarChartOutlined,
   FileProtectOutlined,
   FileTextOutlined,
+  ShoppingCartOutlined,
 } from "@ant-design/icons";
 import DashboardStats from "./components/DashboardStats";
 import UserManagement from "./components/UserManagement";
@@ -24,6 +25,7 @@ import StaffManagement from "./components/StaffManagement";
 import PerformanceResultsManagement from "./components/PerformanceResultsManagement";
 import ItaManagement from "./components/ItaManagement";
 import PostManagement from "./components/PostManagement";
+import ProcurementPlanManagement from "./components/ProcurementPlanManagement";
 import styles from "./admin.module.css";
 import { useState, useEffect } from "react";
 import { useSession, signOut } from "next-auth/react";
@@ -153,6 +155,11 @@ export default function AdminPage() {
           icon: <FileProtectOutlined />,
           label: "ข้อมูล ITA",
         },
+        {
+          key: "procurement-plan",
+          icon: <ShoppingCartOutlined />,
+          label: "แผนจัดซื้อจัดจ้าง",
+        },
       ],
     },
     {
@@ -187,6 +194,8 @@ export default function AdminPage() {
         return <ItaManagement />;
       case "post-management":
         return <PostManagement />;
+      case "procurement-plan":
+        return <ProcurementPlanManagement />;
       default:
         return (
           <Card>

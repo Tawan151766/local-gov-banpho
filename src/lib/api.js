@@ -551,6 +551,103 @@ export const createPostTablesAPI = {
   },
 };
 
+// Procurement Plan Types API functions
+export const procurementPlanTypesAPI = {
+  getTypes: async (params = {}) => {
+    const searchParams = new URLSearchParams();
+
+    if (params.page) searchParams.append("page", params.page);
+    if (params.limit) searchParams.append("limit", params.limit);
+    if (params.search) searchParams.append("search", params.search);
+    if (params.withFiles) searchParams.append("withFiles", params.withFiles);
+
+    const queryString = searchParams.toString();
+    const endpoint = `/procurement-plan-types${queryString ? `?${queryString}` : ""}`;
+
+    return apiCall(endpoint);
+  },
+
+  getType: async (id, withFiles = false) => {
+    const params = withFiles ? "?withFiles=true" : "";
+    return apiCall(`/procurement-plan-types/${id}${params}`);
+  },
+
+  createType: async (typeData) => {
+    return apiCall("/procurement-plan-types", {
+      method: "POST",
+      body: JSON.stringify(typeData),
+    });
+  },
+
+  updateType: async (id, typeData) => {
+    return apiCall(`/procurement-plan-types/${id}`, {
+      method: "PUT",
+      body: JSON.stringify(typeData),
+    });
+  },
+
+  deleteType: async (id) => {
+    return apiCall(`/procurement-plan-types/${id}`, {
+      method: "DELETE",
+    });
+  },
+};
+
+// Procurement Plan Files API functions
+export const procurementPlanFilesAPI = {
+  getFiles: async (params = {}) => {
+    const searchParams = new URLSearchParams();
+
+    if (params.page) searchParams.append("page", params.page);
+    if (params.limit) searchParams.append("limit", params.limit);
+    if (params.search) searchParams.append("search", params.search);
+    if (params.typeId) searchParams.append("typeId", params.typeId);
+    if (params.filesType) searchParams.append("filesType", params.filesType);
+
+    const queryString = searchParams.toString();
+    const endpoint = `/procurement-plan-files${queryString ? `?${queryString}` : ""}`;
+
+    return apiCall(endpoint);
+  },
+
+  getFile: async (id) => {
+    return apiCall(`/procurement-plan-files/${id}`);
+  },
+
+  createFile: async (fileData) => {
+    return apiCall("/procurement-plan-files", {
+      method: "POST",
+      body: JSON.stringify(fileData),
+    });
+  },
+
+  updateFile: async (id, fileData) => {
+    return apiCall(`/procurement-plan-files/${id}`, {
+      method: "PUT",
+      body: JSON.stringify(fileData),
+    });
+  },
+
+  deleteFile: async (id) => {
+    return apiCall(`/procurement-plan-files/${id}`, {
+      method: "DELETE",
+    });
+  },
+};
+
+// Create Procurement Tables API
+export const createProcurementTablesAPI = {
+  createTables: async () => {
+    return apiCall("/create-procurement-tables", {
+      method: "POST",
+    });
+  },
+
+  checkTables: async () => {
+    return apiCall("/create-procurement-tables");
+  },
+};
+
 // Export for easy use
 const apiExports = {
   userAPI,
@@ -565,6 +662,9 @@ const apiExports = {
   postTypesAPI,
   postDetailsAPI,
   createPostTablesAPI,
+  procurementPlanTypesAPI,
+  procurementPlanFilesAPI,
+  createProcurementTablesAPI,
   createCRUDAPI,
 };
 
