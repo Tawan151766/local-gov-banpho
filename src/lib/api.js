@@ -354,6 +354,104 @@ export const perfResultsFilesAPI = {
   },
 };
 
+// ITA Evaluations API functions
+export const itaEvaluationsAPI = {
+  getEvaluations: async (params = {}) => {
+    const searchParams = new URLSearchParams();
+
+    if (params.page) searchParams.append("page", params.page);
+    if (params.limit) searchParams.append("limit", params.limit);
+    if (params.search) searchParams.append("search", params.search);
+    if (params.withContents)
+      searchParams.append("withContents", params.withContents);
+
+    const queryString = searchParams.toString();
+    const endpoint = `/ita-evaluations${queryString ? `?${queryString}` : ""}`;
+
+    return apiCall(endpoint);
+  },
+
+  getEvaluation: async (id, withContents = false) => {
+    const params = withContents ? "?withContents=true" : "";
+    return apiCall(`/ita-evaluations/${id}${params}`);
+  },
+
+  createEvaluation: async (evaluationData) => {
+    return apiCall("/ita-evaluations", {
+      method: "POST",
+      body: JSON.stringify(evaluationData),
+    });
+  },
+
+  updateEvaluation: async (id, evaluationData) => {
+    return apiCall(`/ita-evaluations/${id}`, {
+      method: "PUT",
+      body: JSON.stringify(evaluationData),
+    });
+  },
+
+  deleteEvaluation: async (id) => {
+    return apiCall(`/ita-evaluations/${id}`, {
+      method: "DELETE",
+    });
+  },
+};
+
+// ITA Contents API functions
+export const itaContentsAPI = {
+  getContents: async (params = {}) => {
+    const searchParams = new URLSearchParams();
+
+    if (params.page) searchParams.append("page", params.page);
+    if (params.limit) searchParams.append("limit", params.limit);
+    if (params.search) searchParams.append("search", params.search);
+    if (params.evaluationId)
+      searchParams.append("evaluationId", params.evaluationId);
+
+    const queryString = searchParams.toString();
+    const endpoint = `/ita-contents${queryString ? `?${queryString}` : ""}`;
+
+    return apiCall(endpoint);
+  },
+
+  getContent: async (id) => {
+    return apiCall(`/ita-contents/${id}`);
+  },
+
+  createContent: async (contentData) => {
+    return apiCall("/ita-contents", {
+      method: "POST",
+      body: JSON.stringify(contentData),
+    });
+  },
+
+  updateContent: async (id, contentData) => {
+    return apiCall(`/ita-contents/${id}`, {
+      method: "PUT",
+      body: JSON.stringify(contentData),
+    });
+  },
+
+  deleteContent: async (id) => {
+    return apiCall(`/ita-contents/${id}`, {
+      method: "DELETE",
+    });
+  },
+};
+
+// Create ITA Tables API
+export const createItaTablesAPI = {
+  createTables: async () => {
+    return apiCall("/create-ita-tables", {
+      method: "POST",
+    });
+  },
+
+  checkTables: async () => {
+    return apiCall("/create-ita-tables");
+  },
+};
+
 // Export for easy use
 const apiExports = {
   userAPI,
@@ -362,6 +460,9 @@ const apiExports = {
   perfResultsSectionsAPI,
   perfResultsSubTopicsAPI,
   perfResultsFilesAPI,
+  itaEvaluationsAPI,
+  itaContentsAPI,
+  createItaTablesAPI,
   createCRUDAPI,
 };
 

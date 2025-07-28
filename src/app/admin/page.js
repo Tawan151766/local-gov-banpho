@@ -15,11 +15,13 @@ import {
   LogoutOutlined,
   TeamOutlined,
   BarChartOutlined,
+  FileProtectOutlined,
 } from "@ant-design/icons";
 import DashboardStats from "./components/DashboardStats";
 import UserManagement from "./components/UserManagement";
 import StaffManagement from "./components/StaffManagement";
 import PerformanceResultsManagement from "./components/PerformanceResultsManagement";
+import ItaManagement from "./components/ItaManagement";
 import styles from "./admin.module.css";
 import { useState, useEffect } from "react";
 import { useSession, signOut } from "next-auth/react";
@@ -144,6 +146,11 @@ export default function AdminPage() {
           icon: <BarChartOutlined />,
           label: "ผลการดำเนินงาน",
         },
+        {
+          key: "ita-management",
+          icon: <FileProtectOutlined />,
+          label: "ข้อมูล ITA",
+        },
       ],
     },
   ];
@@ -162,6 +169,8 @@ export default function AdminPage() {
         return <StaffManagement />;
       case "performance-results":
         return <PerformanceResultsManagement />;
+      case "ita-management":
+        return <ItaManagement />;
       default:
         return (
           <Card>
