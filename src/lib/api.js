@@ -648,6 +648,146 @@ export const createProcurementTablesAPI = {
   },
 };
 
+// Laws & Regulations Types API functions
+export const lawsRegsTypesAPI = {
+  getTypes: async (params = {}) => {
+    const searchParams = new URLSearchParams();
+
+    if (params.page) searchParams.append("page", params.page);
+    if (params.limit) searchParams.append("limit", params.limit);
+    if (params.search) searchParams.append("search", params.search);
+    if (params.withSections) searchParams.append("withSections", params.withSections);
+
+    const queryString = searchParams.toString();
+    const endpoint = `/laws-regs-types${queryString ? `?${queryString}` : ""}`;
+
+    return apiCall(endpoint);
+  },
+
+  getType: async (id, withSections = false) => {
+    const params = withSections ? "?withSections=true" : "";
+    return apiCall(`/laws-regs-types/${id}${params}`);
+  },
+
+  createType: async (typeData) => {
+    return apiCall("/laws-regs-types", {
+      method: "POST",
+      body: JSON.stringify(typeData),
+    });
+  },
+
+  updateType: async (id, typeData) => {
+    return apiCall(`/laws-regs-types/${id}`, {
+      method: "PUT",
+      body: JSON.stringify(typeData),
+    });
+  },
+
+  deleteType: async (id) => {
+    return apiCall(`/laws-regs-types/${id}`, {
+      method: "DELETE",
+    });
+  },
+};
+
+// Laws & Regulations Sections API functions
+export const lawsRegsSectionsAPI = {
+  getSections: async (params = {}) => {
+    const searchParams = new URLSearchParams();
+
+    if (params.page) searchParams.append("page", params.page);
+    if (params.limit) searchParams.append("limit", params.limit);
+    if (params.search) searchParams.append("search", params.search);
+    if (params.typeId) searchParams.append("typeId", params.typeId);
+    if (params.withFiles) searchParams.append("withFiles", params.withFiles);
+
+    const queryString = searchParams.toString();
+    const endpoint = `/laws-regs-sections${queryString ? `?${queryString}` : ""}`;
+
+    return apiCall(endpoint);
+  },
+
+  getSection: async (id, withFiles = false) => {
+    const params = withFiles ? "?withFiles=true" : "";
+    return apiCall(`/laws-regs-sections/${id}${params}`);
+  },
+
+  createSection: async (sectionData) => {
+    return apiCall("/laws-regs-sections", {
+      method: "POST",
+      body: JSON.stringify(sectionData),
+    });
+  },
+
+  updateSection: async (id, sectionData) => {
+    return apiCall(`/laws-regs-sections/${id}`, {
+      method: "PUT",
+      body: JSON.stringify(sectionData),
+    });
+  },
+
+  deleteSection: async (id) => {
+    return apiCall(`/laws-regs-sections/${id}`, {
+      method: "DELETE",
+    });
+  },
+};
+
+// Laws & Regulations Files API functions
+export const lawsRegsFilesAPI = {
+  getFiles: async (params = {}) => {
+    const searchParams = new URLSearchParams();
+
+    if (params.page) searchParams.append("page", params.page);
+    if (params.limit) searchParams.append("limit", params.limit);
+    if (params.search) searchParams.append("search", params.search);
+    if (params.sectionId) searchParams.append("sectionId", params.sectionId);
+    if (params.filesType) searchParams.append("filesType", params.filesType);
+
+    const queryString = searchParams.toString();
+    const endpoint = `/laws-regs-files${queryString ? `?${queryString}` : ""}`;
+
+    return apiCall(endpoint);
+  },
+
+  getFile: async (id) => {
+    return apiCall(`/laws-regs-files/${id}`);
+  },
+
+  createFile: async (fileData) => {
+    return apiCall("/laws-regs-files", {
+      method: "POST",
+      body: JSON.stringify(fileData),
+    });
+  },
+
+  updateFile: async (id, fileData) => {
+    return apiCall(`/laws-regs-files/${id}`, {
+      method: "PUT",
+      body: JSON.stringify(fileData),
+    });
+  },
+
+  deleteFile: async (id) => {
+    return apiCall(`/laws-regs-files/${id}`, {
+      method: "DELETE",
+    });
+  },
+};
+
+// Create Laws & Regulations Tables API
+export const createLawsRegsTablesAPI = {
+  createTables: async () => {
+    return apiCall("/create-laws-regs-tables", {
+      method: "POST",
+    });
+  },
+
+  checkTables: async () => {
+    return apiCall("/create-laws-regs-tables");
+  },
+};
+
 // Export for easy use
 const apiExports = {
   userAPI,
@@ -665,6 +805,10 @@ const apiExports = {
   procurementPlanTypesAPI,
   procurementPlanFilesAPI,
   createProcurementTablesAPI,
+  lawsRegsTypesAPI,
+  lawsRegsSectionsAPI,
+  lawsRegsFilesAPI,
+  createLawsRegsTablesAPI,
   createCRUDAPI,
 };
 

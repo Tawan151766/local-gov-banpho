@@ -18,6 +18,7 @@ import {
   FileProtectOutlined,
   FileTextOutlined,
   ShoppingCartOutlined,
+  BookOutlined,
 } from "@ant-design/icons";
 import DashboardStats from "./components/DashboardStats";
 import UserManagement from "./components/UserManagement";
@@ -26,6 +27,7 @@ import PerformanceResultsManagement from "./components/PerformanceResultsManagem
 import ItaManagement from "./components/ItaManagement";
 import PostManagement from "./components/PostManagement";
 import ProcurementPlanManagement from "./components/ProcurementPlanManagement";
+import LawsRegsManagement from "./components/LawsRegsManagement";
 import styles from "./admin.module.css";
 import { useState, useEffect } from "react";
 import { useSession, signOut } from "next-auth/react";
@@ -160,6 +162,11 @@ export default function AdminPage() {
           icon: <ShoppingCartOutlined />,
           label: "แผนจัดซื้อจัดจ้าง",
         },
+        {
+          key: "laws-regulations",
+          icon: <BookOutlined />,
+          label: "กฎหมายและระเบียบ",
+        },
       ],
     },
     {
@@ -196,6 +203,8 @@ export default function AdminPage() {
         return <PostManagement />;
       case "procurement-plan":
         return <ProcurementPlanManagement />;
+      case "laws-regulations":
+        return <LawsRegsManagement />;
       default:
         return (
           <Card>
