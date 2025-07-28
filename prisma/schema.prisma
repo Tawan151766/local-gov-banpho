@@ -35,3 +35,59 @@ model Staff {
 
   @@map("staff")
 }
+
+model PerfResultsType {
+  id         Int      @id @default(autoincrement())
+  type_name  String   @db.VarChar(255)
+  created_at DateTime @default(now())
+  updated_at DateTime @updatedAt
+
+  // Relations
+  sections PerfResultsSection[]
+
+  @@map("perf_results_types")
+}
+
+model PerfResultsSection {
+  id           Int       @id @default(autoincrement())
+  type_id      Int
+  section_name String    @db.VarChar(255)
+  date         DateTime?
+  created_at   DateTime  @default(now())
+  updated_at   DateTime  @updatedAt
+
+  // Relations
+  type      PerfResultsType     @relation(fields: [type_id], references: [id], onDelete: Cascade)
+  subTopics PerfResultsSubTopic[]
+
+  @@map("perf_results_sections")
+}
+
+model PerfResultsSubTopic {
+  id         Int       @id @default(autoincrement())
+  section_id Int
+  topic_name String    @db.VarChar(255)
+  date       DateTime?
+  created_at DateTime  @default(now())
+  updated_at DateTime  @updatedAt
+
+  // Relations
+  section PerfResultsSection @relation(fields: [section_id], references: [id], onDelete: Cascade)
+  files   PerfResultsFile[]
+
+  @@map("perf_results_sub_topics")
+}
+
+model PerfResultsFile {
+  id           Int      @id @default(autoincrement())
+  sub_topic_id Int
+  files_path   String   @db.VarChar(500)
+  files_type   String   @db.VarChar(100)
+  created_at   DateTime @default(now())
+  updated_at   DateTime @updatedAt
+
+  // Relations
+  subTopic PerfResultsSubTopic @relation(fields: [sub_topic_id], references: [id], onDelete: Cascade)
+
+  @@map("perf_results_files")
+}

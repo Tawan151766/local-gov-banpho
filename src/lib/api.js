@@ -1,14 +1,14 @@
 // API utility functions for admin panel
 
-const API_BASE_URL = '/api';
+const API_BASE_URL = "/api";
 
 // Generic API call function
 async function apiCall(endpoint, options = {}) {
   const url = `${API_BASE_URL}${endpoint}`;
-  
+
   const config = {
     headers: {
-      'Content-Type': 'application/json',
+      "Content-Type": "application/json",
       ...options.headers,
     },
     ...options,
@@ -24,7 +24,7 @@ async function apiCall(endpoint, options = {}) {
 
     return data;
   } catch (error) {
-    console.error('API call failed:', error);
+    console.error("API call failed:", error);
     throw error;
   }
 }
@@ -34,14 +34,14 @@ export const userAPI = {
   // Get all users with pagination and search
   getUsers: async (params = {}) => {
     const searchParams = new URLSearchParams();
-    
-    if (params.page) searchParams.append('page', params.page);
-    if (params.limit) searchParams.append('limit', params.limit);
-    if (params.search) searchParams.append('search', params.search);
+
+    if (params.page) searchParams.append("page", params.page);
+    if (params.limit) searchParams.append("limit", params.limit);
+    if (params.search) searchParams.append("search", params.search);
 
     const queryString = searchParams.toString();
-    const endpoint = `/users${queryString ? `?${queryString}` : ''}`;
-    
+    const endpoint = `/users${queryString ? `?${queryString}` : ""}`;
+
     return apiCall(endpoint);
   },
 
@@ -52,8 +52,8 @@ export const userAPI = {
 
   // Create new user
   createUser: async (userData) => {
-    return apiCall('/users', {
-      method: 'POST',
+    return apiCall("/users", {
+      method: "POST",
       body: JSON.stringify(userData),
     });
   },
@@ -61,7 +61,7 @@ export const userAPI = {
   // Update user
   updateUser: async (id, userData) => {
     return apiCall(`/users/${id}`, {
-      method: 'PUT',
+      method: "PUT",
       body: JSON.stringify(userData),
     });
   },
@@ -69,7 +69,7 @@ export const userAPI = {
   // Delete user
   deleteUser: async (id) => {
     return apiCall(`/users/${id}`, {
-      method: 'DELETE',
+      method: "DELETE",
     });
   },
 };
@@ -79,25 +79,28 @@ export const createCRUDAPI = (resource) => ({
   getAll: (params = {}) => {
     const searchParams = new URLSearchParams(params);
     const queryString = searchParams.toString();
-    const endpoint = `/${resource}${queryString ? `?${queryString}` : ''}`;
+    const endpoint = `/${resource}${queryString ? `?${queryString}` : ""}`;
     return apiCall(endpoint);
   },
 
   getById: (id) => apiCall(`/${resource}/${id}`),
 
-  create: (data) => apiCall(`/${resource}`, {
-    method: 'POST',
-    body: JSON.stringify(data),
-  }),
+  create: (data) =>
+    apiCall(`/${resource}`, {
+      method: "POST",
+      body: JSON.stringify(data),
+    }),
 
-  update: (id, data) => apiCall(`/${resource}/${id}`, {
-    method: 'PUT',
-    body: JSON.stringify(data),
-  }),
+  update: (id, data) =>
+    apiCall(`/${resource}/${id}`, {
+      method: "PUT",
+      body: JSON.stringify(data),
+    }),
 
-  delete: (id) => apiCall(`/${resource}/${id}`, {
-    method: 'DELETE',
-  }),
+  delete: (id) =>
+    apiCall(`/${resource}/${id}`, {
+      method: "DELETE",
+    }),
 });
 
 // Staff API functions
@@ -105,16 +108,16 @@ export const staffAPI = {
   // Get all staff with pagination and search
   getStaff: async (params = {}) => {
     const searchParams = new URLSearchParams();
-    
-    if (params.page) searchParams.append('page', params.page);
-    if (params.limit) searchParams.append('limit', params.limit);
-    if (params.search) searchParams.append('search', params.search);
-    if (params.role) searchParams.append('role', params.role);
-    if (params.department) searchParams.append('department', params.department);
+
+    if (params.page) searchParams.append("page", params.page);
+    if (params.limit) searchParams.append("limit", params.limit);
+    if (params.search) searchParams.append("search", params.search);
+    if (params.role) searchParams.append("role", params.role);
+    if (params.department) searchParams.append("department", params.department);
 
     const queryString = searchParams.toString();
-    const endpoint = `/staff${queryString ? `?${queryString}` : ''}`;
-    
+    const endpoint = `/staff${queryString ? `?${queryString}` : ""}`;
+
     return apiCall(endpoint);
   },
 
@@ -125,8 +128,8 @@ export const staffAPI = {
 
   // Create new staff member
   createStaff: async (staffData) => {
-    return apiCall('/staff', {
-      method: 'POST',
+    return apiCall("/staff", {
+      method: "POST",
       body: JSON.stringify(staffData),
     });
   },
@@ -134,7 +137,7 @@ export const staffAPI = {
   // Update staff member
   updateStaff: async (id, staffData) => {
     return apiCall(`/staff/${id}`, {
-      method: 'PUT',
+      method: "PUT",
       body: JSON.stringify(staffData),
     });
   },
@@ -142,33 +145,224 @@ export const staffAPI = {
   // Delete staff member
   deleteStaff: async (id) => {
     return apiCall(`/staff/${id}`, {
-      method: 'DELETE',
+      method: "DELETE",
     });
   },
 
   // Get staff roles
   getRoles: () => {
     return {
-      'leader': 'หัวหน้า',
-      'coleader': 'รองหัวหน้า',
-      'employee': 'พนักงาน',
-      'employee_c1': 'พนักงาน C1',
-      'employee_c2': 'พนักงาน C2',
-      'employee_c3': 'พนักงาน C3',
-      'employee_c4': 'พนักงาน C4',
-      'employee_c5': 'พนักงาน C5',
-      'employee_c6': 'พนักงาน C6',
-      'employee_c7': 'พนักงาน C7',
-      'employee_c8': 'พนักงาน C8',
-      'employee_c9': 'พนักงาน C9',
-      'employee_c10': 'พนักงาน C10',
+      leader: "หัวหน้า",
+      coleader: "รองหัวหน้า",
+      employee: "พนักงาน",
+      employee_c1: "พนักงาน C1",
+      employee_c2: "พนักงาน C2",
+      employee_c3: "พนักงาน C3",
+      employee_c4: "พนักงาน C4",
+      employee_c5: "พนักงาน C5",
+      employee_c6: "พนักงาน C6",
+      employee_c7: "พนักงาน C7",
+      employee_c8: "พนักงาน C8",
+      employee_c9: "พนักงาน C9",
+      employee_c10: "พนักงาน C10",
     };
   },
 };
 
+// Performance Results Types API functions
+export const perfResultsTypesAPI = {
+  // Get all performance results types with pagination and search
+  getTypes: async (params = {}) => {
+    const searchParams = new URLSearchParams();
+
+    if (params.page) searchParams.append("page", params.page);
+    if (params.limit) searchParams.append("limit", params.limit);
+    if (params.search) searchParams.append("search", params.search);
+    if (params.withSections)
+      searchParams.append("withSections", params.withSections);
+
+    const queryString = searchParams.toString();
+    const endpoint = `/perf-results-types${
+      queryString ? `?${queryString}` : ""
+    }`;
+
+    return apiCall(endpoint);
+  },
+
+  // Get single performance results type by ID
+  getType: async (id, withSections = false) => {
+    const params = withSections ? "?withSections=true" : "";
+    return apiCall(`/perf-results-types/${id}${params}`);
+  },
+
+  // Create new performance results type
+  createType: async (typeData) => {
+    return apiCall("/perf-results-types", {
+      method: "POST",
+      body: JSON.stringify(typeData),
+    });
+  },
+
+  // Update performance results type
+  updateType: async (id, typeData) => {
+    return apiCall(`/perf-results-types/${id}`, {
+      method: "PUT",
+      body: JSON.stringify(typeData),
+    });
+  },
+
+  // Delete performance results type
+  deleteType: async (id) => {
+    return apiCall(`/perf-results-types/${id}`, {
+      method: "DELETE",
+    });
+  },
+};
+
+// Performance Results Sections API functions
+export const perfResultsSectionsAPI = {
+  getSections: async (params = {}) => {
+    const searchParams = new URLSearchParams();
+
+    if (params.page) searchParams.append("page", params.page);
+    if (params.limit) searchParams.append("limit", params.limit);
+    if (params.search) searchParams.append("search", params.search);
+    if (params.typeId) searchParams.append("typeId", params.typeId);
+    if (params.withSubTopics)
+      searchParams.append("withSubTopics", params.withSubTopics);
+
+    const queryString = searchParams.toString();
+    const endpoint = `/perf-results-sections${
+      queryString ? `?${queryString}` : ""
+    }`;
+
+    return apiCall(endpoint);
+  },
+
+  getSection: async (id, withSubTopics = false) => {
+    const params = withSubTopics ? "?withSubTopics=true" : "";
+    return apiCall(`/perf-results-sections/${id}${params}`);
+  },
+
+  createSection: async (sectionData) => {
+    return apiCall("/perf-results-sections", {
+      method: "POST",
+      body: JSON.stringify(sectionData),
+    });
+  },
+
+  updateSection: async (id, sectionData) => {
+    return apiCall(`/perf-results-sections/${id}`, {
+      method: "PUT",
+      body: JSON.stringify(sectionData),
+    });
+  },
+
+  deleteSection: async (id) => {
+    return apiCall(`/perf-results-sections/${id}`, {
+      method: "DELETE",
+    });
+  },
+};
+
+// Performance Results Sub Topics API functions
+export const perfResultsSubTopicsAPI = {
+  getSubTopics: async (params = {}) => {
+    const searchParams = new URLSearchParams();
+
+    if (params.page) searchParams.append("page", params.page);
+    if (params.limit) searchParams.append("limit", params.limit);
+    if (params.search) searchParams.append("search", params.search);
+    if (params.sectionId) searchParams.append("sectionId", params.sectionId);
+    if (params.withFiles) searchParams.append("withFiles", params.withFiles);
+
+    const queryString = searchParams.toString();
+    const endpoint = `/perf-results-sub-topics${
+      queryString ? `?${queryString}` : ""
+    }`;
+
+    return apiCall(endpoint);
+  },
+
+  getSubTopic: async (id, withFiles = false) => {
+    const params = withFiles ? "?withFiles=true" : "";
+    return apiCall(`/perf-results-sub-topics/${id}${params}`);
+  },
+
+  createSubTopic: async (subTopicData) => {
+    return apiCall("/perf-results-sub-topics", {
+      method: "POST",
+      body: JSON.stringify(subTopicData),
+    });
+  },
+
+  updateSubTopic: async (id, subTopicData) => {
+    return apiCall(`/perf-results-sub-topics/${id}`, {
+      method: "PUT",
+      body: JSON.stringify(subTopicData),
+    });
+  },
+
+  deleteSubTopic: async (id) => {
+    return apiCall(`/perf-results-sub-topics/${id}`, {
+      method: "DELETE",
+    });
+  },
+};
+
+// Performance Results Files API functions
+export const perfResultsFilesAPI = {
+  getFiles: async (params = {}) => {
+    const searchParams = new URLSearchParams();
+
+    if (params.page) searchParams.append("page", params.page);
+    if (params.limit) searchParams.append("limit", params.limit);
+    if (params.search) searchParams.append("search", params.search);
+    if (params.subTopicId) searchParams.append("subTopicId", params.subTopicId);
+    if (params.filesType) searchParams.append("filesType", params.filesType);
+
+    const queryString = searchParams.toString();
+    const endpoint = `/perf-results-files${
+      queryString ? `?${queryString}` : ""
+    }`;
+
+    return apiCall(endpoint);
+  },
+
+  getFile: async (id) => {
+    return apiCall(`/perf-results-files/${id}`);
+  },
+
+  createFile: async (fileData) => {
+    return apiCall("/perf-results-files", {
+      method: "POST",
+      body: JSON.stringify(fileData),
+    });
+  },
+
+  updateFile: async (id, fileData) => {
+    return apiCall(`/perf-results-files/${id}`, {
+      method: "PUT",
+      body: JSON.stringify(fileData),
+    });
+  },
+
+  deleteFile: async (id) => {
+    return apiCall(`/perf-results-files/${id}`, {
+      method: "DELETE",
+    });
+  },
+};
+
 // Export for easy use
-export default {
+const apiExports = {
   userAPI,
   staffAPI,
+  perfResultsTypesAPI,
+  perfResultsSectionsAPI,
+  perfResultsSubTopicsAPI,
+  perfResultsFilesAPI,
   createCRUDAPI,
 };
+
+export default apiExports;

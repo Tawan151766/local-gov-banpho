@@ -14,10 +14,12 @@ import {
   UserOutlined,
   LogoutOutlined,
   TeamOutlined,
+  BarChartOutlined,
 } from "@ant-design/icons";
 import DashboardStats from "./components/DashboardStats";
 import UserManagement from "./components/UserManagement";
 import StaffManagement from "./components/StaffManagement";
+import PerformanceResultsManagement from "./components/PerformanceResultsManagement";
 import styles from "./admin.module.css";
 import { useState, useEffect } from "react";
 import { useSession, signOut } from "next-auth/react";
@@ -132,6 +134,18 @@ export default function AdminPage() {
         },
       ],
     },
+    {
+      key: "performance-management",
+      label: "การจัดการผลการดำเนินงาน",
+      type: "group",
+      children: [
+        {
+          key: "performance-results",
+          icon: <BarChartOutlined />,
+          label: "ผลการดำเนินงาน",
+        },
+      ],
+    },
   ];
 
   const renderContent = () => {
@@ -146,6 +160,8 @@ export default function AdminPage() {
         return <UserManagement />;
       case "staff-management":
         return <StaffManagement />;
+      case "performance-results":
+        return <PerformanceResultsManagement />;
       default:
         return (
           <Card>
