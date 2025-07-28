@@ -17,7 +17,7 @@ export default function Navbar() {
               <button className="search-btn">🔍</button>
             </div>
             <div className="auth-buttons">
-              <a href="#" className="auth-btn1">
+              <a href="/admin" className="auth-btn1">
                 เข้าสู่ระบบ
               </a>
               <a href="#" className="auth-btn2">
