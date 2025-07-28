@@ -1,4 +1,4 @@
-import { ConfigProvider } from 'antd';
+import { ConfigProvider, App } from 'antd';
 import thTH from 'antd/locale/th_TH';
 
 export const metadata = {
@@ -17,7 +17,9 @@ export default function AdminLayout({ children }) {
         },
       }}
     >
-      {children}
+      <App>
+        {children}
+      </App>
     </ConfigProvider>
   );
 }

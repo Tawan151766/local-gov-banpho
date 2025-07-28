@@ -8,7 +8,7 @@ import {
   Form, 
   Input, 
   Select,
-  message, 
+  App,
   Space, 
   Popconfirm,
   Card,
@@ -47,6 +47,7 @@ export default function StaffManagement() {
   const [searchText, setSearchText] = useState('');
   const [selectedRole, setSelectedRole] = useState('');
   const [form] = Form.useForm();
+  const { message } = App.useApp();
 
   const roles = staffAPI.getRoles();
 

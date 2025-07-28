@@ -7,7 +7,7 @@ import {
   Modal, 
   Form, 
   Input, 
-  message, 
+  App,
   Space, 
   Popconfirm,
   Card,
@@ -38,6 +38,7 @@ export default function UserManagement() {
   });
   const [searchText, setSearchText] = useState('');
   const [form] = Form.useForm();
+  const { message } = App.useApp();
 
   // Load users
   const loadUsers = async (page = 1, search = '') => {

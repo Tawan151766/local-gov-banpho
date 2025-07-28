@@ -1,7 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
-import { Upload, message, Avatar, Button, Space } from "antd";
+import { Upload, App, Avatar, Button, Space } from "antd";
 import {
   UploadOutlined,
   DeleteOutlined,
@@ -12,6 +12,7 @@ import { uploadImage, validateImageFile, getImageUrl } from "@/lib/imageUtils";
 export default function ImageUpload({ value, onChange, disabled = false }) {
   const [loading, setLoading] = useState(false);
   const [imageUrl, setImageUrl] = useState(value);
+  const { message } = App.useApp();
 
   // Update local state when value prop changes
   useEffect(() => {
