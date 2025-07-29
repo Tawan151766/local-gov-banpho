@@ -1,6 +1,6 @@
 "use client";
 
-import "../../styles.css";
+// import "../../styles.css";
 import * as ui from "../../ui-logic";
 import Footer from "./Footer";
 import Navbar from "./Navbar";
