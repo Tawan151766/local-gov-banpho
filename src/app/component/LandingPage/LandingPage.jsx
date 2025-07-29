@@ -11,6 +11,7 @@ import AnnouncementSections from "./AnnouncementSections";
 import ActivitySection from "./ActivitySection";
 import NewsSection from "./NewsSection";
 import TravelSection from "./TravelSection";
+import PeopleSupport from "./PeopleSuport";
 
 export default function LandingPage() {
   return (
@@ -22,6 +23,7 @@ export default function LandingPage() {
       <AnnouncementSections />
       <ActivitySection />
       <NewsSection />
+      <PeopleSupport />
 
       <section className="poll-section">
         <div className="section-container">
