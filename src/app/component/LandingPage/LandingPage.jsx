@@ -10,6 +10,7 @@ import ContentSections from "./ContentSections";
 import AnnouncementSections from "./AnnouncementSections";
 import ActivitySection from "./ActivitySection";
 import NewsSection from "./NewsSection";
+import TravelSection from "./TravelSection";
 
 export default function LandingPage() {
   return (
@@ -21,7 +22,6 @@ export default function LandingPage() {
       <AnnouncementSections />
       <ActivitySection />
       <NewsSection />
-
 
       <section className="poll-section">
         <div className="section-container">
@@ -327,86 +327,7 @@ export default function LandingPage() {
           </div>
         </div>
       </section>
-      <section className="tourism-attractions-inline">
-        <div className="section-container">
-          <h2 className="section-title">แนะนำสถานที่ท่องเที่ยว</h2>
-          <div className="tourism-slider-container">
-            <div className="tourism-slider" id="tourismSlider">
-              <div className="tourism-item">
-                <img
-                  src="image/yak.jpg"
-                  alt="สถานที่ท่องเที่ยว 1"
-                  className="tourism-image"
-                />
-                <h3 className="tourism-title">แนะนำสถานที่ท่องเที่ยว</h3>
-              </div>
-              <div className="tourism-item">
-                <img
-                  src="image/whitecastle.jpg"
-                  alt="สถานที่ท่องเที่ยว 2"
-                  className="tourism-image"
-                />
-                <h3 className="tourism-title">แนะนำสถานที่ท่องเที่ยว</h3>
-              </div>
-              <div className="tourism-item">
-                <img
-                  src="image/market.jpg"
-                  alt="สถานที่ท่องเที่ยว 3"
-                  className="tourism-image"
-                />
-                <h3 className="tourism-title">แนะนำสถานที่ท่องเที่ยว</h3>
-              </div>
-
-              <div className="tourism-item">
-                <img
-                  src="image/yak.jpg"
-                  alt="สถานที่ท่องเที่ยว 1"
-                  className="tourism-image"
-                />
-                <h3 className="tourism-title">แนะนำสถานที่ท่องเที่ยว</h3>
-              </div>
-              <div className="tourism-item">
-                <img
-                  src="image/whitecastle.jpg"
-                  alt="สถานที่ท่องเที่ยว 2"
-                  className="tourism-image"
-                />
-                <h3 className="tourism-title">แนะนำสถานที่ท่องเที่ยว</h3>
-              </div>
-              <div className="tourism-item">
-                <img
-                  src="image/market.jpg"
-                  alt="สถานที่ท่องเที่ยว 3"
-                  className="tourism-image"
-                />
-                <h3 className="tourism-title">แนะนำสถานที่ท่องเที่ยว</h3>
-              </div>
-            </div>
-            <div className="tourism-dots">
-              <span
-                className="tourism-dot active"
-                onClick={() => ui.showTourismSlide(0)}
-              ></span>
-              <span
-                className="tourism-dot"
-                onClick={() => ui.showTourismSlide(1)}
-              ></span>
-              <span
-                className="tourism-dot"
-                onClick={() => ui.showTourismSlide(2)}
-              ></span>
-              <span
-                className="tourism-dot"
-                onClick={() => ui.showTourismSlide(3)}
-              ></span>
-              <span
-                className="tourism-dot"
-                onClick={() => ui.showTourismSlide(4)}
-              ></span>
-            </div>
-          </div>
-        </div>
-      </section>
+      <TravelSection />
       <section className="local-places-inline">
         <div className="section-container-map">
           <img
