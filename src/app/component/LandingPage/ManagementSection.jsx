@@ -214,7 +214,7 @@ export default function ManagementSection() {
   ];
 
   return (
-    <section className="relative w-full min-h-screen overflow-hidden">
+    <section className="relative w-full overflow-hidden">
       {/* Gradient */}
       <div
         className="absolute inset-0 z-0 pointer-events-none"
@@ -228,9 +228,10 @@ export default function ManagementSection() {
         className="absolute inset-0 z-0 pointer-events-none"
         style={{
           backgroundImage: `url('/image/banpho_text.png')`,
-          backgroundSize: "100% auto",
-          backgroundPosition: "50% 5%",
+          backgroundSize: "60% auto",
+          backgroundPosition: "50% 0%",
           backgroundRepeat: "no-repeat",
+          
         }}
       />
 
@@ -243,6 +244,7 @@ export default function ManagementSection() {
           backgroundPosition: "center",
           backgroundRepeat: "no-repeat",
           opacity: 0.39,
+          
         }}
       />
 

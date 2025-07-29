@@ -726,6 +726,204 @@ body {
 
 
 /* ========================================
+ ส่วนแสดงคณะผู้บริหาร (MANAGEMENT SECTION)
+ - แสดงรูปและข้อมูลผู้บริหาร
+ - จัดเรียงเป็นกริด 5 คอลัมน์ แถวเดียว กลางใหญ่ ซ้าย-ขวาเล็กลง
+======================================== */
+#management-title {
+  color: #2e3192;
+  font-weight: bold;
+  font-size: 30px; /* หัวข้อส่วนผู้บริหาร */
+}
+
+#managementGrid {
+ color: white; /* สีตัวอักษรในกริดผู้บริหาร */
+}
+
+#management-title2 {
+  color: white;
+  font-weight: bold;
+  font-size: 30px; /* หัวข้อที่สองของส่วนผู้บริหาร */
+}
+
+#managementGrid2 {
+ color: #2e3192;
+}
+
+.management-section {
+  background-color: white;
+  background-size: cover;
+  background-position: center;
+  background-repeat: no-repeat;
+
+  width: 100%;
+  color: black;
+  min-height: 300px;
+  background-image: 
+  linear-gradient(to bottom, rgba(255, 255, 255, 0.9) 0%, rgba(15, 82, 186, 0.95) 50%, rgba(255, 255, 255, 0.99) 100%),
+    url('/local-gov-banpho/public/image/blue_line.png');
+}
+
+#managementSection {
+  background: white;
+  width: 1440px;
+}
+
+.section-container {
+  width: 1440px;
+}
+
+.government-section {
+  background: linear-gradient(135deg, #4a90e2 0%, #357abd 100%);
+  padding: 0;
+  color: white;
+  width: 100%; /* ส่วนหน่วยงานราชการ */
+}
+
+.section-title {
+  text-align: center;
+  font-size: 32px;
+  font-weight: bold;
+  padding-top: 60px;
+  padding-bottom: 30px; /* หัวข้อของแต่ละส่วน */
+  color: #2E3192;
+
+
+}
+
+.management-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+  gap: clamp(15px, 3vw, 30px);
+  max-width: 100%;
+  margin: 0 auto;
+  justify-content: center;
+  align-items: flex-end; /* กริดสำหรับแสดงผู้บริหาร */
+}
+
+.management-card {
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: flex-end;
+  padding: clamp(10px, 2vw, 15px);
+  min-height: 300px;
+  transition: transform 0.3s ease; 
+}
+
+.management-card:hover {
+  transform: scale(1.05); 
+}
+
+.management-avatar {
+  display: inline-block; 
+  background: rgba(255, 255, 255, 0.9);
+  border-radius: 8px;
+  margin: 0 auto 15px;
+  padding: 0;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  transition: all 0.3s ease;
+  overflow: hidden;
+}
+.management-avatar img {
+  display: block;
+  width: 100%;
+  height: auto;
+}
+
+
+/* ขนาดของรูปภาพตามตำแหน่งในกริด */
+.position-3 .management-avatar {
+  width: clamp(140px, 25vw, 180px);
+  height: clamp(140px, 25vw, 180px);
+  margin-bottom: 50px; /* กลาง (ใหญ่สุด) */
+}
+
+.position-2 .management-avatar,
+.position-4 .management-avatar {
+  width: clamp(120px, 22vw, 150px);
+  height: clamp(120px, 22vw, 150px);
+  margin-bottom: 25px; /* ซ้ายถัดไปและขวาถัดไป */
+}
+
+.position-1 .management-avatar,
+.position-5 .management-avatar {
+  width: clamp(100px, 20vw, 120px);
+  height: clamp(100px, 20vw, 120px); /* ซ้ายสุดและขวาสุด */
+}
+
+.avatar-silhouette {
+  width: 80%;
+  height: 80%;
+  background: #333;
+  border-radius: 4px;
+  position: relative; /* รูปเงาของผู้บริหาร (ถ้าไม่มีรูปจริง) */
+}
+
+.avatar-silhouette::before {
+  content: "";
+  position: absolute;
+  top: 15%;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 25%;
+  height: 25%;
+  background: #333;
+  border-radius: 50%;
+}
+
+.avatar-silhouette::after {
+  content: "";
+  position: absolute;
+  bottom: 10%;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 45%;
+  height: 35%;
+  background: #333;
+  border-radius: 50% 50% 0 0;
+}
+
+.management-name {
+  font-size: clamp(14px, 3vw, 16px);
+  font-weight: bold;
+  margin-bottom: 5px;
+  transition: font-size 0.3s ease; /* ชื่อผู้บริหาร */
+}
+
+.position-3 .management-name {
+  font-size: clamp(16px, 4vw, 20px); /* ชื่อผู้บริหารตำแหน่งกลาง */
+}
+
+.position-2 .management-name,
+.position-4 .management-name {
+  font-size: clamp(15px, 3.5vw, 18px); /* ชื่อผู้บริหารตำแหน่งซ้ายถัดไปและขวาถัดไป */
+}
+
+.management-position {
+  font-size: clamp(15px, 3.5vw, 18px);
+  opacity: 0.9;
+  line-height: 1.4;
+  transition: font-size 0.3s ease; /* ตำแหน่งผู้บริหาร */
+}
+
+.position-3 .management-position {
+  font-size: clamp(15px, 3.5vw, 18px);
+  margin-bottom: 50px; /* ตำแหน่งกลาง */
+}
+
+.position-2 .management-position,
+.position-4 .management-position {
+  font-size: clamp(15px, 3.5vw, 18px);
+  margin-bottom: 25px; /* ตำแหน่งซ้ายถัดไปและขวาถัดไป */
+}
+
+
+
+
+
+/* ========================================
  ส่วนบริการต่างๆ (SERVICES SECTION)
  - แสดงปุ่มบริการที่สามารถเลื่อนซ้าย-ขวาได้
  - มีลูกศรสำหรับนำทางสไลด์
@@ -1307,6 +1505,660 @@ body {
 
 
 
+/* ========================================
+ ส่วนข่าวสารและกิจกรรม (ACTIVITIES & NEWS SECTION)
+ - แสดงข่าวสารและกิจกรรมในรูปแบบแท็บ
+ - มีการ์ดเด่นและรายการด้านข้าง
+======================================== */
+.activities-news-section {
+  background: white;
+  padding: 60px 0; /* ส่วนสำหรับข่าวสารและกิจกรรม */
+  width: 100%;
+
+  display: flex;
+  justify-content: center; /* กึ่งกลางแนวนอน */
+
+}
+
+.tab-header {
+  display: flex;
+  justify-content: center;
+  margin-bottom: 40px;
+}
+
+.tab-btn {
+  background: none;
+  border: none;
+  padding: 15px 30px;
+  font-size: 32px;
+  cursor: pointer;
+  color: #2E3192;
+  transition: all 0.3s; /* ปุ่มแท็บ */
+}
+
+.tab-btn.active {
+  color: #2E3192;
+  border-bottom-color: #2E3192;
+  font-weight: bold; /* ปุ่มแท็บที่เลือก */
+}
+
+.tab-content {
+  display: block; /* เนื้อหาแท็บ */
+  min-width: 1200px;
+  max-width: 1900px;
+
+}
+
+.tab-content.hidden {
+  display: none; /* ซ่อนเนื้อหาแท็บที่ไม่เลือก */
+}
+
+
+/* Layout Container */
+.content-layout {
+  display: flex;
+  flex-direction: column;
+  gap: 40px;
+  margin-bottom: 30px;
+  padding: 0 16px; /* เพิ่ม padding ซ้ายขวาให้เหมาะกับจอ */
+  max-width: 100%;
+  box-sizing: border-box;
+}
+
+/* Featured News */
+
+.featured-item {
+
+  border-radius: 12px;
+  overflow: hidden;
+  width: 100%;
+}
+
+.featured-content {
+  display: flex;
+  flex-direction: row;
+  width: 100%;
+
+}
+
+
+.image-wrapper {
+  width: 100%;
+  max-width: 704px;
+  height: 425px;
+  padding: 0;
+  box-sizing: border-box;
+  flex-shrink: 0;
+  border-radius: 30px;
+  overflow: hidden;
+}
+
+.featured-image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  border-radius: 30px;
+}
+
+
+.item-info {
+  padding: 20px;
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  
+}
+
+.item-title {
+  font-size: 20px;
+  font-weight: bold;
+  color: #2E3192;
+  margin-bottom: 10px;
+}
+
+.item-date {
+  color: #666;
+  font-size: 14px;
+  margin-bottom: 10px;
+}
+
+.item-excerpt {
+  color: #666;
+  line-height: 1.6;
+  margin-bottom: 15px;
+  flex-grow: 1;
+}
+
+.read-more {
+  color: #2E3192;
+  text-decoration: none;
+  font-weight: 400;
+  align-self: flex-start;
+  font-size: 20px;
+}
+
+.read-more:hover {
+  text-decoration: underline;
+}
+
+
+
+
+
+/* Side Items */
+
+.side-items {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: space-between;
+  gap: 60px;
+  padding: 0;
+  box-sizing: border-box;
+  margin-top: 30px;
+  max-width: 100%;
+}
+
+.side-item {
+  border-radius: 30px;
+  display: flex;
+  flex-direction: column;
+  flex: 1 1 383px; /* ขยายได้ แต่ไม่เกิน 383px */
+  max-width: 383px;
+  overflow: hidden;
+  box-sizing: border-box;
+  min-width: 280px; /* กำหนดขั้นต่ำสำหรับ responsive */
+}
+
+.side-image-wrapper {
+  width: 100%;
+  height: 260px;
+  overflow: hidden;
+}
+
+.side-image {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  border-radius: 30px;
+}
+
+.side-info {
+  padding: 15px;
+  flex-grow: 1;
+  border-radius: 0 0 30px 30px;
+  display: flex;
+  flex-direction: column;
+  box-sizing: border-box;
+  font-size: 20px;
+}
+
+.side-title {
+  font-size: 20px;
+  font-weight: bold;
+  color: #2E3192;
+  margin-bottom: 6px;
+}
+
+.side-date, .item-date {
+  color: #00000080;
+  font-size: 20px;
+  margin-bottom: 6px;
+  font-weight: 400;
+}
+
+.side-excerpt, .item-excerpt {
+  color: #1E1E1E;
+  font-size: 20px;
+  line-height: 1.5;
+  margin-bottom: 10px;
+  flex-grow: 1;
+  font-weight: 400;
+}
+
+
+
+.more-section {
+  text-align: center;
+}
+
+.more-btn-center {
+  background: #2E3192;
+  color: white;
+  border: none;
+  padding: 4px 18px; /* ปรับขนาดปุ่ม */
+  border-radius: 16.49px;
+  cursor: pointer;
+  font-size: 14px;
+  transition: background 0.3s ease;
+ margin-right: 2%;
+  white-space: nowrap;
+  font-weight: Medium;
+  
+}
+
+.more-btn-center:hover {
+  background: #2E3192cc;
+  
+}
+
+
+/* ========================================
+ ส่วนบริการและเฟซบุ๊ก (SERVICES & FACEBOOK SECTION)
+ - แสดงปุ่มบริการ เช่น ราคาน้ำมัน, ราคาทอง
+ - มีวิดเจ็ตเฟซบุ๊กเพจ
+======================================== */
+.services-facebook-section {
+  background: #f8f9fa;
+  padding: 60px 0; /* ส่วนสำหรับบริการและวิดเจ็ตเฟซบุ๊ก */
+  width: 100%;
+
+  display: flex;
+  justify-content: center; /* กึ่งกลางแนวนอน */
+}
+
+.services-facebook-grid {
+  display: grid;
+  grid-template-columns: 2fr 1fr;
+  gap: 90px; /* กริดสำหรับบริการและเฟซบุ๊ก */
+  display: flex;
+  justify-content: center; /* กึ่งกลางแนวนอน */
+
+  
+}
+
+.service-buttons-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr); /* 2 คอลัมน์เท่ากัน */
+  grid-template-rows: auto auto auto; /* 3 แถว */
+  gap: 20px 30px; /* ระยะห่างแนวตั้ง 20px แนวนอน 30px ปรับได้ตามชอบ */
+  max-width: 750px; /* กำหนดความกว้างรวมของ grid เพื่อให้พอดีกับ e-service */
+  margin: 0 auto; /* กึ่งกลางหน้า */
+  padding: 10px; /* เว้นขอบเล็กน้อย */
+}
+
+.service-button {
+  border-radius: 12px;
+
+  text-align: center;
+  cursor: pointer;
+  transition: transform 0.3s; /* ปุ่มบริการ */
+}
+
+.service-button:hover {
+  transform: translateY(-5px);
+}
+
+/* Mom */
+
+.service-button.child-center {
+  width: 335px;
+  height: 120px;
+
+  border-radius: 35px;
+
+  background: linear-gradient(180deg, #B7D3FF 0%, #5A89D0 100%);
+  box-shadow: 0px 4px 4px 0px #00000040;
+
+  color: white;
+  opacity: 1;
+
+  display: flex;
+  align-items: center;
+  padding: 0 20px;
+  gap: 15px; /* ระยะห่างระหว่างรูปกับข้อความ */
+
+  width: 100%;
+  max-width: 335px; /* กำหนด max-width ให้เล็กกว่าช่อง */
+  box-sizing: border-box;
+
+  grid-column: 1 / 2; /* ช่อง 1 คอลัมน์ที่ 1 */
+  grid-row: 1 / 2;    /* แถว 1 */
+}
+
+.service-icon-large {
+  width: 94px;
+  height: 94px;
+  object-fit: cover;
+
+
+}
+
+.text-content {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: flex-start;
+  text-align: left; /* เพิ่มบรรทัดนี้ */
+}
+
+
+.main-title {
+  font-weight: 600;
+  font-size: 24px;
+  color: #1E1E1E;
+  white-space: nowrap;  /* เพิ่มตรงนี้ */
+}
+
+
+.sub-title {
+  font-weight: 400;
+  font-size: 16px;
+  color: white;
+}
+
+
+ /* gas  ปุ่มราคาน้ำมัน*/
+
+
+
+ .service-button.oil-price {
+  width: 386px;
+  height: 120px;
+  border-radius: 35px;
+
+  background: linear-gradient(180deg, #B7D3FF 0%, #5A89D0 100%);
+  box-shadow: 0px 4px 4px 0px #00000040;
+
+  display: flex;
+  align-items: center;
+  padding: 10px 20px;
+  gap: 15px;
+  cursor: pointer;
+
+  color: #333;
+  grid-column: 2 / 3; /* ช่อง 2 คอลัมน์ที่ 2 */
+  grid-row: 1 / 2;    /* แถว 1 */
+}
+
+.service-button.oil-price,
+.gold-card,
+.service-button.line-friend {
+  width: 100%;
+  max-width: 386px; /* หรือขนาดที่เหมาะสมกับแต่ละอัน */
+  box-sizing: border-box;
+}
+
+
+.oil-icon {
+  width: 101px;
+  height: 101px;
+  object-fit: cover;
+}
+
+.text-content {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: flex-start;
+  gap: 5px;
+}
+
+.oil-title {
+  font-weight: 600;
+  font-size: 32px;
+  letter-spacing: 0;
+  color: #1E1E1E;
+}
+
+.price-display {
+  display: flex;
+  gap: 20px;
+}
+
+
+.service-icon-large {
+  font-size: 48px;
+  margin-bottom: 10px; /* ไอคอนขนาดใหญ่ */
+}
+
+
+
+
+
+/* ปุ่มราคาทอง */
+
+.gold-card {
+  background: linear-gradient(to bottom, #fdf3ae 0%, #c4932c 100%);
+  border-radius: 20px;
+  width: 280px;
+  padding: 0;
+  color: #5c3b0c;
+  box-shadow: 0 4px 20px rgba(0,0,0,0.3);
+  text-align: center;
+  overflow: hidden;
+
+  grid-column: 1 / 2; /* ช่อง 3 คอลัมน์ที่ 1 */
+  grid-row: 2 / 3;    /* แถว 2 */
+}
+
+.header-gold {
+  background: #fdf3ae;
+  padding: 16px;
+  font-size: 35px;
+  font-weight: bold;
+  border-bottom: 1px solid #ffffff55;
+ 
+  
+}
+
+.gold-content {
+  background: linear-gradient(to right, #f4eca4, #f3eba3, #f4eca4);
+  padding: 16px 20px;
+}
+
+.price-section {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin: 20px 0;
+  position: relative;
+}
+
+.price-section .label {
+  text-align: left;
+  font-size: 16px;
+  font-weight: bold;
+  color: #5c3b0c;
+  flex: 1;
+}
+
+.price-section .label span {
+  font-size: 13px;
+  font-weight: normal;
+}
+
+.price-section .price {
+  flex: 1;
+  text-align: center;
+  font-size: 34px;
+  font-weight: 700;
+  color: #5c3b0c;
+  transform: translateX(-48px);
+  letter-spacing: 2px; 
+}
+
+
+
+.divider {
+  border-top: 1.5px dashed #5c3b0c;
+  margin: 10px 0;
+}
+
+.gold-lower {
+  background: linear-gradient(to right,
+    #d6ac4f 0%, 
+    #fceba6 50%, 
+    #d6ac4f 100%);
+  padding: 20px;
+  border-bottom-left-radius: 20px;
+  border-bottom-right-radius: 20px;
+}
+
+
+
+
+/* ปุ่มเพิ่มเพื่อน LINE */
+
+.service-button.line-friend {
+  width: 386px;
+  height: 260px;
+  border-radius: 35px;
+  background: linear-gradient(180deg, #ACFFA4 0%, #73CC6B 100%);
+  box-shadow: 0px 4px 4px 0px #00000040;
+
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  padding: 20px;
+  position: relative;
+  font-family: "Prompt", sans-serif;
+  grid-column: 2 / 3; /* ช่อง 4 คอลัมน์ที่ 2 */
+  grid-row: 2 / 3;    /* แถว 2 */
+}
+
+.service-button.line-friend .text-area {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 6px;
+  width: 100%;
+  padding-right: 200px; /* กันชนไม่ให้ข้อความไปซ้อน QR */
+  box-sizing: border-box;
+  text-align: left;
+}
+
+
+
+.service-button.line-friend .main-text {
+  font-size: 32px;
+  font-weight: 600;
+  color: #1E1E1E;
+  white-space: nowrap;
+  line-height: 1.2; 
+  margin-bottom: 20px;
+
+}
+
+
+.service-button.line-friend .sub-text {
+  font-size: 20px;
+  font-weight: 500;
+  color: #1E1E1E;
+  margin-bottom: 75px;
+}
+
+/* กล่อง QR */
+.service-button.line-friend .qr-box {
+  width: 180px;
+  height: 173px;
+  border-radius: 23px;
+  background: #FFFFFF;
+  box-shadow: 0px 4px 4px 0px #00000040;
+  
+  position: absolute;
+  bottom: 20px;
+  right: 20px;
+}
+
+.gold-card,
+.service-button.line-friend {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  height: 260px; /* ให้เท่ากันกับ line-friend */
+}
+
+
+
+/* ปุ่ม e-service */
+
+
+.service-button.e-service {
+  background: none;
+  grid-column: 1 / 3; /* ครอบคอลัมน์ 1-2 */
+  grid-row: 3 / 4;    /* แถว 3 */
+}
+
+.e-service-content {
+  width: 100%;
+  max-width: 750px; /* ไม่เกิน grid container */
+  border-radius: 20px;
+  overflow: hidden;
+  box-sizing: border-box;
+}
+
+
+.e-service-icon {
+  width: 100%;      /* ให้เต็ม container */
+  height: auto;     /* รักษาสัดส่วน */
+  display: block;   /* ป้องกันช่องว่างใต้ภาพ */
+  object-fit: contain; /* ปรับขนาดภาพให้พอดี */
+  border-radius: 20px; /* ถ้าต้องการซ้ำก็ได้ */
+}
+
+
+
+
+
+.hours-badge {
+  background: rgba(255, 255, 255, 0.2);
+  padding: 4px 12px;
+  border-radius: 12px;
+  font-size: 12px;
+  font-weight: bold; /* ป้ายเวลา */
+}
+
+.facebook-widget {
+  background: white;
+  border-radius: 12px;
+  overflow: hidden;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1); /* วิดเจ็ตเฟซบุ๊ก */
+}
+
+.facebook-cover {
+  width: 100%;
+  height: 150px;
+  object-fit: cover; /* ภาพปกเฟซบุ๊ก */
+}
+
+.facebook-header {
+  height: 640px;
+  width: 459px;
+}
+
+.facebook-header img {
+  width: 100%;         /* ให้กว้างเต็มพอดี container */
+  height: 640px;        /* ปรับความสูงตามอัตราส่วนภาพ */
+  display: block;      /* ลบช่องว่างล่างของ img */
+  object-fit: cover;   /* เติมพื้นที่ให้เต็ม ถ้าต้องการตัดภาพบางส่วนให้พอดี */
+  border-radius: 12px; /* ถ้าต้องการขอบโค้ง */
+  border: solid #0F52BA 5px;
+}
+
+
+
+.fb-btn {
+  flex: 1;
+  padding: 10px;
+  border: 1px solid #ddd;
+  border-radius: 6px;
+  background: white;
+  cursor: pointer;
+  font-size: 14px; /* ปุ่มทั่วไป */
+}
+
+.fb-btn.like {
+  background: #1877f2;
+  color: white;
+  border-color: #1877f2; /* ปุ่มกดถูกใจ */
+}
+
+.fb-btn.follow {
+  background: #42b883;
+  color: white;
+  border-color: #42b883; /* ปุ่มติดตาม */
+}
 
 
 
