@@ -16,33 +16,49 @@ export default function ContentSections() {
       url: "https://www.youtube.com/watch?v=dQw4w9WgXcQ",
     },
   ];
+
   const [current, setCurrent] = React.useState(0);
+
   const handlePrev = () =>
     setCurrent((prev) => (prev === 0 ? youtubeVideos.length - 1 : prev - 1));
+
   const handleNext = () =>
     setCurrent((prev) => (prev === youtubeVideos.length - 1 ? 0 : prev + 1));
-  return (
-    <div className="relative w-screen h-screen shadow-[0_18.4px_18.4px_rgba(0,0,0,0.49)] overflow-hidden flex items-center justify-center">
-      {/* Background Gradient */}
-      <div className="absolute top-0 left-0 w-full h-full bg-gradient-to-b from-[#A8F9FF] to-[#E8DDC4] z-0" />
 
-      {/* ส่วนเนื้อหา */}
-      <div className="relative z-10 w-full max-w-3xl mx-auto flex flex-col items-center">
-        <div className="flex max-w-2xl w-full justify-between items-center mb-6 mt-8">
-          <div className="text-[#0B2347] text-2xl font-bold mb-6 mt-8 w-full text-left">
+  return (
+    <div
+      className="relative w-screen h-screen shadow-[0_18.4px_18.4px_rgba(0,0,0,0.49)] overflow-hidden flex items-center justify-center"
+      style={{
+        backgroundImage: `linear-gradient(180deg, rgba(239, 228, 212, 0.6) 0%, rgba(1, 189, 204, 0.6) 100%),
+        url("image/vision_bg.png")`,
+        backgroundSize: "cover",
+        backgroundPosition: "center",
+        backgroundRepeat: "no-repeat",
+      }}
+    >
+
+      {/* Fallback Background - เผื่อภาพไม่โหลด */}
+      <div className="absolute top-0 left-0 w-full h-full bg-gradient-to-b from-[#A8F9FF] to-[#E8DDC4] -z-10" />
+
+      {/* Content */}
+      <div className="relative z-10 w-full max-w-4xl mx-auto flex flex-col items-center px-4 sm:px-6 lg:px-8">
+        {/* Header Section */}
+        <div className="flex w-full max-w-2xl justify-between items-center mb-6 mt-8">
+          <div className="text-[#01385F] text-xl sm:text-2xl lg:text-3xl font-bold w-full text-left">
             วิดีทัศน์แนะนำ
           </div>
-          <button className="bg-[#01385f] text-white rounded-[12.5px] w-[72px] h-[25px] text-sm shadow-md relative">
+          <button className="bg-[#01385f] text-white rounded-[12.5px] px-4 py-2 text-sm shadow-md hover:bg-[#01385f]/90 transition-colors duration-200 whitespace-nowrap ml-4">
             เพิ่มเติม
           </button>
         </div>
-        <div
-          className="rectangle-15 relative w-full max-w-2xl sm:max-w-xl xs:max-w-full aspect-video border-[6px] border-solid border-white rounded-[29px] shadow-[0_4px_4px_rgba(0,0,0,0.25)] bg-white flex items-center justify-center overflow-hidden"
-          style={{ boxSizing: 'border-box' }}
-        >
+
+        {/* Video Container */}
+        <div className="relative w-full max-w-2xl aspect-video border-4 sm:border-6 border-solid border-white rounded-[20px] sm:rounded-[29px] shadow-[0_4px_4px_rgba(0,0,0,0.25)] bg-white flex items-center justify-center overflow-hidden">
           <iframe
-            className="w-full h-full rounded-[29px] sm:p-2 xs:p-0"
-            src={`https://www.youtube.com/embed/${youtubeVideos[current].url.split('v=')[1]}`}
+            className="w-full h-full rounded-[16px] sm:rounded-[25px]"
+            src={`https://www.youtube.com/embed/${
+              youtubeVideos[current].url.split("v=")[1]
+            }`}
             title="YouTube video player"
             frameBorder="0"
             allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
@@ -50,11 +66,13 @@ export default function ContentSections() {
           />
         </div>
 
-        {/* จุด slider และลูกศร */}
+        {/* Navigation Controls */}
         <div className="flex items-center justify-center mt-6 space-x-6">
+          {/* Previous Button */}
           <button
             onClick={handlePrev}
-            className="text-gray-500 hover:text-[#0B2347] focus:outline-none"
+            className="text-[#01385F] hover:text-[#01385f] focus:outline-none transition-colors duration-200 p-2"
+            aria-label="Previous video"
           >
             <svg width="24" height="24" fill="none">
               <path
@@ -66,19 +84,28 @@ export default function ContentSections() {
               />
             </svg>
           </button>
-          <div className="flex gap-2 mt-2">
+
+          {/* Dots */}
+          <div className="flex gap-2">
             {youtubeVideos.map((_, idx) => (
-              <span
+              <button
                 key={idx}
-                className={`w-3 h-3 rounded-full ${
-                  current === idx ? "bg-[#0B2347]" : "bg-gray-400 opacity-50"
+                onClick={() => setCurrent(idx)}
+                className={`w-3 h-3 sm:w-4 sm:h-4 rounded-full transition-all duration-200 hover:scale-110 ${
+                  current === idx
+                    ? "bg-[#01385F]"
+                    : "bg-gray-400 opacity-50 hover:opacity-80"
                 }`}
+                aria-label={`Go to video ${idx + 1}`}
               />
             ))}
           </div>
+
+          {/* Next Button */}
           <button
             onClick={handleNext}
-            className="text-gray-500 hover:text-[#0B2347] focus:outline-none"
+            className="text-[#01385F] hover:text-[#01385f] focus:outline-none transition-colors duration-200 p-2"
+            aria-label="Next video"
           >
             <svg width="24" height="24" fill="none">
               <path
