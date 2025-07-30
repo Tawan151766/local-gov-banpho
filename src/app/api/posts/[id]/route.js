@@ -1,180 +1,193 @@
 import { NextResponse } from 'next/server';
+import mysql from 'mysql2/promise';
 
-// Mock news data
-const mockNews = [
-  {
-    id: 101,
-    title: "ประกาศรับสมัครงานเทศบาลตำบลบ้านโพธิ์",
-    content: `เทศบาลตำบลบ้านโพธิ์ ประกาศรับสมัครบุคคลเพื่อบรรจุและแต่งตั้งเป็นพนักงานเทศบาล ตำแหน่งนักวิชาการสาธารณสุข จำนวน 2 อัตรา
+const dbConfig = {
+  host: '103.80.48.25',
+  port: 3306,
+  user: 'gmsky_banphokorat',
+  password: 'banphokorat56789',
+  database: 'gmsky_banphokorat'
+};
 
-คุณสมบัติเฉพาะตำแหน่ง:
-- วุฒิปริญญาตรีสาขาสาธารณสุขศาสตร์ หรือสาขาที่เกี่ยวข้อง
-- มีใบประกอบวิชาชีพที่ถูกต้องตามกฎหมาย
-- มีประสบการณ์การทำงานไม่น้อยกว่า 1 ปี
-
-วิธีการสมัคร:
-- ยื่นใบสมัครด้วยตนเองที่สำนักงานเทศบาล
-- ระยะเวลารับสมัคร: 1-15 สิงหาคม 2567
-- เวลา: 08.30-16.30 น. (วันจันทร์-ศุกร์)
-
-เอกสารประกอบการสมัคร:
-- ใบสมัครงาน (รับได้ที่เทศบาล)
-- สำเนาบัตรประชาชน
-- สำเนาทะเบียนบ้าน
-- สำเนาวุฒิการศึกษา
-- สำเนาใบประกอบวิชาชีพ`,
-    image: "/image/Boat.jpg",
-    created_at: "2024-07-29T10:00:00Z",
-    type: "ข่าวประชาสัมพันธ์",
-    location: "สำนักงานเทศบาลตำบลบ้านโพธิ์",
-    organizer: "เทศบาลตำบลบ้านโพธิ์"
-  },
-  {
-    id: 102,
-    title: "ประชาสัมพันธ์การจัดเก็บภาษีโรงเรือนและที่ดิน",
-    content: `เทศบาลตำบลบ้านโพธิ์ ขอประชาสัมพันธ์การจัดเก็บภาษีโรงเรือนและที่ดิน ประจำปี 2567
-
-รายละเอียดการชำระ:
-- ระยะเวลาชำระ: 1 สิงหาคม - 30 กันยายน 2567
-- สถานที่ชำระ: สำนักงานเทศบาลตำบลบ้านโพธิ์
-- เวลาทำการ: 08.30-16.30 น. (วันจันทร์-ศุกร์)
-
-เอกสารที่ต้องนำมา:
-- บัตรประชาชน
-- ใบแจ้งภาษี (ถ้ามี)
-- หลักฐานกรรมสิทธิ์ที่ดิน
-
-สิทธิประโยชน์:
-- ชำระภายในเดือนสิงหาคม ลดหย่อน 10%
-- ชำระภายในเดือนกันยายน ลดหย่อน 5%
-
-สอบถามเพิ่มเติม: โทร 038-123456`,
-    image: "/image/Boat.jpg",
-    created_at: "2024-07-28T14:30:00Z",
-    type: "ข่าวประชาสัมพันธ์",
-    location: "สำนักงานเทศบาลตำบลบ้านโพธิ์",
-    organizer: "เทศบาลตำบลบ้านโพธิ์"
-  }
-];
-
-// Mock activities data
-const mockActivities = [
-  {
-    id: 1,
-    title: "กิจกรรมปลูกป่าชุมชน",
-    content: `เทศบาลตำบลบ้านโพธิ์ จัดกิจกรรมปลูกป่าชุมชน เพื่อสร้างจิตสำนึกในการอนุรักษ์สิ่งแวดล้อม และเพิ่มพื้นที่สีเขียวให้กับชุมชน
-
-กิจกรรมนี้เป็นส่วนหนึ่งของโครงการอนุรักษ์สิ่งแวดล้อมของเทศบาล โดยมีการเชิญชวนประชาชนในพื้นที่ร่วมกันปลูกต้นไม้ในบริเวณที่เหมาะสม
-
-ผลที่คาดหวัง:
-- เพิ่มพื้นที่สีเขียวในชุมชน
-- สร้างจิตสำนึกด้านสิ่งแวดล้อม
-- ส่งเสริมการมีส่วนร่วมของประชาชน
-- ปรับปรุงคุณภาพอากาศในพื้นที่`,
-    image: "/image/Boat.jpg",
-    created_at: "2024-01-15T10:00:00Z",
-    type: "กิจกรรม",
-    location: "บริเวณสวนสาธารณะตำบลบ้านโพธิ์",
-    organizer: "เทศบาลตำบลบ้านโพธิ์"
-  },
-  {
-    id: 2,
-    title: "งานประเพณีสงกรานต์",
-    content: `จัดงานประเพณีสงกรานต์ประจำปี พร้อมกิจกรรมสรงน้ำพระพุทธรูป รดน้ำดำหัวผู้สูงอายุ และกิจกรรมสันทนาการต่างๆ
-
-งานประเพณีสงกรานต์เป็นงานประจำปีที่สำคัญของชุมชน เป็นการสืบทอดประเพณีไทยและเสริมสร้างความสามัคคีในชุมชน
-
-กิจกรรมภายในงาน:
-- พิธีสรงน้ำพระพุทธรูป
-- พิธีรดน้ำดำหัวผู้สูงอายุ
-- การแสดงพื้นบ้าน
-- กิจกรรมเล่นน้ำแบบประเพณี
-- จำหน่ายอาหารและของที่ระลึก`,
-    image: "/image/Boat.jpg",
-    created_at: "2024-04-13T09:00:00Z",
-    type: "กิจกรรม",
-    location: "ลานอเนกประสงค์เทศบาลตำบลบ้านโพธิ์",
-    organizer: "เทศบาลตำบลบ้านโพธิ์ ร่วมกับชุมชน"
-  }
-];
-
+// GET /api/post-details/[id]
 export async function GET(request, { params }) {
+  let connection;
   try {
-    const { id } = params;
-    
-    // Combine all posts and find by ID
-    const allPosts = [...mockNews, ...mockActivities];
-    const post = allPosts.find(item => item.id === parseInt(id));
-    
-    if (!post) {
+    const id = params?.id;
+    const { searchParams } = new URL(request.url);
+    const withMedia = searchParams.get('withMedia') === 'true';
+
+    connection = await mysql.createConnection(dbConfig);
+
+    const [postDetails] = await connection.execute(
+      `SELECT pd.*, pt.type_name,
+              JSON_ARRAYAGG(JSON_OBJECT(
+                'id', pp.id,
+                'post_photo_file', pp.post_photo_file,
+                'post_photo_status', pp.post_photo_status,
+                'created_at', pp.created_at,
+                'updated_at', pp.updated_at
+              )) AS photos
+       FROM post_details pd 
+       LEFT JOIN post_types pt ON pd.post_type_id = pt.id 
+       LEFT JOIN post_photos pp ON pd.id = pp.post_detail_id
+       WHERE pd.id = ?
+       GROUP BY pd.id`,
+      [parseInt(id)]
+    );
+
+    if (postDetails.length === 0) {
       return NextResponse.json(
-        { 
-          success: false, 
-          error: 'Post not found',
-          post: null
-        },
+        { success: false, error: 'Post detail not found' },
         { status: 404 }
       );
     }
 
-    return NextResponse.json({
-      success: true,
-      post: post
-    });
+    let postDetail = postDetails[0];
 
-  } catch (error) {
-    console.error('Error fetching post:', error);
-    return NextResponse.json(
-      { 
-        success: false, 
-        error: 'Failed to fetch post',
-        post: null
-      },
-      { status: 500 }
-    );
-  }
-}
-
-// TODO: Replace mock data with actual database queries
-// Example with a database:
-/*
-import { connectToDatabase } from '@/lib/mongodb'; // or your database connection
-
-export async function GET(request, { params }) {
-  try {
-    const { id } = params;
-    const { db } = await connectToDatabase();
-    
-    const post = await db
-      .collection('posts')
-      .findOne({ _id: new ObjectId(id) });
-
-    if (!post) {
-      return NextResponse.json(
-        { 
-          success: false, 
-          error: 'Post not found',
-          post: null
-        },
-        { status: 404 }
+    if (withMedia) {
+      const [photos] = await connection.execute(
+        'SELECT * FROM post_photos WHERE post_detail_id = ? ORDER BY created_at ASC',
+        [parseInt(id)]
       );
+      const [videos] = await connection.execute(
+        'SELECT * FROM post_videos WHERE post_detail_id = ? ORDER BY created_at ASC',
+        [parseInt(id)]
+      );
+      const [pdfs] = await connection.execute(
+        'SELECT * FROM post_pdfs WHERE post_detail_id = ? ORDER BY created_at ASC',
+        [parseInt(id)]
+      );
+      postDetail.photos = photos;
+      postDetail.videos = videos;
+      postDetail.pdfs = pdfs;
     }
 
     return NextResponse.json({
       success: true,
-      post: post
+      data: postDetail
     });
 
   } catch (error) {
-    console.error('Error fetching post:', error);
+    console.error('Error fetching post detail:', error);
     return NextResponse.json(
-      { 
-        success: false, 
-        error: 'Failed to fetch post',
-        post: null
-      },
+      { success: false, error: 'Failed to fetch post detail', details: error.message },
       { status: 500 }
     );
+  } finally {
+    if (connection) {
+      await connection.end();
+    }
   }
 }
-*/
+
+// PUT /api/post-details/[id]
+export async function PUT(request, { params }) {
+  let connection;
+  try {
+    const id = params?.id;
+    const body = await request.json();
+    const { date, title_name, topic_name, details } = body;
+
+    if (!title_name) {
+      return NextResponse.json(
+        { success: false, error: 'Title name is required' },
+        { status: 400 }
+      );
+    }
+
+    connection = await mysql.createConnection(dbConfig);
+
+    const [result] = await connection.execute(
+      'UPDATE post_details SET date = ?, title_name = ?, topic_name = ?, details = ?, updated_at = NOW() WHERE id = ?',
+      [date || null, title_name, topic_name || null, details || null, parseInt(id)]
+    );
+
+    if (result.affectedRows === 0) {
+      return NextResponse.json(
+        { success: false, error: 'Post detail not found' },
+        { status: 404 }
+      );
+    }
+
+    const [updatedDetail] = await connection.execute(
+      `SELECT pd.*, pt.type_name 
+       FROM post_details pd 
+       LEFT JOIN post_types pt ON pd.post_type_id = pt.id 
+       WHERE pd.id = ?`,
+      [parseInt(id)]
+    );
+
+    return NextResponse.json({
+      success: true,
+      data: updatedDetail[0],
+      message: 'Post detail updated successfully'
+    });
+
+  } catch (error) {
+    console.error('Error updating post detail:', error);
+    return NextResponse.json(
+      { success: false, error: 'Failed to update post detail', details: error.message },
+      { status: 500 }
+    );
+  } finally {
+    if (connection) {
+      await connection.end();
+    }
+  }
+}
+
+// DELETE /api/post-details/[id]
+export async function DELETE(request, { params }) {
+  let connection;
+  try {
+    const id = params?.id;
+    connection = await mysql.createConnection(dbConfig);
+
+    await connection.beginTransaction();
+
+    try {
+      await connection.execute(
+        'DELETE FROM post_photos WHERE post_detail_id = ?',
+        [parseInt(id)]
+      );
+      await connection.execute(
+        'DELETE FROM post_videos WHERE post_detail_id = ?',
+        [parseInt(id)]
+      );
+      await connection.execute(
+        'DELETE FROM post_pdfs WHERE post_detail_id = ?',
+        [parseInt(id)]
+      );
+      const [result] = await connection.execute(
+        'DELETE FROM post_details WHERE id = ?',
+        [parseInt(id)]
+      );
+      if (result.affectedRows === 0) {
+        await connection.rollback();
+        return NextResponse.json(
+          { success: false, error: 'Post detail not found' },
+          { status: 404 }
+        );
+      }
+      await connection.commit();
+      return NextResponse.json({
+        success: true,
+        message: 'Post detail deleted successfully'
+      });
+    } catch (error) {
+      await connection.rollback();
+      throw error;
+    }
+  } catch (error) {
+    console.error('Error deleting post detail:', error);
+    return NextResponse.json(
+      { success: false, error: 'Failed to delete post detail', details: error.message },
+      { status: 500 }
+    );
+  } finally {
+    if (connection) {
+      await connection.end();
+    }
+  }
+}

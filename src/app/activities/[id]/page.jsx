@@ -36,7 +36,7 @@ export default function ActivityPage({ params }) {
       const data = await response.json();
       
       if (data.success) {
-        setActivity(data.post);
+        setActivity(data.data);
       } else {
         throw new Error(data.error || 'Failed to fetch activity');
       }
