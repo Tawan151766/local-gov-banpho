@@ -1,5 +1,5 @@
 import { EServiceTop, EServiceBottom } from "./EServiceSection";
-import FinanceSection from "./financeSection";
+import FinanceSection from "./FinanceSection";
 import InsideBander from "./InsideBander";
 
 export default function EService() {
