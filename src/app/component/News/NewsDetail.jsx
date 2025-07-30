@@ -1,8 +1,10 @@
 "use client";
-import React from "react";
+import React, { useState } from "react";
 import Link from "next/link";
 
 export default function NewsDetail({ news, loading, error, onRetry }) {
+  const [currentImageIndex, setCurrentImageIndex] = useState(0);
+
   const formatDate = (dateString) => {
     if (!dateString) return 'ไม่ระบุวันที่';
     
@@ -22,7 +24,31 @@ export default function NewsDetail({ news, loading, error, onRetry }) {
   const getImageUrl = (imagePath) => {
     if (!imagePath) return '/image/Boat.jpg';
     if (imagePath.startsWith('http')) return imagePath;
-    return imagePath.startsWith('/') ? imagePath : `/${imagePath}`;
+    
+    // Handle news images with storage URL
+    const baseStorageUrl = 'https://banpho.sosmartsolution.com/storage/';
+    return `${baseStorageUrl}${imagePath}`;
+  };
+
+  const getNewsImages = (news) => {
+    if (!news?.photos) return ['/image/Boat.jpg'];
+    
+    try {
+      const photos = typeof news.photos === 'string' ? JSON.parse(news.photos) : news.photos;
+      if (Array.isArray(photos) && photos.length > 0) {
+        const validImages = photos
+          .filter(photo => photo.post_photo_status === "1" || photo.post_photo_status === "2")
+          .map(photo => photo.post_photo_file)
+          .filter(path => path && path.trim() !== '' && !path.includes('undefined') && !path.includes('null'))
+          .map(path => getImageUrl(path));
+        
+        return validImages.length > 0 ? validImages : ['/image/Boat.jpg'];
+      }
+    } catch (error) {
+      console.error('Error parsing photos:', error);
+    }
+    
+    return ['/image/Boat.jpg'];
   };
 
   if (loading) {
@@ -115,6 +141,8 @@ export default function NewsDetail({ news, loading, error, onRetry }) {
     );
   }
 
+  const images = getNewsImages(news);
+
   return (
     <div
       className="min-h-screen py-16 px-4"
@@ -135,24 +163,68 @@ export default function NewsDetail({ news, loading, error, onRetry }) {
             </Link>
             <span>›</span>
             <span className="text-yellow-300 font-medium">
-              {news.title || 'รายละเอียดข่าว'}
+              {news.title_name || news.title || 'รายละเอียดข่าว'}
             </span>
           </div>
         </nav>
 
         {/* Main Content */}
         <article className="bg-white/38 backdrop-blur-[80px] rounded-3xl shadow-xl overflow-hidden hover:shadow-2xl transition-shadow duration-300">
-          {/* Featured Image */}
-          <div className="w-full h-96 relative overflow-hidden">
-            <img
-              src={getImageUrl(news.image || news.featured_image)}
-              alt={news.title || 'ข่าวประชาสัมพันธ์'}
-              className="w-full h-full object-cover hover:scale-105 transition-transform duration-500"
-              onError={(e) => {
-                e.target.src = '/image/Boat.jpg';
-              }}
-            />
-            <div className="absolute inset-0 bg-gradient-to-t from-black/30 to-transparent"></div>
+          {/* Image Gallery */}
+          <div className="relative">
+            <div className="w-full h-96 relative overflow-hidden">
+              <img
+                src={images[currentImageIndex]}
+                alt={news.title_name || news.title || 'ข่าวประชาสัมพันธ์'}
+                className="w-full h-full object-cover transition-transform duration-500"
+                onError={(e) => {
+                  e.target.src = '/image/Boat.jpg';
+                }}
+              />
+              <div className="absolute inset-0 bg-gradient-to-t from-black/30 to-transparent"></div>
+              
+              {/* Image Navigation */}
+              {images.length > 1 && (
+                <>
+                  <button
+                    onClick={() => setCurrentImageIndex(prev => prev === 0 ? images.length - 1 : prev - 1)}
+                    className="absolute left-4 top-1/2 transform -translate-y-1/2 bg-black/50 text-white p-2 rounded-full hover:bg-black/70 transition-colors"
+                  >
+                    <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
+                    </svg>
+                  </button>
+                  <button
+                    onClick={() => setCurrentImageIndex(prev => prev === images.length - 1 ? 0 : prev + 1)}
+                    className="absolute right-4 top-1/2 transform -translate-y-1/2 bg-black/50 text-white p-2 rounded-full hover:bg-black/70 transition-colors"
+                  >
+                    <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                    </svg>
+                  </button>
+                  
+                  {/* Image Indicators */}
+                  <div className="absolute bottom-4 left-1/2 transform -translate-x-1/2 flex space-x-2">
+                    {images.map((_, index) => (
+                      <button
+                        key={index}
+                        onClick={() => setCurrentImageIndex(index)}
+                        className={`w-3 h-3 rounded-full transition-colors ${
+                          index === currentImageIndex ? 'bg-white' : 'bg-white/50'
+                        }`}
+                      />
+                    ))}
+                  </div>
+                </>
+              )}
+            </div>
+            
+            {/* Image Counter */}
+            {images.length > 1 && (
+              <div className="absolute top-4 right-4 bg-black/50 text-white px-3 py-1 rounded-full text-sm">
+                {currentImageIndex + 1} / {images.length}
+              </div>
+            )}
           </div>
 
           {/* Content */}
@@ -160,7 +232,7 @@ export default function NewsDetail({ news, loading, error, onRetry }) {
             {/* Header */}
             <header className="mb-8">
               <h1 className="text-3xl lg:text-4xl font-bold text-[#394D1C] mb-4 leading-tight">
-                {news.title || 'ไม่มีหัวข้อ'}
+                {news.title_name || news.title || 'ไม่มีหัวข้อ'}
               </h1>
               
               <div className="flex flex-wrap items-center gap-4 text-gray-600">
@@ -169,7 +241,7 @@ export default function NewsDetail({ news, loading, error, onRetry }) {
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z" />
                   </svg>
                   <span className="text-lg">
-                    {formatDate(news.created_at || news.date)}
+                    {formatDate(news.date || news.created_at)}
                   </span>
                 </div>
                 
@@ -178,7 +250,7 @@ export default function NewsDetail({ news, loading, error, onRetry }) {
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M7 7h.01M7 3h5c.512 0 1.024.195 1.414.586l7 7a2 2 0 010 2.828l-7 7a2 2 0 01-2.828 0l-7-7A1.994 1.994 0 013 12V7a4 4 0 014-4z" />
                   </svg>
                   <span className="bg-blue-100 text-blue-800 px-3 py-1 rounded-full text-sm font-medium">
-                    {news.type || 'ข่าวประชาสัมพันธ์'}
+                    {news.type_name || news.type || 'ข่าวประชาสัมพันธ์'}
                   </span>
                 </div>
               </div>
@@ -196,7 +268,9 @@ export default function NewsDetail({ news, loading, error, onRetry }) {
             {/* Content Body */}
             <div className="prose prose-lg max-w-none">
               <div className="text-gray-700 leading-relaxed text-lg space-y-6">
-                {news.content ? (
+                {news.details ? (
+                  <div dangerouslySetInnerHTML={{ __html: news.details }} />
+                ) : news.content ? (
                   news.content.split('\n').map((paragraph, index) => (
                     paragraph.trim() && (
                       <p key={index} className="mb-4">
@@ -209,6 +283,38 @@ export default function NewsDetail({ news, loading, error, onRetry }) {
                 )}
               </div>
             </div>
+
+            {/* Thumbnail Gallery */}
+            {images.length > 1 && (
+              <div className="mt-8">
+                <h3 className="text-lg font-medium text-gray-800 mb-4">รูปภาพประกอบ</h3>
+                <div className="grid grid-cols-3 md:grid-cols-4 lg:grid-cols-6 gap-3">
+                  {images.map((image, index) => (
+                    <button
+                      key={index}
+                      onClick={() => setCurrentImageIndex(index)}
+                      className={`relative aspect-square rounded-lg overflow-hidden transition-all duration-200 ${
+                        index === currentImageIndex 
+                          ? 'ring-4 ring-[#0383AA] ring-opacity-50 scale-105' 
+                          : 'hover:scale-105 hover:shadow-lg'
+                      }`}
+                    >
+                      <img
+                        src={image}
+                        alt={`รูปที่ ${index + 1}`}
+                        className="w-full h-full object-cover"
+                        onError={(e) => {
+                          e.target.src = '/image/Boat.jpg';
+                        }}
+                      />
+                      {index === currentImageIndex && (
+                        <div className="absolute inset-0 bg-[#0383AA]/20"></div>
+                      )}
+                    </button>
+                  ))}
+                </div>
+              </div>
+            )}
 
             {/* Additional Info */}
             {(news.location || news.organizer) && (

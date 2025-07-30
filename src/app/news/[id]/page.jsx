@@ -36,7 +36,7 @@ export default function NewsPage({ params }) {
       const data = await response.json();
       
       if (data.success) {
-        setNews(data.post);
+        setNews(data.data);
       } else {
         throw new Error(data.error || 'Failed to fetch news');
       }
