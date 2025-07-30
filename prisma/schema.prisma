@@ -1,6 +1,3 @@
-// This is your Prisma schema file,
-// learn more about it in the docs: https://pris.ly/d/prisma-schema
-
 generator client {
   provider = "prisma-client-js"
 }
@@ -11,83 +8,310 @@ datasource db {
 }
 
 model User {
-  id                Int       @id @default(autoincrement())
+  id                BigInt    @id @default(autoincrement()) @db.UnsignedBigInt
   name              String    @db.VarChar(255)
-  email             String    @unique @db.VarChar(255)
-  email_verified_at DateTime?
+  email             String    @unique(map: "users_email_unique") @db.VarChar(255)
+  email_verified_at DateTime? @db.Timestamp(0)
   password          String    @db.VarChar(255)
+  level             String    @db.VarChar(255)
   remember_token    String?   @db.VarChar(100)
-  created_at        DateTime  @default(now())
-  updated_at        DateTime  @updatedAt
+  created_at        DateTime? @db.Timestamp(0)
+  updated_at        DateTime? @updatedAt @db.Timestamp(0)
 
   @@map("users")
 }
 
 model Staff {
-  id          Int      @id @default(autoincrement())
-  full_name   String   @db.VarChar(255)
-  phone       String?  @db.VarChar(20)
-  role        String   @db.VarChar(50)
-  department  String?  @db.VarChar(255)
-  img         String?  @db.VarChar(500)
-  created_at  DateTime @default(now())
-  updated_at  DateTime @updatedAt
+  id         BigInt     @id @default(autoincrement()) @db.UnsignedBigInt
+  full_name  String     @db.VarChar(255)
+  phone      String     @db.VarChar(50)
+  role       staff_role
+  department String?    @db.VarChar(255)
+  img        String?    @db.VarChar(255)
+  created_at DateTime?  @default(now()) @db.Timestamp(0)
+  updated_at DateTime?  @default(now()) @updatedAt @db.Timestamp(0)
 
   @@map("staff")
 }
 
 model PerfResultsType {
-  id         Int      @id @default(autoincrement())
-  type_name  String   @db.VarChar(255)
-  created_at DateTime @default(now())
-  updated_at DateTime @updatedAt
-
-  // Relations
-  sections PerfResultsSection[]
+  id         BigInt               @id @default(autoincrement()) @db.UnsignedBigInt
+  type_name  String               @db.Text
+  created_at DateTime?            @db.Timestamp(0)
+  updated_at DateTime?            @updatedAt @db.Timestamp(0)
+  sections   PerfResultsSection[]
 
   @@map("perf_results_types")
 }
 
 model PerfResultsSection {
-  id           Int       @id @default(autoincrement())
-  type_id      Int
-  section_name String    @db.VarChar(255)
-  date         DateTime?
-  created_at   DateTime  @default(now())
-  updated_at   DateTime  @updatedAt
+  id           BigInt                @id @default(autoincrement()) @db.UnsignedBigInt
+  type_id      BigInt?               @db.UnsignedBigInt
+  section_name String                @db.Text
+  date         DateTime?             @db.Date
+  created_at   DateTime?             @db.Timestamp(0)
+  updated_at   DateTime?             @updatedAt @db.Timestamp(0)
+  type         PerfResultsType?      @relation(fields: [type_id], references: [id], onUpdate: Restrict, map: "perf_results_sections_type_id_foreign")
+  subTopics    PerfResultsSubTopic[]
 
-  // Relations
-  type      PerfResultsType     @relation(fields: [type_id], references: [id], onDelete: Cascade)
-  subTopics PerfResultsSubTopic[]
-
+  @@index([type_id], map: "perf_results_sections_type_id_foreign")
   @@map("perf_results_sections")
 }
 
 model PerfResultsSubTopic {
-  id         Int       @id @default(autoincrement())
-  section_id Int
-  topic_name String    @db.VarChar(255)
-  date       DateTime?
-  created_at DateTime  @default(now())
-  updated_at DateTime  @updatedAt
+  id         BigInt              @id @default(autoincrement()) @db.UnsignedBigInt
+  section_id BigInt?             @db.UnsignedBigInt
+  topic_name String              @db.Text
+  date       DateTime?           @db.Date
+  created_at DateTime?           @db.Timestamp(0)
+  updated_at DateTime?           @updatedAt @db.Timestamp(0)
+  files      PerfResultsFile[]
+  section    PerfResultsSection? @relation(fields: [section_id], references: [id], onUpdate: Restrict, map: "perf_results_sub_topics_section_id_foreign")
 
-  // Relations
-  section PerfResultsSection @relation(fields: [section_id], references: [id], onDelete: Cascade)
-  files   PerfResultsFile[]
-
+  @@index([section_id], map: "perf_results_sub_topics_section_id_foreign")
   @@map("perf_results_sub_topics")
 }
 
 model PerfResultsFile {
-  id           Int      @id @default(autoincrement())
-  sub_topic_id Int
-  files_path   String   @db.VarChar(500)
-  files_type   String   @db.VarChar(100)
-  created_at   DateTime @default(now())
-  updated_at   DateTime @updatedAt
+  id           BigInt               @id @default(autoincrement()) @db.UnsignedBigInt
+  sub_topic_id BigInt?              @db.UnsignedBigInt
+  files_path   String               @db.VarChar(255)
+  files_type   String               @db.VarChar(255)
+  created_at   DateTime?            @db.Timestamp(0)
+  updated_at   DateTime?            @updatedAt @db.Timestamp(0)
+  subTopic     PerfResultsSubTopic? @relation(fields: [sub_topic_id], references: [id], onUpdate: Restrict, map: "perf_results_files_sub_topic_id_foreign")
 
-  // Relations
-  subTopic PerfResultsSubTopic @relation(fields: [sub_topic_id], references: [id], onDelete: Cascade)
-
+  @@index([sub_topic_id], map: "perf_results_files_sub_topic_id_foreign")
   @@map("perf_results_files")
+}
+
+model failed_jobs {
+  id         BigInt   @id @default(autoincrement()) @db.UnsignedBigInt
+  uuid       String   @unique(map: "failed_jobs_uuid_unique") @db.VarChar(255)
+  connection String   @db.Text
+  queue      String   @db.Text
+  payload    String   @db.LongText
+  exception  String   @db.LongText
+  failed_at  DateTime @default(now()) @db.Timestamp(0)
+}
+
+model ita_contents {
+  id            BigInt    @id @default(autoincrement()) @db.UnsignedBigInt
+  url           String    @db.VarChar(500)
+  description   String?   @db.Text
+  evaluation_id BigInt    @db.UnsignedBigInt
+  created_at    DateTime? @db.Timestamp(0)
+  updated_at    DateTime? @db.Timestamp(0)
+  deleted_at    DateTime? @db.Timestamp(0)
+}
+
+model ita_evaluations {
+  id          BigInt    @id @default(autoincrement()) @db.UnsignedBigInt
+  name        String    @db.VarChar(255)
+  description String?   @db.Text
+  ita_date    DateTime? @db.Date
+  deleted_at  DateTime? @db.Timestamp(0)
+  created_at  DateTime? @default(now()) @db.Timestamp(0)
+  updated_at  DateTime? @default(now()) @db.Timestamp(0)
+}
+
+model laws_regs_files {
+  id                 BigInt              @id @default(autoincrement()) @db.UnsignedBigInt
+  section_id         BigInt?             @db.UnsignedBigInt
+  files_path         String              @db.VarChar(255)
+  files_type         String              @db.VarChar(255)
+  created_at         DateTime?           @db.Timestamp(0)
+  updated_at         DateTime?           @db.Timestamp(0)
+  laws_regs_sections laws_regs_sections? @relation(fields: [section_id], references: [id], onUpdate: Restrict, map: "laws_regs_files_section_id_foreign")
+
+  @@index([section_id], map: "laws_regs_files_section_id_foreign")
+}
+
+model laws_regs_sections {
+  id              BigInt            @id @default(autoincrement()) @db.UnsignedBigInt
+  type_id         BigInt?           @db.UnsignedBigInt
+  section_name    String            @db.Text
+  created_at      DateTime?         @db.Timestamp(0)
+  updated_at      DateTime?         @db.Timestamp(0)
+  laws_regs_files laws_regs_files[]
+  laws_regs_types laws_regs_types?  @relation(fields: [type_id], references: [id], onUpdate: Restrict, map: "laws_regs_sections_type_id_foreign")
+
+  @@index([type_id], map: "laws_regs_sections_type_id_foreign")
+}
+
+model laws_regs_types {
+  id                 BigInt               @id @default(autoincrement()) @db.UnsignedBigInt
+  type_name          String               @db.Text
+  created_at         DateTime?            @db.Timestamp(0)
+  updated_at         DateTime?            @db.Timestamp(0)
+  laws_regs_sections laws_regs_sections[]
+}
+
+model local_dev_plan_files {
+  id                   BigInt               @id @default(autoincrement()) @db.UnsignedBigInt
+  type_id              BigInt               @db.UnsignedBigInt
+  files_path           String               @db.VarChar(255)
+  files_type           String               @db.VarChar(255)
+  created_at           DateTime?            @db.Timestamp(0)
+  updated_at           DateTime?            @db.Timestamp(0)
+  local_dev_plan_types local_dev_plan_types @relation(fields: [type_id], references: [id], onDelete: Cascade, onUpdate: Restrict, map: "local_dev_plan_files_type_id_foreign")
+
+  @@index([type_id], map: "local_dev_plan_files_type_id_foreign")
+}
+
+model local_dev_plan_types {
+  id                   BigInt                 @id @default(autoincrement()) @db.UnsignedBigInt
+  type_name            String                 @db.VarChar(255)
+  created_at           DateTime?              @db.Timestamp(0)
+  updated_at           DateTime?              @db.Timestamp(0)
+  local_dev_plan_files local_dev_plan_files[]
+}
+
+model menu_attachments {
+  id         BigInt    @id @default(autoincrement()) @db.UnsignedBigInt
+  menu_id    BigInt    @db.UnsignedBigInt
+  title      String?   @db.VarChar(255)
+  word_file  String?   @db.VarChar(255)
+  excel_file String?   @db.VarChar(255)
+  pdf_file   String?   @db.VarChar(255)
+  image_file String?   @db.VarChar(255)
+  created_at DateTime? @db.Timestamp(0)
+  updated_at DateTime? @db.Timestamp(0)
+  menus      menus     @relation(fields: [menu_id], references: [id], onDelete: Cascade, onUpdate: Restrict, map: "menu_attachments_menu_id_foreign")
+
+  @@index([menu_id], map: "menu_attachments_menu_id_foreign")
+}
+
+model menus {
+  id               BigInt             @id @default(autoincrement()) @db.UnsignedBigInt
+  name             String             @db.VarChar(255)
+  link             String?            @db.VarChar(255)
+  parent_id        BigInt?            @db.UnsignedBigInt
+  level            menus_level        @default(main)
+  order_no         Int                @default(0)
+  created_at       DateTime?          @db.Timestamp(0)
+  updated_at       DateTime?          @db.Timestamp(0)
+  menu_attachments menu_attachments[]
+  menus            menus?             @relation("menusTomenus", fields: [parent_id], references: [id], onDelete: Cascade, onUpdate: Restrict, map: "menus_parent_id_foreign")
+  other_menus      menus[]            @relation("menusTomenus")
+
+  @@index([parent_id], map: "menus_parent_id_foreign")
+}
+
+model migrations {
+  id        Int    @id @default(autoincrement()) @db.UnsignedInt
+  migration String @db.VarChar(255)
+  batch     Int
+}
+
+model password_reset_tokens {
+  email      String    @id @db.VarChar(255)
+  token      String    @db.VarChar(255)
+  created_at DateTime? @db.Timestamp(0)
+}
+
+model personal_access_tokens {
+  id             BigInt    @id @default(autoincrement()) @db.UnsignedBigInt
+  tokenable_type String    @db.VarChar(255)
+  tokenable_id   BigInt    @db.UnsignedBigInt
+  name           String    @db.VarChar(255)
+  token          String    @unique(map: "personal_access_tokens_token_unique") @db.VarChar(64)
+  abilities      String?   @db.Text
+  last_used_at   DateTime? @db.Timestamp(0)
+  expires_at     DateTime? @db.Timestamp(0)
+  created_at     DateTime? @db.Timestamp(0)
+  updated_at     DateTime? @db.Timestamp(0)
+
+  @@index([tokenable_type, tokenable_id], map: "personal_access_tokens_tokenable_type_tokenable_id_index")
+}
+
+model post_details {
+  id           BigInt        @id @default(autoincrement()) @db.UnsignedBigInt
+  post_type_id BigInt?       @db.UnsignedBigInt
+  date         DateTime?     @db.Date
+  title_name   String?       @db.Text
+  topic_name   String?       @db.Text
+  details      String?       @db.MediumText
+  created_at   DateTime?     @db.Timestamp(0)
+  updated_at   DateTime?     @db.Timestamp(0)
+  post_types   post_types?   @relation(fields: [post_type_id], references: [id], onUpdate: Restrict, map: "post_details_post_type_id_foreign")
+  post_pdfs    post_pdfs[]
+  post_photos  post_photos[]
+  post_videos  post_videos[]
+
+  @@index([post_type_id], map: "post_details_post_type_id_foreign")
+}
+
+model post_pdfs {
+  id             BigInt       @id @default(autoincrement()) @db.UnsignedBigInt
+  post_detail_id BigInt       @db.UnsignedBigInt
+  post_pdf_file  String       @db.VarChar(255)
+  created_at     DateTime?    @db.Timestamp(0)
+  updated_at     DateTime?    @db.Timestamp(0)
+  post_details   post_details @relation(fields: [post_detail_id], references: [id], onDelete: Cascade, onUpdate: Restrict, map: "post_pdfs_post_detail_id_foreign")
+
+  @@index([post_detail_id], map: "post_pdfs_post_detail_id_foreign")
+}
+
+model post_photos {
+  id                BigInt       @id @default(autoincrement()) @db.UnsignedBigInt
+  post_detail_id    BigInt       @db.UnsignedBigInt
+  post_photo_file   String       @db.VarChar(255)
+  post_photo_status String       @db.VarChar(255)
+  created_at        DateTime?    @db.Timestamp(0)
+  updated_at        DateTime?    @db.Timestamp(0)
+  post_details      post_details @relation(fields: [post_detail_id], references: [id], onDelete: Cascade, onUpdate: Restrict, map: "post_photos_post_detail_id_foreign")
+
+  @@index([post_detail_id], map: "post_photos_post_detail_id_foreign")
+}
+
+model post_types {
+  id           BigInt         @id @default(autoincrement()) @db.UnsignedBigInt
+  type_name    String         @db.VarChar(255)
+  created_at   DateTime?      @db.Timestamp(0)
+  updated_at   DateTime?      @db.Timestamp(0)
+  post_details post_details[]
+}
+
+model post_videos {
+  id              BigInt       @id @default(autoincrement()) @db.UnsignedBigInt
+  post_detail_id  BigInt       @db.UnsignedBigInt
+  post_video_file String       @db.VarChar(255)
+  created_at      DateTime?    @db.Timestamp(0)
+  updated_at      DateTime?    @db.Timestamp(0)
+  post_details    post_details @relation(fields: [post_detail_id], references: [id], onDelete: Cascade, onUpdate: Restrict, map: "post_videos_post_detail_id_foreign")
+
+  @@index([post_detail_id], map: "post_videos_post_detail_id_foreign")
+}
+
+model procurement_plan_files {
+  id                     BigInt                 @id @default(autoincrement()) @db.UnsignedBigInt
+  type_id                BigInt                 @db.UnsignedBigInt
+  files_path             String                 @db.VarChar(255)
+  files_type             String                 @db.VarChar(255)
+  created_at             DateTime?              @db.Timestamp(0)
+  updated_at             DateTime?              @db.Timestamp(0)
+  procurement_plan_types procurement_plan_types @relation(fields: [type_id], references: [id], onDelete: Cascade, onUpdate: Restrict, map: "procurement_plan_files_type_id_foreign")
+
+  @@index([type_id], map: "procurement_plan_files_type_id_foreign")
+}
+
+model procurement_plan_types {
+  id                     BigInt                   @id @default(autoincrement()) @db.UnsignedBigInt
+  type_name              String                   @db.VarChar(255)
+  created_at             DateTime?                @db.Timestamp(0)
+  updated_at             DateTime?                @db.Timestamp(0)
+  procurement_plan_files procurement_plan_files[]
+}
+
+enum staff_role {
+  leader
+  coleader
+  employee
+}
+
+enum menus_level {
+  main
+  sub
+  small_sub
 }

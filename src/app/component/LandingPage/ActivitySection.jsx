@@ -14,13 +14,15 @@ export default function ActivitySection() {
     try {
       setLoading(true);
       setError(null);
-
-      const response = await fetch("/api/posts?type=กิจกรรม&limit=6", {
-        method: "GET",
-        headers: {
-          "Content-Type": "application/json",
-        },
-      });
+      const response = await fetch(
+        "http://localhost:3000/api/post-details?page=1&limit=4&postTypeId=2&withMedia=true",
+        {
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json",
+          },
+        }
+      );
 
       if (!response.ok) {
         throw new Error(`HTTP error! status: ${response.status}`);
@@ -29,7 +31,7 @@ export default function ActivitySection() {
       const data = await response.json();
 
       if (data.success) {
-        setActivities(data.posts || []);
+        setActivities(data.data || []);
       } else {
         throw new Error(data.error || "Failed to fetch activities");
       }
@@ -60,8 +62,10 @@ export default function ActivitySection() {
 
   const truncateText = (text, maxLength = 100) => {
     if (!text) return "ไม่มีรายละเอียด";
-    if (text.length <= maxLength) return text;
-    return text.substring(0, maxLength) + "...";
+    // Remove HTML tags before truncating
+    const plainText = text.replace(/<[^>]+>/g, "");
+    if (plainText.length <= maxLength) return plainText;
+    return plainText.substring(0, maxLength) + "...";
   };
 
   const getImageUrl = (imagePath) => {
@@ -172,10 +176,9 @@ export default function ActivitySection() {
         <img
           src="image/leaf.png"
           alt="Leaf"
-          className="absolute w-[240px] h-auto left-[48%] -translate-x-1/2 top-[-61px] pointer-events-none"
+          className="absolute w-[240px] h-auto left-1/2 -translate-x-1/2 -top-[61px] pointer-events-none"
         />
       </div>
-
       <div className="max-w-7xl mx-auto px-2 sm:px-4 md:px-6">
         {activities.length === 0 ? (
           <div className="text-center py-12">
@@ -202,19 +205,15 @@ export default function ActivitySection() {
                 <div className="p-2 sm:p-4 h-[120px] sm:h-[140px] md:h-[160px] lg:h-[166px] flex flex-col justify-between">
                   <div>
                     <div className="flex justify-between items-start mb-1 sm:mb-2">
-                      <h4 className="text-base sm:text-lg md:text-xl lg:text-[20px] font-semibold text-[#1E1E1E] transition-colors duration-200 line-clamp-1">
-                        {activity.title || "ไม่มีหัวข้อ"}
+                      <h4 className="text-base sm:text-lg md:text-xl lg:text-[20px] font-semibold text-[#1E1E1E] line-clamp-1">
+                        {activity.topic_name || "ไม่มีหัวข้อ"}
                       </h4>
-                      <p className="text-sm sm:text-base md:text-lg lg:text-[16px] font-Regular text-gray-500 ml-2 sm:ml-4 whitespace-nowrap">
-                        {formatDate(activity.created_at || activity.date)}
+                      <p className="text-sm sm:text-base md:text-lg lg:text-[16px] text-gray-500 ml-2 sm:ml-4 whitespace-nowrap">
+                        {formatDate(activity.created_at || "ไม่ระบุวันที่")}
                       </p>
                     </div>
-                    <p className="text-sm sm:text-base md:text-lg lg:text-[18px] font-Regular text-gray-600 mb-2 sm:mb-3 line-clamp-2">
-                      {truncateText(
-                        activity.content ||
-                          activity.description ||
-                          activity.excerpt
-                      )}
+                    <p className="text-sm sm:text-base md:text-lg lg:text-[18px] text-gray-600 mb-2 sm:mb-3 line-clamp-2">
+                      {truncateText(activity.details || "ไม่มีรายละเอียดเพิ่มเติม")}
                     </p>
                   </div>
                   <span className="text-base sm:text-lg md:text-xl lg:text-[20px] text-[#1E1E1E] hover:text-blue-800 transition-colors duration-200">

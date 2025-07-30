@@ -14,7 +14,7 @@ export default function NewsSection() {
     try {
       setLoading(true);
       const response = await fetch(
-        "/api/posts?type=ข่าวประชาสัมพันธ์&limit=20"
+        "http://localhost:3000/api/post-details?page=1&limit=4&postTypeId=1&withMedia=true"
       );
 
       if (!response.ok) {
@@ -24,7 +24,7 @@ export default function NewsSection() {
       const data = await response.json();
 
       if (data.success) {
-        setNewsItems(data.posts || []);
+        setNewsItems(data.data || []);
       } else {
         throw new Error(data.error || "Failed to fetch news");
       }
@@ -150,11 +150,11 @@ export default function NewsSection() {
                   {/* เนื้อหา */}
                   <div className="flex-1 flex flex-col">
                     <h3 className="text-gray-800 text-sm sm:text-base md:text-lg font-semibold mb-2 group-hover:text-[#394D1C] transition-colors">
-                      {item.title || "ไม่มีหัวข้อ"}
+                      {item.title_name || "ไม่มีหัวข้อ"}
                     </h3>
                     <p className="text-gray-700 text-xs sm:text-sm md:text-base leading-relaxed mt-1 sm:mt-2 font-medium flex-1">
                       {truncateText(
-                        item.content || item.description || item.excerpt
+                        item.details || "ไม่มีรายละเอียดเพิ่มเติม",
                       )}
                     </p>
                     <p className="text-gray-500 text-xs mt-auto pt-2">
