@@ -1,67 +1,69 @@
-import React from "react";
+"use client";
+import React, { useState, useEffect } from "react";
 
 export default function NewsSection() {
-  // ข้อมูลตัวอย่าง
-  const contentItems = [
-    {
-      id: 1,
-      image: "image/Boat.jpg",
-      text: "ข้อความตัวอย่างที่หนึ่ง นี่คือเนื้อหาที่แสดงในส่วนของข้อความ สามารถเป็นข้อความยาวๆ ได้ตามต้องการ",
-      date: "29 กรกฎาคม 2025",
-    },
-    {
-      id: 2,
-      image: "image/Boat.jpg",
-      text: "ข้อความตัวอย่างที่สอง เนื้อหาแต่ละรายการจะมีรูปแบบเดียวกัน แต่สามารถมีเนื้อหาที่แตกต่างกันได้",
-      date: "28 กรกฎาคม 2025",
-    },
-    {
-      id: 3,
-      image: "image/Boat.jpg",
-      text: "ข้อความตัวอย่างที่สาม การจัด layout แบบนี้ช่วยให้เนื้อหามีความเป็นระเบียบและดูง่าย",
-      date: "27 กรกฎาคม 2025",
-    },
-    {
-      id: 4,
-      image: "image/Boat.jpg",
-      text: "ข้อความตัวอย่างที่สี่ สามารถเพิ่มรายการได้ตามต้องการ และแต่ละรายการจะมีเส้นกั้นแยกจากกัน",
-      date: "26 กรกฎาคม 2025",
-    },
-    {
-      id: 5,
-      image: "image/Boat.jpg",
-      text: "ข้อความตัวอย่างที่ห้า ระบบจะแสดงรายการต่างๆ ในรูปแบบที่สวยงามและเป็นระเบียบ",
-      date: "25 กรกฎาคม 2025",
-    },
-    {
-      id: 6,
-      image:
-        "https://images.unsplash.com/photo-1469474968028-56623f02e42e?w=150&h=150&fit=crop&crop=center",
-      text: "ข้อความตัวอย่างที่สอง เนื้อหาแต่ละรายการจะมีรูปแบบเดียวกัน แต่สามารถมีเนื้อหาที่แตกต่างกันได้",
-      date: "28 กรกฎาคม 2025",
-    },
-    {
-      id: 7,
-      image:
-        "https://images.unsplash.com/photo-1441974231531-c6227db76b6e?w=150&h=150&fit=crop&crop=center",
-      text: "ข้อความตัวอย่างที่สาม การจัด layout แบบนี้ช่วยให้เนื้อหามีความเป็นระเบียบและดูง่าย",
-      date: "27 กรกฎาคม 2025",
-    },
-    {
-      id: 8,
-      image:
-        "https://images.unsplash.com/photo-1506905925346-21bda4d32df4?w=150&h=150&fit=crop&crop=center",
-      text: "ข้อความตัวอย่างที่สี่ สามารถเพิ่มรายการได้ตามต้องการ และแต่ละรายการจะมีเส้นกั้นแยกจากกัน",
-      date: "26 กรกฎาคม 2025",
-    },
-    {
-      id: 9,
-      image:
-        "https://images.unsplash.com/photo-1469474968028-56623f02e42e?w=150&h=150&fit=crop&crop=center",
-      text: "ข้อความตัวอย่างที่ห้า ระบบจะแสดงรายการต่างๆ ในรูปแบบที่สวยงามและเป็นระเบียบ",
-      date: "25 กรกฎาคม 2025",
-    },
-  ];
+  const [newsItems, setNewsItems] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
+
+  useEffect(() => {
+    fetchNews();
+  }, []);
+
+  const fetchNews = async () => {
+    try {
+      setLoading(true);
+      const response = await fetch(
+        "/api/posts?type=ข่าวประชาสัมพันธ์&limit=20"
+      );
+
+      if (!response.ok) {
+        throw new Error("Failed to fetch news");
+      }
+
+      const data = await response.json();
+
+      if (data.success) {
+        setNewsItems(data.posts || []);
+      } else {
+        throw new Error(data.error || "Failed to fetch news");
+      }
+    } catch (err) {
+      console.error("Error fetching news:", err);
+      setError(err.message);
+      // Set empty array as fallback
+      setNewsItems([]);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const formatDate = (dateString) => {
+    if (!dateString) return "ไม่ระบุวันที่";
+
+    try {
+      const date = new Date(dateString);
+      return date.toLocaleDateString("th-TH", {
+        year: "numeric",
+        month: "long",
+        day: "numeric",
+      });
+    } catch (error) {
+      return "ไม่ระบุวันที่";
+    }
+  };
+
+  const truncateText = (text, maxLength = 150) => {
+    if (!text) return "ไม่มีรายละเอียด";
+    if (text.length <= maxLength) return text;
+    return text.substring(0, maxLength) + "...";
+  };
+
+  const getImageUrl = (imagePath) => {
+    if (!imagePath) return "/image/Boat.jpg"; // Default image
+    if (imagePath.startsWith("http")) return imagePath;
+    return imagePath.startsWith("/") ? imagePath : `/${imagePath}`;
+  };
 
   return (
     <section
@@ -86,29 +88,82 @@ export default function NewsSection() {
           </div>
 
           <div className="left-content max-h-[500px] sm:max-h-[700px] lg:h-[calc(100%-200px)] overflow-y-auto px-2 sm:px-4 md:px-8">
-            {contentItems.map((item) => (
-              <div
-                key={item.id}
-                className="flex flex-col sm:flex-row gap-2 sm:gap-4 p-2 sm:p-4 pl-0 border-b border-[#01BDCC] last:border-b"
-              >
-                {/* ภาพ */}
-                <div className="flex-shrink-0 mb-2 sm:mb-0">
-                  <img
-                    src={item.image}
-                    alt={`รูปภาพ ${item.id}`}
-                    className="w-full sm:w-[216px] h-[120px] sm:h-[150px] rounded-lg object-cover shadow-md"
-                  />
-                </div>
-
-                {/* เนื้อหา */}
-                <div className="flex-1 flex flex-col">
-                  <p className="text-gray-800 text-xs sm:text-sm md:text-base leading-relaxed mt-1 sm:mt-2 font-medium">
-                    {item.text}
-                  </p>
-                  <p className="text-gray-500 text-xs mt-auto">{item.date}</p>
-                </div>
+            {loading ? (
+              // Loading State
+              <div className="space-y-4">
+                {[1, 2, 3, 4, 5].map((item) => (
+                  <div
+                    key={item}
+                    className="flex flex-col sm:flex-row gap-2 sm:gap-4 p-2 sm:p-4 pl-0 border-b border-[#01BDCC] animate-pulse"
+                  >
+                    <div className="flex-shrink-0 mb-2 sm:mb-0">
+                      <div className="w-full sm:w-[216px] h-[120px] sm:h-[150px] rounded-lg bg-gray-300"></div>
+                    </div>
+                    <div className="flex-1 flex flex-col">
+                      <div className="h-4 bg-gray-300 rounded mb-2"></div>
+                      <div className="h-4 bg-gray-300 rounded mb-2 w-3/4"></div>
+                      <div className="h-3 bg-gray-300 rounded w-1/4 mt-auto"></div>
+                    </div>
+                  </div>
+                ))}
               </div>
-            ))}
+            ) : error ? (
+              // Error State
+              <div className="text-center py-8">
+                <div className="text-red-600 text-lg mb-4">
+                  เกิดข้อผิดพลาดในการโหลดข่าวประชาสัมพันธ์
+                </div>
+                <button
+                  onClick={fetchNews}
+                  className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+                >
+                  ลองใหม่
+                </button>
+              </div>
+            ) : newsItems.length === 0 ? (
+              // Empty State
+              <div className="text-center py-8">
+                <p className="text-gray-600 text-lg">
+                  ไม่มีข่าวประชาสัมพันธ์ในขณะนี้
+                </p>
+              </div>
+            ) : (
+              // News Items
+              newsItems.map((item) => (
+                <a
+                  href={`/news/${item.id || item._id}`}
+                  key={item.id || item._id}
+                  className="flex flex-col sm:flex-row gap-2 sm:gap-4 p-2 sm:p-4 pl-0 border-b border-[#01BDCC] last:border-b hover:bg-white/20 transition-colors duration-200 cursor-pointer group"
+                >
+                  {/* ภาพ */}
+                  <div className="flex-shrink-0 mb-2 sm:mb-0">
+                    <img
+                      src={getImageUrl(item.image || item.featured_image)}
+                      alt={item.title || "ข่าวประชาสัมพันธ์"}
+                      className="w-full sm:w-[216px] h-[120px] sm:h-[150px] rounded-lg object-cover shadow-md group-hover:scale-105 transition-transform duration-200"
+                      onError={(e) => {
+                        e.target.src = "/image/Boat.jpg";
+                      }}
+                    />
+                  </div>
+
+                  {/* เนื้อหา */}
+                  <div className="flex-1 flex flex-col">
+                    <h3 className="text-gray-800 text-sm sm:text-base md:text-lg font-semibold mb-2 group-hover:text-[#394D1C] transition-colors">
+                      {item.title || "ไม่มีหัวข้อ"}
+                    </h3>
+                    <p className="text-gray-700 text-xs sm:text-sm md:text-base leading-relaxed mt-1 sm:mt-2 font-medium flex-1">
+                      {truncateText(
+                        item.content || item.description || item.excerpt
+                      )}
+                    </p>
+                    <p className="text-gray-500 text-xs mt-auto pt-2">
+                      {formatDate(item.created_at || item.date)}
+                    </p>
+                  </div>
+                </a>
+              ))
+            )}
           </div>
         </div>
 
@@ -125,7 +180,9 @@ export default function NewsSection() {
                 <div className="text-left font-bold text-[#5c3b0c] text-base sm:text-[20px] leading-tight">
                   รับซื้อ
                   <br />
-                  <span className="font-normal text-xs sm:text-[14px]">(บาท)</span>
+                  <span className="font-normal text-xs sm:text-[14px]">
+                    (บาท)
+                  </span>
                 </div>
                 <div className="text-xl sm:text-[34px] font-extrabold text-[#5c3b0c] tracking-wide -translate-x-4 sm:-translate-x-12 mr-4 sm:mr-12">
                   42,000
@@ -137,7 +194,9 @@ export default function NewsSection() {
                 <div className="text-left font-bold text-[#5c3b0c] text-base sm:text-[20px] leading-tight">
                   ขายออก
                   <br />
-                  <span className="font-normal text-xs sm:text-[14px]">(บาท)</span>
+                  <span className="font-normal text-xs sm:text-[14px]">
+                    (บาท)
+                  </span>
                 </div>
                 <div className="text-xl sm:text-[34px] font-extrabold text-[#5c3b0c] tracking-wide -translate-x-4 sm:-translate-x-12 mr-4 sm:mr-12">
                   43,000
