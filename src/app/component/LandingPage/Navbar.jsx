@@ -1,7 +1,31 @@
-import React, { useState } from "react";
+"use client";
+import React, { useState, useEffect, useRef } from "react";
 
 export default function Navbar() {
   const [showMenu, setShowMenu] = useState(false);
+  const [showPersonnelDropdown, setShowPersonnelDropdown] = useState(false);
+  const [showDesktopDropdown, setShowDesktopDropdown] = useState(false);
+  const dropdownRef = useRef(null);
+  const desktopDropdownRef = useRef(null);
+
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
+        setShowPersonnelDropdown(false);
+      }
+      if (
+        desktopDropdownRef.current &&
+        !desktopDropdownRef.current.contains(event.target)
+      ) {
+        setShowDesktopDropdown(false);
+      }
+    };
+
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => {
+      document.removeEventListener("mousedown", handleClickOutside);
+    };
+  }, []);
   return (
     <header className="w-full bg-[linear-gradient(180deg,_#0383AA_0%,_#05C5FF_100%)] relative z-10">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
@@ -119,12 +143,97 @@ export default function Navbar() {
               >
                 ข้อมูลพื้นฐาน
               </a>
-              <a
-                href="#"
-                className="text-white text-base font-medium hover:underline"
-              >
-                บุคลากร
-              </a>
+              <div className="relative" ref={dropdownRef}>
+                <button
+                  onClick={() =>
+                    setShowPersonnelDropdown(!showPersonnelDropdown)
+                  }
+                  className="text-white text-base font-medium hover:underline flex items-center gap-1"
+                >
+                  บุคลากร
+                  <svg
+                    className={`w-4 h-4 transition-transform ${
+                      showPersonnelDropdown ? "rotate-180" : ""
+                    }`}
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M19 9l-7 7-7-7"
+                    />
+                  </svg>
+                </button>
+                {showPersonnelDropdown && (
+                  <div className="absolute top-full left-0 mt-2 w-64 bg-white rounded-md shadow-lg z-[9999]">
+                    <div className="py-2">
+                      <a
+                        href="/personnel"
+                        className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                      >
+                        โครงสร้างบุคลากร
+                      </a>
+                      <a
+                        href="/personnel?section=executives"
+                        className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                      >
+                        คณะผู้บริหาร
+                      </a>
+                      <a
+                        href="/personnel?section=council"
+                        className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                      >
+                        สภาเทศบาล
+                      </a>
+                      <a
+                        href="/personnel?section=departments"
+                        className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                      >
+                        พนักงานเทศบาล
+                      </a>
+                      <a
+                        href="/personnel?section=departments"
+                        className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                      >
+                        หัวหน้าส่วนราชการ
+                      </a>
+                      <a
+                        href="/personnel?dept=clerk"
+                        className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                      >
+                        สำนักปลัดเทศบาล
+                      </a>
+                      <a
+                        href="/personnel?dept=finance"
+                        className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                      >
+                        กองคลัง
+                      </a>
+                      <a
+                        href="/personnel?dept=engineering"
+                        className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                      >
+                        กองช่าง
+                      </a>
+                      <a
+                        href="/personnel?dept=education"
+                        className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                      >
+                        กองการศึกษาฯ
+                      </a>
+                      <a
+                        href="/personnel?section=audit"
+                        className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                      >
+                        หน่วยตรวจสอบภายใน
+                      </a>
+                    </div>
+                  </div>
+                )}
+              </div>
               <a
                 href="#"
                 className="text-white text-base font-medium hover:underline"
@@ -181,12 +290,100 @@ export default function Navbar() {
           >
             ข้อมูลพื้นฐาน
           </a>
-          <a
-            href="#"
-            className="text-white text-base font-medium hover:underline"
-          >
-            บุคลากร
-          </a>
+          <div className="relative" ref={desktopDropdownRef}>
+            <button
+              onClick={() => setShowDesktopDropdown(!showDesktopDropdown)}
+              onMouseEnter={() => setShowDesktopDropdown(true)}
+              className="text-white text-base font-medium hover:underline flex items-center gap-1"
+            >
+              บุคลากร
+              <svg
+                className={`w-4 h-4 transition-transform ${
+                  showDesktopDropdown ? "rotate-180" : ""
+                }`}
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M19 9l-7 7-7-7"
+                />
+              </svg>
+            </button>
+            {showDesktopDropdown && (
+              <div
+                className="absolute top-full left-0 mt-2 w-64 bg-white rounded-md shadow-lg z-[9999] transition-all duration-200"
+                onMouseEnter={() => setShowDesktopDropdown(true)}
+                onMouseLeave={() => setShowDesktopDropdown(false)}
+              >
+                <div className="py-2">
+                  <a
+                    href="/personnel"
+                    className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                  >
+                    โครงสร้างบุคลากร
+                  </a>
+                  <a
+                    href="/personnel?section=executives"
+                    className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                  >
+                    คณะผู้บริหาร
+                  </a>
+                  <a
+                    href="/personnel?section=council"
+                    className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                  >
+                    สภาเทศบาล
+                  </a>
+                  <a
+                    href="/personnel?section=departments"
+                    className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                  >
+                    พนักงานเทศบาล
+                  </a>
+                  <a
+                    href="/personnel?section=departments"
+                    className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                  >
+                    หัวหน้าส่วนราชการ
+                  </a>
+                  <a
+                    href="/personnel?dept=clerk"
+                    className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                  >
+                    สำนักปลัดเทศบาล
+                  </a>
+                  <a
+                    href="/personnel?dept=finance"
+                    className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                  >
+                    กองคลัง
+                  </a>
+                  <a
+                    href="/personnel?dept=engineering"
+                    className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                  >
+                    กองช่าง
+                  </a>
+                  <a
+                    href="/personnel?dept=education"
+                    className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                  >
+                    กองการศึกษาฯ
+                  </a>
+                  <a
+                    href="/personnel?section=audit"
+                    className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                  >
+                    หน่วยตรวจสอบภายใน
+                  </a>
+                </div>
+              </div>
+            )}
+          </div>
           <a
             href="#"
             className="text-white text-base font-medium hover:underline"
