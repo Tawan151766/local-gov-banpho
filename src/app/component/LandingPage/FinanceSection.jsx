@@ -68,30 +68,37 @@ export default function FinanceSection() {
   };
 
   return (
-    <div className="w-full min-h-[900px] py-8 px-2 md:px-8 flex flex-col items-center bg-transparent">
+    <div
+      className="w-full min-h-[900px] py-8 px-2 md:px-8 flex flex-col items-center"
+      style={{
+        backgroundImage:
+          'linear-gradient(180deg, rgba(239, 228, 212, 0.6) 0%, rgba(1, 189, 204, 0.6) 100%), url("/image/Boat.jpg")',
+        backgroundSize: 'cover',
+        backgroundPosition: 'center',
+        backgroundRepeat: 'no-repeat',
+      }}
+    >
       {/* Header Section */}
       <div className="w-full max-w-[1268px] flex flex-col gap-4 mb-8">
-        <div className="bg-[#03bdca] rounded-[36px] shadow-md w-full h-auto flex flex-col md:flex-row md:items-center px-4 md:px-8 py-4 md:py-0 relative">
-          <div className="bg-white rounded-[36px] shadow-md w-full md:w-[247px] h-[56px] md:h-[71px] flex items-center justify-center mb-4 md:mb-0 md:absolute md:left-0 md:top-0">
-            <span className="text-[#01385f] font-semibold text-xl md:text-2xl">
+        <div className="bg-gradient-to-r from-[#03bdca] to-[#01bdcc] rounded-[36px] shadow-lg w-full flex flex-col md:flex-row items-center px-6 py-6 relative">
+          <div className="bg-white rounded-full shadow-md w-32 h-16 flex items-center justify-center mb-4 md:mb-0 md:absolute md:left-6 md:top-1/2 md:-translate-y-1/2 border-2 border-[#01bdcc]">
+            <span className="text-[#01385f] font-bold text-2xl tracking-wide">
               EGP
             </span>
           </div>
-          <div className="flex-1 flex flex-wrap flex-col md:flex-row items-center justify-center gap-4 md:gap-8 md:ml-[260px]">
-            <span className="text-[#01385f] font-semibold text-base md:text-2xl">
+          <div className="flex-1 flex flex-wrap flex-row items-center justify-center gap-6 md:gap-12 md:ml-40">
+            <span className="text-white font-semibold text-lg md:text-2xl drop-shadow">
               ประกาศจัดซื้อจัดจ้าง
             </span>
-            <span className="text-[#01385f] font-semibold text-base md:text-2xl">
+            <span className="text-white font-semibold text-lg md:text-2xl drop-shadow">
               ผลประกาศจัดซื้อจัดจ้าง
             </span>
-            <span className="text-[#01385f] font-semibold text-base md:text-2xl">
+            <span className="text-white font-semibold text-lg md:text-2xl drop-shadow">
               รายงานผลจัดซื้อจัดจ้าง
             </span>
           </div>
         </div>
       </div>
-
-      {/* Announcement Cards */}
       <div className="w-full max-w-[1268px] grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-8">
         {loading ? (
           // Loading skeleton
@@ -146,7 +153,10 @@ export default function FinanceSection() {
               </div>
 
               <div className="flex flex-row items-center justify-between mt-4">
-                <span className="text-[#01385f] font-semibold text-base hover:underline">
+                <span
+                  className="text-[#01385f] font-semibold text-base hover:underline cursor-pointer"
+                  onClick={() => window.location.href = '/finance/all'}
+                >
                   ดูทั้งหมด
                 </span>
                 <div className="flex gap-2 text-xs text-gray-500">
