@@ -235,7 +235,7 @@ export default function Navbar() {
                 )}
               </div>
               <a
-                href="#"
+                href="/perf-result"
                 className="text-white text-base font-medium hover:underline"
               >
                 ผลการดำเนินงาน
@@ -385,7 +385,7 @@ export default function Navbar() {
             )}
           </div>
           <a
-            href="#"
+            href="/perf-result"
             className="text-white text-base font-medium hover:underline"
           >
             ผลการดำเนินงาน
