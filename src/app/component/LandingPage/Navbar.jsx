@@ -157,10 +157,10 @@ export default function Navbar() {
                     <a href="/vision" className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">วิสัยทัศน์/พันธกิจ</a>
                     <div className="px-4 py-2 text-sm text-gray-700 font-bold">สภาพและข้อมูลพื้นฐาน</div>
                     <a href="/simple-infomation/general-overview" className="block px-6 py-2 text-sm text-gray-700 hover:bg-gray-100">สภาพทั่วไป</a>
-                    <a href="/simple-infomation/economic" className="block px-6 py-2 text-sm text-gray-700 hover:bg-gray-100">สภาพทางเศรษฐกิจ</a>
-                    <a href="/simple-infomation/social" className="block px-6 py-2 text-sm text-gray-700 hover:bg-gray-100">สภาพทางสังคม</a>
-                    <a href="/simple-infomation/service" className="block px-6 py-2 text-sm text-gray-700 hover:bg-gray-100">การบริการพื้นฐาน</a>
-                    <a href="/basic-info" className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">ข้อมูลพื้นฐาน</a>
+                    <a href="/simple-infomation/economic-status" className="block px-6 py-2 text-sm text-gray-700 hover:bg-gray-100">สภาพทางเศรษฐกิจ</a>
+                    <a href="/simple-infomation/demographics" className="block px-6 py-2 text-sm text-gray-700 hover:bg-gray-100">สภาพทางสังคม</a>
+                    <a href="/simple-infomation/infrastructure" className="block px-6 py-2 text-sm text-gray-700 hover:bg-gray-100">การบริการพื้นฐาน</a>
+                    <a href="/simple-infomationdemographics" className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">ข้อมูลพื้นฐาน</a>
                     <a href="/structure" className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">โครงสร้าง</a>
                     <a href="/executives" className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">ข้อมูลผู้บริหาร</a>
                     <a href="/authority" className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">อำนาจหน้าที่</a>
@@ -342,10 +342,10 @@ export default function Navbar() {
                 <a href="/vision" className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">วิสัยทัศน์/พันธกิจ</a>
                 <div className="px-4 py-2 text-sm text-gray-700 font-bold">สภาพและข้อมูลพื้นฐาน</div>
                 <a href="/simple-infomation/general-overview" className="block px-6 py-2 text-sm text-gray-700 hover:bg-gray-100">สภาพทั่วไป</a>
-                <a href="/simple-infomation/economic" className="block px-6 py-2 text-sm text-gray-700 hover:bg-gray-100">สภาพทางเศรษฐกิจ</a>
-                <a href="/simple-infomation/social" className="block px-6 py-2 text-sm text-gray-700 hover:bg-gray-100">สภาพทางสังคม</a>
-                <a href="/simple-infomation/service" className="block px-6 py-2 text-sm text-gray-700 hover:bg-gray-100">การบริการพื้นฐาน</a>
-                <a href="/basic-info" className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">ข้อมูลพื้นฐาน</a>
+                <a href="/simple-infomation/economic-status" className="block px-6 py-2 text-sm text-gray-700 hover:bg-gray-100">สภาพทางเศรษฐกิจ</a>
+                <a href="/simple-infomation/demographics" className="block px-6 py-2 text-sm text-gray-700 hover:bg-gray-100">สภาพทางสังคม</a>
+                <a href="/simple-infomation/infrastructure" className="block px-6 py-2 text-sm text-gray-700 hover:bg-gray-100">การบริการพื้นฐาน</a>
+                <a href="/simple-infomationdemographics" className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">ข้อมูลพื้นฐาน</a>
                 <a href="/structure" className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">โครงสร้าง</a>
                 <a href="/executives" className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">ข้อมูลผู้บริหาร</a>
                 <a href="/authority" className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">อำนาจหน้าที่</a>
