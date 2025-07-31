@@ -29,39 +29,6 @@ const services = [
   },
 ];
 
-const services = [
-  {
-    title: "ศูนย์ข้อมูลข่าวสารอิเล็กทรอนิกส์ ของราชการ (OIC)",
-    image: "image/Logo1_OIC.png",
-    alt: "OIC Logo",
-  },
-  {
-    title: "สำนักงานคณะกรรมการป้องกันและปราบปราม การทุจริตแห่งชาติ",
-    image: "image/Logo2_ppp.jpg",
-    alt: "PPP Logo",
-  },
-  {
-    title: "ศูนย์ดำรงธรรม",
-    image: "image/Logo3_tam.png",
-    alt: "TAM Logo",
-  },
-  {
-    title: "การประเมินประสิทธิภาพของ อปท. (LPA)",
-    image: "image/Logo4_LPA.jpg",
-    alt: "LPA Logo",
-  },
-  {
-    title: "งานบริการของศูนย์บริการร่วม One Stop Service",
-    image: "image/Logo5_onestop.png",
-    alt: "One Stop Logo",
-  },
-  {
-    title: "สาระดีๆจากศาลปกครอง",
-    image: "image/Logo6_law.jpg",
-    alt: "Law Logo",
-  },
-];
-
 export default function InsideBander() {
   return (
     <div className="w-full min-h-screen  p-4 md:p-6 lg:p-8">
@@ -102,7 +69,7 @@ export default function InsideBander() {
                 </div>
               </div>
 
-              {/* Card 2 */}
+              {/* Card 3 */}
               <div className="bg-white rounded-2xl shadow-md hover:shadow-lg transition-shadow duration-300 flex items-center gap-4 p-4">
                 <img
                   src="image/InsiderBander_3.png"
@@ -114,7 +81,7 @@ export default function InsideBander() {
                 </div>
               </div>
 
-              {/* Card 3 */}
+              {/* Card 4 */}
               <div className="bg-white rounded-2xl shadow-md hover:shadow-lg transition-shadow duration-300 flex items-center gap-4 p-4">
                 <img
                   src="image/InsiderBander_4.png"
@@ -126,7 +93,7 @@ export default function InsideBander() {
                 </div>
               </div>
 
-              {/* Card 4 */}
+              {/* Card 5 */}
               <div className="bg-white rounded-2xl shadow-md hover:shadow-lg transition-shadow duration-300 flex items-center gap-4 p-4">
                 <img
                   src="image/InsiderBander_5.png"
@@ -138,7 +105,7 @@ export default function InsideBander() {
                 </div>
               </div>
 
-              {/* Card 5 */}
+              {/* Card 6 */}
               <div className="bg-white rounded-2xl shadow-md hover:shadow-lg transition-shadow duration-300 flex items-center gap-4 p-4">
                 <img
                   src="image/InsiderBander_6.png"
@@ -150,7 +117,7 @@ export default function InsideBander() {
                 </div>
               </div>
 
-              {/* Card 6 */}
+              {/* Card 7 */}
               <div className="bg-white rounded-2xl shadow-md hover:shadow-lg transition-shadow duration-300 flex items-center gap-4 p-4">
                 <img
                   src="image/InsiderBander_7.png"
@@ -298,27 +265,31 @@ export default function InsideBander() {
                 </div>
               </div>
             </div>
-          </div>
-        </div>
 
-        {/* Bottom Section: KM Icons */}
-        <div className="grid grid-cols-3 gap-5 mt-36 mb-8 pb-36">
-          {services.map((service, idx) => (
-            <div key={idx} className="flex justify-center">
-              <div className="flex items-center gap-4 px-6 py-4 rounded-full text-white min-w-[280px] max-w-[398px] shadow-lg hover:shadow-xl hover:-translate-y-1 transition-all bg-gradient-to-b from-[#87B6FF] to-[#0F52BA]">
-                <img
-                  src={service.image}
-                  alt={service.alt}
-                  className="w-[100px] h-[100px] rounded-full object-cover border-2 border-white shadow"
-                />
-                <div className="flex-1">
-                  <div className="text-sm font-bold leading-tight">
-                    {service.title}
+            {/* Bottom Section: KM Icons */}
+            <div className="flex flex-wrap justify-center gap-5 max-w-[1240px] mx-auto">
+              {services.map((service, idx) => (
+                <div
+                  key={idx}
+                  className="w-[310px] h-[72px] flex justify-center"
+                >
+                  <div className="relative flex items-center justify-center pr-6 py-4 rounded-full text-white w-full shadow-lg hover:shadow-xl hover:-translate-y-1 transition-all bg-gradient-to-b from-[#FFFF00] to-[#E5B878]">
+                    {/* รูปภาพอยู่ชิดซ้ายแบบ absolute */}
+                    <img
+                      src={service.image}
+                      alt={service.alt}
+                      className="absolute left-0 w-[71px] h-[71px] rounded-full object-cover border-2 border-white shadow"
+                    />
+
+                    {/* ข้อความอยู่กลางป้าย โดยมี padding ซ้ายให้ไม่ชนรูป */}
+                    <div className="text-[16px] text-[#1E1E1E] font-normal leading-tight text-center pl-[80px] w-full">
+                      {service.title}
+                    </div>
                   </div>
                 </div>
-              </div>
+              ))}
             </div>
-          ))}
+          </div>
         </div>
       </div>
     </div>

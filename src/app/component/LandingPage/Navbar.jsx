@@ -1,6 +1,8 @@
 "use client";
 import React, { useState, useEffect, useRef } from "react";
 
+
+
 export default function Navbar() {
   const [showMenu, setShowMenu] = useState(false);
   const [showPersonnelDropdown, setShowPersonnelDropdown] = useState(false);
@@ -126,6 +128,8 @@ export default function Navbar() {
               </svg>
             </button>
 
+
+
             {/* Language Selector */}
             <div className="relative w-full md:w-auto mb-2 md:mb-0">
               <select
@@ -141,12 +145,9 @@ export default function Navbar() {
               </select>
             </div>
 
+
             <div className="bg-white rounded-sm p-1 cursor-pointer">
-              <img
-                src="/image/blind.png"
-                alt="blind"
-                className="w-5 h-5 cursor-pointer"
-              />
+            <img src="/image/blind.png" alt="blind" className="w-5 h-5 cursor-pointer" />
             </div>
 
             {/* Search Box */}
@@ -186,16 +187,14 @@ export default function Navbar() {
                 <button
                   className=" text-white text-base font-medium hover:underline hover:text-[#01385F] hover:text-bold hover:text-[20px] transition-all duration-300 flex items-center gap-1"
                   onClick={() =>
-                    setShowMobileBasicDropdown(!showMobileBasicDropdown)
+                    setShowMenu(showMenu === "basic" ? false : "basic")
                   }
                   aria-haspopup="true"
-                  aria-expanded={showMobileBasicDropdown}
+                  aria-expanded={showMenu === "basic"}
                 >
                   ข้อมูลพื้นฐาน
                   <svg
-                    className={`w-4 h-4 transition-transform ${
-                      showMobileBasicDropdown ? "rotate-180" : ""
-                    }`}
+                    className="w-4 h-4"
                     fill="none"
                     stroke="currentColor"
                     viewBox="0 0 24 24"
@@ -208,7 +207,7 @@ export default function Navbar() {
                     />
                   </svg>
                 </button>
-                {showMobileBasicDropdown && (
+                {showMenu === "basic" && (
                   <div className="mt-2 bg-white rounded-md shadow-lg z-[9999] p-2 flex flex-col gap-1">
                     <a
                       href="/"
@@ -311,70 +310,10 @@ export default function Navbar() {
                   </svg>
                 </button>
                 {showPersonnelDropdown && (
-                  <div className="mt-2 bg-white rounded-md shadow-lg z-[9999] p-2 flex flex-col gap-1">
-                    <a
-                      href="/personnel"
-                      className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
-                      onClick={handleLinkClick}
-                    >
-                      โครงสร้างบุคลากร
-                    </a>
-                    <a
-                      href="/personnel?section=executives"
-                      className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
-                      onClick={handleLinkClick}
-                    >
-                      คณะผู้บริหาร
-                    </a>
-                    <a
-                      href="/personnel?section=council"
-                      className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
-                      onClick={handleLinkClick}
-                    >
-                      สภาเทศบาล
-                    </a>
-                    <a
-                      href="/personnel?section=departments"
-                      className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
-                      onClick={handleLinkClick}
-                    >
-                      พนักงานเทศบาล
-                    </a>
-                    <a
-                      href="/personnel?dept=clerk"
-                      className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
-                      onClick={handleLinkClick}
-                    >
-                      สำนักปลัดเทศบาล
-                    </a>
-                    <a
-                      href="/personnel?dept=finance"
-                      className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
-                      onClick={handleLinkClick}
-                    >
-                      กองคลัง
-                    </a>
-                    <a
-                      href="/personnel?dept=engineering"
-                      className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
-                      onClick={handleLinkClick}
-                    >
-                      กองช่าง
-                    </a>
-                    <a
-                      href="/personnel?dept=education"
-                      className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
-                      onClick={handleLinkClick}
-                    >
-                      กองการศึกษาฯ
-                    </a>
-                    <a
-                      href="/personnel?section=audit"
-                      className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
-                      onClick={handleLinkClick}
-                    >
-                      หน่วยตรวจสอบภายใน
-                    </a>
+                  <div className="absolute top-full left-0 mt-2 w-64 bg-white rounded-md shadow-lg z-[9999]">
+                    <div className="py-2">
+                      {/* ... other dropdown items ... */}
+                    </div>
                   </div>
                 )}
               </div>
@@ -385,7 +324,7 @@ export default function Navbar() {
                 ผลการดำเนินงาน
               </a>
               <a
-                href="/local-development-plan"
+                href="#"
                 className="text-white text-base font-medium hover:underline hover:text-[#01385F] hover:text-bold hover:text-[20px] transition-all duration-300"
               >
                 แผนพัฒนาท้องถิ่น
@@ -431,6 +370,7 @@ export default function Navbar() {
           <div className="relative" ref={basicDropdownRef}>
             <button
               onClick={() => setShowBasicDropdown(!showBasicDropdown)}
+              onMouseEnter={() => setShowBasicDropdown(true)}
               className="text-white text-base font-medium hover:underline hover:text-[#01385F] hover:text-bold hover:text-[20px] transition-all duration-300 flex items-center gap-1"
             >
               ข้อมูลพื้นฐาน
@@ -544,6 +484,7 @@ export default function Navbar() {
           <div className="relative" ref={personnelDropdownRef}>
             <button
               onClick={() => setShowPersonnelDropdown(!showPersonnelDropdown)}
+              onMouseEnter={() => setShowPersonnelDropdown(true)}
               className="text-white text-base font-medium hover:underline hover:text-[#01385F] hover:text-bold hover:text-[20px] transition-all duration-300 flex items-center gap-1"
             >
               บุคลากร
@@ -610,14 +551,7 @@ export default function Navbar() {
 
                   <a
                     href="/personnel?dept=clerk"
-                    className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
                     onClick={handleLinkClick}
-                  >
-                    สำนักปลัดเทศบาล
-                  </a>
-
-                  <a
-                    href="/personnel?dept=finance"
                     className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
                     onClick={handleLinkClick}
                   >
@@ -658,7 +592,7 @@ export default function Navbar() {
             ผลการดำเนินงาน
           </a>
           <a
-            href="/local-development-plan"
+            href="#"
             className="text-white text-base font-medium hover:underline hover:text-[#01385F] hover:text-[20px] hover:text-bold transition-all duration-300"
           >
             แผนพัฒนาท้องถิ่น
