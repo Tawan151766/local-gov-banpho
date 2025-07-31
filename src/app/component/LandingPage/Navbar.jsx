@@ -388,7 +388,8 @@ export default function Navbar() {
             </button>
             {showPersonnelDropdown && (
               <div
-                className="absolute top-full left-0 mt-2 w-64 bg-white rounded-md shadow-lg z-[9999] transition-all duration-200"
+                className="absolute top-full left-0 mt-2 w-64 bg-white rounded-md shadow-lg z-[9999] transition-all duration-200 pointer-events-auto"
+                style={{ pointerEvents: 'auto' }}
                 onMouseEnter={() => setShowPersonnelDropdown(true)}
                 onMouseLeave={() => setShowPersonnelDropdown(false)}
               >
@@ -396,60 +397,70 @@ export default function Navbar() {
                   <a
                     href="/personnel"
                     className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                    tabIndex={0}
                   >
                     โครงสร้างบุคลากร
                   </a>
                   <a
                     href="/personnel?section=executives"
                     className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                    tabIndex={0}
                   >
                     คณะผู้บริหาร
                   </a>
                   <a
                     href="/personnel?section=council"
                     className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                    tabIndex={0}
                   >
                     สภาเทศบาล
                   </a>
                   <a
                     href="/personnel?section=departments"
                     className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                    tabIndex={0}
                   >
                     พนักงานเทศบาล
                   </a>
                   <a
                     href="/personnel?section=departments"
                     className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                    tabIndex={0}
                   >
                     หัวหน้าส่วนราชการ
                   </a>
                   <a
                     href="/personnel?dept=clerk"
                     className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                    tabIndex={0}
                   >
                     สำนักปลัดเทศบาล
                   </a>
                   <a
                     href="/personnel?dept=finance"
                     className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                    tabIndex={0}
                   >
                     กองคลัง
                   </a>
                   <a
                     href="/personnel?dept=engineering"
                     className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                    tabIndex={0}
                   >
                     กองช่าง
                   </a>
                   <a
                     href="/personnel?dept=education"
                     className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                    tabIndex={0}
                   >
                     กองการศึกษาฯ
                   </a>
                   <a
                     href="/personnel?section=audit"
                     className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                    tabIndex={0}
                   >
                     หน่วยตรวจสอบภายใน
                   </a>
