@@ -9,7 +9,7 @@ export default function ContentSections() {
     },
     {
       thumbnail: "/image/ktc_nakhon33.png",
-      url: "https://www.youtube.com/watch?v=dQw4w9WgXcQ",
+      url: "https://www.youtube.com/watch?v=ptnRdZeNr4g",
     },
     {
       thumbnail: "/image/ktc_nakhon3.png",
@@ -36,7 +36,6 @@ export default function ContentSections() {
         backgroundRepeat: "no-repeat",
       }}
     >
-
       {/* Fallback Background - เผื่อภาพไม่โหลด */}
       <div className="absolute top-0 left-0 w-full h-full bg-gradient-to-b from-[#A8F9FF] to-[#E8DDC4] -z-10" />
 
@@ -53,9 +52,9 @@ export default function ContentSections() {
         </div>
 
         {/* Video Container */}
-        <div className="relative w-full max-w-2xl aspect-video border-4 sm:border-6 border-solid border-white rounded-[20px] sm:rounded-[29px] shadow-[0_4px_4px_rgba(0,0,0,0.25)] bg-white flex items-center justify-center overflow-hidden">
+        <div className="relative w-[952px] h-[482px] rounded-[29px] border-[6px] border-white shadow-[0_4px_4px_rgba(0,0,0,0.25)] overflow-hidden bg-[url('/image/your_image.png')] bg-[length:100%_131.545%] bg-no-repeat bg-[position:1.644px_-90.28px]">
           <iframe
-            className="w-full h-full rounded-[16px] sm:rounded-[25px]"
+            className="w-full h-full"
             src={`https://www.youtube.com/embed/${
               youtubeVideos[current].url.split("v=")[1]
             }`}

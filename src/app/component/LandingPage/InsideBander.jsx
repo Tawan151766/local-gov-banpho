@@ -1,4 +1,5 @@
 import React from "react";
+import { ChevronUp, ChevronDown } from "lucide-react";
 
 const services = [
   {
@@ -7,7 +8,7 @@ const services = [
     alt: "OIC Logo",
   },
   {
-    title: "สำนักงานคณะกรรมการป้องกันและปราบปราม การทุจริตแห่งชาติ",
+    title: "สำนักงานคณะกรรมการป้องกัน และปราบปรามการทุจริตแห่งชาติ",
     image: "image/Logo2_ppp.jpg",
     alt: "PPP Logo",
   },
@@ -15,11 +16,6 @@ const services = [
     title: "ศูนย์ดำรงธรรม",
     image: "image/Logo3_tam.png",
     alt: "TAM Logo",
-  },
-  {
-    title: "การประเมินประสิทธิภาพของ อปท. (LPA)",
-    image: "image/Logo4_LPA.jpg",
-    alt: "LPA Logo",
   },
   {
     title: "งานบริการของศูนย์บริการร่วม One Stop Service",
@@ -40,13 +36,32 @@ export default function InsideBander() {
         {/* Main Grid Layout */}
         <div className="flex flex-col lg:flex-row gap-6 p-4 md:p-6 lg:p-8">
           {/* Left Column: Service Cards */}
-          <div className="w-96">
+          <div className="w-96 flex flex-col justify-center">
+
+            {/* ปุ่มลูกศรขึ้น */}
+            <button className="mb-4 p-2 rounded-full  hover:bg-gray-100 transition mx-auto">
+              <ChevronUp className="w-10 h-10 text-gray-700" />
+            </button>
+
+
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-1 gap-4">
               {/* Card 1 */}
               <div className="bg-white rounded-2xl shadow-md hover:shadow-lg transition-shadow duration-300 flex items-center gap-4 p-4">
                 <img
-                  src="publishing-10.png"
+                  src="image/InsiderBander_1.png"
                   alt="เผยแพร่"
+                  className="w-16 h-16 md:w-20 md:h-20 object-cover rounded-xl flex-shrink-0"
+                />
+                <div className="text-gray-800 font-medium text-base md:text-lg">
+                  การจัดการ องค์ความรู้ (KM)
+                </div>
+              </div>
+
+              {/* Card 2 */}
+              <div className="bg-white rounded-2xl shadow-md hover:shadow-lg transition-shadow duration-300 flex items-center gap-4 p-4">
+                <img
+                  src="image/InsiderBander_2.png"
+                  alt="สารสนเทศ"
                   className="w-16 h-16 md:w-20 md:h-20 object-cover rounded-xl flex-shrink-0"
                 />
                 <div className="text-gray-800 font-medium text-base md:text-lg">
@@ -54,11 +69,11 @@ export default function InsideBander() {
                 </div>
               </div>
 
-              {/* Card 2 */}
+              {/* Card 3 */}
               <div className="bg-white rounded-2xl shadow-md hover:shadow-lg transition-shadow duration-300 flex items-center gap-4 p-4">
                 <img
-                  src="information-management-10.png"
-                  alt="สารสนเทศ"
+                  src="image/InsiderBander_3.png"
+                  alt="จริยธรรม"
                   className="w-16 h-16 md:w-20 md:h-20 object-cover rounded-xl flex-shrink-0"
                 />
                 <div className="text-gray-800 font-medium text-base md:text-lg">
@@ -66,11 +81,11 @@ export default function InsideBander() {
                 </div>
               </div>
 
-              {/* Card 3 */}
+              {/* Card 4 */}
               <div className="bg-white rounded-2xl shadow-md hover:shadow-lg transition-shadow duration-300 flex items-center gap-4 p-4">
                 <img
-                  src="business-ethics-10.png"
-                  alt="จริยธรรม"
+                  src="image/InsiderBander_4.png"
+                  alt="ห้องสมุด"
                   className="w-16 h-16 md:w-20 md:h-20 object-cover rounded-xl flex-shrink-0"
                 />
                 <div className="text-gray-800 font-medium text-base md:text-lg">
@@ -78,11 +93,11 @@ export default function InsideBander() {
                 </div>
               </div>
 
-              {/* Card 4 */}
+              {/* Card 5 */}
               <div className="bg-white rounded-2xl shadow-md hover:shadow-lg transition-shadow duration-300 flex items-center gap-4 p-4">
                 <img
-                  src="library-10.png"
-                  alt="ห้องสมุด"
+                  src="image/InsiderBander_5.png"
+                  alt="ผู้สูงอายุ"
                   className="w-16 h-16 md:w-20 md:h-20 object-cover rounded-xl flex-shrink-0"
                 />
                 <div className="text-gray-800 font-medium text-base md:text-lg">
@@ -90,11 +105,11 @@ export default function InsideBander() {
                 </div>
               </div>
 
-              {/* Card 5 */}
+              {/* Card 6 */}
               <div className="bg-white rounded-2xl shadow-md hover:shadow-lg transition-shadow duration-300 flex items-center gap-4 p-4">
                 <img
-                  src="couple-10.png"
-                  alt="ผู้สูงอายุ"
+                  src="image/InsiderBander_6.png"
+                  alt="คนพิการ"
                   className="w-16 h-16 md:w-20 md:h-20 object-cover rounded-xl flex-shrink-0"
                 />
                 <div className="text-gray-800 font-medium text-base md:text-lg">
@@ -102,10 +117,10 @@ export default function InsideBander() {
                 </div>
               </div>
 
-              {/* Card 6 */}
+              {/* Card 7 */}
               <div className="bg-white rounded-2xl shadow-md hover:shadow-lg transition-shadow duration-300 flex items-center gap-4 p-4">
                 <img
-                  src="disabled-person-10.png"
+                  src="image/InsiderBander_7.png"
                   alt="คนพิการ"
                   className="w-16 h-16 md:w-20 md:h-20 object-cover rounded-xl flex-shrink-0"
                 />
@@ -114,6 +129,12 @@ export default function InsideBander() {
                 </div>
               </div>
             </div>
+
+            {/* ปุ่มลูกศรลง */}
+            <button className="mt-4 p-2 rounded-full hover:bg-gray-100 transition mx-auto">
+              <ChevronDown className="w-10 h-10 text-gray-700" />
+            </button>
+
           </div>
 
           {/* Right Column: Combined Book Section and Opinion Poll */}
@@ -244,27 +265,31 @@ export default function InsideBander() {
                 </div>
               </div>
             </div>
-          </div>
-        </div>
 
-        {/* Bottom Section: KM Icons */}
-        <div className="grid grid-cols-3 gap-5 mt-36 mb-8 pb-36">
-          {services.map((service, idx) => (
-            <div key={idx} className="flex justify-center">
-              <div className="flex items-center gap-4 px-6 py-4 rounded-full text-white min-w-[280px] max-w-[398px] shadow-lg hover:shadow-xl hover:-translate-y-1 transition-all bg-gradient-to-b from-[#87B6FF] to-[#0F52BA]">
-                <img
-                  src={service.image}
-                  alt={service.alt}
-                  className="w-[100px] h-[100px] rounded-full object-cover border-2 border-white shadow"
-                />
-                <div className="flex-1">
-                  <div className="text-sm font-bold leading-tight">
-                    {service.title}
+            {/* Bottom Section: KM Icons */}
+            <div className="flex flex-wrap justify-center gap-5 max-w-[1240px] mx-auto">
+              {services.map((service, idx) => (
+                <div
+                  key={idx}
+                  className="w-[310px] h-[72px] flex justify-center"
+                >
+                  <div className="relative flex items-center justify-center pr-6 py-4 rounded-full text-white w-full shadow-lg hover:shadow-xl hover:-translate-y-1 transition-all bg-gradient-to-b from-[#FFFF00] to-[#E5B878]">
+                    {/* รูปภาพอยู่ชิดซ้ายแบบ absolute */}
+                    <img
+                      src={service.image}
+                      alt={service.alt}
+                      className="absolute left-0 w-[71px] h-[71px] rounded-full object-cover border-2 border-white shadow"
+                    />
+
+                    {/* ข้อความอยู่กลางป้าย โดยมี padding ซ้ายให้ไม่ชนรูป */}
+                    <div className="text-[16px] text-[#1E1E1E] font-normal leading-tight text-center pl-[80px] w-full">
+                      {service.title}
+                    </div>
                   </div>
                 </div>
-              </div>
+              ))}
             </div>
-          ))}
+          </div>
         </div>
       </div>
     </div>
