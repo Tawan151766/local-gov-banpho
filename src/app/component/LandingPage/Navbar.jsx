@@ -186,14 +186,16 @@ export default function Navbar() {
                 <button
                   className=" text-white text-base font-medium hover:underline hover:text-[#01385F] hover:text-bold hover:text-[20px] transition-all duration-300 flex items-center gap-1"
                   onClick={() =>
-                    setShowMenu(showMenu === "basic" ? false : "basic")
+                    setShowMobileBasicDropdown(!showMobileBasicDropdown)
                   }
                   aria-haspopup="true"
-                  aria-expanded={showMenu === "basic"}
+                  aria-expanded={showMobileBasicDropdown}
                 >
                   ข้อมูลพื้นฐาน
                   <svg
-                    className="w-4 h-4"
+                    className={`w-4 h-4 transition-transform ${
+                      showMobileBasicDropdown ? "rotate-180" : ""
+                    }`}
                     fill="none"
                     stroke="currentColor"
                     viewBox="0 0 24 24"
@@ -206,7 +208,7 @@ export default function Navbar() {
                     />
                   </svg>
                 </button>
-                {showMenu === "basic" && (
+                {showMobileBasicDropdown && (
                   <div className="mt-2 bg-white rounded-md shadow-lg z-[9999] p-2 flex flex-col gap-1">
                     <a
                       href="/"
@@ -309,10 +311,70 @@ export default function Navbar() {
                   </svg>
                 </button>
                 {showPersonnelDropdown && (
-                  <div className="absolute top-full left-0 mt-2 w-64 bg-white rounded-md shadow-lg z-[9999]">
-                    <div className="py-2">
-                      {/* ... other dropdown items ... */}
-                    </div>
+                  <div className="mt-2 bg-white rounded-md shadow-lg z-[9999] p-2 flex flex-col gap-1">
+                    <a
+                      href="/personnel"
+                      className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                      onClick={handleLinkClick}
+                    >
+                      โครงสร้างบุคลากร
+                    </a>
+                    <a
+                      href="/personnel?section=executives"
+                      className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                      onClick={handleLinkClick}
+                    >
+                      คณะผู้บริหาร
+                    </a>
+                    <a
+                      href="/personnel?section=council"
+                      className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                      onClick={handleLinkClick}
+                    >
+                      สภาเทศบาล
+                    </a>
+                    <a
+                      href="/personnel?section=departments"
+                      className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                      onClick={handleLinkClick}
+                    >
+                      พนักงานเทศบาล
+                    </a>
+                    <a
+                      href="/personnel?dept=clerk"
+                      className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                      onClick={handleLinkClick}
+                    >
+                      สำนักปลัดเทศบาล
+                    </a>
+                    <a
+                      href="/personnel?dept=finance"
+                      className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                      onClick={handleLinkClick}
+                    >
+                      กองคลัง
+                    </a>
+                    <a
+                      href="/personnel?dept=engineering"
+                      className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                      onClick={handleLinkClick}
+                    >
+                      กองช่าง
+                    </a>
+                    <a
+                      href="/personnel?dept=education"
+                      className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                      onClick={handleLinkClick}
+                    >
+                      กองการศึกษาฯ
+                    </a>
+                    <a
+                      href="/personnel?section=audit"
+                      className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                      onClick={handleLinkClick}
+                    >
+                      หน่วยตรวจสอบภายใน
+                    </a>
                   </div>
                 )}
               </div>
@@ -369,7 +431,6 @@ export default function Navbar() {
           <div className="relative" ref={basicDropdownRef}>
             <button
               onClick={() => setShowBasicDropdown(!showBasicDropdown)}
-              onMouseEnter={() => setShowBasicDropdown(true)}
               className="text-white text-base font-medium hover:underline hover:text-[#01385F] hover:text-bold hover:text-[20px] transition-all duration-300 flex items-center gap-1"
             >
               ข้อมูลพื้นฐาน
@@ -483,7 +544,6 @@ export default function Navbar() {
           <div className="relative" ref={personnelDropdownRef}>
             <button
               onClick={() => setShowPersonnelDropdown(!showPersonnelDropdown)}
-              onMouseEnter={() => setShowPersonnelDropdown(true)}
               className="text-white text-base font-medium hover:underline hover:text-[#01385F] hover:text-bold hover:text-[20px] transition-all duration-300 flex items-center gap-1"
             >
               บุคลากร
@@ -552,7 +612,15 @@ export default function Navbar() {
                     href="/personnel?dept=clerk"
                     onClick={handleLinkClick}
                     className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
-                    onClick={handleLinkClick}
+                    tabIndex={0}
+                  >
+                    สำนักปลัดเทศบาล
+                  </a>
+
+                  <a
+                    href="/personnel?dept=finance"
+                    className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                    tabIndex={0}
                   >
                     กองคลัง
                   </a>
