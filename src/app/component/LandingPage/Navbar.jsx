@@ -455,13 +455,16 @@ export default function Navbar() {
             </button>
             {showPersonnelDropdown && (
               <div
-                className="absolute top-full left-0 mt-2 w-64 bg-white rounded-md shadow-lg z-[9999] transition-all duration-200"
+                className="absolute top-full left-0 mt-2 w-64 bg-white rounded-md shadow-lg z-[9999] transition-all duration-200 pointer-events-auto"
+                style={{ pointerEvents: 'auto' }}
+                onMouseEnter={() => setShowPersonnelDropdown(true)}
+                onMouseLeave={() => setShowPersonnelDropdown(false)}
               >
                 <div className="py-2">
                   <a
                     href="/personnel"
                     className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
-                    onClick={handleLinkClick}
+                    tabIndex={0}
                   >
                     โครงสร้างบุคลากร
                   </a>
@@ -469,7 +472,7 @@ export default function Navbar() {
                   <a
                     href="/personnel?section=executives"
                     className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
-                    onClick={handleLinkClick}
+                    tabIndex={0}
                   >
                     คณะผู้บริหาร
                   </a>
@@ -477,7 +480,7 @@ export default function Navbar() {
                   <a
                     href="/personnel?section=council"
                     className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
-                    onClick={handleLinkClick}
+                    tabIndex={0}
                   >
                     สภาเทศบาล
                   </a>
@@ -485,7 +488,7 @@ export default function Navbar() {
                   <a
                     href="/personnel?section=departments"
                     className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
-                    onClick={handleLinkClick}
+                    tabIndex={0}
                   >
                     พนักงานเทศบาล
                   </a>
@@ -493,7 +496,7 @@ export default function Navbar() {
                   <a
                     href="/personnel?section=departments"
                     className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
-                    onClick={handleLinkClick}
+                    tabIndex={0}
                   >
                     หัวหน้าส่วนราชการ
                   </a>
@@ -501,7 +504,7 @@ export default function Navbar() {
                   <a
                     href="/personnel?dept=clerk"
                     className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
-                    onClick={handleLinkClick}
+                    tabIndex={0}
                   >
                     สำนักปลัดเทศบาล
                   </a>
@@ -509,7 +512,7 @@ export default function Navbar() {
                   <a
                     href="/personnel?dept=finance"
                     className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
-                    onClick={handleLinkClick}
+                    tabIndex={0}
                   >
                     กองคลัง
                   </a>
@@ -517,7 +520,7 @@ export default function Navbar() {
                   <a
                     href="/personnel?dept=engineering"
                     className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
-                    onClick={handleLinkClick}
+                    tabIndex={0}
                   >
                     กองช่าง
                   </a>
@@ -525,7 +528,7 @@ export default function Navbar() {
                   <a
                     href="/personnel?dept=education"
                     className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
-                    onClick={handleLinkClick}
+                    tabIndex={0}
                   >
                     กองการศึกษาฯ
                   </a>
@@ -533,7 +536,7 @@ export default function Navbar() {
                   <a
                     href="/personnel?section=audit"
                     className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
-                    onClick={handleLinkClick}
+                    tabIndex={0}
                   >
                     หน่วยตรวจสอบภายใน
                   </a>
