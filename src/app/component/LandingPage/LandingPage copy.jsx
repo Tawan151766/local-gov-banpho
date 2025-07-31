@@ -21,6 +21,20 @@ export default function LandingPage() {
     <>
       <Navbar />
       <HeroSection />
+      <div className="relative w-full h-[814px] overflow-hidden">
+        <video
+          className="absolute inset-0 w-full h-auto object-cover object-bottom"
+          src="/image/mp_4_bg.mp4"
+          autoPlay
+          loop
+          muted
+          playsInline
+          style={{
+            transform: "translateY(-20%)", // ปรับค่านี้เพื่อแสดงส่วนล่างมากขึ้น
+            height: "120%", // ขยายความสูงเพื่อให้มีพื้นที่ในการครอบตัด
+          }}
+        />
+      </div>
       <ManagementSection />
       <ContentSections />
       <AnnouncementSections />
