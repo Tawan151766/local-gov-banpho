@@ -1,6 +1,5 @@
 "use client";
 import React, { useState, useEffect, use } from "react";
-import Navbar from "../../component/LandingPage/Navbar";
 import ActivityDetail from "../../component/Activities/ActivityDetail";
 
 export default function ActivityPage({ params }) {
@@ -50,7 +49,6 @@ export default function ActivityPage({ params }) {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50">
-      <Navbar />
       <ActivityDetail 
         activity={activity} 
         loading={loading} 

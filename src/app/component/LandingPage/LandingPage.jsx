@@ -2,8 +2,6 @@
 
 // import "../../styles.css";
 import * as ui from "../../ui-logic";
-import Footer from "./Footer";
-import Navbar from "./Navbar";
 import HeroSection from "./HeroSection";
 import ManagementSection from "./ManagementSection";
 import ContentSections from "./ContentSections";
@@ -19,7 +17,6 @@ import StateSection from "./StateSection";
 export default function LandingPage() {
   return (
     <>
-      <Navbar />
       <HeroSection />
       <ManagementSection />
       <ContentSections />
@@ -31,7 +28,6 @@ export default function LandingPage() {
       <TravelSection />
       <MapsSection />
       <StateSection />
-      <Footer />
     </>
   );
 }
