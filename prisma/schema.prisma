@@ -310,6 +310,57 @@ enum staff_role {
   employee
 }
 
+model CorruptionComplaint {
+  id                   BigInt                      @id @default(autoincrement()) @db.UnsignedBigInt
+  complaint_date       DateTime                    @db.Date
+  
+  // ข้อมูลผู้ร้องเรียน (Complainant Information)
+  complainant_name     String                      @db.VarChar(255)
+  complainant_id_card  String                      @db.VarChar(13)
+  complainant_address  String                      @db.Text
+  complainant_age      Int
+  complainant_phone    String                      @db.VarChar(20)
+  
+  // ข้อมูลผู้ถูกร้องเรียน (Accused Information)
+  accused_name         String                      @db.VarChar(255)
+  accused_position     String                      @db.VarChar(255)
+  accused_agency       String                      @db.VarChar(255)
+  accused_province     String                      @db.VarChar(100)
+  
+  // รายละเอียดการร้องเรียน (Complaint Details)
+  complaint_details    String                      @db.Text
+  attachments          String?                     @db.Text // JSON string of file attachments
+  
+  // สถานะการดำเนินการ (Status Management)
+  status               CorruptionComplaintStatus   @default(pending)
+  status_note          String?                     @db.Text
+  
+  // ข้อมูลการติดตาม (Tracking Information)
+  assigned_to          String?                     @db.VarChar(255)
+  investigation_result String?                     @db.Text
+  action_taken         String?                     @db.Text
+  
+  // ข้อมูลระบบ (System Information)
+  ip_address           String?                     @db.VarChar(45)
+  user_agent           String?                     @db.Text
+  created_at           DateTime?                   @default(now()) @db.Timestamp(0)
+  updated_at           DateTime?                   @default(now()) @updatedAt @db.Timestamp(0)
+
+  @@index([complaint_date], map: "idx_complaint_date")
+  @@index([complainant_name], map: "idx_complainant_name")
+  @@index([accused_name], map: "idx_accused_name")
+  @@index([status], map: "idx_status")
+  @@index([created_at], map: "idx_created_at")
+  @@map("corruption_complaints")
+}
+
+enum CorruptionComplaintStatus {
+  pending
+  investigating
+  completed
+  rejected
+}
+
 enum menus_level {
   main
   sub

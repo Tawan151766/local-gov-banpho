@@ -5,6 +5,7 @@ export default function Navbar() {
   const [showMenu, setShowMenu] = useState(false);
   const [showPersonnelDropdown, setShowPersonnelDropdown] = useState(false);
   const [showBasicDropdown, setShowBasicDropdown] = useState(false);
+  const [showMobileBasicDropdown, setShowMobileBasicDropdown] = useState(false);
   const dropdownRef = useRef(null);
   const basicDropdownRef = useRef(null);
   const personnelDropdownRef = useRef(null);
@@ -33,6 +34,14 @@ export default function Navbar() {
       document.removeEventListener("mousedown", handleClickOutside);
     };
   }, []);
+
+  // Close dropdowns when clicking on links
+  const handleLinkClick = () => {
+    setShowBasicDropdown(false);
+    setShowPersonnelDropdown(false);
+    setShowMobileBasicDropdown(false);
+    setShowMenu(false);
+  };
   return (
     <header className="w-full bg-[linear-gradient(180deg,_#0383AA_0%,_#05C5FF_100%)] relative z-10 ">
       {/* Background image ซ้อนทับ */}
@@ -49,7 +58,7 @@ export default function Navbar() {
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pb-8">
         <div className="flex flex-col md:flex-row items-center justify-between py-4">
           {/* Logo and Title */}
-          <div className="flex items-center gap-4 w-full md:w-auto">
+          <a href="/" className="pointer flex items-center gap-4 w-full md:w-auto">
             <img
               src="/image/Logo.png"
               alt="โลโก้เทศบาล"
@@ -63,7 +72,7 @@ export default function Navbar() {
                 Ban Pho Subdistrict, Chachoengsao
               </span>
             </div>
-          </div>
+          </a>
 
           {/* Hamburger for mobile */}
           <div className="md:hidden flex items-center ml-auto">
@@ -177,14 +186,16 @@ export default function Navbar() {
                 <button
                   className=" text-white text-base font-medium hover:underline hover:text-[#01385F] hover:text-bold hover:text-[20px] transition-all duration-300 flex items-center gap-1"
                   onClick={() =>
-                    setShowMenu(showMenu === "basic" ? false : "basic")
+                    setShowMobileBasicDropdown(!showMobileBasicDropdown)
                   }
                   aria-haspopup="true"
-                  aria-expanded={showMenu === "basic"}
+                  aria-expanded={showMobileBasicDropdown}
                 >
                   ข้อมูลพื้นฐาน
                   <svg
-                    className="w-4 h-4"
+                    className={`w-4 h-4 transition-transform ${
+                      showMobileBasicDropdown ? "rotate-180" : ""
+                    }`}
                     fill="none"
                     stroke="currentColor"
                     viewBox="0 0 24 24"
@@ -197,21 +208,81 @@ export default function Navbar() {
                     />
                   </svg>
                 </button>
-                {showMenu === "basic" && (
+                {showMobileBasicDropdown && (
                   <div className="mt-2 bg-white rounded-md shadow-lg z-[9999] p-2 flex flex-col gap-1">
                     <a
                       href="/"
                       className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                      onClick={handleLinkClick}
                     >
                       หน้าหลัก
                     </a>
                     <a
                       href="/history"
                       className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                      onClick={handleLinkClick}
                     >
                       ประวัติความเป็นมา
                     </a>
-                    {/* ... other dropdown items ... */}
+                    <a
+                      href="/vision"
+                      className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                      onClick={handleLinkClick}
+                    >
+                      วิสัยทัศน์/พันธกิจ
+                    </a>
+                    <div className="px-4 py-2 text-sm text-gray-700 font-bold">
+                      สภาพและข้อมูลพื้นฐาน
+                    </div>
+                    <a
+                      href="/simple-infomation/general-overview"
+                      className="block px-6 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                      onClick={handleLinkClick}
+                    >
+                      สภาพทั่วไป
+                    </a>
+                    <a
+                      href="/simple-infomation/economic-status"
+                      className="block px-6 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                      onClick={handleLinkClick}
+                    >
+                      สภาพทางเศรษฐกิจ
+                    </a>
+                    <a
+                      href="/simple-infomation/demographics"
+                      className="block px-6 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                      onClick={handleLinkClick}
+                    >
+                      สภาพทางสังคม
+                    </a>
+                    <a
+                      href="/simple-infomation/infrastructure"
+                      className="block px-6 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                      onClick={handleLinkClick}
+                    >
+                      การบริการพื้นฐาน
+                    </a>
+                    <a
+                      href="/authority"
+                      className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                      onClick={handleLinkClick}
+                    >
+                      อำนาจหน้าที่
+                    </a>
+                    <a
+                      href="/policy"
+                      className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                      onClick={handleLinkClick}
+                    >
+                      นโยบายการบริหาร
+                    </a>
+                    <a
+                      href="/integrity"
+                      className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                      onClick={handleLinkClick}
+                    >
+                      เจตจำนงสุจริตของผู้บริหาร
+                    </a>
                   </div>
                 )}
               </div>
@@ -240,10 +311,70 @@ export default function Navbar() {
                   </svg>
                 </button>
                 {showPersonnelDropdown && (
-                  <div className="absolute top-full left-0 mt-2 w-64 bg-white rounded-md shadow-lg z-[9999]">
-                    <div className="py-2">
-                      {/* ... other dropdown items ... */}
-                    </div>
+                  <div className="mt-2 bg-white rounded-md shadow-lg z-[9999] p-2 flex flex-col gap-1">
+                    <a
+                      href="/personnel"
+                      className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                      onClick={handleLinkClick}
+                    >
+                      โครงสร้างบุคลากร
+                    </a>
+                    <a
+                      href="/personnel?section=executives"
+                      className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                      onClick={handleLinkClick}
+                    >
+                      คณะผู้บริหาร
+                    </a>
+                    <a
+                      href="/personnel?section=council"
+                      className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                      onClick={handleLinkClick}
+                    >
+                      สภาเทศบาล
+                    </a>
+                    <a
+                      href="/personnel?section=departments"
+                      className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                      onClick={handleLinkClick}
+                    >
+                      พนักงานเทศบาล
+                    </a>
+                    <a
+                      href="/personnel?dept=clerk"
+                      className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                      onClick={handleLinkClick}
+                    >
+                      สำนักปลัดเทศบาล
+                    </a>
+                    <a
+                      href="/personnel?dept=finance"
+                      className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                      onClick={handleLinkClick}
+                    >
+                      กองคลัง
+                    </a>
+                    <a
+                      href="/personnel?dept=engineering"
+                      className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                      onClick={handleLinkClick}
+                    >
+                      กองช่าง
+                    </a>
+                    <a
+                      href="/personnel?dept=education"
+                      className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                      onClick={handleLinkClick}
+                    >
+                      กองการศึกษาฯ
+                    </a>
+                    <a
+                      href="/personnel?section=audit"
+                      className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                      onClick={handleLinkClick}
+                    >
+                      หน่วยตรวจสอบภายใน
+                    </a>
                   </div>
                 )}
               </div>
@@ -300,7 +431,6 @@ export default function Navbar() {
           <div className="relative" ref={basicDropdownRef}>
             <button
               onClick={() => setShowBasicDropdown(!showBasicDropdown)}
-              onMouseEnter={() => setShowBasicDropdown(true)}
               className="text-white text-base font-medium hover:underline hover:text-[#01385F] hover:text-bold hover:text-[20px] transition-all duration-300 flex items-center gap-1"
             >
               ข้อมูลพื้นฐาน
@@ -324,12 +454,11 @@ export default function Navbar() {
             {showBasicDropdown && (
               <div
                 className="absolute top-full left-0 mt-2 w-80 bg-white rounded-md shadow-lg z-[9999] transition-all duration-200"
-                onMouseEnter={() => setShowBasicDropdown(true)}
-                onMouseLeave={() => setShowBasicDropdown(false)}
               >
                 <a
                   href="/"
                   className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                  onClick={handleLinkClick}
                 >
                   หน้าหลัก
                 </a>
@@ -337,6 +466,7 @@ export default function Navbar() {
                 <a
                   href="/history"
                   className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                  onClick={handleLinkClick}
                 >
                   ประวัติความเป็นมา
                 </a>
@@ -344,6 +474,7 @@ export default function Navbar() {
                 <a
                   href="/vision"
                   className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                  onClick={handleLinkClick}
                 >
                   วิสัยทัศน์/พันธกิจ
                 </a>
@@ -355,6 +486,7 @@ export default function Navbar() {
                 <a
                   href="/simple-infomation/general-overview"
                   className="block px-6 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                  onClick={handleLinkClick}
                 >
                   สภาพทั่วไป
                 </a>
@@ -362,6 +494,7 @@ export default function Navbar() {
                 <a
                   href="/simple-infomation/economic-status"
                   className="block px-6 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                  onClick={handleLinkClick}
                 >
                   สภาพทางเศรษฐกิจ
                 </a>
@@ -369,6 +502,7 @@ export default function Navbar() {
                 <a
                   href="/simple-infomation/demographics"
                   className="block px-6 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                  onClick={handleLinkClick}
                 >
                   สภาพทางสังคม
                 </a>
@@ -376,55 +510,23 @@ export default function Navbar() {
                 <a
                   href="/simple-infomation/infrastructure"
                   className="block px-6 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                  onClick={handleLinkClick}
                 >
                   การบริการพื้นฐาน
                 </a>
 
                 <a
-                  href="/simple-infomationdemographics"
-                  className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
-                >
-                  ข้อมูลพื้นฐาน
-                </a>
-
-                <a
-                  href="/structure"
-                  className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
-                >
-                  โครงสร้าง
-                </a>
-
-                <a
-                  href="/executives"
-                  className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
-                >
-                  ข้อมูลผู้บริหาร
-                </a>
-
-                <a
                   href="/authority"
                   className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                  onClick={handleLinkClick}
                 >
                   อำนาจหน้าที่
                 </a>
 
                 <a
-                  href="/plan"
-                  className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
-                >
-                  แผนการขับเคลื่อนหน่วยงาน
-                </a>
-
-                <a
-                  href="/contact"
-                  className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
-                >
-                  ข้อมูลการติดต่อ
-                </a>
-
-                <a
                   href="/policy"
                   className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                  onClick={handleLinkClick}
                 >
                   นโยบายการบริหาร
                 </a>
@@ -432,54 +534,9 @@ export default function Navbar() {
                 <a
                   href="/integrity"
                   className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                  onClick={handleLinkClick}
                 >
                   เจตจำนงสุจริตของผู้บริหาร
-                </a>
-
-                <a
-                  href="/laws"
-                  className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
-                >
-                  กฏหมายที่เกี่ยวข้อง
-                </a>
-
-                <div className="px-4 py-2 text-sm text-gray-700 font-bold">
-                  กิจกรรมเด่นเทศบาลฯ
-                </div>
-
-                <a
-                  href="/activities/2567"
-                  className="block px-6 py-2 text-sm text-gray-700 hover:bg-gray-100"
-                >
-                  กิจกรรมประจำปี 2567
-                </a>
-
-                <a
-                  href="/activities/2566"
-                  className="block px-6 py-2 text-sm text-gray-700 hover:bg-gray-100"
-                >
-                  กิจกรรมประจำปี 2566
-                </a>
-
-                <a
-                  href="/activities/2565"
-                  className="block px-6 py-2 text-sm text-gray-700 hover:bg-gray-100"
-                >
-                  กิจกรรมประจำปี 2565
-                </a>
-
-                <a
-                  href="/activities/2564"
-                  className="block px-6 py-2 text-sm text-gray-700 hover:bg-gray-100"
-                >
-                  กิจกรรมประจำปี 2564
-                </a>
-
-                <a
-                  href="/activities/2557-2563"
-                  className="block px-6 py-2 text-sm text-gray-700 hover:bg-gray-100"
-                >
-                  กิจกรรมประจำปี 2557-2563
                 </a>
               </div>
             )}
@@ -487,7 +544,6 @@ export default function Navbar() {
           <div className="relative" ref={personnelDropdownRef}>
             <button
               onClick={() => setShowPersonnelDropdown(!showPersonnelDropdown)}
-              onMouseEnter={() => setShowPersonnelDropdown(true)}
               className="text-white text-base font-medium hover:underline hover:text-[#01385F] hover:text-bold hover:text-[20px] transition-all duration-300 flex items-center gap-1"
             >
               บุคลากร
@@ -509,16 +565,13 @@ export default function Navbar() {
             </button>
             {showPersonnelDropdown && (
               <div
-                className="absolute top-full left-0 mt-2 w-64 bg-white rounded-md shadow-lg z-[9999] transition-all duration-200 pointer-events-auto"
-                style={{ pointerEvents: "auto" }}
-                onMouseEnter={() => setShowPersonnelDropdown(true)}
-                onMouseLeave={() => setShowPersonnelDropdown(false)}
+                className="absolute top-full left-0 mt-2 w-64 bg-white rounded-md shadow-lg z-[9999] transition-all duration-200"
               >
                 <div className="py-2">
                   <a
                     href="/personnel"
                     className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
-                    tabIndex={0}
+                    onClick={handleLinkClick}
                   >
                     โครงสร้างบุคลากร
                   </a>
@@ -526,7 +579,7 @@ export default function Navbar() {
                   <a
                     href="/personnel?section=executives"
                     className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
-                    tabIndex={0}
+                    onClick={handleLinkClick}
                   >
                     คณะผู้บริหาร
                   </a>
@@ -534,7 +587,7 @@ export default function Navbar() {
                   <a
                     href="/personnel?section=council"
                     className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
-                    tabIndex={0}
+                    onClick={handleLinkClick}
                   >
                     สภาเทศบาล
                   </a>
@@ -542,7 +595,7 @@ export default function Navbar() {
                   <a
                     href="/personnel?section=departments"
                     className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
-                    tabIndex={0}
+                    onClick={handleLinkClick}
                   >
                     พนักงานเทศบาล
                   </a>
@@ -550,7 +603,7 @@ export default function Navbar() {
                   <a
                     href="/personnel?section=departments"
                     className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
-                    tabIndex={0}
+                    onClick={handleLinkClick}
                   >
                     หัวหน้าส่วนราชการ
                   </a>
@@ -558,7 +611,7 @@ export default function Navbar() {
                   <a
                     href="/personnel?dept=clerk"
                     className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
-                    tabIndex={0}
+                    onClick={handleLinkClick}
                   >
                     สำนักปลัดเทศบาล
                   </a>
@@ -566,7 +619,7 @@ export default function Navbar() {
                   <a
                     href="/personnel?dept=finance"
                     className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
-                    tabIndex={0}
+                    onClick={handleLinkClick}
                   >
                     กองคลัง
                   </a>
@@ -574,7 +627,7 @@ export default function Navbar() {
                   <a
                     href="/personnel?dept=engineering"
                     className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
-                    tabIndex={0}
+                    onClick={handleLinkClick}
                   >
                     กองช่าง
                   </a>
@@ -582,7 +635,7 @@ export default function Navbar() {
                   <a
                     href="/personnel?dept=education"
                     className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
-                    tabIndex={0}
+                    onClick={handleLinkClick}
                   >
                     กองการศึกษาฯ
                   </a>
@@ -590,7 +643,7 @@ export default function Navbar() {
                   <a
                     href="/personnel?section=audit"
                     className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
-                    tabIndex={0}
+                    onClick={handleLinkClick}
                   >
                     หน่วยตรวจสอบภายใน
                   </a>

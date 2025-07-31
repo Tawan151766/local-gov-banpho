@@ -20,6 +20,7 @@ import {
   List,
   Drawer
 } from 'antd';
+import FileUpload from './FileUpload';
 import { 
   PlusOutlined, 
   EditOutlined, 
@@ -840,10 +841,13 @@ export default function LawsRegsManagement() {
           >
             <Form.Item
               name="files_path"
-              label="Path ไฟล์"
-              rules={[{ required: true, message: 'กรุณากรอก Path ไฟล์' }]}
+              label="ไฟล์เอกสาร"
+              rules={[{ required: true, message: 'กรุณาอัปโหลดไฟล์' }]}
             >
-              <Input placeholder="/assets/documents/laws/law_document.pdf" />
+              <FileUpload 
+                accept=".pdf,.doc,.docx,.xls,.xlsx"
+                placeholder="เลือกไฟล์เอกสารกฎหมายและระเบียบ"
+              />
             </Form.Item>
 
             <Form.Item

@@ -1,739 +1,944 @@
-'use client';
+"use client";
 
-import { useState, useEffect } from 'react';
-import { 
-  Table, 
-  Button, 
-  Modal, 
-  Form, 
-  Input, 
-  App,
-  Space, 
-  Popconfirm,
+import React, { useState, useEffect, useCallback } from "react";
+import {
+  Table,
+  Button,
+  Modal,
+  Form,
+  Input,
+  Select,
+  DatePicker,
+  Upload,
+  Image,
   Card,
-  Typography,
+  Space,
+  Popconfirm,
   Tag,
+  Tabs,
   Row,
   Col,
-  DatePicker,
-  Select,
-  Breadcrumb,
-  Tabs,
-  Upload,
-  Image
-} from 'antd';
-import { 
-  PlusOutlined, 
-  EditOutlined, 
-  DeleteOutlined, 
-  SearchOutlined,
-  FileTextOutlined,
+  Typography,
+  Descriptions,
+  Divider,
+  App,
+} from "antd";
+import {
+  PlusOutlined,
+  EditOutlined,
+  DeleteOutlined,
   EyeOutlined,
-  ArrowLeftOutlined,
   UploadOutlined,
-  PictureOutlined,
+  FileImageOutlined,
   VideoCameraOutlined,
-  FilePdfOutlined
-} from '@ant-design/icons';
-import { 
-  postTypesAPI, 
-  postDetailsAPI, 
-  createPostTablesAPI 
-} from '@/lib/api';
-import dayjs from 'dayjs';
+  FilePdfOutlined,
+} from "@ant-design/icons";
+import { postTypesAPI, postDetailsAPI } from "@/lib/api";
+import { uploadFileToServer } from "@/lib/fileUploadUtils";
+import dayjs from "dayjs";
 
-const { Title, Text } = Typography;
-const { Search } = Input;
 const { TextArea } = Input;
-const { Option } = Select;
-const { TabPane } = Tabs;
+const { Title } = Typography;
 
 export default function PostManagement() {
-  // Data states
+  const { message } = App.useApp();
   const [postTypes, setPostTypes] = useState([]);
   const [postDetails, setPostDetails] = useState([]);
-  
-  // Loading states
   const [loading, setLoading] = useState(false);
-  const [detailsLoading, setDetailsLoading] = useState(false);
-  const [tablesLoading, setTablesLoading] = useState(false);
-  
-  // Modal states
-  const [typeModalVisible, setTypeModalVisible] = useState(false);
+  const [modalVisible, setModalVisible] = useState(false);
   const [detailModalVisible, setDetailModalVisible] = useState(false);
-  
-  // Editing states
-  const [editingType, setEditingType] = useState(null);
-  const [editingDetail, setEditingDetail] = useState(null);
-  const [selectedType, setSelectedType] = useState(null);
-  
-  // Navigation state
-  const [currentLevel, setCurrentLevel] = useState('types'); // types, details
-  
-  // Table states
+  const [viewModalVisible, setViewModalVisible] = useState(false);
+  const [editingRecord, setEditingRecord] = useState(null);
+  const [selectedRecord, setSelectedRecord] = useState(null);
+  const [activeTab, setActiveTab] = useState("types");
+  const [form] = Form.useForm();
+  const [detailForm] = Form.useForm();
+
+  // Pagination states
   const [pagination, setPagination] = useState({
     current: 1,
     pageSize: 10,
-    total: 0
+    total: 0,
   });
-  const [searchText, setSearchText] = useState('');
-  const [tablesExist, setTablesExist] = useState(false);
-  
-  // Forms
-  const [typeForm] = Form.useForm();
-  const [detailForm] = Form.useForm();
-  
-  const { message } = App.useApp();
 
-  // Check if tables exist
-  const checkTables = async () => {
-    setTablesLoading(true);
-    try {
-      const response = await createPostTablesAPI.checkTables();
-      if (response.success) {
-        const allTablesExist = Object.values(response.tablesExist).every(exists => exists);
-        setTablesExist(allTablesExist);
-      }
-    } catch (error) {
-      console.error('Error checking tables:', error);
-    } finally {
-      setTablesLoading(false);
-    }
-  };
+  const [detailPagination, setDetailPagination] = useState({
+    current: 1,
+    pageSize: 10,
+    total: 0,
+  });
 
-  // Create tables
-  const createTables = async () => {
-    setTablesLoading(true);
-    try {
-      const response = await createPostTablesAPI.createTables();
-      if (response.success) {
-        message.success('สร้างตาราง Post Management สำเร็จ');
-        setTablesExist(true);
-        loadPostTypes();
-      }
-    } catch (error) {
-      message.error('ไม่สามารถสร้างตาราง Post Management ได้');
-      console.error('Error creating tables:', error);
-    } finally {
-      setTablesLoading(false);
-    }
-  };
+  // Search states
+  const [searchText, setSearchText] = useState("");
+  const [selectedPostType, setSelectedPostType] = useState(null);
 
-  // Load post types
-  const loadPostTypes = async (page = 1, search = '') => {
-    setLoading(true);
+  // File upload states
+  const [photoFileList, setPhotoFileList] = useState([]);
+  const [videoFileList, setVideoFileList] = useState([]);
+  const [pdfFileList, setPdfFileList] = useState([]);
+  const [uploading, setUploading] = useState(false);
+
+  const fetchPostTypes = useCallback(async () => {
     try {
+      setLoading(true);
       const response = await postTypesAPI.getPostTypes({
-        page,
+        page: pagination.current,
         limit: pagination.pageSize,
-        search,
-        withDetails: false
+        search: searchText,
       });
 
       if (response.success) {
         setPostTypes(response.data);
-        setPagination(prev => ({
+        setPagination((prev) => ({
           ...prev,
-          current: response.pagination.page,
-          total: response.pagination.total
+          total: response.pagination.total,
         }));
       }
     } catch (error) {
-      message.error('ไม่สามารถโหลดข้อมูลประเภทโพสต์ได้');
-      console.error('Error loading post types:', error);
+      message.error("เกิดข้อผิดพลาดในการโหลดข้อมูลประเภทโพสต์");
+    } finally {
+      setLoading(false);
+    }
+  }, [message]);
+
+  const fetchPostDetails = useCallback(async () => {
+    try {
+      setLoading(true);
+      const response = await postDetailsAPI.getPostDetails({
+        page: detailPagination.current,
+        limit: detailPagination.pageSize,
+        search: searchText,
+        postTypeId: selectedPostType,
+        withMedia: true,
+      });
+
+      if (response.success) {
+        setPostDetails(response.data);
+        setDetailPagination((prev) => ({
+          ...prev,
+          total: response.pagination.total,
+        }));
+      }
+    } catch (error) {
+      message.error("เกิดข้อผิดพลาดในการโหลดข้อมูลโพสต์");
+    } finally {
+      setLoading(false);
+    }
+  }, [message]);
+
+  // Initial load
+  useEffect(() => {
+    fetchPostTypes();
+  }, []);
+
+  // Search and filter changes for post types
+  useEffect(() => {
+    if (activeTab === "types") {
+      fetchPostTypes();
+    }
+  }, [activeTab, fetchPostTypes, searchText]);
+
+  // Pagination changes for post types
+  useEffect(() => {
+    if (activeTab === "types") {
+      fetchPostTypes();
+    }
+  }, [activeTab, fetchPostTypes, pagination.pageSize]);
+
+  // Tab change and search/filter changes for post details
+  useEffect(() => {
+    if (activeTab === "details") {
+      fetchPostDetails();
+    }
+  }, [activeTab, fetchPostDetails, searchText, selectedPostType]);
+
+  // Pagination changes for post details
+  useEffect(() => {
+    if (activeTab === "details") {
+      fetchPostDetails();
+    }
+  }, [activeTab, detailPagination.pageSize, fetchPostDetails]);
+
+  // Post Types Management
+  const handleCreatePostType = () => {
+    setEditingRecord(null);
+    setModalVisible(true);
+    form.resetFields();
+  };
+
+  const handleEditPostType = (record) => {
+    setEditingRecord(record);
+    setModalVisible(true);
+    form.setFieldsValue(record);
+  };
+
+  const handleDeletePostType = async (id) => {
+    try {
+      const response = await postTypesAPI.deletePostType(id);
+      if (response.success) {
+        message.success("ลบประเภทโพสต์สำเร็จ");
+        fetchPostTypes();
+      }
+    } catch (error) {
+      message.error("เกิดข้อผิดพลาดในการลบประเภทโพสต์");
+    }
+  };
+
+  const handleSubmitPostType = async (values) => {
+    try {
+      setLoading(true);
+      let response;
+
+      if (editingRecord) {
+        response = await postTypesAPI.updatePostType(editingRecord.id, values);
+      } else {
+        response = await postTypesAPI.createPostType(values);
+      }
+
+      if (response.success) {
+        message.success(
+          editingRecord ? "แก้ไขประเภทโพสต์สำเร็จ" : "เพิ่มประเภทโพสต์สำเร็จ"
+        );
+        setModalVisible(false);
+        fetchPostTypes();
+      }
+    } catch (error) {
+      message.error("เกิดข้อผิดพลาดในการบันทึกข้อมูล");
     } finally {
       setLoading(false);
     }
   };
 
-  // Load post details for a specific type
-  const loadPostDetails = async (typeId, page = 1, search = '') => {
-    setDetailsLoading(true);
-    try {
-      const response = await postDetailsAPI.getPostDetails({
-        postTypeId: typeId,
-        page,
-        limit: pagination.pageSize,
-        search,
-        withMedia: true
-      });
-
-      if (response.success) {
-        setPostDetails(response.data);
-        setPagination(prev => ({
-          ...prev,
-          current: response.pagination.page,
-          total: response.pagination.total
-        }));
-      }
-    } catch (error) {
-      message.error('ไม่สามารถโหลดข้อมูลโพสต์ได้');
-      console.error('Error loading post details:', error);
-    } finally {
-      setDetailsLoading(false);
-    }
-  };
-
-  // Initial load
-  useEffect(() => {
-    checkTables();
-  }, []);
-
-  useEffect(() => {
-    if (tablesExist) {
-      loadPostTypes();
-    }
-  }, [tablesExist]); // eslint-disable-line react-hooks/exhaustive-deps
-
-  // Handle search
-  const handleSearch = (value) => {
-    setSearchText(value);
-    if (currentLevel === 'types') {
-      loadPostTypes(1, value);
-    } else if (currentLevel === 'details' && selectedType) {
-      loadPostDetails(selectedType.id, 1, value);
-    }
-  };
-
-  // Handle pagination change
-  const handleTableChange = (paginationInfo) => {
-    if (currentLevel === 'types') {
-      loadPostTypes(paginationInfo.current, searchText);
-    } else if (currentLevel === 'details' && selectedType) {
-      loadPostDetails(selectedType.id, paginationInfo.current, searchText);
-    }
-  };
-
-  // Navigation functions
-  const navigateToDetails = (type) => {
-    setSelectedType(type);
-    setCurrentLevel('details');
-    loadPostDetails(type.id);
-  };
-
-  const navigateBack = () => {
-    setCurrentLevel('types');
-    setSelectedType(null);
-    setPostDetails([]);
-    setSearchText('');
-  };
-
-  // Modal management functions
-  const openTypeModal = (type = null) => {
-    setEditingType(type);
-    setTypeModalVisible(true);
-    
-    if (type) {
-      typeForm.setFieldsValue({
-        type_name: type.type_name
-      });
-    } else {
-      typeForm.resetFields();
-    }
-  };
-
-  const closeTypeModal = () => {
-    setTypeModalVisible(false);
-    setEditingType(null);
-    typeForm.resetFields();
-  };
-
-  const openDetailModal = (detail = null) => {
-    setEditingDetail(detail);
+  // Post Details Management
+  const handleCreatePostDetail = () => {
+    setEditingRecord(null);
     setDetailModalVisible(true);
-    
-    if (detail) {
-      detailForm.setFieldsValue({
-        title_name: detail.title_name,
-        topic_name: detail.topic_name,
-        details: detail.details,
-        date: detail.date ? dayjs(detail.date) : null
-      });
-    } else {
-      detailForm.resetFields();
-    }
-  };
-
-  const closeDetailModal = () => {
-    setDetailModalVisible(false);
-    setEditingDetail(null);
     detailForm.resetFields();
+    setPhotoFileList([]);
+    setVideoFileList([]);
+    setPdfFileList([]);
   };
 
-  // Handle type form submit
-  const handleTypeSubmit = async (values) => {
-    try {
-      if (editingType) {
-        const response = await postTypesAPI.updatePostType(editingType.id, values);
-        if (response.success) {
-          message.success('อัปเดตประเภทโพสต์สำเร็จ');
-          loadPostTypes(pagination.current, searchText);
-          closeTypeModal();
-        }
-      } else {
-        const response = await postTypesAPI.createPostType(values);
-        if (response.success) {
-          message.success('เพิ่มประเภทโพสต์ใหม่สำเร็จ');
-          loadPostTypes(pagination.current, searchText);
-          closeTypeModal();
-        }
-      }
-    } catch (error) {
-      message.error(error.message || 'เกิดข้อผิดพลาด');
-    }
+  const handleEditPostDetail = (record) => {
+    setEditingRecord(record);
+    setDetailModalVisible(true);
+    detailForm.setFieldsValue({
+      ...record,
+      date: record.date ? dayjs(record.date) : null,
+    });
+
+    // Set existing files
+    setPhotoFileList(
+      record.photos?.map((photo) => ({
+        uid: photo.id,
+        name: photo.post_photo_file,
+        status: "done",
+        url: `https://banpho.sosmartsolution.com/storage/${photo.post_photo_file}`,
+      })) || []
+    );
+
+    setVideoFileList(
+      record.videos?.map((video) => ({
+        uid: video.id,
+        name: video.post_video_file,
+        status: "done",
+        url: `https://banpho.sosmartsolution.com/storage/${video.post_video_file}`,
+      })) || []
+    );
+
+    setPdfFileList(
+      record.pdfs?.map((pdf) => ({
+        uid: pdf.id,
+        name: pdf.post_pdf_file,
+        status: "done",
+        url: `https://banpho.sosmartsolution.com/storage/${pdf.post_pdf_file}`,
+      })) || []
+    );
   };
 
-  // Handle type delete
-  const handleTypeDelete = async (id) => {
-    try {
-      const response = await postTypesAPI.deletePostType(id);
-      if (response.success) {
-        message.success('ลบประเภทโพสต์สำเร็จ');
-        loadPostTypes(pagination.current, searchText);
-      }
-    } catch (error) {
-      message.error(error.message || 'ไม่สามารถลบประเภทโพสต์ได้');
-    }
+  const handleViewPostDetail = (record) => {
+    setSelectedRecord(record);
+    setViewModalVisible(true);
   };
 
-  // Handle detail form submit
-  const handleDetailSubmit = async (values) => {
-    try {
-      const detailData = {
-        ...values,
-        post_type_id: selectedType.id,
-        date: values.date ? values.date.format('YYYY-MM-DD') : null
-      };
-
-      if (editingDetail) {
-        const response = await postDetailsAPI.updatePostDetail(editingDetail.id, detailData);
-        if (response.success) {
-          message.success('อัปเดตโพสต์สำเร็จ');
-          loadPostDetails(selectedType.id, pagination.current, searchText);
-          closeDetailModal();
-        }
-      } else {
-        const response = await postDetailsAPI.createPostDetail(detailData);
-        if (response.success) {
-          message.success('เพิ่มโพสต์ใหม่สำเร็จ');
-          loadPostDetails(selectedType.id, pagination.current, searchText);
-          closeDetailModal();
-        }
-      }
-    } catch (error) {
-      message.error(error.message || 'เกิดข้อผิดพลาดในการจัดการโพสต์');
-    }
-  };
-
-  // Handle detail delete
-  const handleDetailDelete = async (id) => {
+  const handleDeletePostDetail = async (id) => {
     try {
       const response = await postDetailsAPI.deletePostDetail(id);
       if (response.success) {
-        message.success('ลบโพสต์สำเร็จ');
-        loadPostDetails(selectedType.id, pagination.current, searchText);
+        message.success("ลบโพสต์สำเร็จ");
+        fetchPostDetails();
       }
     } catch (error) {
-      message.error(error.message || 'ไม่สามารถลบโพสต์ได้');
+      message.error("เกิดข้อผิดพลาดในการลบโพสต์");
     }
   };
 
-  // Get breadcrumb items
-  const getBreadcrumbItems = () => {
-    const items = [
-      {
-        title: 'ประเภทโพสต์',
-        onClick: () => setCurrentLevel('types')
+  // File upload handlers
+  const handleFileUpload = async (file) => {
+    try {
+      setUploading(true);
+      const result = await uploadFileToServer(file);
+
+      console.log("Upload result:", result);
+
+      if (result.success) {
+        // API returns 'url' not 'file_url'
+        let fileUrl = result.url || result.file_url;
+        
+        // Clean up escaped slashes from JSON response
+        fileUrl = fileUrl.replace(/\\\//g, '/');
+        
+        // Extract path from URL - handle both /storage/ and /storage/uploads/ patterns
+        let filePath = fileUrl.replace(
+          "https://banpho.sosmartsolution.com/storage/",
+          ""
+        );
+
+        // If the path doesn't start with uploads/, it might be the filename only
+        if (!filePath.startsWith("uploads/") && result.filename) {
+          filePath = `uploads/${result.filename}`;
+        }
+
+        console.log("Original URL:", result.url);
+        console.log("Cleaned File URL:", fileUrl);
+        console.log("Extracted File Path:", filePath);
+
+        const uploadedFile = {
+          uid: file.uid,
+          name: file.name,
+          status: "done",
+          url: fileUrl,
+          path: filePath,
+        };
+
+        console.log("Uploaded file object:", uploadedFile);
+        return uploadedFile;
       }
-    ];
-
-    if (selectedType) {
-      items.push({
-        title: selectedType.type_name,
-        onClick: () => setCurrentLevel('details')
-      });
-    }
-
-    return items;
-  };
-
-  // Dynamic columns based on current level
-  const getColumns = () => {
-    if (currentLevel === 'types') {
-      return [
-        {
-          title: 'ID',
-          dataIndex: 'id',
-          key: 'id',
-          width: 80,
-        },
-        {
-          title: 'ชื่อประเภท',
-          dataIndex: 'type_name',
-          key: 'type_name',
-          render: (name) => <Text strong>{name}</Text>
-        },
-        {
-          title: 'วันที่สร้าง',
-          dataIndex: 'created_at',
-          key: 'created_at',
-          render: (date) => dayjs(date).format('DD/MM/YYYY HH:mm'),
-        },
-        {
-          title: 'การจัดการ',
-          key: 'actions',
-          width: 250,
-          render: (_, record) => (
-            <Space>
-              <Button
-                type="primary"
-                size="small"
-                icon={<EyeOutlined />}
-                onClick={() => navigateToDetails(record)}
-              >
-                ดูโพสต์
-              </Button>
-              <Button
-                type="default"
-                size="small"
-                icon={<EditOutlined />}
-                onClick={() => openTypeModal(record)}
-              >
-                แก้ไข
-              </Button>
-              <Popconfirm
-                title="ยืนยันการลบ"
-                description="คุณแน่ใจหรือไม่ที่จะลบประเภทนี้? โพสต์ทั้งหมดจะถูกลบด้วย"
-                onConfirm={() => handleTypeDelete(record.id)}
-                okText="ลบ"
-                cancelText="ยกเลิก"
-              >
-                <Button
-                  danger
-                  size="small"
-                  icon={<DeleteOutlined />}
-                >
-                  ลบ
-                </Button>
-              </Popconfirm>
-            </Space>
-          ),
-        },
-      ];
-    } else if (currentLevel === 'details') {
-      return [
-        {
-          title: 'ID',
-          dataIndex: 'id',
-          key: 'id',
-          width: 80,
-        },
-        {
-          title: 'หัวข้อ',
-          dataIndex: 'title_name',
-          key: 'title_name',
-          render: (title) => <Text strong>{title}</Text>
-        },
-        {
-          title: 'หัวข้อย่อย',
-          dataIndex: 'topic_name',
-          key: 'topic_name',
-          render: (topic) => topic || '-'
-        },
-        {
-          title: 'วันที่',
-          dataIndex: 'date',
-          key: 'date',
-          render: (date) => date ? dayjs(date).format('DD/MM/YYYY') : '-',
-        },
-        {
-          title: 'สื่อ',
-          key: 'media',
-          render: (_, record) => (
-            <Space>
-              {record.photos && record.photos.length > 0 && (
-                <Tag color="blue" icon={<PictureOutlined />}>
-                  รูป {record.photos.length}
-                </Tag>
-              )}
-              {record.videos && record.videos.length > 0 && (
-                <Tag color="red" icon={<VideoCameraOutlined />}>
-                  วิดีโอ {record.videos.length}
-                </Tag>
-              )}
-              {record.pdfs && record.pdfs.length > 0 && (
-                <Tag color="orange" icon={<FilePdfOutlined />}>
-                  PDF {record.pdfs.length}
-                </Tag>
-              )}
-            </Space>
-          )
-        },
-        {
-          title: 'วันที่สร้าง',
-          dataIndex: 'created_at',
-          key: 'created_at',
-          render: (date) => dayjs(date).format('DD/MM/YYYY HH:mm'),
-        },
-        {
-          title: 'การจัดการ',
-          key: 'actions',
-          width: 200,
-          render: (_, record) => (
-            <Space>
-              <Button
-                type="default"
-                size="small"
-                icon={<EditOutlined />}
-                onClick={() => openDetailModal(record)}
-              >
-                แก้ไข
-              </Button>
-              <Popconfirm
-                title="ยืนยันการลบ"
-                description="คุณแน่ใจหรือไม่ที่จะลบโพสต์นี้? ไฟล์สื่อทั้งหมดจะถูกลบด้วย"
-                onConfirm={() => handleDetailDelete(record.id)}
-                okText="ลบ"
-                cancelText="ยกเลิก"
-              >
-                <Button
-                  danger
-                  size="small"
-                  icon={<DeleteOutlined />}
-                >
-                  ลบ
-                </Button>
-              </Popconfirm>
-            </Space>
-          ),
-        },
-      ];
-    }
-    return [];
-  };
-
-  // Get current data based on level
-  const getCurrentData = () => {
-    switch (currentLevel) {
-      case 'types':
-        return postTypes;
-      case 'details':
-        return postDetails;
-      default:
-        return [];
+    } catch (error) {
+      console.error("File upload error:", error);
+      message.error(`เกิดข้อผิดพลาดในการอัปโหลดไฟล์: ${file.name}`);
+      return null;
+    } finally {
+      setUploading(false);
     }
   };
 
-  // Get current loading state
-  const getCurrentLoading = () => {
-    switch (currentLevel) {
-      case 'types':
-        return loading;
-      case 'details':
-        return detailsLoading;
-      default:
-        return false;
+  const handleSubmitPostDetail = async (values) => {
+    try {
+      setLoading(true);
+
+      // Prepare media data
+      const photos = photoFileList
+        .filter((file) => file.status === "done")
+        .map((file) => ({
+          post_photo_file: file.path || file.name,
+          post_photo_status: "active",
+        }));
+
+      const videos = videoFileList
+        .filter((file) => file.status === "done")
+        .map((file) => ({
+          post_video_file: file.path || file.name,
+        }));
+
+      const pdfs = pdfFileList
+        .filter((file) => file.status === "done")
+        .map((file) => ({
+          post_pdf_file: file.path || file.name,
+        }));
+
+      const postData = {
+        ...values,
+        date: values.date ? values.date.format("YYYY-MM-DD") : null,
+        photos,
+        videos,
+        pdfs,
+      };
+
+      // Debug logging
+      console.log("Submitting post data:", postData);
+      console.log("Photo file list:", photoFileList);
+      console.log("Video file list:", videoFileList);
+      console.log("PDF file list:", pdfFileList);
+
+      let response;
+      if (editingRecord) {
+        response = await postDetailsAPI.updatePostDetail(
+          editingRecord.id,
+          postData
+        );
+      } else {
+        response = await postDetailsAPI.createPostDetail(postData);
+      }
+
+      if (response.success) {
+        message.success(
+          editingRecord ? "แก้ไขโพสต์สำเร็จ" : "เพิ่มโพสต์สำเร็จ"
+        );
+        setDetailModalVisible(false);
+        fetchPostDetails();
+      }
+    } catch (error) {
+      console.error("Error submitting post detail:", error);
+      message.error("เกิดข้อผิดพลาดในการบันทึกข้อมูล");
+    } finally {
+      setLoading(false);
     }
   };
 
-  // If tables don't exist, show setup screen
-  if (!tablesExist && !tablesLoading) {
-    return (
-      <Card>
-        <Space direction="vertical" size="large" style={{ width: '100%', textAlign: 'center' }}>
-          <FileTextOutlined style={{ fontSize: '64px', color: '#1890ff' }} />
-          <Title level={3}>ระบบจัดการโพสต์</Title>
-          <Text type="secondary">
-            ยังไม่มีตารางข้อมูลโพสต์ในระบบ กรุณาสร้างตารางก่อนใช้งาน
-          </Text>
+  // Table columns for post types
+  const postTypeColumns = [
+    {
+      title: "ID",
+      dataIndex: "id",
+      key: "id",
+      width: 80,
+    },
+    {
+      title: "ชื่อประเภท",
+      dataIndex: "type_name",
+      key: "type_name",
+    },
+    {
+      title: "วันที่สร้าง",
+      dataIndex: "created_at",
+      key: "created_at",
+      render: (date) => dayjs(date).format("DD/MM/YYYY HH:mm"),
+    },
+    {
+      title: "การจัดการ",
+      key: "actions",
+      width: 150,
+      render: (_, record) => (
+        <Space>
           <Button
             type="primary"
-            size="large"
-            loading={tablesLoading}
-            onClick={createTables}
+            size="small"
+            icon={<EditOutlined />}
+            onClick={() => handleEditPostType(record)}
           >
-            สร้างตารางโพสต์
+            แก้ไข
           </Button>
+          <Popconfirm
+            title="คุณแน่ใจหรือไม่ที่จะลบประเภทโพสต์นี้?"
+            onConfirm={() => handleDeletePostType(record.id)}
+            okText="ใช่"
+            cancelText="ไม่"
+          >
+            <Button danger size="small" icon={<DeleteOutlined />}>
+              ลบ
+            </Button>
+          </Popconfirm>
         </Space>
-      </Card>
-    );
-  }
+      ),
+    },
+  ];
 
-  return (
-    <Card>
-      <Space direction="vertical" size="large" style={{ width: '100%' }}>
-        <div>
-          <Title level={3}>
-            <FileTextOutlined style={{ marginRight: 8 }} />
-            จัดการโพสต์และเนื้อหา
-          </Title>
-          <Text type="secondary">จัดการประเภทโพสต์ เนื้อหา และไฟล์สื่อต่างๆ</Text>
-        </div>
+  // Table columns for post details
+  const postDetailColumns = [
+    {
+      title: "ID",
+      dataIndex: "id",
+      key: "id",
+      width: 80,
+    },
+    {
+      title: "ประเภท",
+      dataIndex: "type_name",
+      key: "type_name",
+      render: (text) => <Tag color="blue">{text}</Tag>,
+    },
+    {
+      title: "หัวข้อ",
+      dataIndex: "title_name",
+      key: "title_name",
+      ellipsis: true,
+    },
+    {
+      title: "วันที่",
+      dataIndex: "date",
+      key: "date",
+      render: (date) => (date ? dayjs(date).format("DD/MM/YYYY") : "-"),
+    },
+    {
+      title: "สื่อ",
+      key: "media",
+      render: (_, record) => (
+        <Space>
+          {record.photos?.length > 0 && (
+            <Tag icon={<FileImageOutlined />} color="green">
+              รูป {record.photos.length}
+            </Tag>
+          )}
+          {record.videos?.length > 0 && (
+            <Tag icon={<VideoCameraOutlined />} color="red">
+              วิดีโอ {record.videos.length}
+            </Tag>
+          )}
+          {record.pdfs?.length > 0 && (
+            <Tag icon={<FilePdfOutlined />} color="orange">
+              PDF {record.pdfs.length}
+            </Tag>
+          )}
+        </Space>
+      ),
+    },
+    {
+      title: "การจัดการ",
+      key: "actions",
+      width: 200,
+      render: (_, record) => (
+        <Space>
+          <Button
+            size="small"
+            icon={<EyeOutlined />}
+            onClick={() => handleViewPostDetail(record)}
+          >
+            ดู
+          </Button>
+          <Button
+            type="primary"
+            size="small"
+            icon={<EditOutlined />}
+            onClick={() => handleEditPostDetail(record)}
+          >
+            แก้ไข
+          </Button>
+          <Popconfirm
+            title="คุณแน่ใจหรือไม่ที่จะลบโพสต์นี้?"
+            onConfirm={() => handleDeletePostDetail(record.id)}
+            okText="ใช่"
+            cancelText="ไม่"
+          >
+            <Button danger size="small" icon={<DeleteOutlined />}>
+              ลบ
+            </Button>
+          </Popconfirm>
+        </Space>
+      ),
+    },
+  ];
 
-        {/* Breadcrumb Navigation */}
-        {currentLevel !== 'types' && (
-          <Row gutter={16} align="middle">
-            <Col>
-              <Button
-                icon={<ArrowLeftOutlined />}
-                onClick={navigateBack}
-              >
-                ย้อนกลับ
-              </Button>
-            </Col>
-            <Col flex="auto">
-              <Breadcrumb
-                items={getBreadcrumbItems()}
-                style={{ fontSize: '14px' }}
+  const tabItems = [
+    {
+      key: "types",
+      label: "ประเภทโพสต์",
+      children: (
+        <Card>
+          <div className="mb-4 flex justify-between items-center">
+            <Space>
+              <Input.Search
+                placeholder="ค้นหาประเภทโพสต์..."
+                allowClear
+                onSearch={setSearchText}
+                style={{ width: 300 }}
               />
-            </Col>
-          </Row>
-        )}
-
-        <Row gutter={16} align="middle">
-          <Col flex="auto">
-            <Search
-              placeholder={
-                currentLevel === 'types' ? 'ค้นหาชื่อประเภท' : 'ค้นหาหัวข้อโพสต์'
-              }
-              allowClear
-              enterButton={<SearchOutlined />}
-              size="middle"
-              onSearch={handleSearch}
-              style={{ width: 300 }}
-            />
-          </Col>
-          
-          <Col>
+            </Space>
             <Button
               type="primary"
               icon={<PlusOutlined />}
-              onClick={() => {
-                if (currentLevel === 'types') openTypeModal();
-                else if (currentLevel === 'details') openDetailModal();
-              }}
+              onClick={handleCreatePostType}
             >
-              {currentLevel === 'types' ? 'เพิ่มประเภทใหม่' : 'เพิ่มโพสต์ใหม่'}
+              เพิ่มประเภทโพสต์
             </Button>
-          </Col>
-        </Row>
+          </div>
 
-        <Table
-          columns={getColumns()}
-          dataSource={getCurrentData()}
-          rowKey="id"
-          loading={getCurrentLoading()}
-          pagination={{
-            ...pagination,
-            showSizeChanger: true,
-            showQuickJumper: true,
-            showTotal: (total, range) => 
-              `${range[0]}-${range[1]} จาก ${total} รายการ`,
-          }}
-          onChange={handleTableChange}
-        />
-
-        {/* Post Type Modal */}
-        <Modal
-          title={editingType ? 'แก้ไขประเภทโพสต์' : 'เพิ่มประเภทโพสต์ใหม่'}
-          open={typeModalVisible}
-          onCancel={closeTypeModal}
-          footer={null}
-          width={500}
-        >
-          <Form
-            form={typeForm}
-            layout="vertical"
-            onFinish={handleTypeSubmit}
-          >
-            <Form.Item
-              name="type_name"
-              label="ชื่อประเภท"
-              rules={[{ required: true, message: 'กรุณากรอกชื่อประเภท' }]}
-            >
-              <Input placeholder="กรอกชื่อประเภทโพสต์" />
-            </Form.Item>
-
-            <div style={{ textAlign: 'right', marginTop: 24 }}>
-              <Space>
-                <Button onClick={closeTypeModal}>
-                  ยกเลิก
-                </Button>
-                <Button type="primary" htmlType="submit">
-                  {editingType ? 'อัปเดต' : 'เพิ่ม'}
-                </Button>
-              </Space>
-            </div>
-          </Form>
-        </Modal>
-
-        {/* Post Detail Modal */}
-        <Modal
-          title={editingDetail ? 'แก้ไขโพสต์' : 'เพิ่มโพสต์ใหม่'}
-          open={detailModalVisible}
-          onCancel={closeDetailModal}
-          footer={null}
-          width={800}
-        >
-          <Form
-            form={detailForm}
-            layout="vertical"
-            onFinish={handleDetailSubmit}
-          >
-            <Row gutter={16}>
-              <Col span={12}>
-                <Form.Item
-                  name="title_name"
-                  label="หัวข้อหลัก"
-                  rules={[{ required: true, message: 'กรุณากรอกหัวข้อหลัก' }]}
-                >
-                  <Input placeholder="กรอกหัวข้อหลัก" />
-                </Form.Item>
-              </Col>
-              <Col span={12}>
-                <Form.Item
-                  name="topic_name"
-                  label="หัวข้อย่อย"
-                >
-                  <Input placeholder="กรอกหัวข้อย่อย (ไม่บังคับ)" />
-                </Form.Item>
-              </Col>
-            </Row>
-
-            <Form.Item
-              name="date"
-              label="วันที่"
-            >
-              <DatePicker 
-                style={{ width: '100%' }}
-                placeholder="เลือกวันที่"
-                format="DD/MM/YYYY"
+          <Table
+            columns={postTypeColumns}
+            dataSource={postTypes}
+            rowKey="id"
+            loading={loading}
+            pagination={{
+              current: pagination.current,
+              pageSize: pagination.pageSize,
+              total: pagination.total,
+              onChange: (page, pageSize) => {
+                setPagination((prev) => ({
+                  ...prev,
+                  current: page,
+                  pageSize,
+                }));
+              },
+              showSizeChanger: true,
+              showQuickJumper: true,
+              showTotal: (total, range) =>
+                `${range[0]}-${range[1]} จาก ${total} รายการ`,
+            }}
+          />
+        </Card>
+      ),
+    },
+    {
+      key: "details",
+      label: "โพสต์และเนื้อหา",
+      children: (
+        <Card>
+          <div className="mb-4 flex justify-between items-center">
+            <Space>
+              <Input.Search
+                placeholder="ค้นหาโพสต์..."
+                allowClear
+                onSearch={setSearchText}
+                style={{ width: 300 }}
               />
-            </Form.Item>
-
-            <Form.Item
-              name="details"
-              label="รายละเอียด"
+              <Select
+                placeholder="เลือกประเภทโพสต์"
+                allowClear
+                style={{ width: 200 }}
+                onChange={setSelectedPostType}
+              >
+                {postTypes.map((type) => (
+                  <Select.Option key={type.id} value={type.id}>
+                    {type.type_name}
+                  </Select.Option>
+                ))}
+              </Select>
+            </Space>
+            <Button
+              type="primary"
+              icon={<PlusOutlined />}
+              onClick={handleCreatePostDetail}
             >
-              <TextArea 
-                rows={6} 
-                placeholder="กรอกรายละเอียดเนื้อหา (ไม่บังคับ)" 
-              />
-            </Form.Item>
+              เพิ่มโพสต์
+            </Button>
+          </div>
 
-            <div style={{ textAlign: 'right', marginTop: 24 }}>
-              <Space>
-                <Button onClick={closeDetailModal}>
-                  ยกเลิก
-                </Button>
-                <Button type="primary" htmlType="submit">
-                  {editingDetail ? 'อัปเดต' : 'เพิ่ม'}
-                </Button>
-              </Space>
-            </div>
-          </Form>
-        </Modal>
-      </Space>
-    </Card>
+          <Table
+            columns={postDetailColumns}
+            dataSource={postDetails}
+            rowKey="id"
+            loading={loading}
+            pagination={{
+              current: detailPagination.current,
+              pageSize: detailPagination.pageSize,
+              total: detailPagination.total,
+              onChange: (page, pageSize) => {
+                setDetailPagination((prev) => ({
+                  ...prev,
+                  current: page,
+                  pageSize,
+                }));
+              },
+              showSizeChanger: true,
+              showQuickJumper: true,
+              showTotal: (total, range) =>
+                `${range[0]}-${range[1]} จาก ${total} รายการ`,
+            }}
+          />
+        </Card>
+      ),
+    },
+  ];
+
+  return (
+    <div className="p-6">
+      <Title level={2}>จัดการโพสต์และเนื้อหา</Title>
+      <Tabs activeKey={activeTab} onChange={setActiveTab} items={tabItems} />
+      {/* Post Type Modal */}
+      <Modal
+        title={editingRecord ? "แก้ไขประเภทโพสต์" : "เพิ่มประเภทโพสต์"}
+        open={modalVisible}
+        onCancel={() => setModalVisible(false)}
+        footer={null}
+        width={500}
+      >
+        <Form form={form} layout="vertical" onFinish={handleSubmitPostType}>
+          <Form.Item
+            name="type_name"
+            label="ชื่อประเภทโพสต์"
+            rules={[{ required: true, message: "กรุณากรอกชื่อประเภทโพสต์" }]}
+          >
+            <Input placeholder="กรอกชื่อประเภทโพสต์" />
+          </Form.Item>
+
+          <Form.Item className="mb-0 text-right">
+            <Space>
+              <Button onClick={() => setModalVisible(false)}>ยกเลิก</Button>
+              <Button type="primary" htmlType="submit" loading={loading}>
+                {editingRecord ? "บันทึกการแก้ไข" : "เพิ่มประเภทโพสต์"}
+              </Button>
+            </Space>
+          </Form.Item>
+        </Form>
+      </Modal>{" "}
+      {/* Post Detail Modal */}
+      <Modal
+        title={editingRecord ? "แก้ไขโพสต์" : "เพิ่มโพสต์"}
+        open={detailModalVisible}
+        onCancel={() => setDetailModalVisible(false)}
+        footer={null}
+        width={800}
+      >
+        <Form
+          form={detailForm}
+          layout="vertical"
+          onFinish={handleSubmitPostDetail}
+        >
+          <Row gutter={16}>
+            <Col span={12}>
+              <Form.Item
+                name="post_type_id"
+                label="ประเภทโพสต์"
+                rules={[{ required: true, message: "กรุณาเลือกประเภทโพสต์" }]}
+              >
+                <Select placeholder="เลือกประเภทโพสต์">
+                  {postTypes.map((type) => (
+                    <Select.Option key={type.id} value={type.id}>
+                      {type.type_name}
+                    </Select.Option>
+                  ))}
+                </Select>
+              </Form.Item>
+            </Col>
+            <Col span={12}>
+              <Form.Item name="date" label="วันที่">
+                <DatePicker style={{ width: "100%" }} />
+              </Form.Item>
+            </Col>
+          </Row>
+
+          <Form.Item
+            name="title_name"
+            label="หัวข้อ"
+            rules={[{ required: true, message: "กรุณากรอกหัวข้อ" }]}
+          >
+            <Input placeholder="กรอกหัวข้อโพสต์" />
+          </Form.Item>
+
+          <Form.Item name="topic_name" label="หัวข้อย่อย">
+            <Input placeholder="กรอกหัวข้อย่อย (ถ้ามี)" />
+          </Form.Item>
+
+          <Form.Item name="details" label="รายละเอียด">
+            <TextArea rows={4} placeholder="กรอกรายละเอียดโพสต์" />
+          </Form.Item>
+
+          <Divider>ไฟล์สื่อ</Divider>
+
+          <Row gutter={16}>
+            <Col span={8}>
+              <Form.Item label="รูปภาพ">
+                <Upload
+                  listType="picture-card"
+                  fileList={photoFileList}
+                  onChange={({ fileList }) => setPhotoFileList(fileList)}
+                  beforeUpload={async (file) => {
+                    const uploadedFile = await handleFileUpload(file);
+                    if (uploadedFile) {
+                      setPhotoFileList((prev) => {
+                        // Remove the uploading file and add the uploaded file
+                        const filteredList = prev.filter(
+                          (f) => f.uid !== file.uid
+                        );
+                        return [...filteredList, uploadedFile];
+                      });
+                    }
+                    return false;
+                  }}
+                  accept="image/*"
+                  multiple
+                >
+                  {photoFileList.length >= 8 ? null : (
+                    <div>
+                      <PlusOutlined />
+                      <div style={{ marginTop: 8 }}>อัปโหลด</div>
+                    </div>
+                  )}
+                </Upload>
+              </Form.Item>
+            </Col>
+
+            <Col span={8}>
+              <Form.Item label="วิดีโอ">
+                <Upload
+                  fileList={videoFileList}
+                  onChange={({ fileList }) => setVideoFileList(fileList)}
+                  beforeUpload={async (file) => {
+                    const uploadedFile = await handleFileUpload(file);
+                    if (uploadedFile) {
+                      setVideoFileList((prev) => {
+                        // Remove the uploading file and add the uploaded file
+                        const filteredList = prev.filter(
+                          (f) => f.uid !== file.uid
+                        );
+                        return [...filteredList, uploadedFile];
+                      });
+                    }
+                    return false;
+                  }}
+                  accept="video/*"
+                  multiple
+                >
+                  <Button icon={<UploadOutlined />}>อัปโหลดวิดีโอ</Button>
+                </Upload>
+              </Form.Item>
+            </Col>
+
+            <Col span={8}>
+              <Form.Item label="ไฟล์ PDF">
+                <Upload
+                  fileList={pdfFileList}
+                  onChange={({ fileList }) => setPdfFileList(fileList)}
+                  beforeUpload={async (file) => {
+                    const uploadedFile = await handleFileUpload(file);
+                    if (uploadedFile) {
+                      setPdfFileList((prev) => {
+                        // Remove the uploading file and add the uploaded file
+                        const filteredList = prev.filter(
+                          (f) => f.uid !== file.uid
+                        );
+                        return [...filteredList, uploadedFile];
+                      });
+                    }
+                    return false;
+                  }}
+                  accept=".pdf"
+                  multiple
+                >
+                  <Button icon={<UploadOutlined />}>อัปโหลด PDF</Button>
+                </Upload>
+              </Form.Item>
+            </Col>
+          </Row>
+
+          <Form.Item className="mb-0 text-right">
+            <Space>
+              <Button onClick={() => setDetailModalVisible(false)}>
+                ยกเลิก
+              </Button>
+              <Button
+                type="primary"
+                htmlType="submit"
+                loading={loading || uploading}
+              >
+                {editingRecord ? "บันทึกการแก้ไข" : "เพิ่มโพสต์"}
+              </Button>
+            </Space>
+          </Form.Item>
+        </Form>
+      </Modal>
+      {/* View Post Detail Modal */}
+      <Modal
+        title="รายละเอียดโพสต์"
+        open={viewModalVisible}
+        onCancel={() => setViewModalVisible(false)}
+        footer={[
+          <Button key="close" onClick={() => setViewModalVisible(false)}>
+            ปิด
+          </Button>,
+        ]}
+        width={900}
+      >
+        {selectedRecord && (
+          <div>
+            <Descriptions bordered column={2}>
+              <Descriptions.Item label="ประเภท" span={1}>
+                <Tag color="blue">{selectedRecord.type_name}</Tag>
+              </Descriptions.Item>
+              <Descriptions.Item label="วันที่" span={1}>
+                {selectedRecord.date
+                  ? dayjs(selectedRecord.date).format("DD/MM/YYYY")
+                  : "-"}
+              </Descriptions.Item>
+              <Descriptions.Item label="หัวข้อ" span={2}>
+                {selectedRecord.title_name}
+              </Descriptions.Item>
+              {selectedRecord.topic_name && (
+                <Descriptions.Item label="หัวข้อย่อย" span={2}>
+                  {selectedRecord.topic_name}
+                </Descriptions.Item>
+              )}
+              {selectedRecord.details && (
+                <Descriptions.Item label="รายละเอียด" span={2}>
+                  <div style={{ whiteSpace: "pre-wrap" }}>
+                    {selectedRecord.details}
+                  </div>
+                </Descriptions.Item>
+              )}
+            </Descriptions>
+
+            {/* Media Display */}
+            {(selectedRecord.photos?.length > 0 ||
+              selectedRecord.videos?.length > 0 ||
+              selectedRecord.pdfs?.length > 0) && (
+              <>
+                <Divider>ไฟล์สื่อ</Divider>
+
+                {selectedRecord.photos?.length > 0 && (
+                  <div className="mb-4">
+                    <Title level={5}>
+                      รูปภาพ ({selectedRecord.photos.length})
+                    </Title>
+                    <div className="grid grid-cols-4 gap-2">
+                      {selectedRecord.photos.map((photo, index) => (
+                        <Image
+                          key={photo.id}
+                          width={150}
+                          height={150}
+                          src={`https://banpho.sosmartsolution.com/storage/${photo.post_photo_file}`}
+                          alt={`Photo ${index + 1}`}
+                          style={{ objectFit: "cover" }}
+                        />
+                      ))}
+                    </div>
+                  </div>
+                )}
+
+                {selectedRecord.videos?.length > 0 && (
+                  <div className="mb-4">
+                    <Title level={5}>
+                      วิดีโอ ({selectedRecord.videos.length})
+                    </Title>
+                    <div className="space-y-2">
+                      {selectedRecord.videos.map((video, index) => (
+                        <div
+                          key={video.id}
+                          className="flex items-center gap-2 p-2 bg-gray-50 rounded"
+                        >
+                          <VideoCameraOutlined className="text-red-500" />
+                          <a
+                            href={`https://banpho.sosmartsolution.com/storage/${video.post_video_file}`}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="text-blue-600 hover:underline"
+                          >
+                            วิดีโอ {index + 1}
+                          </a>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                )}
+
+                {selectedRecord.pdfs?.length > 0 && (
+                  <div className="mb-4">
+                    <Title level={5}>
+                      ไฟล์ PDF ({selectedRecord.pdfs.length})
+                    </Title>
+                    <div className="space-y-2">
+                      {selectedRecord.pdfs.map((pdf, index) => (
+                        <div
+                          key={pdf.id}
+                          className="flex items-center gap-2 p-2 bg-gray-50 rounded"
+                        >
+                          <FilePdfOutlined className="text-orange-500" />
+                          <a
+                            href={`https://banpho.sosmartsolution.com/storage/${pdf.post_pdf_file}`}
+                            target="_blank"
+                            rel="noopener noreferrer"
+                            className="text-blue-600 hover:underline"
+                          >
+                            PDF {index + 1}
+                          </a>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                )}
+              </>
+            )}
+          </div>
+        )}
+      </Modal>
+    </div>
   );
 }

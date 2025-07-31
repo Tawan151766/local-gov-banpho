@@ -20,6 +20,7 @@ import {
   List,
   Drawer,
 } from "antd";
+import FileUpload from './FileUpload';
 import {
   PlusOutlined,
   EditOutlined,
@@ -624,10 +625,13 @@ export default function ProcurementPlanManagement() {
           <Form form={fileForm} layout="vertical" onFinish={handleFileSubmit}>
             <Form.Item
               name="files_path"
-              label="Path ไฟล์"
-              rules={[{ required: true, message: "กรุณากรอก Path ไฟล์" }]}
+              label="ไฟล์เอกสาร"
+              rules={[{ required: true, message: "กรุณาอัปโหลดไฟล์" }]}
             >
-              <Input placeholder="/assets/documents/procurement/plan.pdf" />
+              <FileUpload 
+                accept=".pdf,.doc,.docx,.xls,.xlsx"
+                placeholder="เลือกไฟล์เอกสารแผนจัดซื้อจัดจ้าง"
+              />
             </Form.Item>
 
             <Form.Item

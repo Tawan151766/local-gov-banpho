@@ -23,6 +23,7 @@ import {
   Upload,
   message as antMessage,
 } from "antd";
+import FileUpload from './FileUpload';
 import {
   PlusOutlined,
   EditOutlined,
@@ -1136,10 +1137,13 @@ export default function PerformanceResultsManagement() {
           <Form form={fileForm} layout="vertical" onFinish={handleFileSubmit}>
             <Form.Item
               name="files_path"
-              label="ชื่อไฟล์หรือ URL"
-              rules={[{ required: true, message: "กรุณากรอกชื่อไฟล์หรือ URL" }]}
+              label="ไฟล์เอกสาร"
+              rules={[{ required: true, message: "กรุณาอัปโหลดไฟล์" }]}
             >
-              <Input placeholder="กรอกชื่อไฟล์หรือ URL" />
+              <FileUpload 
+                accept=".pdf,.doc,.docx,.xls,.xlsx"
+                placeholder="เลือกไฟล์เอกสารผลการดำเนินงาน"
+              />
             </Form.Item>
 
             <Form.Item
