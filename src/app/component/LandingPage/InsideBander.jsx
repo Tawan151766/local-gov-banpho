@@ -1,12 +1,44 @@
 import React from "react";
 
+const services = [
+  {
+    title: "ศูนย์ข้อมูลข่าวสารอิเล็กทรอนิกส์ ของราชการ (OIC)",
+    image: "image/Logo1_OIC.png",
+    alt: "OIC Logo",
+  },
+  {
+    title: "สำนักงานคณะกรรมการป้องกันและปราบปราม การทุจริตแห่งชาติ",
+    image: "image/Logo2_ppp.jpg",
+    alt: "PPP Logo",
+  },
+  {
+    title: "ศูนย์ดำรงธรรม",
+    image: "image/Logo3_tam.png",
+    alt: "TAM Logo",
+  },
+  {
+    title: "การประเมินประสิทธิภาพของ อปท. (LPA)",
+    image: "image/Logo4_LPA.jpg",
+    alt: "LPA Logo",
+  },
+  {
+    title: "งานบริการของศูนย์บริการร่วม One Stop Service",
+    image: "image/Logo5_onestop.png",
+    alt: "One Stop Logo",
+  },
+  {
+    title: "สาระดีๆจากศาลปกครอง",
+    image: "image/Logo6_law.jpg",
+    alt: "Law Logo",
+  },
+];
+
 export default function InsideBander() {
   return (
     <div className="w-full min-h-screen  p-4 md:p-6 lg:p-8">
       <div className="w-full mx-auto  overflow-hidden">
         {/* Main Grid Layout */}
-         <div className="flex flex-col lg:flex-row gap-6 p-4 md:p-6 lg:p-8">
-          
+        <div className="flex flex-col lg:flex-row gap-6 p-4 md:p-6 lg:p-8">
           {/* Left Column: Service Cards */}
           <div className="w-96">
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-1 gap-4">
@@ -21,7 +53,7 @@ export default function InsideBander() {
                   เอกสารเผยแพร่
                 </div>
               </div>
-              
+
               {/* Card 2 */}
               <div className="bg-white rounded-2xl shadow-md hover:shadow-lg transition-shadow duration-300 flex items-center gap-4 p-4">
                 <img
@@ -33,7 +65,7 @@ export default function InsideBander() {
                   ระบบสารสนเทศ
                 </div>
               </div>
-              
+
               {/* Card 3 */}
               <div className="bg-white rounded-2xl shadow-md hover:shadow-lg transition-shadow duration-300 flex items-center gap-4 p-4">
                 <img
@@ -45,7 +77,7 @@ export default function InsideBander() {
                   ประมวลจริยธรรม
                 </div>
               </div>
-              
+
               {/* Card 4 */}
               <div className="bg-white rounded-2xl shadow-md hover:shadow-lg transition-shadow duration-300 flex items-center gap-4 p-4">
                 <img
@@ -57,7 +89,7 @@ export default function InsideBander() {
                   คำถามที่พบบ่อย
                 </div>
               </div>
-              
+
               {/* Card 5 */}
               <div className="bg-white rounded-2xl shadow-md hover:shadow-lg transition-shadow duration-300 flex items-center gap-4 p-4">
                 <img
@@ -69,7 +101,7 @@ export default function InsideBander() {
                   เบี้ยยังชีพผู้สูงอายุ
                 </div>
               </div>
-              
+
               {/* Card 6 */}
               <div className="bg-white rounded-2xl shadow-md hover:shadow-lg transition-shadow duration-300 flex items-center gap-4 p-4">
                 <img
@@ -87,111 +119,152 @@ export default function InsideBander() {
           {/* Right Column: Combined Book Section and Opinion Poll */}
           <div className="w-full space-y-6">
             {/* Book Section */}
-            <div className="bg-white rounded-2xl shadow-md p-4 md:p-6">
-              <div className="text-blue-900 font-semibold text-xl md:text-2xl text-center mb-4">
-                หนังสือราชการ
+            <div className="bg-none rounded-2xl p-4 md:p-6">
+              <div className="relative text-center mb-12">
+                <div className="text-[32px] font-semibold text-[#01385F] inline-block">
+                  หนังสือราชการ
+                </div>
+                <img
+                  src="image/leaf_blue.png"
+                  alt="Leaf"
+                  className="absolute w-[240px] h-auto left-[43%] -translate-x-1/2 top-[-61px] pointer-events-none"
+                />
               </div>
-              
-              <div className="bg-white rounded-xl border-2 border-blue-400 shadow p-4">
-                <div className="grid grid-cols-1 gap-6">
-                  {/* Local Government Section */}
-                  <div>
-                    <div className="font-semibold text-base md:text-lg mb-3 text-gray-800">
-                      จากราชการจากท้องถิ่นจังหวัด
-                    </div>
-                    <div className="space-y-2">
-                      {["ข่าวประชาสัมพันธ์ สถ.", "หนังสือสั่งการจังหวัด", "ติดต่อหน่วยงาน สถ.จังหวัด"].map((doc, idx) => (
-                        <div key={idx} className="text-gray-700 text-sm md:text-base py-1">
-                          {doc}
-                        </div>
-                      ))}
-                      <div className="text-white bg-blue-400 rounded px-3 py-2 text-sm md:text-base">
-                        สถานที่สำคัญ/แหล่งท่องเที่ยว
-                      </div>
-                    </div>
-                  </div>
-                  
-                  {/* Central Government Section */}
-                  <div>
-                    <div className="font-semibold text-base md:text-lg mb-3 text-gray-800">
+
+              <div className="bg-white rounded-xl border-3 border-[#01BDCC] shadow p-3 md:p-4">
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-0">
+                  {/* Left Side */}
+                  <div className="pr-3 md:pr-4 md:border-r md:border-gray-300">
+                    <div className="font-semibold text-base md:text-lg text-gray-800">
                       จากกรมส่งเสริมการปกครองท้องถิ่น
                     </div>
-                    <div className="space-y-2">
-                      {["หนังสือราชการของ สถ.", "บทความที่น่าสนใจ", "พรบ. และประกาศเกี่ยวกับเทคโนโลยีสารสนเทศ"].map((doc, idx) => (
-                        <div key={idx} className="text-gray-700 text-sm md:text-base py-1">
+                    <div className="w-67 h-[3px] bg-[#01BDCC] my-2"></div>
+
+                    <div className="space-y-2 cursor-pointer">
+                      {[
+                        "หนังสือราชการของ สถ.",
+                        "กฎหมาย ระเบียบ และมติ ก.กลาง",
+                        "บทความที่น่าสนใจ",
+                        "พรบ. และประกาศเกี่ยวกับเทคโนโลยีสารสนเทศ",
+                      ].map((doc, idx) => (
+                        <div
+                          key={idx}
+                          className={`text-gray-700 text-sm md:text-base py-[2px] transition-all duration-200
+                            hover:bg-[#01BDCC] 
+                            hover:rounded-[18.5px] hover:text-white px-3 flex items-center`}
+                        >
                           {doc}
                         </div>
                       ))}
-                      <div className="text-white bg-blue-400 rounded px-3 py-2 text-sm md:text-base">
-                        กฎหมาย ระเบียบ และมติ ก.กลาง
-                      </div>
                     </div>
                   </div>
-                </div>
-                
-                <div className="flex justify-center mt-6">
-                  <img
-                    src="unnamed-1-10.png"
-                    alt="book"
-                    className="w-32 h-24 md:w-40 md:h-28 object-cover rounded-xl"
-                  />
+
+                  {/* Right Side */}
+                  <div className="pl-3 md:pl-4">
+                    <div className="font-semibold text-base md:text-lg text-gray-800">
+                      จากราชการจากท้องถิ่นจังหวัด
+                    </div>
+                    <div className="w-56 h-[3px] bg-[#01BDCC] my-2"></div>
+
+                    <div className="space-y-2 cursor-pointer">
+                      {[
+                        "หนังสือราชการของ สถ.",
+                        "บทความที่น่าสนใจ",
+                        "พรบ. และประกาศเกี่ยวกับเทคโนโลยีสารสนเทศ",
+                        "กฎหมาย ระเบียบ และมติ ก.กลาง",
+                      ].map((doc, idx) => (
+                        <div
+                          key={idx}
+                          className={`text-gray-700 text-sm md:text-base py-[2px] transition-all duration-200
+                            hover:bg-[#01BDCC] 
+                            hover:rounded-[18.5px] hover:text-white px-3 flex items-center`}
+                        >
+                          {doc}
+                        </div>
+                      ))}
+                    </div>
+                  </div>
                 </div>
               </div>
             </div>
 
             {/* Opinion Poll Section */}
-            <div className="bg-white rounded-2xl shadow-md p-4 md:p-6">
-              <div className="text-green-800 font-semibold text-xl md:text-2xl mb-4">
-                แสดงความคิดเห็น
+            <div className="bg-none  p-4 md:p-6">
+              {/* ส่วนหัวข้อ จัดกลาง */}
+              <div className="text-center">
+                <div className="text-[#394D1C] font-semibold text-[32px] mb-2">
+                  แสดงความคิดเห็น
+                </div>
+                <div className="text-[#394D1C] text-[20px] mb-6">
+                  อยากให้อบต.บ้านโพธิ์เร่งแก้ปัญหาเรื่องใด
+                </div>
               </div>
-              
-              <div className="text-gray-800 text-base md:text-lg mb-6">
-                อยากให้อบต.บ้านโพธิ์เร่งแก้ปัญหาเรื่องใด
-              </div>
-              
-              <div className="space-y-3 mb-6">
-                {[
-                  "จัดการเรื่องการป้องกันน้ำท่วม",
-                  "จัดมาตรการป้องกันน้ำท่วม",
-                  "แก้ไขปัญหาสิ่งแวดล้อม",
-                  "แก้ไขปัญหาไฟฟ้าดับบ่อย",
-                  "แก้ไขปัญหาลักขโมย",
-                  "แก้ไขปัญหายาเสพติด",
-                ].map((choice, idx) => (
-                  <div key={idx} className="flex items-center gap-3 p-2 hover:bg-gray-50 rounded-lg transition-colors">
-                    <div className="w-4 h-4 md:w-5 md:h-5 rounded-full bg-green-300 flex-shrink-0"></div>
-                    <span className="text-sm md:text-base text-gray-700">{choice}</span>
+
+              <div className="w-full bg-white rounded-xl border-3 border-[#01BDCC] shadow pt-5 ">
+                {/* Grid 2 คอลัมน์ */}
+                <div className="flex justify-center">
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-x-60 gap-y-3 mb-6">
+                    {[
+                      "จัดการเรื่องการป้องกันน้ำท่วม",
+                      "จัดมาตรการป้องกันน้ำท่วม",
+                      "แก้ไขปัญหาสิ่งแวดล้อม",
+                      "แก้ไขปัญหาไฟฟ้าดับบ่อย",
+                      "แก้ไขปัญหาลักขโมย",
+                      "แก้ไขปัญหายาเสพติด",
+                    ].map((choice, idx) => (
+                      <label
+                        key={idx}
+                        className="flex items-center gap-3 p-2 hover:bg-gray-50 rounded-lg transition-colors cursor-pointer"
+                      >
+                        {/* Checkbox input ซ่อน */}
+                        <input
+                          type="checkbox"
+                          className="hidden peer"
+                          name="opinion"
+                          value={choice}
+                        />
+
+                        {/* วงกลมแสดงสถานะ checkbox */}
+                        <div className="w-5 h-5 rounded-full border-2 border-green-400 peer-checked:bg-green-500 transition-colors flex-shrink-0"></div>
+
+                        {/* ข้อความตัวเลือก */}
+                        <span className="text-sm md:text-base text-gray-700">
+                          {choice}
+                        </span>
+                      </label>
+                    ))}
                   </div>
-                ))}
+                </div>
+
+                {/* ปุ่มอยู่กึ่งกลางแนวนอน */}
+                <div className="flex justify-center mb-3">
+                  <button className=" border-[2px] border-[#FFA82D] hover:bg-[#FFA82D] hover:text-white text-[#394D1C] text-[24px] rounded-3xl  px-6 pb-2 pt-1 font-semibold shadow-md transition-colors duration-300">
+                    กดโหวต
+                  </button>
+                </div>
               </div>
-              
-              <button className="w-full md:w-auto bg-orange-400 hover:bg-orange-500 text-white rounded-xl py-3 px-6 font-semibold shadow-md transition-colors duration-300">
-                กดโหวต
-              </button>
             </div>
           </div>
         </div>
 
         {/* Bottom Section: KM Icons */}
-        <div className="p-4 md:p-6 lg:p-8 pt-0">
-          <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-5 gap-4">
-            {[
-              "ศูนย์ข้อมูลข่าวสารอิเล็กทรอนิกส์\nของราชการ (OIC)",
-              "สาระดีๆจากศาลปกครอง",
-              "สำนักงานคณะกรรมการป้องกัน\nและปราบปรามการทุจริตแห่งชาติ",
-              "งานบริการของศูนย์บริการ\nร่วม One Stop Service",
-              "ศูนย์ดำรงธรรม",
-            ].map((title, idx) => (
-              <div
-                key={idx}
-                className="bg-gradient-to-br from-yellow-400 to-yellow-300 hover:from-yellow-500 hover:to-yellow-400 rounded-2xl p-4 flex items-center justify-center shadow-md hover:shadow-lg transition-all duration-300 min-h-[100px] md:min-h-[120px]"
-              >
-                <div className="text-gray-800 font-medium text-xs md:text-sm text-center whitespace-pre-line leading-tight">
-                  {title}
+        <div className="grid grid-cols-3 gap-5 mt-36 mb-8 pb-36">
+          {services.map((service, idx) => (
+            <div key={idx} className="flex justify-center">
+              <div className="flex items-center gap-4 px-6 py-4 rounded-full text-white min-w-[280px] max-w-[398px] shadow-lg hover:shadow-xl hover:-translate-y-1 transition-all bg-gradient-to-b from-[#87B6FF] to-[#0F52BA]">
+                <img
+                  src={service.image}
+                  alt={service.alt}
+                  className="w-[100px] h-[100px] rounded-full object-cover border-2 border-white shadow"
+                />
+                <div className="flex-1">
+                  <div className="text-sm font-bold leading-tight">
+                    {service.title}
+                  </div>
                 </div>
               </div>
-            ))}
-          </div>
+            </div>
+          ))}
         </div>
       </div>
     </div>

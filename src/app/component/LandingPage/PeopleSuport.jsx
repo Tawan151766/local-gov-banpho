@@ -2,31 +2,35 @@ export default function PeopleSupport() {
   // Card data (icon src, link only)
   const cards = [
     {
-      icon: "/image/people_gui.png",
+      icon: "/image/people_gui1.png",
       link: "/manual",
     },
     {
-      icon: "/image/people_gui.png",
+      icon: "/image/people_gui2.png",
       link: "/download-form",
     },
     {
-      icon: "/image/people_gui.png",
+      icon: "/image/people_gui3.png",
       link: "/survey",
     },
     {
-      icon: "/image/people_gui.png",
+      icon: "/image/people_gui4.png",
       link: "/elderly-allowance",
     },
     {
-      icon: "/image/people_gui.png",
+      icon: "/image/people_gui5.png",
       link: "/disabled-allowance",
     },
     {
-      icon: "/image/people_gui.png",
+      icon: "/image/people_gui6.png",
       link: "/work-manual",
     },
     {
-      icon: "/image/people_gui.png",
+      icon: "/image/people_gui7.png",
+      link: "/qa",
+    },
+    {
+      icon: "/image/people_gui8.png",
       link: "/qa",
     },
   ];
