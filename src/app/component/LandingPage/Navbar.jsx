@@ -4,20 +4,21 @@ import React, { useState, useEffect, useRef } from "react";
 export default function Navbar() {
   const [showMenu, setShowMenu] = useState(false);
   const [showPersonnelDropdown, setShowPersonnelDropdown] = useState(false);
-  const [showDesktopDropdown, setShowDesktopDropdown] = useState(false);
+  const [showBasicDropdown, setShowBasicDropdown] = useState(false);
   const dropdownRef = useRef(null);
-  const desktopDropdownRef = useRef(null);
+  const basicDropdownRef = useRef(null);
+  const personnelDropdownRef = useRef(null);
 
   useEffect(() => {
     const handleClickOutside = (event) => {
       if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
         setShowPersonnelDropdown(false);
       }
-      if (
-        desktopDropdownRef.current &&
-        !desktopDropdownRef.current.contains(event.target)
-      ) {
-        setShowDesktopDropdown(false);
+      if (basicDropdownRef.current && !basicDropdownRef.current.contains(event.target)) {
+        setShowBasicDropdown(false);
+      }
+      if (personnelDropdownRef.current && !personnelDropdownRef.current.contains(event.target)) {
+        setShowPersonnelDropdown(false);
       }
     };
 
@@ -137,12 +138,46 @@ export default function Navbar() {
             </a>
             {/* Main Menu - Mobile */}
             <nav className="flex flex-col gap-2 mt-4 w-full md:hidden">
-              <a
-                href="#"
-                className="text-white text-base font-medium hover:underline"
-              >
-                ข้อมูลพื้นฐาน
-              </a>
+              <div className="relative">
+                <button
+                  className="text-white text-base font-medium hover:underline flex items-center gap-1"
+                  onClick={() => setShowMenu(showMenu === 'basic' ? false : 'basic')}
+                  aria-haspopup="true"
+                  aria-expanded={showMenu === 'basic'}
+                >
+                  ข้อมูลพื้นฐาน
+                  <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                  </svg>
+                </button>
+                {showMenu === 'basic' && (
+                  <div className="mt-2 bg-white rounded-md shadow-lg z-[9999] p-2 flex flex-col gap-1">
+                    <a href="/" className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">หน้าหลัก</a>
+                    <a href="/history" className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">ประวัติความเป็นมา</a>
+                    <a href="/vision" className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">วิสัยทัศน์/พันธกิจ</a>
+                    <div className="px-4 py-2 text-sm text-gray-700 font-bold">สภาพและข้อมูลพื้นฐาน</div>
+                    <a href="/simple-infomation/general-overview" className="block px-6 py-2 text-sm text-gray-700 hover:bg-gray-100">สภาพทั่วไป</a>
+                    <a href="/simple-infomation/economic" className="block px-6 py-2 text-sm text-gray-700 hover:bg-gray-100">สภาพทางเศรษฐกิจ</a>
+                    <a href="/simple-infomation/social" className="block px-6 py-2 text-sm text-gray-700 hover:bg-gray-100">สภาพทางสังคม</a>
+                    <a href="/simple-infomation/service" className="block px-6 py-2 text-sm text-gray-700 hover:bg-gray-100">การบริการพื้นฐาน</a>
+                    <a href="/basic-info" className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">ข้อมูลพื้นฐาน</a>
+                    <a href="/structure" className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">โครงสร้าง</a>
+                    <a href="/executives" className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">ข้อมูลผู้บริหาร</a>
+                    <a href="/authority" className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">อำนาจหน้าที่</a>
+                    <a href="/plan" className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">แผนการขับเคลื่อนหน่วยงาน</a>
+                    <a href="/contact" className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">ข้อมูลการติดต่อ</a>
+                    <a href="/policy" className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">นโยบายการบริหาร</a>
+                    <a href="/integrity" className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">เจตจำนงสุจริตของผู้บริหาร</a>
+                    <a href="/laws" className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">กฏหมายที่เกี่ยวข้อง</a>
+                    <div className="px-4 py-2 text-sm text-gray-700 font-bold">กิจกรรมเด่นเทศบาลฯ</div>
+                    <a href="/activities/2567" className="block px-6 py-2 text-sm text-gray-700 hover:bg-gray-100">กิจกรรมประจำปี 2567</a>
+                    <a href="/activities/2566" className="block px-6 py-2 text-sm text-gray-700 hover:bg-gray-100">กิจกรรมประจำปี 2566</a>
+                    <a href="/activities/2565" className="block px-6 py-2 text-sm text-gray-700 hover:bg-gray-100">กิจกรรมประจำปี 2565</a>
+                    <a href="/activities/2564" className="block px-6 py-2 text-sm text-gray-700 hover:bg-gray-100">กิจกรรมประจำปี 2564</a>
+                    <a href="/activities/2557-2563" className="block px-6 py-2 text-sm text-gray-700 hover:bg-gray-100">กิจกรรมประจำปี 2557-2563</a>
+                  </div>
+                )}
+              </div>
               <div className="relative" ref={dropdownRef}>
                 <button
                   onClick={() =>
@@ -284,22 +319,60 @@ export default function Navbar() {
         </div>
         {/* Main Menu - Desktop (move below Logo/Title/Language/Search/Auth) */}
         <nav className="hidden md:flex flex-wrap items-center justify-center gap-6 mt-2">
-          <a
-            href="#"
-            className="text-white text-base font-medium hover:underline"
-          >
-            ข้อมูลพื้นฐาน
-          </a>
-          <div className="relative" ref={desktopDropdownRef}>
+          <div className="relative" ref={basicDropdownRef}>
             <button
-              onClick={() => setShowDesktopDropdown(!showDesktopDropdown)}
-              onMouseEnter={() => setShowDesktopDropdown(true)}
+              onClick={() => setShowBasicDropdown(!showBasicDropdown)}
+              onMouseEnter={() => setShowBasicDropdown(true)}
+              className="text-white text-base font-medium hover:underline flex items-center gap-1"
+            >
+              ข้อมูล พื้นฐาน
+              <svg className={`w-4 h-4 transition-transform ${showBasicDropdown ? "rotate-180" : ""}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+              </svg>
+            </button>
+            
+            {showBasicDropdown && (
+              <div
+                className="absolute top-full left-0 mt-2 w-80 bg-white rounded-md shadow-lg z-[9999] transition-all duration-200"
+                onMouseEnter={() => setShowBasicDropdown(true)}
+                onMouseLeave={() => setShowBasicDropdown(false)}
+              >
+                <a href="/" className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">หน้าหลัก</a>
+                <a href="/history" className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">ประวัติความเป็นมา</a>
+                <a href="/vision" className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">วิสัยทัศน์/พันธกิจ</a>
+                <div className="px-4 py-2 text-sm text-gray-700 font-bold">สภาพและข้อมูลพื้นฐาน</div>
+                <a href="/simple-infomation/general-overview" className="block px-6 py-2 text-sm text-gray-700 hover:bg-gray-100">สภาพทั่วไป</a>
+                <a href="/simple-infomation/economic" className="block px-6 py-2 text-sm text-gray-700 hover:bg-gray-100">สภาพทางเศรษฐกิจ</a>
+                <a href="/simple-infomation/social" className="block px-6 py-2 text-sm text-gray-700 hover:bg-gray-100">สภาพทางสังคม</a>
+                <a href="/simple-infomation/service" className="block px-6 py-2 text-sm text-gray-700 hover:bg-gray-100">การบริการพื้นฐาน</a>
+                <a href="/basic-info" className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">ข้อมูลพื้นฐาน</a>
+                <a href="/structure" className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">โครงสร้าง</a>
+                <a href="/executives" className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">ข้อมูลผู้บริหาร</a>
+                <a href="/authority" className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">อำนาจหน้าที่</a>
+                <a href="/plan" className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">แผนการขับเคลื่อนหน่วยงาน</a>
+                <a href="/contact" className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">ข้อมูลการติดต่อ</a>
+                <a href="/policy" className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">นโยบายการบริหาร</a>
+                <a href="/integrity" className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">เจตจำนงสุจริตของผู้บริหาร</a>
+                <a href="/laws" className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100">กฏหมายที่เกี่ยวข้อง</a>
+                <div className="px-4 py-2 text-sm text-gray-700 font-bold">กิจกรรมเด่นเทศบาลฯ</div>
+                <a href="/activities/2567" className="block px-6 py-2 text-sm text-gray-700 hover:bg-gray-100">กิจกรรมประจำปี 2567</a>
+                <a href="/activities/2566" className="block px-6 py-2 text-sm text-gray-700 hover:bg-gray-100">กิจกรรมประจำปี 2566</a>
+                <a href="/activities/2565" className="block px-6 py-2 text-sm text-gray-700 hover:bg-gray-100">กิจกรรมประจำปี 2565</a>
+                <a href="/activities/2564" className="block px-6 py-2 text-sm text-gray-700 hover:bg-gray-100">กิจกรรมประจำปี 2564</a>
+                <a href="/activities/2557-2563" className="block px-6 py-2 text-sm text-gray-700 hover:bg-gray-100">กิจกรรมประจำปี 2557-2563</a>
+              </div>
+            )}
+          </div>
+          <div className="relative" ref={personnelDropdownRef}>
+            <button
+              onClick={() => setShowPersonnelDropdown(!showPersonnelDropdown)}
+              onMouseEnter={() => setShowPersonnelDropdown(true)}
               className="text-white text-base font-medium hover:underline flex items-center gap-1"
             >
               บุคลากร
               <svg
                 className={`w-4 h-4 transition-transform ${
-                  showDesktopDropdown ? "rotate-180" : ""
+                  showPersonnelDropdown ? "rotate-180" : ""
                 }`}
                 fill="none"
                 stroke="currentColor"
@@ -313,11 +386,11 @@ export default function Navbar() {
                 />
               </svg>
             </button>
-            {showDesktopDropdown && (
+            {showPersonnelDropdown && (
               <div
                 className="absolute top-full left-0 mt-2 w-64 bg-white rounded-md shadow-lg z-[9999] transition-all duration-200"
-                onMouseEnter={() => setShowDesktopDropdown(true)}
-                onMouseLeave={() => setShowDesktopDropdown(false)}
+                onMouseEnter={() => setShowPersonnelDropdown(true)}
+                onMouseLeave={() => setShowPersonnelDropdown(false)}
               >
                 <div className="py-2">
                   <a
