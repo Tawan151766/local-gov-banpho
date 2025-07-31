@@ -4,19 +4,22 @@ export function EServiceTop() {
   return (
     <div className="relative w-full flex flex-col md:flex-row items-center justify-center px-2 md:px-8 py-4 gap-4">
       {/* Left Card with image background */}
-      <div className="relative w-full md:w-[734px] h-[332px] max-w-[734px] rounded-[35px] shadow-lg overflow-hidden flex flex-col justify-between p-8">
-        <img
-          src="/image/Eservice.png"
-          alt="E-Service Background"
-          className="absolute inset-0 w-full h-full object-cover rounded-[35px] z-0"
-        />
-      </div>
+      <a href="/e-service">
+        <div className="relative w-full md:w-[734px] h-[332px] max-w-[734px] rounded-[35px] shadow-lg overflow-hidden flex flex-col justify-between p-8">
+          <img
+            src="/image/Eservice.png"
+            alt="E-Service Background"
+            className="absolute inset-0 w-full h-full object-cover rounded-[35px] z-0"
+          />
+        </div>
+      </a>
       {/* Right Card with image icon */}
+
       <img
-          src="/image/externalOrgLink.png"
-          alt="external org link"
-          className=" rounded-[24px] shadow-lg w-full md:w-[386px] max-w-[386px] h-[156px"
-        />
+        src="/image/externalOrgLink.png"
+        alt="external org link"
+        className=" rounded-[24px] shadow-lg w-full md:w-[386px] max-w-[386px] h-[156px"
+      />
     </div>
   );
 }

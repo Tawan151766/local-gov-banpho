@@ -41,17 +41,23 @@ const ManagementCard = ({
       <div className="w-full max-w-[120px] sm:max-w-[150px] md:max-w-[180px] lg:max-w-[215px] rounded-[10px] sm:rounded-[17px] shadow-[0_4px_4px_0_rgba(0,0,0,0.25)] overflow-hidden bg-white">
         {/* ส่วนชื่อและตำแหน่ง */}
         <div className="h-[50px] sm:h-[55px] md:h-[60px] lg:h-[66px] flex flex-col justify-center items-center px-2 sm:px-3 text-center">
-          <div className={`font-bold ${textColor} ${textSizeClasses[position]} leading-tight`}>
+          <div
+            className={`font-bold ${textColor} ${textSizeClasses[position]} leading-tight`}
+          >
             {name}
           </div>
-          <div className={`opacity-90 leading-relaxed ${textColor} text-[10px] sm:text-xs mt-1`}>
+          <div
+            className={`opacity-90 leading-relaxed ${textColor} text-[10px] sm:text-xs mt-1`}
+          >
             {title}
           </div>
         </div>
 
         {/* แถบฟ้า ใส่เบอร์โทรตรงนี้ */}
         <div className="h-[28px] sm:h-[32px] md:h-[36px] bg-[#01BDCC] rounded-b-[10px] sm:rounded-b-[17px] flex items-center justify-center px-2 sm:px-3">
-          <span className="text-white text-[10px] sm:text-xs md:text-sm font-medium">{phone}</span>
+          <span className="text-white text-[10px] sm:text-xs md:text-sm font-medium">
+            {phone}
+          </span>
         </div>
       </div>
     </div>
@@ -98,17 +104,23 @@ const ManagementCard2 = ({
       <div className="w-full max-w-[120px] sm:max-w-[150px] md:max-w-[180px] lg:max-w-[215px] rounded-[10px] sm:rounded-[17px] shadow-[0_4px_4px_0_rgba(0,0,0,0.25)] overflow-hidden bg-white">
         {/* ส่วนชื่อและตำแหน่ง */}
         <div className="h-[50px] sm:h-[55px] md:h-[60px] lg:h-[66px] flex flex-col justify-center items-center px-2 sm:px-3 text-center">
-          <div className={`font-bold ${textColor} ${textSizeClasses[position]} leading-tight`}>
+          <div
+            className={`font-bold ${textColor} ${textSizeClasses[position]} leading-tight`}
+          >
             {name}
           </div>
-          <div className={`opacity-90 leading-relaxed ${textColor} text-[10px] sm:text-xs mt-1`}>
+          <div
+            className={`opacity-90 leading-relaxed ${textColor} text-[10px] sm:text-xs mt-1`}
+          >
             {title}
           </div>
         </div>
 
         {/* แถบฟ้า ใส่เบอร์โทรตรงนี้ */}
         <div className="h-[28px] sm:h-[32px] md:h-[36px] bg-[#01BDCC] rounded-b-[10px] sm:rounded-b-[17px] flex items-center justify-center px-2 sm:px-3">
-          <span className="text-white text-[10px] sm:text-xs md:text-sm font-medium">{phone}</span>
+          <span className="text-white text-[10px] sm:text-xs md:text-sm font-medium">
+            {phone}
+          </span>
         </div>
       </div>
     </div>
@@ -116,7 +128,7 @@ const ManagementCard2 = ({
 };
 
 // Service Item Component
-const ServiceItem = ({ icon, title }) => {
+const ServiceItem = ({ icon, title,path }) => {
   return (
     <div className="bg-white rounded-lg p-3 sm:p-4 md:p-6 min-w-[160px] sm:min-w-[200px] md:min-w-[240px] max-w-[160px] sm:max-w-[200px] md:max-w-[240px] text-center hover:shadow-lg transition-shadow cursor-pointer flex flex-col items-center justify-center h-full">
       <img
@@ -124,27 +136,48 @@ const ServiceItem = ({ icon, title }) => {
         alt={title}
         className="w-[60px] h-[60px] sm:w-[80px] sm:h-[80px] md:w-[102px] md:h-[102px] object-contain mb-3 sm:mb-4 md:mb-5"
       />
-      <div className="text-sm sm:text-base md:text-[20px] font-medium text-gray-700 whitespace-pre-line overflow-hidden text-ellipsis leading-tight">
+      <a
+        href={path}
+        className="text-sm sm:text-base md:text-[20px] font-medium text-gray-700 whitespace-pre-line overflow-hidden text-ellipsis leading-tight"
+      >
         {title}
-      </div>
+      </a>
     </div>
   );
 };
 
 export default function ManagementSection() {
   const services = [
-    { icon: "/image/manage_item1.png", title: "สารจากนายก" },
-    { icon: "/image/manage_item2.png", title: "เจตจำนงสุจริต ของผู้บริหาร" },
-    { icon: "/image/manage_item3.png", title: "รับเเจ้งเรื่องราว ร้องทุกข์" },
+    {
+      icon: "/image/manage_item1.png",
+      title: "สารจากนายก",
+      path: "/mayor-message",
+    },
+    {
+      icon: "/image/manage_item2.png",
+      title: "เจตจำนงสุจริต ของผู้บริหาร",
+      path: "/executive-integrity",
+    },
+    {
+      icon: "/image/manage_item3.png",
+      title: "รับเเจ้งเรื่องราว ร้องทุกข์",
+      path: "/complaint",
+    },
     {
       icon: "/image/manage_item4.png",
       title: "รับเเจ้งเรื่องร้องเรียน ทุจริตประพฤติมิชอบ",
+      path: "/corruption-report",
     },
     {
       icon: "/image/manage_item5.png",
       title: "การประเมินคุณธรม และความโปร่งใส",
+      path: "/ITA",
     },
-    { icon: "/image/manage_item6.png", title: "การประเมิน ประสิทธิภาพภายใน" },
+    {
+      icon: "/image/manage_item6.png",
+      title: "การประเมิน ประสิทธิภาพภายใน",
+      path: "/internal-efficiency",
+    },
   ];
 
   const managementTeam1 = [
@@ -231,7 +264,6 @@ export default function ManagementSection() {
           backgroundSize: "60% auto",
           backgroundPosition: "50% 0%",
           backgroundRepeat: "no-repeat",
-          
         }}
       />
 
@@ -244,7 +276,6 @@ export default function ManagementSection() {
           backgroundPosition: "center",
           backgroundRepeat: "no-repeat",
           opacity: 0.39,
-          
         }}
       />
 
@@ -257,7 +288,11 @@ export default function ManagementSection() {
         {/* Management Team 1 - Responsive Grid */}
         <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-2 sm:gap-4 md:gap-6 lg:gap-8 w-full mx-auto justify-center items-end px-2 sm:px-4">
           {managementTeam1.map((member, index) => (
-            <ManagementCard key={index} {...member} textColor="text-[#01385F]" />
+            <ManagementCard
+              key={index}
+              {...member}
+              textColor="text-[#01385F]"
+            />
           ))}
         </div>
 
