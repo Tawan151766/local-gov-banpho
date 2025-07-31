@@ -86,7 +86,13 @@ export async function PUT(request, { params }) {
   try {
     const { id } = params;
     const body = await request.json();
-    const { date, title_name, topic_name, details } = body;
+    const { date, title_name, topic_name, details, photos = [], videos = [], pdfs = [] } = body;
+
+    // Debug logging
+    console.log('PUT request body:', body);
+    console.log('Photos:', photos);
+    console.log('Videos:', videos);
+    console.log('PDFs:', pdfs);
 
     // Validation
     if (!title_name) {
@@ -98,33 +104,130 @@ export async function PUT(request, { params }) {
 
     connection = await mysql.createConnection(dbConfig);
 
-    // Update post detail
-    const [result] = await connection.execute(
-      'UPDATE post_details SET date = ?, title_name = ?, topic_name = ?, details = ?, updated_at = NOW() WHERE id = ?',
-      [date || null, title_name, topic_name || null, details || null, parseInt(id)]
-    );
+    // Start transaction
+    await connection.beginTransaction();
 
-    if (result.affectedRows === 0) {
-      return NextResponse.json(
-        { success: false, error: 'Post detail not found' },
-        { status: 404 }
+    try {
+      // Update post detail
+      const [result] = await connection.execute(
+        'UPDATE post_details SET date = ?, title_name = ?, topic_name = ?, details = ?, updated_at = NOW() WHERE id = ?',
+        [date || null, title_name, topic_name || null, details || null, parseInt(id)]
       );
+
+      if (result.affectedRows === 0) {
+        await connection.rollback();
+        return NextResponse.json(
+          { success: false, error: 'Post detail not found' },
+          { status: 404 }
+        );
+      }
+
+      // Delete existing media files
+      await connection.execute(
+        'DELETE FROM post_photos WHERE post_detail_id = ?',
+        [parseInt(id)]
+      );
+
+      await connection.execute(
+        'DELETE FROM post_videos WHERE post_detail_id = ?',
+        [parseInt(id)]
+      );
+
+      await connection.execute(
+        'DELETE FROM post_pdfs WHERE post_detail_id = ?',
+        [parseInt(id)]
+      );
+
+      // Insert new photos if provided
+      if (photos && photos.length > 0) {
+        console.log('Inserting photos:', photos);
+        for (const photo of photos) {
+          if (photo.post_photo_file) {
+            console.log('Inserting photo:', photo.post_photo_file);
+            const [photoResult] = await connection.execute(
+              'INSERT INTO post_photos (post_detail_id, post_photo_file, post_photo_status, created_at, updated_at) VALUES (?, ?, ?, NOW(), NOW())',
+              [parseInt(id), photo.post_photo_file, photo.post_photo_status || 'active']
+            );
+            console.log('Photo insert result:', photoResult);
+          }
+        }
+      }
+
+      // Insert new videos if provided
+      if (videos && videos.length > 0) {
+        console.log('Inserting videos:', videos);
+        for (const video of videos) {
+          if (video.post_video_file) {
+            console.log('Inserting video:', video.post_video_file);
+            const [videoResult] = await connection.execute(
+              'INSERT INTO post_videos (post_detail_id, post_video_file, created_at, updated_at) VALUES (?, ?, NOW(), NOW())',
+              [parseInt(id), video.post_video_file]
+            );
+            console.log('Video insert result:', videoResult);
+          }
+        }
+      }
+
+      // Insert new PDFs if provided
+      if (pdfs && pdfs.length > 0) {
+        console.log('Inserting PDFs:', pdfs);
+        for (const pdf of pdfs) {
+          if (pdf.post_pdf_file) {
+            console.log('Inserting PDF:', pdf.post_pdf_file);
+            const [pdfResult] = await connection.execute(
+              'INSERT INTO post_pdfs (post_detail_id, post_pdf_file, created_at, updated_at) VALUES (?, ?, NOW(), NOW())',
+              [parseInt(id), pdf.post_pdf_file]
+            );
+            console.log('PDF insert result:', pdfResult);
+          }
+        }
+      }
+
+      // Commit transaction
+      await connection.commit();
+
+      // Get updated post detail with media
+      const [updatedDetail] = await connection.execute(
+        `SELECT pd.*, pt.type_name 
+         FROM post_details pd 
+         LEFT JOIN post_types pt ON pd.post_type_id = pt.id 
+         WHERE pd.id = ?`,
+        [parseInt(id)]
+      );
+
+      const [updatedPhotos] = await connection.execute(
+        'SELECT * FROM post_photos WHERE post_detail_id = ?',
+        [parseInt(id)]
+      );
+
+      const [updatedVideos] = await connection.execute(
+        'SELECT * FROM post_videos WHERE post_detail_id = ?',
+        [parseInt(id)]
+      );
+
+      const [updatedPdfs] = await connection.execute(
+        'SELECT * FROM post_pdfs WHERE post_detail_id = ?',
+        [parseInt(id)]
+      );
+
+      const postDetailWithMedia = {
+        ...updatedDetail[0],
+        photos: updatedPhotos,
+        videos: updatedVideos,
+        pdfs: updatedPdfs
+      };
+
+      return NextResponse.json({
+        success: true,
+        data: postDetailWithMedia,
+        message: 'Post detail updated successfully'
+      });
+
+    } catch (error) {
+      // Rollback transaction on error
+      await connection.rollback();
+      throw error;
     }
-
-    // Get updated post detail
-    const [updatedDetail] = await connection.execute(
-      `SELECT pd.*, pt.type_name 
-       FROM post_details pd 
-       LEFT JOIN post_types pt ON pd.post_type_id = pt.id 
-       WHERE pd.id = ?`,
-      [parseInt(id)]
-    );
-
-    return NextResponse.json({
-      success: true,
-      data: updatedDetail[0],
-      message: 'Post detail updated successfully'
-    });
 
   } catch (error) {
     console.error('Error updating post detail:', error);

@@ -1,14 +1,6 @@
 "use client";
 
-import {
-  Layout,
-  Menu,
-  Card,
-  Typography,
-  Space,
-  Avatar,
-  Dropdown,
-} from "antd";
+import { Layout, Menu, Card, Typography, Space, Avatar, Dropdown } from "antd";
 import {
   DashboardOutlined,
   UserOutlined,
@@ -19,6 +11,8 @@ import {
   FileTextOutlined,
   ShoppingCartOutlined,
   BookOutlined,
+  SafetyOutlined,
+  CustomerServiceOutlined,
 } from "@ant-design/icons";
 import DashboardStats from "./components/DashboardStats";
 import UserManagement from "./components/UserManagement";
@@ -28,6 +22,12 @@ import ItaManagement from "./components/ItaManagement";
 import PostManagement from "./components/PostManagement";
 import ProcurementPlanManagement from "./components/ProcurementPlanManagement";
 import LawsRegsManagement from "./components/LawsRegsManagement";
+import dynamic from "next/dynamic";
+
+const CorruptionComplaintsManagement = dynamic(
+  () => import("./components/CorruptionComplaintsManagement"),
+  { ssr: false }
+);
 import styles from "./admin.module.css";
 import { useState, useEffect } from "react";
 import { useSession, signOut } from "next-auth/react";
@@ -43,27 +43,27 @@ export default function AdminPage() {
 
   // Redirect to login if not authenticated
   useEffect(() => {
-    if (status === 'loading') return; // Still loading
+    if (status === "loading") return; // Still loading
     if (!session) {
-      router.push('/admin/login');
+      router.push("/admin/login");
     }
   }, [session, status, router]);
 
-
-
   const handleLogout = async () => {
-    await signOut({ callbackUrl: '/admin/login' });
+    await signOut({ callbackUrl: "/admin/login" });
   };
 
   // Show loading while checking authentication
-  if (status === 'loading') {
+  if (status === "loading") {
     return (
-      <div style={{ 
-        display: 'flex', 
-        justifyContent: 'center', 
-        alignItems: 'center', 
-        height: '100vh' 
-      }}>
+      <div
+        style={{
+          display: "flex",
+          justifyContent: "center",
+          alignItems: "center",
+          height: "100vh",
+        }}
+      >
         <div>กำลังโหลด...</div>
       </div>
     );
@@ -76,17 +76,17 @@ export default function AdminPage() {
 
   const userMenuItems = [
     {
-      key: 'profile',
+      key: "profile",
       icon: <UserOutlined />,
-      label: 'ข้อมูลส่วนตัว',
+      label: "ข้อมูลส่วนตัว",
     },
     {
-      type: 'divider',
+      type: "divider",
     },
     {
-      key: 'logout',
+      key: "logout",
       icon: <LogoutOutlined />,
-      label: 'ออกจากระบบ',
+      label: "ออกจากระบบ",
       onClick: handleLogout,
     },
   ];
@@ -121,11 +121,6 @@ export default function AdminPage() {
 
   const menuItems = [
     {
-      key: "dashboard",
-      icon: <DashboardOutlined />,
-      label: "Dashboard",
-    },
-    {
       key: "basic-management",
       label: "การจัดการพื้นฐาน",
       type: "group",
@@ -134,11 +129,6 @@ export default function AdminPage() {
           key: "user-management",
           icon: <UserOutlined />,
           label: "จัดการผู้ใช้งาน",
-        },
-        {
-          key: "staff-management",
-          icon: <TeamOutlined />,
-          label: "จัดการบุคลากร",
         },
       ],
     },
@@ -181,6 +171,18 @@ export default function AdminPage() {
         },
       ],
     },
+    {
+      key: "e-service",
+      label: "E-Service",
+      type: "group",
+      children: [
+        {
+          key: "corruption-complaints",
+          icon: <SafetyOutlined />,
+          label: "คำร้องเรียนการทุจริต",
+        },
+      ],
+    },
   ];
 
   const renderContent = () => {
@@ -205,6 +207,8 @@ export default function AdminPage() {
         return <ProcurementPlanManagement />;
       case "laws-regulations":
         return <LawsRegsManagement />;
+      case "corruption-complaints":
+        return <CorruptionComplaintsManagement />;
       default:
         return (
           <Card>
@@ -219,10 +223,7 @@ export default function AdminPage() {
 
   return (
     <Layout style={{ minHeight: "100vh" }}>
-      <Sider
-        width={250}
-        className={styles.adminSidebar}
-      >
+      <Sider width={250} className={styles.adminSidebar}>
         <div style={{ padding: "16px", borderBottom: "1px solid #f0f0f0" }}>
           <Title level={4} style={{ margin: 0, textAlign: "center" }}>
             Admin Panel
@@ -234,26 +235,22 @@ export default function AdminPage() {
             อบต.บ้านโพธิ์
           </Text>
         </div>
-        
+
         <div style={{ padding: "16px", borderBottom: "1px solid #f0f0f0" }}>
           <Dropdown
             menu={{ items: userMenuItems }}
             placement="topRight"
-            trigger={['click']}
+            trigger={["click"]}
           >
             <div className={styles.userDropdown}>
-              <Avatar 
-                size="small" 
-                icon={<UserOutlined />} 
-                style={{ marginRight: '8px' }}
+              <Avatar
+                size="small"
+                icon={<UserOutlined />}
+                style={{ marginRight: "8px" }}
               />
               <div className={styles.userInfo}>
-                <div className={styles.userName}>
-                  {session?.user?.name}
-                </div>
-                <div className={styles.userEmail}>
-                  {session?.user?.email}
-                </div>
+                <div className={styles.userName}>{session?.user?.name}</div>
+                <div className={styles.userEmail}>{session?.user?.email}</div>
               </div>
             </div>
           </Dropdown>
@@ -263,9 +260,9 @@ export default function AdminPage() {
           selectedKeys={[selectedKey]}
           items={menuItems}
           onClick={({ key }) => setSelectedKey(key)}
-          style={{ 
-            border: "none", 
-            height: "calc(100vh - 160px)"
+          style={{
+            border: "none",
+            height: "calc(100vh - 160px)",
           }}
         />
       </Sider>
