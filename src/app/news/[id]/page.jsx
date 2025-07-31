@@ -1,6 +1,5 @@
 "use client";
 import React, { useState, useEffect, use } from "react";
-import Navbar from "../../component/LandingPage/Navbar";
 import NewsDetail from "../../component/News/NewsDetail";
 
 export default function NewsPage({ params }) {
@@ -50,7 +49,6 @@ export default function NewsPage({ params }) {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50">
-      <Navbar />
       <NewsDetail 
         news={news} 
         loading={loading} 

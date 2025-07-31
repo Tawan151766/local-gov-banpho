@@ -1,7 +1,6 @@
 "use client";
 import React, { useEffect, useState } from "react";
 import { useSearchParams } from "next/navigation";
-import Navbar from "../LandingPage/Navbar";
 
 const PersonnelOrgChart = () => {
   const searchParams = useSearchParams();
@@ -584,8 +583,6 @@ const PersonnelOrgChart = () => {
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50">
-      <Navbar />
-
       {/* Hero Header */}
       <div className="relative bg-[linear-gradient(180deg,_#0383AA_0%,_#05C5FF_100%)] py-20 overflow-hidden">
         <div className="absolute inset-0 bg-black/10"></div>
