@@ -50,6 +50,7 @@ import styles from "./admin.module.css";
 import { useState, useEffect } from "react";
 import { useSession, signOut } from "next-auth/react";
 import { useRouter } from "next/navigation";
+import LocalDevPlanManagement from "./components/LocalDevPlanManagement";
 
 const { Title, Text } = Typography;
 const { Sider, Content } = Layout;
@@ -149,6 +150,11 @@ export default function AdminPage() {
           icon: <BookOutlined />,
           label: "กฎหมายและระเบียบ",
         },
+        {
+          key: "local-dev-plan",
+          icon: <FileTextOutlined />,
+          label: "แผนพัฒนาท้องถิ่น",
+        },
       ],
     },
     {
@@ -213,6 +219,8 @@ export default function AdminPage() {
         return <ProcurementPlanManagement />;
       case "laws-regulations":
         return <LawsRegsManagement />;
+      case "local-dev-plan":
+        return <LocalDevPlanManagement />;
       case "corruption-complaints":
         return <CorruptionComplaintsManagement />;
       case "general-requests":
