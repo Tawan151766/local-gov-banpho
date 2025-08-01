@@ -251,7 +251,9 @@ export default function NewsSection() {
             </div>
 
             {/* กล่อง QR */}
-            <div className="qr-box absolute bottom-3 sm:bottom-5 right-3 sm:right-5 w-[90px] sm:w-[180px] h-[90px] sm:h-[173px] rounded-xl sm:rounded-[23px] bg-white shadow-[0_2px_4px_rgba(0,0,0,0.18)] sm:shadow-[0_4px_4px_rgba(0,0,0,0.25)]"></div>
+            <div className="qr-box absolute bottom-3 sm:bottom-5 right-3 sm:right-5 w-[90px] sm:w-[180px] h-[90px] sm:h-[173px] rounded-xl sm:rounded-[23px] bg-white shadow-[0_2px_4px_rgba(0,0,0,0.18)] sm:shadow-[0_4px_4px_rgba(0,0,0,0.25)]">
+            <img src="image/QR_Line.png" alt="QR Line" className="w-full h-full object-cover" />
+            </div>
           </div>
         </div>
       </div>
