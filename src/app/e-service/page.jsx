@@ -4,9 +4,8 @@ import {
   RestOutlined,
   DeleteOutlined,
   EditOutlined,
-  CarOutlined,
 } from "@ant-design/icons";
-import { GlassWater, Trash } from "lucide-react";
+import { GlassWater } from "lucide-react";
 
 export default function EServicePage() {
   const services = [

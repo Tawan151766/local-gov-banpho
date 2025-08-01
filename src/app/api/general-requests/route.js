@@ -1,0 +1,179 @@
+import { NextResponse } from 'next/server';
+import mysql from 'mysql2/promise';
+
+// Database connection
+const dbConfig = {
+  host: '103.80.48.25',
+  port: 3306,
+  user: 'gmsky_banphokorat',
+  password: 'banphokorat56789',
+  database: 'gmsky_banphokorat'
+};
+
+// GET /api/general-requests - ดึงรายการคำร้องทั่วไป
+export async function GET(request) {
+  let connection;
+  
+  try {
+    const { searchParams } = new URL(request.url);
+    const page = parseInt(searchParams.get('page')) || 1;
+    const limit = parseInt(searchParams.get('limit')) || 10;
+    const search = searchParams.get('search') || '';
+    const status = searchParams.get('status');
+
+    const offset = (page - 1) * limit;
+
+    connection = await mysql.createConnection(dbConfig);
+
+    // Build WHERE clause
+    let whereClause = 'WHERE 1=1';
+    const params = [];
+
+    if (search) {
+      whereClause += ' AND (requester_name LIKE ? OR request_subject LIKE ?)';
+      params.push(`%${search}%`, `%${search}%`);
+    }
+
+    if (status) {
+      whereClause += ' AND status = ?';
+      params.push(status);
+    }
+
+    // Get general requests
+    const [requests] = await connection.execute(
+      `SELECT * FROM general_requests ${whereClause} ORDER BY created_at DESC LIMIT ? OFFSET ?`,
+      [...params, limit, offset]
+    );
+
+    // Get total count
+    const [countResult] = await connection.execute(
+      `SELECT COUNT(*) as total FROM general_requests ${whereClause}`,
+      params
+    );
+
+    const total = countResult[0]?.total || 0;
+
+    return NextResponse.json({
+      success: true,
+      data: requests,
+      pagination: {
+        page,
+        limit,
+        total,
+        totalPages: Math.ceil(total / limit)
+      }
+    });
+
+  } catch (error) {
+    console.error('Error fetching general requests:', error);
+    return NextResponse.json(
+      { success: false, error: 'Failed to fetch general requests', details: error.message },
+      { status: 500 }
+    );
+  } finally {
+    if (connection) {
+      await connection.end();
+    }
+  }
+}
+
+// POST /api/general-requests - สร้างคำร้องทั่วไปใหม่
+export async function POST(request) {
+  let connection;
+  
+  try {
+    const body = await request.json();
+    const {
+      request_date,
+      requester_title,
+      requester_name,
+      requester_age,
+      requester_nationality = 'ไทย',
+      requester_house_number,
+      requester_village,
+      requester_subdistrict,
+      requester_district,
+      requester_province,
+      requester_postal_code,
+      requester_phone,
+      request_subject,
+      request_details,
+      document_1,
+      document_2,
+      document_3,
+      other_document_1,
+      other_document_2,
+      captcha_answer,
+      ip_address,
+      user_agent
+    } = body;
+
+    // Validation
+    if (!requester_title || !requester_name || !requester_age || !request_subject || !request_details) {
+      return NextResponse.json(
+        { success: false, error: 'Required fields are missing' },
+        { status: 400 }
+      );
+    }
+
+    connection = await mysql.createConnection(dbConfig);
+
+    // Insert general request
+    const [result] = await connection.execute(
+      `INSERT INTO general_requests (
+        request_date, requester_title, requester_name, requester_age, requester_nationality,
+        requester_house_number, requester_village, requester_subdistrict, requester_district,
+        requester_province, requester_postal_code, requester_phone, request_subject, request_details,
+        document_1, document_2, document_3, other_document_1, other_document_2,
+        captcha_answer, ip_address, user_agent, created_at, updated_at
+      ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, NOW(), NOW())`,
+      [
+        request_date || new Date().toISOString().split('T')[0],
+        requester_title,
+        requester_name,
+        requester_age,
+        requester_nationality,
+        requester_house_number,
+        requester_village,
+        requester_subdistrict,
+        requester_district,
+        requester_province,
+        requester_postal_code,
+        requester_phone,
+        request_subject,
+        request_details,
+        document_1,
+        document_2,
+        document_3,
+        other_document_1,
+        other_document_2,
+        captcha_answer,
+        ip_address,
+        user_agent
+      ]
+    );
+
+    // Get the created request
+    const [createdRequest] = await connection.execute(
+      'SELECT * FROM general_requests WHERE id = ?',
+      [result.insertId]
+    );
+
+    return NextResponse.json({
+      success: true,
+      data: createdRequest[0],
+      message: 'General request submitted successfully'
+    }, { status: 201 });
+
+  } catch (error) {
+    console.error('Error creating general request:', error);
+    return NextResponse.json(
+      { success: false, error: 'Failed to create general request', details: error.message },
+      { status: 500 }
+    );
+  } finally {
+    if (connection) {
+      await connection.end();
+    }
+  }
+}
