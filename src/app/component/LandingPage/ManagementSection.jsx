@@ -128,7 +128,7 @@ const ManagementCard2 = ({
 };
 
 // Service Item Component
-const ServiceItem = ({ icon, title, path }) => {
+const ServiceItem = ({ icon, title,path }) => {
   return (
     <div className="bg-white rounded-lg p-3 sm:p-4 md:p-6 min-w-[160px] sm:min-w-[200px] md:min-w-[240px] max-w-[160px] sm:max-w-[200px] md:max-w-[240px] text-center hover:shadow-lg transition-shadow cursor-pointer flex flex-col items-center justify-center h-full">
       <img
@@ -166,7 +166,7 @@ export default function ManagementSection() {
     {
       icon: "/image/manage_item4.png",
       title: "รับเเจ้งเรื่องร้องเรียน ทุจริตประพฤติมิชอบ",
-      path: "/e-service/corruption-complaint",
+      path: "/corruption-report",
     },
     {
       icon: "/image/manage_item5.png",

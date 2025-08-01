@@ -1,8 +1,6 @@
 "use client";
 import React, { useState, useEffect, useRef } from "react";
 
-
-
 export default function Navbar() {
   const [showMenu, setShowMenu] = useState(false);
   const [showPersonnelDropdown, setShowPersonnelDropdown] = useState(false);
@@ -128,8 +126,6 @@ export default function Navbar() {
               </svg>
             </button>
 
-
-
             {/* Language Selector */}
             <div className="relative w-full md:w-auto mb-2 md:mb-0">
               <select
@@ -145,9 +141,12 @@ export default function Navbar() {
               </select>
             </div>
 
-
             <div className="bg-white rounded-sm p-1 cursor-pointer">
-            <img src="/image/blind.png" alt="blind" className="w-5 h-5 cursor-pointer" />
+              <img
+                src="/image/blind.png"
+                alt="blind"
+                className="w-5 h-5 cursor-pointer"
+              />
             </div>
 
             {/* Search Box */}
@@ -324,7 +323,7 @@ export default function Navbar() {
                 ผลการดำเนินงาน
               </a>
               <a
-                href="#"
+                href="/local-development-plan"
                 className="text-white text-base font-medium hover:underline hover:text-[#01385F] hover:text-bold hover:text-[20px] transition-all duration-300"
               >
                 แผนพัฒนาท้องถิ่น
@@ -592,7 +591,7 @@ export default function Navbar() {
             ผลการดำเนินงาน
           </a>
           <a
-            href="#"
+            href="/local-development-plan"
             className="text-white text-base font-medium hover:underline hover:text-[#01385F] hover:text-[20px] hover:text-bold transition-all duration-300"
           >
             แผนพัฒนาท้องถิ่น
