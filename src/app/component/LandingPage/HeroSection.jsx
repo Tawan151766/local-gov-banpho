@@ -27,7 +27,7 @@ export default function HeroSection({ ui }) {
           width: "100vw",
           height: "100vh", // หรือจะใช้ h-[100vh] ก็ได้ถ้าครอบด้วย Tailwind
           backgroundImage: `url('${slide}')`,
-          backgroundSize: "100% 125%",
+          backgroundSize: "100% 135%",
           backgroundRepeat: "no-repeat",
           backgroundPosition: "center top", // หรือ center center ถ้าต้องการกลางแนวดิ่งด้วย
         }}
