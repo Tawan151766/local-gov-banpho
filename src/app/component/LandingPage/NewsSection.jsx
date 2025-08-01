@@ -14,7 +14,7 @@ export default function NewsSection() {
     try {
       setLoading(true);
       const response = await fetch(
-        "http://localhost:3000/api/post-details?page=1&limit=4&postTypeId=1&withMedia=true"
+        "/api/post-details?page=1&limit=4&postTypeId=1&withMedia=true"
       );
 
       if (!response.ok) {
