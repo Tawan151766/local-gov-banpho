@@ -15,7 +15,7 @@ export default function MapsSection() {
         MAP บ้านโพธิ์
       </h2>
       {/* Map Image Section */}
-      <div className="w-full max-w-3xl flex items-center justify-center bg-cover bg-center mx-auto mb-6">
+      <div className="w-full max-w-[1652px]  flex items-center justify-center bg-cover bg-center mx-auto mb-6">
         <img
           src="/image/banpho_map.png"
           alt="Banpho Map"
@@ -23,20 +23,31 @@ export default function MapsSection() {
         />
       </div>
       {/* Button Section */}
-      <div className="flex flex-col md:flex-row items-center justify-center gap-4 w-full max-w-2xl mx-auto">
-        <button className="flex items-center gap-2 bg-white rounded-xl shadow px-6 py-3 text-[#01385f] font-semibold text-base md:text-lg hover:bg-blue-50 transition">
-          <span className="material-icons text-lg md:text-xl">location_on</span>
-          บ้านน้ำ
-        </button>
-        <button className="flex items-center gap-2 bg-white rounded-xl shadow px-6 py-3 text-[#01385f] font-semibold text-base md:text-lg hover:bg-blue-50 transition">
-          <span className="material-icons text-lg md:text-xl">restaurant</span>
-          ร้านอาหาร
-        </button>
-        <button className="flex items-center gap-2 bg-white rounded-xl shadow px-6 py-3 text-[#01385f] font-semibold text-base md:text-lg hover:bg-blue-50 transition">
-          <span className="material-icons text-lg md:text-xl">place</span>
-          สถานที่สำคัญในพื้นที่
-        </button>
+      <div className="flex flex-col md:flex-row items-center justify-center gap-4 w-full max-w-3xl mx-auto">
+  {[
+    { label: "ปั๊มน้ำมัน", imgAlt: "ปั๊มน้ำมัน"},
+    { label: "ร้านอาหาร", imgAlt: "ร้านอาหาร" },
+    { label: "สถานที่สำคัญในพื้นที่", imgAlt: "สถานที่สำคัญ" },
+  ].map((btn, index) => (
+    <button
+      key={index}
+      className="flex items-center justify-center gap-2 w-[244px] h-[71px] flex-shrink-0 rounded-[15px] bg-white shadow transition duration-200 hover:bg-blue-50 hover:shadow-lg hover:scale-[1.02] px-4"
+    >
+      {/* กลุ่ม icon และข้อความ */}
+      <div className="flex items-center gap-2">
+        <img
+          src="/image/location.png"
+          alt={btn.imgAlt}
+          className="w-6 h-6 object-contain"
+        />
+        <span className="text-[#01385f] font-semibold text-base md:text-lg">
+          {btn.label}
+        </span>
       </div>
+    </button>
+  ))}
+</div>
+
     </div>
   );
 }

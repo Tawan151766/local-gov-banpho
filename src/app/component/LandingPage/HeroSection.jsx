@@ -4,12 +4,15 @@ import { useState } from "react";
 
 export default function HeroSection({ ui }) {
   const [activeSlide, setActiveSlide] = useState(0);
+  const [showBanner, setShowBanner] = useState(true);
   const slides = ["/image/yak.jpg", "/image/yak.jpg", "/image/yak.jpg"];
 
   const handleDotClick = (index) => {
     setActiveSlide(index);
     if (ui?.setSlide) ui.setSlide(index);
   };
+
+
 
   return (
     <>
@@ -49,22 +52,27 @@ export default function HeroSection({ ui }) {
           ))}
         </div>
 
-        {/* Banner (โปรโมชันด้านข้าง) */}
-        <div className="fixed top-[360px] left-0 w-[275px] h-[349px] bg-white/95 rounded-[33px] shadow-[0_4px_20px_rgba(0,0,0,0.2)] z-[9999] flex flex-col overflow-hidden cursor-default transition-all duration-300 translate-y-[210px] ml-[25px] hover:shadow-[0_8px_30px_rgba(0,0,0,0.3)] hover:scale-[1.01]">
-          {/* ปุ่มปิด */}
-          <button className="absolute top-[15px] right-[15px] w-[30px] h-[30px] rounded-full bg-[rgba(206,222,240,0.8)] text-[18px] font-bold flex items-center justify-center z-20 cursor-pointer transition-all duration-300 hover:bg-[#4A90E2] hover:scale-110">
-            ×
-          </button>
+        {/* ✅ Banner แสดงตาม state */}
+        {showBanner && (
+          <div className="fixed top-[360px] left-0 w-[275px] h-[349px] bg-white/95 rounded-[33px] shadow-[0_4px_20px_rgba(0,0,0,0.2)] z-[9999] flex flex-col overflow-hidden cursor-default transition-all duration-300 translate-y-[210px] ml-[25px] hover:shadow-[0_8px_30px_rgba(0,0,0,0.3)] hover:scale-[1.01]">
+            {/* ปุ่มปิด */}
+            <button
+              onClick={() => setShowBanner(false)} // ✅ ปิด banner เมื่อคลิก
+              className="absolute top-[15px] right-[15px] w-[30px] h-[30px] rounded-full bg-[rgba(206,222,240,0.8)] text-[18px] font-bold flex items-center justify-center z-20 cursor-pointer transition-all duration-300 hover:bg-[#4A90E2] hover:scale-110"
+            >
+              ×
+            </button>
 
-          {/* ภาพโปรโมชัน */}
-          <div className="flex-1 flex items-center justify-center bg-[rgba(74,144,226,0.1)] transition-all duration-300 overflow-hidden">
-            <img
-              src="image/EIT.jpg"
-              alt="EIT"
-              className="w-full h-full object-cover"
-            />
+            {/* ภาพโปรโมชัน */}
+            <div className="flex-1 flex items-center justify-center bg-[rgba(74,144,226,0.1)] transition-all duration-300 overflow-hidden">
+              <img
+                src="image/EIT.jpg"
+                alt="EIT"
+                className="w-full h-full object-cover"
+              />
+            </div>
           </div>
-        </div>
+        )}
 
         {/* Hero Text Box */}
         <div className="absolute bottom-0 left-1/2 -translate-x-1/2 w-full text-center px-4 py-5 bg-[#0000006B] shadow-[0_4px_15px_rgba(0,0,0,0.1)] z-10">
