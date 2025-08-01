@@ -2,10 +2,8 @@
 
 import { Layout, Menu, Card, Typography, Space, Avatar, Dropdown } from "antd";
 import {
-  DashboardOutlined,
   UserOutlined,
   LogoutOutlined,
-  TeamOutlined,
   BarChartOutlined,
   FileProtectOutlined,
   FileTextOutlined,
@@ -14,7 +12,7 @@ import {
   SafetyOutlined,
   CustomerServiceOutlined,
 } from "@ant-design/icons";
-import DashboardStats from "./components/DashboardStats";
+
 import UserManagement from "./components/UserManagement";
 import StaffManagement from "./components/StaffManagement";
 import PerformanceResultsManagement from "./components/PerformanceResultsManagement";
@@ -26,6 +24,26 @@ import dynamic from "next/dynamic";
 
 const CorruptionComplaintsManagement = dynamic(
   () => import("./components/CorruptionComplaintsManagement"),
+  { ssr: false }
+);
+
+const GeneralRequestsManagement = dynamic(
+  () => import("./components/GeneralRequestsManagement"),
+  { ssr: false }
+);
+
+const WaterSupportRequestsManagement = dynamic(
+  () => import("./components/WaterSupportRequestsManagement"),
+  { ssr: false }
+);
+
+const WastebinRequestsManagement = dynamic(
+  () => import("./components/WastebinRequestsManagement"),
+  { ssr: false }
+);
+
+const WasteCollectionRequestsManagement = dynamic(
+  () => import("./components/WasteCollectionRequestsManagement"),
   { ssr: false }
 );
 import styles from "./admin.module.css";
@@ -91,33 +109,7 @@ export default function AdminPage() {
     },
   ];
 
-  // ข้อมูลตัวอย่างสำหรับ Dashboard
-  const performanceData = [
-    {
-      key: "1",
-      project: "โครงการพัฒนาถนนในหมู่บ้าน",
-      budget: "2,500,000",
-      progress: 85,
-      status: "กำลังดำเนินการ",
-      responsible: "กองช่าง",
-    },
-    {
-      key: "2",
-      project: "โครงการจัดการขยะชุมชน",
-      budget: "800,000",
-      progress: 100,
-      status: "เสร็จสิ้น",
-      responsible: "กองสาธารณสุข",
-    },
-    {
-      key: "3",
-      project: "โครงการส่งเสริมการเกษตรอินทรีย์",
-      budget: "1,200,000",
-      progress: 60,
-      status: "กำลังดำเนินการ",
-      responsible: "กองส่งเสริมการเกษตร",
-    },
-  ];
+
 
   const menuItems = [
     {
@@ -181,18 +173,32 @@ export default function AdminPage() {
           icon: <SafetyOutlined />,
           label: "คำร้องเรียนการทุจริต",
         },
+        {
+          key: "general-requests",
+          icon: <CustomerServiceOutlined />,
+          label: "คำร้องทั่วไป",
+        },
+        {
+          key: "water-support-requests",
+          icon: <FileTextOutlined />,
+          label: "คำร้องขอสนับสนุนน้ำ",
+        },
+        {
+          key: "wastebin-requests",
+          icon: <FileTextOutlined />,
+          label: "คำร้องขอรับถังขยะ",
+        },
+        {
+          key: "waste-collection-requests",
+          icon: <FileTextOutlined />,
+          label: "คำร้องขอจัดเก็บขยะ",
+        },
       ],
     },
   ];
 
   const renderContent = () => {
     switch (selectedKey) {
-      case "dashboard":
-        return (
-          <Card>
-            <DashboardStats performanceData={performanceData} />
-          </Card>
-        );
       case "user-management":
         return <UserManagement />;
       case "staff-management":
@@ -209,6 +215,14 @@ export default function AdminPage() {
         return <LawsRegsManagement />;
       case "corruption-complaints":
         return <CorruptionComplaintsManagement />;
+      case "general-requests":
+        return <GeneralRequestsManagement />;
+      case "water-support-requests":
+        return <WaterSupportRequestsManagement />;
+      case "wastebin-requests":
+        return <WastebinRequestsManagement />;
+      case "waste-collection-requests":
+        return <WasteCollectionRequestsManagement />;
       default:
         return (
           <Card>

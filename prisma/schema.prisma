@@ -366,3 +366,151 @@ enum menus_level {
   sub
   small_sub
 }
+
+model WaterSupportRequest {
+  id                    BigInt                     @id @default(autoincrement()) @db.UnsignedBigInt
+  request_date          DateTime                   @db.Date
+  
+  // ข้อมูลผู้ยื่นคำร้อง (Requester Information)
+  requester_title       String                     @db.VarChar(20) // นาย, นาง, นางสาว
+  requester_name        String                     @db.VarChar(255)
+  requester_age         Int?
+  requester_house_number String                    @db.VarChar(50)
+  requester_village     String                     @db.VarChar(100)
+  requester_subdistrict String                     @default("ตำบลบ้านโพธิ์") @db.VarChar(100)
+  requester_district    String                     @default("อำเภอบ้านโพธิ์") @db.VarChar(100)
+  requester_province    String                     @default("จังหวัดฉะเชิงเทรา") @db.VarChar(100)
+  requester_phone       String?                    @db.VarChar(20)
+  family_members        Int?
+  
+  // รายละเอียดคำร้อง (Request Details)
+  water_needs           String                     @db.Text // ความต้องการใช้น้ำ
+  symptoms_description  String                     @db.Text // อาการและประเภท
+  
+  // สถานะการดำเนินการ (Status Management)
+  status                WaterSupportRequestStatus  @default(pending)
+  status_note           String?                    @db.Text
+  
+  // ข้อมูลระบบ (System Information)
+  captcha_answer        String?                    @db.VarChar(10)
+  ip_address            String?                    @db.VarChar(45)
+  user_agent            String?                    @db.Text
+  created_at            DateTime?                  @default(now()) @db.Timestamp(0)
+  updated_at            DateTime?                  @default(now()) @updatedAt @db.Timestamp(0)
+
+  @@index([request_date], map: "idx_water_request_date")
+  @@index([requester_name], map: "idx_water_requester_name")
+  @@index([status], map: "idx_water_status")
+  @@index([created_at], map: "idx_water_created_at")
+  @@map("water_support_requests")
+}
+
+enum WaterSupportRequestStatus {
+  pending
+  processing
+  completed
+  rejected
+}
+
+model WastebinRequest {
+  id                      BigInt                @id @default(autoincrement()) @db.UnsignedBigInt
+  request_date            DateTime              @db.Date
+  
+  // ข้อมูลผู้ยื่นคำร้อง (Requester Information)
+  requester_title         String                @db.VarChar(20) // นาย, นาง, นางสาว, หน่วยงาน
+  requester_name          String                @db.VarChar(255)
+  requester_age           Int
+  requester_house_number  String                @db.VarChar(50)
+  requester_street        String?               @db.VarChar(100)
+  requester_village       String                @db.VarChar(100)
+  requester_subdistrict   String                @default("ตำบลบ้านโพธิ์") @db.VarChar(100)
+  requester_district      String                @default("อำเภอบ้านโพธิ์") @db.VarChar(100)
+  requester_province      String                @default("จังหวัดฉะเชิงเทรา") @db.VarChar(100)
+  
+  // รายละเอียดคำร้อง (Request Details)
+  bin_quantity            Int                   // จำนวนถังขยะที่ต้องการ
+  delivery_house_number   String                @db.VarChar(50)
+  delivery_village        String                @db.VarChar(100)
+  
+  // เอกสารประกอบ (Documents)
+  house_registration_doc  String?               @db.VarChar(255) // สำเนาทะเบียนบ้าน
+  id_card_doc            String?               @db.VarChar(255) // สำเนาบัตรประชาชน
+  document_1             String?               @db.VarChar(255)
+  document_2             String?               @db.VarChar(255)
+  document_3             String?               @db.VarChar(255)
+  
+  // สถานะการดำเนินการ (Status Management)
+  status                 WastebinRequestStatus @default(pending)
+  status_note            String?               @db.Text
+  
+  // ข้อมูลระบบ (System Information)
+  captcha_answer         String?               @db.VarChar(10)
+  ip_address             String?               @db.VarChar(45)
+  user_agent             String?               @db.Text
+  created_at             DateTime?             @default(now()) @db.Timestamp(0)
+  updated_at             DateTime?             @default(now()) @updatedAt @db.Timestamp(0)
+
+  @@index([request_date], map: "idx_wastebin_request_date")
+  @@index([requester_name], map: "idx_wastebin_requester_name")
+  @@index([status], map: "idx_wastebin_status")
+  @@index([created_at], map: "idx_wastebin_created_at")
+  @@map("wastebin_requests")
+}
+
+enum WastebinRequestStatus {
+  pending
+  processing
+  completed
+  rejected
+}
+
+model WasteCollectionRequest {
+  id                      BigInt                      @id @default(autoincrement()) @db.UnsignedBigInt
+  request_date            DateTime                    @db.Date
+  
+  // ข้อมูลผู้ยื่นคำร้อง (Requester Information)
+  requester_title         String                      @db.VarChar(20) // นาย, นาง, นางสาว, หน่วยงาน
+  requester_name          String                      @db.VarChar(255)
+  requester_age           Int
+  requester_house_number  String                      @db.VarChar(50)
+  requester_village       String                      @db.VarChar(100)
+  requester_subdistrict   String                      @default("ตำบลบ้านโพธิ์") @db.VarChar(100)
+  requester_district      String                      @default("อำเภอบ้านโพธิ์") @db.VarChar(100)
+  requester_province      String                      @default("จังหวัดฉะเชิงเทรา") @db.VarChar(100)
+  requester_phone         String?                     @db.VarChar(20)
+  
+  // ประเภทขยะ (Waste Types)
+  waste_type_household    Boolean                     @default(false) // บ้านที่อยู่อาศัย
+  waste_type_rental       Boolean                     @default(false) // บ้านเจ้า/อาคารให้เช่า
+  waste_type_shop         Boolean                     @default(false) // ร้านค้า
+  waste_type_factory      Boolean                     @default(false) // โรงงาน/ประกอบธุรกิจ
+  other_waste_type        String?                     @db.Text // อื่นๆ
+  
+  // รายละเอียดคำร้อง (Request Details)
+  collection_details      String                      @db.Text // รายละเอียดการจัดเก็บ
+  reason_for_request      String                      @db.Text // เหตุผลความจำเป็น
+  
+  // สถานะการดำเนินการ (Status Management)
+  status                  WasteCollectionRequestStatus @default(pending)
+  status_note             String?                     @db.Text
+  
+  // ข้อมูลระบบ (System Information)
+  captcha_answer          String?                     @db.VarChar(10)
+  ip_address              String?                     @db.VarChar(45)
+  user_agent              String?                     @db.Text
+  created_at              DateTime?                   @default(now()) @db.Timestamp(0)
+  updated_at              DateTime?                   @default(now()) @updatedAt @db.Timestamp(0)
+
+  @@index([request_date], map: "idx_waste_collection_request_date")
+  @@index([requester_name], map: "idx_waste_collection_requester_name")
+  @@index([status], map: "idx_waste_collection_status")
+  @@index([created_at], map: "idx_waste_collection_created_at")
+  @@map("waste_collection_requests")
+}
+
+enum WasteCollectionRequestStatus {
+  pending
+  processing
+  completed
+  rejected
+}
