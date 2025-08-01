@@ -5,6 +5,7 @@ export default function Navbar() {
   const [showMenu, setShowMenu] = useState(false);
   const [showBasicInfoDropdown, setShowBasicInfoDropdown] = useState(false);
   const [showPersonnelDropdown, setShowPersonnelDropdown] = useState(false);
+  const [showCitizenDropdown, setShowCitizenDropdown] = useState(false);
   const navRef = useRef(null);
 
   // ปิด dropdown เมื่อคลิกข้างนอก
@@ -13,6 +14,7 @@ export default function Navbar() {
       if (navRef.current && !navRef.current.contains(event.target)) {
         setShowBasicInfoDropdown(false);
         setShowPersonnelDropdown(false);
+        setShowCitizenDropdown(false);
       }
     };
 
@@ -393,12 +395,87 @@ export default function Navbar() {
               >
                 กฎหมายและระเบียบ
               </a>
-              <a
-                href="#"
-                className="text-white text-base font-medium hover:underline hover:text-[#01385F] hover:text-bold hover:text-[20px] transition-all duration-300"
-              >
-                เมนูสำหรับประชาชน
-              </a>
+              {/* เมนูสำหรับประชาชน - Mobile */}
+              <div className="relative">
+                <div
+                  className="text-white text-base font-medium hover:underline hover:text-[#01385F] hover:text-bold hover:text-[20px] transition-all duration-300 flex items-center gap-1 cursor-pointer"
+                  onClick={() => setShowCitizenDropdown(!showCitizenDropdown)}
+                >
+                  เมนูสำหรับประชาชน
+                  <svg
+                    className={`w-4 h-4 transition-transform ${
+                      showCitizenDropdown ? "rotate-180" : ""
+                    }`}
+                    fill="none"
+                    stroke="currentColor"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth={2}
+                      d="M19 9l-7 7-7-7"
+                    />
+                  </svg>
+                </div>
+                <div
+                  className={`${
+                    showCitizenDropdown
+                      ? "opacity-100 visible"
+                      : "opacity-0 invisible"
+                  } transition-all duration-200 mt-2 bg-white rounded-md shadow-lg p-2 flex flex-col gap-1 relative z-50`}
+                >
+                  <a
+                    href="/citizen/complaints"
+                    className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                    onClick={() => setShowCitizenDropdown(false)}
+                  >
+                    รับเรื่องราวร้องทุกข์
+                  </a>
+                  <a
+                    href="/citizen/complaints-quality"
+                    className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                    onClick={() => setShowCitizenDropdown(false)}
+                  >
+                    รับแจ้งร้องเรียนกวรคุณภาพดีมีชอบ
+                  </a>
+                  <a
+                    href="/citizen/manual"
+                    className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                    onClick={() => setShowCitizenDropdown(false)}
+                  >
+                    คู่มือปฏิบัติงาน
+                  </a>
+                  <a
+                    href="/citizen/service-standards"
+                    className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                    onClick={() => setShowCitizenDropdown(false)}
+                  >
+                    คู่มือหรือมาตรฐานการให้บริการประชาชน
+                  </a>
+                  <a
+                    href="/citizen/citizen-manual"
+                    className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                    onClick={() => setShowCitizenDropdown(false)}
+                  >
+                    คู่มือประชาชน
+                  </a>
+                  <a
+                    href="/citizen/documents"
+                    className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                    onClick={() => setShowCitizenDropdown(false)}
+                  >
+                    เอกสารดาวน์โหลด/แบบฟอร์มต่างๆ
+                  </a>
+                  <a
+                    href="/citizen/work-process"
+                    className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                    onClick={() => setShowCitizenDropdown(false)}
+                  >
+                    ลิดขั้นตอนการปฏิบัติงาน
+                  </a>
+                </div>
+              </div>
 
               {/* Close Button for mobile menu at bottom */}
               <button
@@ -658,12 +735,89 @@ export default function Navbar() {
           >
             กฎหมายและระเบียบ
           </a>
-          <a
-            href="#"
-            className="text-white text-base font-medium hover:underline hover:text-[#01385F] hover:text-[20px] hover:text-bold transition-all duration-300"
-          >
-            เมนูสำหรับประชาชน
-          </a>
+          {/* เมนูสำหรับประชาชน - Desktop */}
+          <div className="group relative">
+            <div
+              className="text-white text-base font-medium hover:underline hover:text-[#01385F] hover:text-bold hover:text-[20px] transition-all duration-300 flex items-center gap-1 cursor-pointer"
+              onClick={() => setShowCitizenDropdown(!showCitizenDropdown)}
+            >
+              เมนูสำหรับประชาชน
+              <svg
+                className={`w-4 h-4 transition-transform group-hover:rotate-180 ${
+                  showCitizenDropdown ? "rotate-180" : ""
+                }`}
+                fill="none"
+                stroke="currentColor"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                  strokeWidth={2}
+                  d="M19 9l-7 7-7-7"
+                />
+              </svg>
+            </div>
+            <div
+              className={`absolute top-full left-0 mt-2 w-80 ${
+                showCitizenDropdown
+                  ? "opacity-100 visible"
+                  : "opacity-0 invisible group-hover:opacity-100 group-hover:visible"
+              } transition-all duration-200 bg-white rounded-md shadow-lg z-50`}
+            >
+              <div className="py-2">
+                <a
+                  href="/citizen/complaints"
+                  className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 cursor-pointer"
+                  onClick={() => setShowCitizenDropdown(false)}
+                >
+                  รับเรื่องราวร้องทุกข์
+                </a>
+                <a
+                  href="/citizen/complaints-quality"
+                  className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 cursor-pointer"
+                  onClick={() => setShowCitizenDropdown(false)}
+                >
+                  รับแจ้งร้องเรียนกวรคุณภาพดีมีชอบ
+                </a>
+                <a
+                  href="/citizen/manual"
+                  className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 cursor-pointer"
+                  onClick={() => setShowCitizenDropdown(false)}
+                >
+                  คู่มือปฏิบัติงาน
+                </a>
+                <a
+                  href="/citizen/service-standards"
+                  className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 cursor-pointer"
+                  onClick={() => setShowCitizenDropdown(false)}
+                >
+                  คู่มือหรือมาตรฐานการให้บริการประชาชน
+                </a>
+                <a
+                  href="/citizen/citizen-manual"
+                  className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 cursor-pointer"
+                  onClick={() => setShowCitizenDropdown(false)}
+                >
+                  คู่มือประชาชน
+                </a>
+                <a
+                  href="/citizen/documents"
+                  className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 cursor-pointer"
+                  onClick={() => setShowCitizenDropdown(false)}
+                >
+                  เอกสารดาวน์โหลด/แบบฟอร์มต่างๆ
+                </a>
+                <a
+                  href="/citizen/work-process"
+                  className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 cursor-pointer"
+                  onClick={() => setShowCitizenDropdown(false)}
+                >
+                  ลิดขั้นตอนการปฏิบัติงาน
+                </a>
+              </div>
+            </div>
+          </div>
         </nav>
       </div>
     </header>
