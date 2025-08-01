@@ -15,7 +15,7 @@ export default function ActivitySection() {
       setLoading(true);
       setError(null);
       const response = await fetch(
-        "http://localhost:3000/api/post-details?page=1&limit=4&postTypeId=2&withMedia=true",
+        "/api/post-details?page=1&limit=4&postTypeId=2&withMedia=true",
         {
           method: "GET",
           headers: {
