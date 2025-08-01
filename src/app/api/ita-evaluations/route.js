@@ -1,36 +1,36 @@
-import { NextResponse } from 'next/server';
-import mysql from 'mysql2/promise';
+import { NextResponse } from "next/server";
+import mysql from "mysql2/promise";
 
 // Database connection
 const dbConfig = {
-  host: '103.80.48.25',
-  port: 3306,
-  user: 'gmsky_banphokorat',
-  password: 'banphokorat56789',
-  database: 'gmsky_banphokorat'
+  host: process.env.DB_HOST,
+  port: process.env.DB_PORT ? parseInt(process.env.DB_PORT) : 3306,
+  user: process.env.DB_USER,
+  password: process.env.DB_PASSWORD,
+  database: process.env.DB_NAME,
 };
 
 // GET /api/ita-evaluations - ดึงรายการ evaluations
 export async function GET(request) {
   let connection;
-  
+
   try {
     const { searchParams } = new URL(request.url);
-    const page = parseInt(searchParams.get('page')) || 1;
-    const limit = parseInt(searchParams.get('limit')) || 10;
-    const search = searchParams.get('search') || '';
-    const withContents = searchParams.get('withContents') === 'true';
+    const page = parseInt(searchParams.get("page")) || 1;
+    const limit = parseInt(searchParams.get("limit")) || 10;
+    const search = searchParams.get("search") || "";
+    const withContents = searchParams.get("withContents") === "true";
 
     const offset = (page - 1) * limit;
 
     connection = await mysql.createConnection(dbConfig);
 
     // Build WHERE clause
-    let whereClause = 'WHERE deleted_at IS NULL';
+    let whereClause = "WHERE deleted_at IS NULL";
     const params = [];
 
     if (search) {
-      whereClause += ' AND (name LIKE ? OR description LIKE ?)';
+      whereClause += " AND (name LIKE ? OR description LIKE ?)";
       params.push(`%${search}%`, `%${search}%`);
     }
 
@@ -51,9 +51,9 @@ export async function GET(request) {
     // If withContents is true, get contents for each evaluation
     let evaluationsWithContents = evaluations;
     if (withContents && evaluations.length > 0) {
-      const evaluationIds = evaluations.map(evaluation => evaluation.id);
-      const placeholders = evaluationIds.map(() => '?').join(',');
-      
+      const evaluationIds = evaluations.map((evaluation) => evaluation.id);
+      const placeholders = evaluationIds.map(() => "?").join(",");
+
       const [contents] = await connection.execute(
         `SELECT * FROM ita_contents WHERE evaluation_id IN (${placeholders}) AND deleted_at IS NULL ORDER BY created_at ASC`,
         evaluationIds
@@ -69,9 +69,9 @@ export async function GET(request) {
       }, {});
 
       // Add contents to each evaluation
-      evaluationsWithContents = evaluations.map(evaluation => ({
+      evaluationsWithContents = evaluations.map((evaluation) => ({
         ...evaluation,
-        contents: contentsByEvaluation[evaluation.id] || []
+        contents: contentsByEvaluation[evaluation.id] || [],
       }));
     }
 
@@ -82,14 +82,17 @@ export async function GET(request) {
         page,
         limit,
         total,
-        totalPages: Math.ceil(total / limit)
-      }
+        totalPages: Math.ceil(total / limit),
+      },
     });
-
   } catch (error) {
-    console.error('Error fetching evaluations:', error);
+    console.error("Error fetching evaluations:", error);
     return NextResponse.json(
-      { success: false, error: 'Failed to fetch evaluations', details: error.message },
+      {
+        success: false,
+        error: "Failed to fetch evaluations",
+        details: error.message,
+      },
       { status: 500 }
     );
   } finally {
@@ -102,7 +105,7 @@ export async function GET(request) {
 // POST /api/ita-evaluations - สร้าง evaluation ใหม่
 export async function POST(request) {
   let connection;
-  
+
   try {
     const body = await request.json();
     const { name, description, ita_date, contents = [] } = body;
@@ -110,7 +113,7 @@ export async function POST(request) {
     // Validation
     if (!name) {
       return NextResponse.json(
-        { success: false, error: 'Name is required' },
+        { success: false, error: "Name is required" },
         { status: 400 }
       );
     }
@@ -123,7 +126,7 @@ export async function POST(request) {
     try {
       // Insert evaluation
       const [result] = await connection.execute(
-        'INSERT INTO ita_evaluations (name, description, ita_date, created_at, updated_at) VALUES (?, ?, ?, NOW(), NOW())',
+        "INSERT INTO ita_evaluations (name, description, ita_date, created_at, updated_at) VALUES (?, ?, ?, NOW(), NOW())",
         [name, description || null, ita_date || null]
       );
 
@@ -134,7 +137,7 @@ export async function POST(request) {
         for (const content of contents) {
           if (content.url) {
             await connection.execute(
-              'INSERT INTO ita_contents (url, description, evaluation_id, created_at, updated_at) VALUES (?, ?, ?, NOW(), NOW())',
+              "INSERT INTO ita_contents (url, description, evaluation_id, created_at, updated_at) VALUES (?, ?, ?, NOW(), NOW())",
               [content.url, content.description || null, evaluationId]
             );
           }
@@ -146,36 +149,41 @@ export async function POST(request) {
 
       // Get the created evaluation with contents
       const [createdEvaluation] = await connection.execute(
-        'SELECT * FROM ita_evaluations WHERE id = ?',
+        "SELECT * FROM ita_evaluations WHERE id = ?",
         [evaluationId]
       );
 
       const [createdContents] = await connection.execute(
-        'SELECT * FROM ita_contents WHERE evaluation_id = ? AND deleted_at IS NULL',
+        "SELECT * FROM ita_contents WHERE evaluation_id = ? AND deleted_at IS NULL",
         [evaluationId]
       );
 
       const evaluationWithContents = {
         ...createdEvaluation[0],
-        contents: createdContents
+        contents: createdContents,
       };
 
-      return NextResponse.json({
-        success: true,
-        data: evaluationWithContents,
-        message: 'Evaluation created successfully'
-      }, { status: 201 });
-
+      return NextResponse.json(
+        {
+          success: true,
+          data: evaluationWithContents,
+          message: "Evaluation created successfully",
+        },
+        { status: 201 }
+      );
     } catch (error) {
       // Rollback transaction on error
       await connection.rollback();
       throw error;
     }
-
   } catch (error) {
-    console.error('Error creating evaluation:', error);
+    console.error("Error creating evaluation:", error);
     return NextResponse.json(
-      { success: false, error: 'Failed to create evaluation', details: error.message },
+      {
+        success: false,
+        error: "Failed to create evaluation",
+        details: error.message,
+      },
       { status: 500 }
     );
   } finally {
