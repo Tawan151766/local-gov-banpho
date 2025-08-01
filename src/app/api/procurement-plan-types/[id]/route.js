@@ -3,11 +3,11 @@ import mysql from 'mysql2/promise';
 
 // Database connection
 const dbConfig = {
-  host: '103.80.48.25',
-  port: 3306,
-  user: 'gmsky_banphokorat',
-  password: 'banphokorat56789',
-  database: 'gmsky_banphokorat'
+  host: process.env.DB_HOST,
+  port: process.env.DB_PORT ? parseInt(process.env.DB_PORT) : 3306,
+  user: process.env.DB_USER,
+  password: process.env.DB_PASSWORD,
+  database: process.env.DB_NAME
 };
 
 // GET /api/procurement-plan-types/[id] - ดึงข้อมูล procurement plan type เดียว

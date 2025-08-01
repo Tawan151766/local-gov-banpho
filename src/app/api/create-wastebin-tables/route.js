@@ -1,21 +1,21 @@
-import { NextResponse } from 'next/server';
-import mysql from 'mysql2/promise';
+import { NextResponse } from "next/server";
+import mysql from "mysql2/promise";
 
 // Database connection
 const dbConfig = {
-  host: '103.80.48.25',
-  port: 3306,
-  user: 'gmsky_banphokorat',
-  password: 'banphokorat56789',
-  database: 'gmsky_banphokorat'
+  host: process.env.DB_HOST,
+  port: process.env.DB_PORT ? parseInt(process.env.DB_PORT) : 3306,
+  user: process.env.DB_USER,
+  password: process.env.DB_PASSWORD,
+  database: process.env.DB_NAME,
 };
 
 export async function POST() {
   let connection;
-  
+
   try {
     connection = await mysql.createConnection(dbConfig);
-    
+
     // Create wastebin_requests table
     const createWastebinRequestsTable = `
       CREATE TABLE IF NOT EXISTS wastebin_requests (
@@ -70,17 +70,16 @@ export async function POST() {
 
     return NextResponse.json({
       success: true,
-      message: 'Wastebin request tables created successfully',
-      tables: ['wastebin_requests']
+      message: "Wastebin request tables created successfully",
+      tables: ["wastebin_requests"],
     });
-
   } catch (error) {
-    console.error('Error creating wastebin request tables:', error);
+    console.error("Error creating wastebin request tables:", error);
     return NextResponse.json(
-      { 
-        success: false, 
-        error: 'Failed to create wastebin request tables', 
-        details: error.message 
+      {
+        success: false,
+        error: "Failed to create wastebin request tables",
+        details: error.message,
       },
       { status: 500 }
     );
