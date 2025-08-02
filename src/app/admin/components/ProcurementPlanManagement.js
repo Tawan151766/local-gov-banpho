@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback } from "react";
 import {
   Table,
   Button,
@@ -21,6 +22,8 @@ import {
   Drawer,
   Upload,
   Progress,
+  Upload,
+  Progress,
 } from "antd";
 import {
   PlusOutlined,
@@ -35,6 +38,9 @@ import {
   FileWordOutlined,
   FileOutlined,
   LinkOutlined,
+  UploadOutlined,
+  FileImageOutlined,
+  DownloadOutlined,
   UploadOutlined,
   FileImageOutlined,
   DownloadOutlined,
@@ -90,13 +96,6 @@ const ProcurementFileUpload = ({
     if (!typeId) {
       console.error("กรุณาเลือกประเภทแผนก่อน");
       onError(new Error("Type ID is required"));
-      return;
-    }
-
-    // ป้องกันการ upload ซ้ำ - ถ้ากำลัง upload อยู่แล้วให้หยุด
-    if (uploading) {
-      console.log('Upload already in progress, skipping...');
-      onError(new Error('Upload already in progress'));
       return;
     }
 
@@ -535,8 +534,51 @@ export default function ProcurementPlanManagement() {
         }
       }
 
+      // ตรวจสอบนาสกุลไฟล์อัตโนมัติจาก files_path
+      let autoDetectedFileType = "other";
+      if (values.files_path) {
+        const extension = values.files_path.split(".").pop().toLowerCase();
+        switch (extension) {
+          case "pdf":
+            autoDetectedFileType = "pdf";
+            break;
+          case "doc":
+            autoDetectedFileType = "doc";
+            break;
+          case "docx":
+            autoDetectedFileType = "docx";
+            break;
+          case "xls":
+            autoDetectedFileType = "xls";
+            break;
+          case "xlsx":
+            autoDetectedFileType = "xlsx";
+            break;
+          case "txt":
+            autoDetectedFileType = "txt";
+            break;
+          case "jpg":
+          case "jpeg":
+            autoDetectedFileType = "jpg";
+            break;
+          case "png":
+            autoDetectedFileType = "png";
+            break;
+          case "gif":
+            autoDetectedFileType = "gif";
+            break;
+          case "webp":
+            autoDetectedFileType = "webp";
+            break;
+          case "mp4":
+            autoDetectedFileType = "mp4";
+            break;
+        }
+      }
+
       const fileData = {
         ...values,
+        files_type: autoDetectedFileType, // ใช้ประเภทไฟล์ที่ตรวจสอบอัตโนมัติ
         files_type: autoDetectedFileType, // ใช้ประเภทไฟล์ที่ตรวจสอบอัตโนมัติ
         type_id: selectedType.id,
       };
@@ -584,6 +626,27 @@ export default function ProcurementPlanManagement() {
     } catch (error) {
       message.error(error.message || "ไม่สามารถลบไฟล์ได้");
     }
+  };
+
+  // Handle download file
+  const handleDownloadFile = (file) => {
+    // file.files_path เก็บเป็น /storage/uploads/filename
+    let fullUrl = "";
+    if (file.files_path.startsWith("/storage/")) {
+      // Laravel storage URL format
+      fullUrl = file.files_path.replace(
+        "/storage/",
+        "https://banpho.sosmartsolution.com/storage/"
+      );
+    } else if (file.files_path.startsWith("http")) {
+      // Already full URL
+      fullUrl = file.files_path;
+    } else {
+      // Fallback
+      fullUrl = `https://banpho.sosmartsolution.com${file.files_path}`;
+    }
+
+    window.open(fullUrl, "_blank");
   };
 
   // Handle download file
@@ -851,6 +914,14 @@ export default function ProcurementPlanManagement() {
                     ดาวน์โหลด
                   </Button>,
                   <Button
+                    key="download"
+                    type="link"
+                    icon={<DownloadOutlined />}
+                    onClick={() => handleDownloadFile(file)}
+                  >
+                    ดาวน์โหลด
+                  </Button>,
+                  <Button
                     key="edit"
                     type="link"
                     icon={<EditOutlined />}
@@ -875,8 +946,16 @@ export default function ProcurementPlanManagement() {
                 <List.Item.Meta
                   avatar={getFileIcon(file.files_type)}
                   title={file.original_name || file.files_path.split("/").pop()}
+                  title={file.original_name || file.files_path.split("/").pop()}
                   description={
                     <Space direction="vertical" size="small">
+                      <Tag color="blue">{file.files_type?.toUpperCase()}</Tag>
+                      <Text type="secondary" style={{ fontSize: "12px" }}>
+                        Path: {file.files_path}
+                      </Text>
+                      {file.description && (
+                        <Text type="secondary">{file.description}</Text>
+                      )}
                       <Tag color="blue">{file.files_type?.toUpperCase()}</Tag>
                       <Text type="secondary" style={{ fontSize: "12px" }}>
                         Path: {file.files_path}
@@ -895,6 +974,7 @@ export default function ProcurementPlanManagement() {
             )}
             locale={{
               emptyText: "ยังไม่มีไฟล์เอกสาร",
+              emptyText: "ยังไม่มีไฟล์เอกสาร",
             }}
           />
         </Drawer>
@@ -906,6 +986,7 @@ export default function ProcurementPlanManagement() {
           onCancel={closeFileModal}
           footer={null}
           width={500}
+          width={500}
         >
           <Form form={fileForm} layout="vertical" onFinish={handleFileSubmit}>
             <Form.Item
@@ -916,7 +997,11 @@ export default function ProcurementPlanManagement() {
               <ProcurementFileUpload
                 typeId={selectedType?.id}
                 accept=".pdf,.doc,.docx,.xls,.xlsx,.txt,.jpg,.jpeg,.png,.gif,.webp"
+              <ProcurementFileUpload
+                typeId={selectedType?.id}
+                accept=".pdf,.doc,.docx,.xls,.xlsx,.txt,.jpg,.jpeg,.png,.gif,.webp"
                 placeholder="เลือกไฟล์เอกสารแผนจัดซื้อจัดจ้าง"
+                maxSize={10}
                 maxSize={10}
               />
             </Form.Item>
@@ -928,7 +1013,71 @@ export default function ProcurementPlanManagement() {
                 maxLength={500}
                 showCount
               />
+            <Form.Item name="description" label="คำอธิบาย (ไม่บังคับ)">
+              <TextArea
+                rows={3}
+                placeholder="กรอกคำอธิบายไฟล์..."
+                maxLength={500}
+                showCount
+              />
             </Form.Item>
+
+            {/* แสดงประเภทไฟล์ที่ตรวจสอบได้ (แบบ read-only) */}
+            {fileForm.getFieldValue("files_path") && (
+              <Form.Item label="ประเภทไฟล์ที่ตรวจสอบได้">
+                <div
+                  style={{
+                    padding: "8px 12px",
+                    backgroundColor: "#f5f5f5",
+                    borderRadius: "6px",
+                    border: "1px solid #d9d9d9",
+                  }}
+                >
+                  <Space>
+                    {getFileIcon(
+                      (() => {
+                        const path = fileForm.getFieldValue("files_path");
+                        return path ? path.split(".").pop().toLowerCase() : "";
+                      })()
+                    )}
+                    <Text>
+                      {(() => {
+                        const path = fileForm.getFieldValue("files_path");
+                        if (!path) return "ยังไม่ได้เลือกไฟล์";
+                        const extension = path.split(".").pop().toLowerCase();
+                        switch (extension) {
+                          case "pdf":
+                            return "PDF Document";
+                          case "doc":
+                            return "Word Document";
+                          case "docx":
+                            return "Word Document (DOCX)";
+                          case "xls":
+                            return "Excel Spreadsheet";
+                          case "xlsx":
+                            return "Excel Spreadsheet (XLSX)";
+                          case "txt":
+                            return "Text File";
+                          case "jpg":
+                          case "jpeg":
+                            return "JPEG Image";
+                          case "png":
+                            return "PNG Image";
+                          case "gif":
+                            return "GIF Image";
+                          case "webp":
+                            return "WebP Image";
+                          case "mp4":
+                            return "MP4 Video";
+                          default:
+                            return "ไฟล์อื่นๆ";
+                        }
+                      })()}
+                    </Text>
+                  </Space>
+                </div>
+              </Form.Item>
+            )}
 
             {/* แสดงประเภทไฟล์ที่ตรวจสอบได้ (แบบ read-only) */}
             {fileForm.getFieldValue("files_path") && (

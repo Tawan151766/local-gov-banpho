@@ -22,6 +22,7 @@ import {
   Select,
   Upload,
   Progress,
+  Progress,
   message as antMessage,
 } from "antd";
 import {
@@ -40,6 +41,7 @@ import {
   FileExcelOutlined,
   FileImageOutlined,
   FileOutlined,
+  DownloadOutlined,
   DownloadOutlined,
 } from "@ant-design/icons";
 import {
@@ -89,13 +91,6 @@ const PerformanceResultsFileUpload = ({
     if (!subTopicId) {
       console.error('กรุณาเลือกหัวข้อย่อยก่อน');
       onError(new Error('Sub Topic ID is required'));
-      return;
-    }
-
-    // ป้องกันการ upload ซ้ำ - ถ้ากำลัง upload อยู่แล้วให้หยุด
-    if (uploading) {
-      console.log('Upload already in progress, skipping...');
-      onError(new Error('Upload already in progress'));
       return;
     }
 
@@ -405,6 +400,7 @@ export default function PerformanceResultsManagement() {
         loadTypes(paginationInfo.current, searchText);
       }
     }
+  }, [currentLevel, pagination, loadTypes, searchText]);
   }, [currentLevel, pagination, loadTypes, searchText]);
 
   // Open type modal for create/edit
@@ -747,8 +743,29 @@ export default function PerformanceResultsManagement() {
         }
       }
 
+      // ตรวจสอบนาสกุลไฟล์อัตโนมัติจาก files_path
+      let autoDetectedFileType = 'other';
+      if (values.files_path) {
+        const extension = values.files_path.split('.').pop().toLowerCase();
+        switch (extension) {
+          case 'pdf': autoDetectedFileType = 'pdf'; break;
+          case 'doc': autoDetectedFileType = 'doc'; break;
+          case 'docx': autoDetectedFileType = 'docx'; break;
+          case 'xls': autoDetectedFileType = 'xls'; break;
+          case 'xlsx': autoDetectedFileType = 'xlsx'; break;
+          case 'txt': autoDetectedFileType = 'txt'; break;
+          case 'jpg':
+          case 'jpeg': autoDetectedFileType = 'jpg'; break;
+          case 'png': autoDetectedFileType = 'png'; break;
+          case 'gif': autoDetectedFileType = 'gif'; break;
+          case 'webp': autoDetectedFileType = 'webp'; break;
+          case 'mp4': autoDetectedFileType = 'mp4'; break;
+        }
+      }
+
       const fileData = {
         ...values,
+        files_type: autoDetectedFileType, // ใช้ประเภทไฟล์ที่ตรวจสอบอัตโนมัติ
         files_type: autoDetectedFileType, // ใช้ประเภทไฟล์ที่ตรวจสอบอัตโนมัติ
         sub_topic_id: selectedSubTopic.id,
       };
@@ -796,6 +813,24 @@ export default function PerformanceResultsManagement() {
     } catch (error) {
       message.error(error.message || "ไม่สามารถลบไฟล์ได้");
     }
+  };
+
+  // Handle download file
+  const handleDownloadFile = (file) => {
+    // file.files_path เก็บเป็น /storage/uploads/filename
+    let fullUrl = '';
+    if (file.files_path.startsWith('/storage/')) {
+      // Laravel storage URL format
+      fullUrl = file.files_path.replace('/storage/', 'https://banpho.sosmartsolution.com/storage/');
+    } else if (file.files_path.startsWith('http')) {
+      // Already full URL
+      fullUrl = file.files_path;
+    } else {
+      // Fallback
+      fullUrl = `https://banpho.sosmartsolution.com${file.files_path}`;
+    }
+    
+    window.open(fullUrl, '_blank');
   };
 
   // Handle download file
@@ -1038,8 +1073,17 @@ export default function PerformanceResultsManagement() {
           title: "การจัดการ",
           key: "actions",
           width: 250,
+          width: 250,
           render: (_, record) => (
             <Space>
+              <Button
+                type="primary"
+                size="small"
+                icon={<DownloadOutlined />}
+                onClick={() => handleDownloadFile(record)}
+              >
+                ดาวน์โหลด
+              </Button>
               <Button
                 type="primary"
                 size="small"
@@ -1388,12 +1432,18 @@ export default function PerformanceResultsManagement() {
               <PerformanceResultsFileUpload 
                 subTopicId={selectedSubTopic?.id}
                 accept=".pdf,.doc,.docx,.xls,.xlsx,.txt,.jpg,.jpeg,.png,.gif,.webp"
+              <PerformanceResultsFileUpload 
+                subTopicId={selectedSubTopic?.id}
+                accept=".pdf,.doc,.docx,.xls,.xlsx,.txt,.jpg,.jpeg,.png,.gif,.webp"
                 placeholder="เลือกไฟล์เอกสารผลการดำเนินงาน"
+                maxSize={10}
                 maxSize={10}
               />
             </Form.Item>
 
             <Form.Item
+              name="description"
+              label="คำอธิบาย (ไม่บังคับ)"
               name="description"
               label="คำอธิบาย (ไม่บังคับ)"
             >
@@ -1403,7 +1453,54 @@ export default function PerformanceResultsManagement() {
                 maxLength={500}
                 showCount
               />
+              <TextArea 
+                rows={3} 
+                placeholder="กรอกคำอธิบายไฟล์..."
+                maxLength={500}
+                showCount
+              />
             </Form.Item>
+
+            {/* แสดงประเภทไฟล์ที่ตรวจสอบได้ (แบบ read-only) */}
+            {fileForm.getFieldValue('files_path') && (
+              <Form.Item label="ประเภทไฟล์ที่ตรวจสอบได้">
+                <div style={{ 
+                  padding: '8px 12px', 
+                  backgroundColor: '#f5f5f5', 
+                  borderRadius: '6px',
+                  border: '1px solid #d9d9d9'
+                }}>
+                  <Space>
+                    {getFileIcon((() => {
+                      const path = fileForm.getFieldValue('files_path');
+                      return path ? path.split('.').pop().toLowerCase() : '';
+                    })())}
+                    <Text>
+                      {(() => {
+                        const path = fileForm.getFieldValue('files_path');
+                        if (!path) return 'ยังไม่ได้เลือกไฟล์';
+                        const extension = path.split('.').pop().toLowerCase();
+                        switch (extension) {
+                          case 'pdf': return 'PDF Document';
+                          case 'doc': return 'Word Document';
+                          case 'docx': return 'Word Document (DOCX)';
+                          case 'xls': return 'Excel Spreadsheet';
+                          case 'xlsx': return 'Excel Spreadsheet (XLSX)';
+                          case 'txt': return 'Text File';
+                          case 'jpg':
+                          case 'jpeg': return 'JPEG Image';
+                          case 'png': return 'PNG Image';
+                          case 'gif': return 'GIF Image';
+                          case 'webp': return 'WebP Image';
+                          case 'mp4': return 'MP4 Video';
+                          default: return 'ไฟล์อื่นๆ';
+                        }
+                      })()}
+                    </Text>
+                  </Space>
+                </div>
+              </Form.Item>
+            )}
 
             {/* แสดงประเภทไฟล์ที่ตรวจสอบได้ (แบบ read-only) */}
             {fileForm.getFieldValue('files_path') && (
