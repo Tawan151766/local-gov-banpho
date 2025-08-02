@@ -35,6 +35,9 @@ import {
   LoadingOutlined,
   CheckCircleOutlined,
   ExclamationCircleOutlined,
+  LoadingOutlined,
+  CheckCircleOutlined,
+  ExclamationCircleOutlined,
 } from "@ant-design/icons";
 import { postTypesAPI, postDetailsAPI } from "@/lib/api";
 import { uploadFileToServer } from "@/lib/fileUploadUtils";
@@ -47,7 +50,7 @@ const { Title } = Typography;
 const PostFileUpload = ({ 
   value = [],
   onChange,
-  fileType = 'image',
+  fileType = 'image', // 'image', 'video', 'pdf'
   maxCount = 8,
   accept,
   placeholder = "อัปโหลดไฟล์",
@@ -83,6 +86,7 @@ const PostFileUpload = ({
       setUploading(true);
       setUploadProgress(prev => ({ ...prev, [file.uid]: 0 }));
 
+      // Simulate progress
       const progressInterval = setInterval(() => {
         setUploadProgress(prev => {
           const currentProgress = prev[file.uid] || 0;
@@ -123,6 +127,7 @@ const PostFileUpload = ({
       console.error('Upload error:', error);
       message.error(`เกิดข้อผิดพลาดในการอัปโหลด ${file.name}: ${error.message}`);
       
+      // Remove failed file from list
       const newFileList = fileList.filter(f => f.uid !== file.uid);
       setFileList(newFileList);
       if (onChange) {
@@ -136,7 +141,7 @@ const PostFileUpload = ({
         return newProgress;
       });
     }
-    return false;
+    return false; // Prevent default upload
   };
 
   const handleRemove = (file) => {
@@ -149,6 +154,7 @@ const PostFileUpload = ({
   };
 
   const handleChange = ({ fileList: newFileList }) => {
+    // Update file list but don't trigger onChange for uploading files
     const processedList = newFileList.map(file => {
       if (file.status === 'uploading' && uploadProgress[file.uid] !== undefined) {
         return {
@@ -178,8 +184,7 @@ const PostFileUpload = ({
           fileList={fileList}
           onChange={handleChange}
           onRemove={handleRemove}
-          beforeUpload={() => false}
-          customRequest={({ file }) => handleUpload(file)}
+          beforeUpload={handleUpload}
           accept={accept || "image/*"}
           multiple
           disabled={disabled || uploading}
@@ -204,8 +209,7 @@ const PostFileUpload = ({
         fileList={fileList}
         onChange={handleChange}
         onRemove={handleRemove}
-        beforeUpload={() => false}
-        customRequest={({ file }) => handleUpload(file)}
+        beforeUpload={handleUpload}
         accept={accept}
         multiple
         disabled={disabled || uploading}
@@ -474,12 +478,16 @@ export default function PostManagement() {
       date: record.date ? dayjs(record.date) : null,
     });
 
+    // Set existing files with enhanced metadata
     setPhotoFileList(
       record.photos?.map((photo) => ({
         uid: photo.id,
         name: photo.post_photo_file.split('/').pop(),
+        name: photo.post_photo_file.split('/').pop(),
         status: "done",
         url: `https://banpho.sosmartsolution.com/storage/${photo.post_photo_file}`,
+        path: photo.post_photo_file,
+        type: 'image'
         path: photo.post_photo_file,
         type: 'image'
       })) || []
@@ -489,8 +497,11 @@ export default function PostManagement() {
       record.videos?.map((video) => ({
         uid: video.id,
         name: video.post_video_file.split('/').pop(),
+        name: video.post_video_file.split('/').pop(),
         status: "done",
         url: `https://banpho.sosmartsolution.com/storage/${video.post_video_file}`,
+        path: video.post_video_file,
+        type: 'video'
         path: video.post_video_file,
         type: 'video'
       })) || []
@@ -500,8 +511,11 @@ export default function PostManagement() {
       record.pdfs?.map((pdf) => ({
         uid: pdf.id,
         name: pdf.post_pdf_file.split('/').pop(),
+        name: pdf.post_pdf_file.split('/').pop(),
         status: "done",
         url: `https://banpho.sosmartsolution.com/storage/${pdf.post_pdf_file}`,
+        path: pdf.post_pdf_file,
+        type: 'pdf'
         path: pdf.post_pdf_file,
         type: 'pdf'
       })) || []
@@ -536,33 +550,51 @@ export default function PostManagement() {
 
   const handlePdfListChange = (newFileList) => {
     setPdfFileList(newFileList);
+  const handlePhotoListChange = (newFileList) => {
+    setPhotoFileList(newFileList);
+  };
+
+  const handleVideoListChange = (newFileList) => {
+    setVideoFileList(newFileList);
+  };
+
+  const handlePdfListChange = (newFileList) => {
+    setPdfFileList(newFileList);
   };
 
   const handleSubmitPostDetail = async (values) => {
     try {
       setLoading(true);
 
+      // Validate that at least one field is filled
       if (!values.title_name?.trim()) {
         message.error("กรุณากรอกหัวข้อโพสต์");
         return;
       }
 
+      // Prepare media data with better path handling
       const photos = photoFileList
         .filter((file) => file.status === "done" && file.path)
+        .filter((file) => file.status === "done" && file.path)
         .map((file) => ({
+          post_photo_file: file.path,
           post_photo_file: file.path,
           post_photo_status: "active",
         }));
 
       const videos = videoFileList
         .filter((file) => file.status === "done" && file.path)
+        .filter((file) => file.status === "done" && file.path)
         .map((file) => ({
+          post_video_file: file.path,
           post_video_file: file.path,
         }));
 
       const pdfs = pdfFileList
         .filter((file) => file.status === "done" && file.path)
+        .filter((file) => file.status === "done" && file.path)
         .map((file) => ({
+          post_pdf_file: file.path,
           post_pdf_file: file.path,
         }));
 
@@ -592,6 +624,7 @@ export default function PostManagement() {
         );
         setDetailModalVisible(false);
         
+        // Reset form and file lists
         detailForm.resetFields();
         setPhotoFileList([]);
         setVideoFileList([]);
@@ -600,9 +633,12 @@ export default function PostManagement() {
         fetchPostDetails();
       } else {
         throw new Error(response.error || 'Failed to save post');
+      } else {
+        throw new Error(response.error || 'Failed to save post');
       }
     } catch (error) {
       console.error("Error submitting post detail:", error);
+      message.error(`เกิดข้อผิดพลาดในการบันทึกข้อมูล: ${error.message}`);
       message.error(`เกิดข้อผิดพลาดในการบันทึกข้อมูล: ${error.message}`);
     } finally {
       setLoading(false);
@@ -949,7 +985,15 @@ export default function PostManagement() {
                   onChange={handlePhotoListChange}
                   fileType="image"
                   maxCount={8}
+                <PostFileUpload
+                  value={photoFileList}
+                  onChange={handlePhotoListChange}
+                  fileType="image"
+                  maxCount={8}
                   accept="image/*"
+                  placeholder="อัปโหลดรูปภาพ"
+                  disabled={uploading}
+                />
                   placeholder="อัปโหลดรูปภาพ"
                   disabled={uploading}
                 />
@@ -963,7 +1007,15 @@ export default function PostManagement() {
                   onChange={handleVideoListChange}
                   fileType="video"
                   maxCount={5}
+                <PostFileUpload
+                  value={videoFileList}
+                  onChange={handleVideoListChange}
+                  fileType="video"
+                  maxCount={5}
                   accept="video/*"
+                  placeholder="อัปโหลดวิดีโอ"
+                  disabled={uploading}
+                />
                   placeholder="อัปโหลดวิดีโอ"
                   disabled={uploading}
                 />
@@ -977,7 +1029,15 @@ export default function PostManagement() {
                   onChange={handlePdfListChange}
                   fileType="pdf"
                   maxCount={10}
+                <PostFileUpload
+                  value={pdfFileList}
+                  onChange={handlePdfListChange}
+                  fileType="pdf"
+                  maxCount={10}
                   accept=".pdf"
+                  placeholder="อัปโหลด PDF"
+                  disabled={uploading}
+                />
                   placeholder="อัปโหลด PDF"
                   disabled={uploading}
                 />
@@ -1051,10 +1111,13 @@ export default function PostManagement() {
 
                 {selectedRecord.photos?.length > 0 && (
                   <div style={{ marginBottom: 16 }}>
+                  <div style={{ marginBottom: 16 }}>
                     <Title level={5}>
+                      <FileImageOutlined style={{ marginRight: 8, color: '#52c41a' }} />
                       <FileImageOutlined style={{ marginRight: 8, color: '#52c41a' }} />
                       รูปภาพ ({selectedRecord.photos.length})
                     </Title>
+                    <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(150px, 1fr))', gap: 8 }}>
                     <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(150px, 1fr))', gap: 8 }}>
                       {selectedRecord.photos.map((photo, index) => (
                         <Image
@@ -1076,6 +1139,19 @@ export default function PostManagement() {
                               <LoadingOutlined />
                             </div>
                           }
+                          style={{ objectFit: "cover", borderRadius: 6 }}
+                          placeholder={
+                            <div style={{ 
+                              width: 150, 
+                              height: 150, 
+                              display: 'flex', 
+                              alignItems: 'center', 
+                              justifyContent: 'center',
+                              backgroundColor: '#f5f5f5'
+                            }}>
+                              <LoadingOutlined />
+                            </div>
+                          }
                         />
                       ))}
                     </div>
@@ -1084,12 +1160,39 @@ export default function PostManagement() {
 
                 {selectedRecord.videos?.length > 0 && (
                   <div style={{ marginBottom: 16 }}>
+                  <div style={{ marginBottom: 16 }}>
                     <Title level={5}>
+                      <VideoCameraOutlined style={{ marginRight: 8, color: '#722ed1' }} />
                       <VideoCameraOutlined style={{ marginRight: 8, color: '#722ed1' }} />
                       วิดีโอ ({selectedRecord.videos.length})
                     </Title>
                     <Space direction="vertical" style={{ width: '100%' }}>
+                    <Space direction="vertical" style={{ width: '100%' }}>
                       {selectedRecord.videos.map((video, index) => (
+                        <Card 
+                          key={video.id} 
+                          size="small"
+                          style={{ backgroundColor: '#fafafa' }}
+                        >
+                          <Space>
+                            <VideoCameraOutlined style={{ color: '#722ed1', fontSize: 18 }} />
+                            <div>
+                              <div style={{ fontWeight: 500 }}>วิดีโอ {index + 1}</div>
+                              <div style={{ fontSize: 12, color: '#666' }}>
+                                {video.post_video_file.split('/').pop()}
+                              </div>
+                            </div>
+                            <Button
+                              type="link"
+                              size="small"
+                              onClick={() => window.open(`https://banpho.sosmartsolution.com/storage/${video.post_video_file}`, '_blank')}
+                            >
+                              ดูวิดีโอ
+                            </Button>
+                          </Space>
+                        </Card>
+                      ))}
+                    </Space>
                         <Card 
                           key={video.id} 
                           size="small"
@@ -1119,12 +1222,39 @@ export default function PostManagement() {
 
                 {selectedRecord.pdfs?.length > 0 && (
                   <div style={{ marginBottom: 16 }}>
+                  <div style={{ marginBottom: 16 }}>
                     <Title level={5}>
+                      <FilePdfOutlined style={{ marginRight: 8, color: '#ff4d4f' }} />
                       <FilePdfOutlined style={{ marginRight: 8, color: '#ff4d4f' }} />
                       ไฟล์ PDF ({selectedRecord.pdfs.length})
                     </Title>
                     <Space direction="vertical" style={{ width: '100%' }}>
+                    <Space direction="vertical" style={{ width: '100%' }}>
                       {selectedRecord.pdfs.map((pdf, index) => (
+                        <Card 
+                          key={pdf.id} 
+                          size="small"
+                          style={{ backgroundColor: '#fafafa' }}
+                        >
+                          <Space>
+                            <FilePdfOutlined style={{ color: '#ff4d4f', fontSize: 18 }} />
+                            <div>
+                              <div style={{ fontWeight: 500 }}>PDF {index + 1}</div>
+                              <div style={{ fontSize: 12, color: '#666' }}>
+                                {pdf.post_pdf_file.split('/').pop()}
+                              </div>
+                            </div>
+                            <Button
+                              type="link"
+                              size="small"
+                              onClick={() => window.open(`https://banpho.sosmartsolution.com/storage/${pdf.post_pdf_file}`, '_blank')}
+                            >
+                              ดาวน์โหลด
+                            </Button>
+                          </Space>
+                        </Card>
+                      ))}
+                    </Space>
                         <Card 
                           key={pdf.id} 
                           size="small"
