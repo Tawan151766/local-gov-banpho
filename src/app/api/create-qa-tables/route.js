@@ -112,27 +112,6 @@ export async function POST() {
       console.log('Columns may already exist:', alterError.message);
     }
 
-    // Create qa_comments table
-    await connection.execute(`
-      CREATE TABLE IF NOT EXISTS qa_comments (
-        id BIGINT UNSIGNED AUTO_INCREMENT PRIMARY KEY,
-        qa_item_id INT NOT NULL,
-        comment_text TEXT NOT NULL,
-        commenter_name VARCHAR(255),
-        commenter_email VARCHAR(255),
-        rating TINYINT UNSIGNED,
-        commenter_ip VARCHAR(45),
-        is_approved BOOLEAN DEFAULT FALSE,
-        created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-        updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
-        
-        FOREIGN KEY (qa_item_id) REFERENCES qa_items(id) ON DELETE CASCADE,
-        INDEX idx_qa_item_id (qa_item_id),
-        INDEX idx_is_approved (is_approved),
-        INDEX idx_created_at (created_at)
-      ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci
-    `);
-
     // เพิ่มข้อมูลตัวอย่าง
     await connection.execute(`
       INSERT IGNORE INTO qa_categories (id, category_name, category_description, display_order) VALUES

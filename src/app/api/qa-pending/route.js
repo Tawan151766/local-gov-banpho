@@ -24,13 +24,13 @@ export async function GET(request) {
     connection = await mysql.createConnection(dbConfig);
     
     // สร้าง WHERE clause สำหรับการค้นหา
-    let whereClause = 'WHERE (qi.answer IS NULL OR qi.answer = "" OR qi.is_active = 0)';
+    let whereClause = 'WHERE (qi.answer IS NULL OR qi.answer = "" OR qi.is_active = FALSE)';
     let searchParams = [];
     
     if (search.trim()) {
-      whereClause += ' AND qi.question LIKE ?';
+      whereClause += ' AND (qi.question LIKE ? OR qs.submitter_name LIKE ? OR qs.submitter_email LIKE ?)';
       const searchTerm = `%${search.trim()}%`;
-      searchParams.push(searchTerm);
+      searchParams.push(searchTerm, searchTerm, searchTerm);
     }
     
     // ดึงข้อมูลคำถามที่รอการตอบ
@@ -47,9 +47,14 @@ export async function GET(request) {
         qi.view_count,
         qi.created_at,
         qi.updated_at,
-        qc.category_name
+        qc.category_name,
+        qs.submitter_name,
+        qs.submitter_email,
+        qs.submitter_phone,
+        qs.submitter_ip
       FROM qa_items qi
       LEFT JOIN qa_categories qc ON qi.category_id = qc.id
+      LEFT JOIN qa_submitters qs ON qi.id = qs.qa_item_id
       ${whereClause}
       ORDER BY qi.created_at DESC
       LIMIT ? OFFSET ?
@@ -59,6 +64,7 @@ export async function GET(request) {
     const [countResult] = await connection.execute(`
       SELECT COUNT(*) as total
       FROM qa_items qi
+      LEFT JOIN qa_submitters qs ON qi.id = qs.qa_item_id
       ${whereClause}
     `, searchParams);
     

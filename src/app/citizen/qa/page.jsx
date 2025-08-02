@@ -1,213 +1,450 @@
 "use client";
 
-import { useState } from "react";
-import Link from "next/link";
+import React, { useState, useEffect } from "react";
+import {
+  Input,
+  Card,
+  List,
+  Typography,
+  Space,
+  Tag,
+  Collapse,
+  Row,
+  Col,
+  Spin,
+  Empty,
+  Badge,
+  Button,
+} from "antd";
+import {
+  SearchOutlined,
+  QuestionCircleOutlined,
+  EyeOutlined,
+  StarOutlined,
+  FireOutlined,
+  PlusOutlined,
+  CommentOutlined,
+} from "@ant-design/icons";
+import { qaAPI } from "@/lib/api";
+import SubmitQuestionModal from "@/components/SubmitQuestionModal";
+import SubmitCommentModal from "@/components/SubmitCommentModal";
 
-const initialQuestions = {
-  1: {
-    id: 1,
-    title: "การเก็บค่าธรรมเนียมหนังสือรับรอง",
-    author: "จิราภรณ์",
-    date: "2023-04-26 17:27:04",
-    content:
-      "สอบถามค่ะ ปีนี้ทางเทศบาลยังยกเว้นการเก็บค่าธรรมเนียมหนังสือรับรองการเเจ้งสะสมอาหารอยู่ไหมคะ",
-    ip: "110.169.9.33",
-    comments: [
-      {
-        id: 1,
-        author: "แอดมิน",
-        date: "2023-04-26 18:28:09",
-        ip: "110.169.9.33",
-        content:
-          "ไม่ยกเว้นค่ะ\nห้วงระยะเวลาการยกเว้นการจัดเก็บค่าธรรมเนียม ตั้งเเต่วันที่ 14 พฤศจิกายน 2564 ถึง 13 พฤศจิกายน 2565 ค่ะ",
-      },
-    ],
-  },
-};
+const { Title, Text, Paragraph } = Typography;
+const { Search } = Input;
 
 export default function QAPage() {
-  const [qt, setQt] = useState(initialQuestions);
-  const [showForm, setShowForm] = useState(false);
-  const [form, setForm] = useState({
-    title: "",
-    author: "",
-    email: "",
-    content: "",
-    ip: "",
-  });
-  const [detailId, setDetailId] = useState(null);
-  const [commentForm, setCommentForm] = useState({
-    author: "",
-    email: "",
-    content: "",
-  });
+  const [categories, setCategories] = useState([]);
+  const [qaItems, setQaItems] = useState([]);
+  const [featuredItems, setFeaturedItems] = useState([]);
+  const [searchResults, setSearchResults] = useState([]);
+  const [loading, setLoading] = useState(true);
+  const [searching, setSearching] = useState(false);
+  const [selectedCategory, setSelectedCategory] = useState(null);
+  const [searchQuery, setSearchQuery] = useState("");
+  const [submitModalVisible, setSubmitModalVisible] = useState(false);
+  const [commentModalVisible, setCommentModalVisible] = useState(false);
+  const [selectedQaItem, setSelectedQaItem] = useState(null);
 
-  // Simulate IP
-  const getFakeIP = () => "110.169.9.33";
+  // โหลดข้อมูลเริ่มต้น
+  useEffect(() => {
+    loadInitialData();
+  }, []);
 
-  const handleFormChange = (e) => {
-    const { name, value } = e.target;
-    setForm((prev) => ({ ...prev, [name]: value }));
+  const loadInitialData = async () => {
+    try {
+      setLoading(true);
+
+      // โหลดหมวดหมู่
+      const categoriesResponse = await qaAPI.getCategories({
+        withItems: true,
+        activeOnly: true,
+      });
+
+      if (categoriesResponse.success) {
+        setCategories(categoriesResponse.data);
+      }
+
+      // โหลด Q&A ที่เป็น featured
+      const featuredResponse = await qaAPI.getItems({
+        featuredOnly: true,
+        limit: 5,
+      });
+
+      if (featuredResponse.success) {
+        setFeaturedItems(featuredResponse.data);
+      }
+
+      // โหลด Q&A ทั้งหมด
+      const itemsResponse = await qaAPI.getItems({
+        limit: 20,
+      });
+
+      if (itemsResponse.success) {
+        setQaItems(itemsResponse.data);
+      }
+    } catch (error) {
+      console.error("Failed to load Q&A data:", error);
+    } finally {
+      setLoading(false);
+    }
   };
 
-  const handleCommentChange = (e) => {
-    const { name, value } = e.target;
-    setCommentForm((prev) => ({ ...prev, [name]: value }));
+  // ค้นหา Q&A
+  const handleSearch = async (query) => {
+    if (!query.trim()) {
+      setSearchResults([]);
+      setSearchQuery("");
+      return;
+    }
+
+    try {
+      setSearching(true);
+      setSearchQuery(query);
+
+      const response = await qaAPI.search(query, 20);
+
+      if (response.success) {
+        setSearchResults(response.data);
+      }
+    } catch (error) {
+      console.error("Search failed:", error);
+    } finally {
+      setSearching(false);
+    }
   };
 
-  const handleSubmitQuestion = (e) => {
-    e.preventDefault();
-    if (!form.title || !form.author || !form.content) return;
-    const newId = Object.keys(qt).length + 1;
-    setQt((prev) => ({
-      ...prev,
-      [newId]: {
-        id: newId,
-        title: form.title,
-        author: form.author,
-        date: new Date().toISOString().replace("T", " ").substring(0, 19),
-        content: form.content,
-        ip: getFakeIP(),
-        comments: [],
-      },
-    }));
-    setForm({ title: "", author: "", email: "", content: "", ip: "" });
-    setShowForm(false);
+  // เลือกหมวดหมู่
+  const handleCategorySelect = async (categoryId) => {
+    try {
+      setLoading(true);
+      setSelectedCategory(categoryId);
+      setSearchQuery("");
+      setSearchResults([]);
+
+      const response = await qaAPI.getItems({
+        categoryId,
+        limit: 50,
+      });
+
+      if (response.success) {
+        setQaItems(response.data);
+      }
+    } catch (error) {
+      console.error("Failed to load category items:", error);
+    } finally {
+      setLoading(false);
+    }
   };
 
-  const handleShowDetail = (id) => {
-    setDetailId(id);
-    setCommentForm({ author: "", email: "", content: "" });
+  // เพิ่มจำนวนการดู
+  const handleItemView = async (itemId) => {
+    try {
+      await qaAPI.incrementView(itemId);
+    } catch (error) {
+      console.error("Failed to increment view:", error);
+    }
   };
 
-  const handleSubmitComment = (e) => {
-    e.preventDefault();
-    if (!commentForm.author || !commentForm.content || !detailId) return;
-    setQt((prev) => ({
-      ...prev,
-      [detailId]: {
-        ...prev[detailId],
-        comments: [
-          ...prev[detailId].comments,
-          {
-            id: prev[detailId].comments.length + 1,
-            author: commentForm.author,
-            date: new Date().toISOString().replace("T", " ").substring(0, 19),
-            ip: getFakeIP(),
-            content: commentForm.content,
-          },
-        ],
-      },
-    }));
-    setCommentForm({ author: "", email: "", content: "" });
+  // เปิด modal แสดงความคิดเห็น
+  const handleShowComment = (item) => {
+    setSelectedQaItem(item);
+    setCommentModalVisible(true);
   };
 
-  return (
-    <div className="bg-white w-full h-screen">
-      <div className="max-w-3xl mx-auto py-8 px-4 ">
-        <h1 className="text-2xl font-bold mb-6 text-blue-900">กระดานสนทนา</h1>
-        <div className="mb-4 flex gap-2">
-          <button
-            className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700"
-            onClick={() => setShowForm(true)}
-          >
-            ตั้งคำถามใหม่
-          </button>
-          <button
-            className="bg-gray-200 px-4 py-2 rounded"
-            onClick={() => setShowForm(false)}
-          >
-            คำถามทั้งหมด
-          </button>
+  // รีเซ็ตการกรอง
+  const resetFilter = () => {
+    setSelectedCategory(null);
+    setSearchQuery("");
+    setSearchResults([]);
+    loadInitialData();
+  };
+
+  const displayItems = searchQuery ? searchResults : qaItems;
+
+  // สร้าง items สำหรับ Collapse component
+  const collapseItems = displayItems.map((item, index) => ({
+    key: index.toString(),
+    label: (
+      <div>
+        <Text strong style={{ fontSize: "15px" }}>
+          {item.question}
+        </Text>
+        <div style={{ marginTop: "4px" }}>
+          <Space size="small">
+            {item.category_name && (
+              <Tag color="blue" size="small">
+                {item.category_name}
+              </Tag>
+            )}
+            {item.is_featured && (
+              <Tag color="gold" size="small">
+                <StarOutlined /> ยอดนิยม
+              </Tag>
+            )}
+            <Space size="small">
+              <EyeOutlined style={{ fontSize: "12px" }} />
+              <Text
+                type="secondary"
+                style={{ fontSize: "12px" }}
+              >
+                {item.view_count || 0}
+              </Text>
+            </Space>
+          </Space>
         </div>
+      </div>
+    ),
+    children: (
+      <div style={{ paddingLeft: "16px" }}>
+        <Paragraph
+          style={{ marginBottom: "16px", lineHeight: "1.6" }}
+        >
+          {item.answer}
+        </Paragraph>
 
-        {showForm && (
-          <form
-            className="bg-white rounded shadow p-4 mb-6"
-            onSubmit={handleSubmitQuestion}
-          >
-            <h2 className="text-lg font-semibold mb-2">ตั้งคำถามใหม่</h2>
-            <div className="mb-2">
-              <label className="block text-sm mb-1">หัวข้อคำถาม</label>
-              <input
-                name="title"
-                value={form.title}
-                onChange={handleFormChange}
-                className="w-full border px-2 py-1 rounded"
-                required
-              />
-            </div>
-            <div className="mb-2">
-              <label className="block text-sm mb-1">ชื่อ/Username</label>
-              <input
-                name="author"
-                value={form.author}
-                onChange={handleFormChange}
-                className="w-full border px-2 py-1 rounded"
-                required
-              />
-            </div>
-            <div className="mb-2">
-              <label className="block text-sm mb-1">อีเมลล์</label>
-              <input
-                name="email"
-                value={form.email}
-                onChange={handleFormChange}
-                className="w-full border px-2 py-1 rounded"
-              />
-            </div>
-            <div className="mb-2">
-              <label className="block text-sm mb-1">รายละเอียดคำถาม</label>
-              <textarea
-                name="content"
-                value={form.content}
-                onChange={handleFormChange}
-                className="w-full border px-2 py-1 rounded"
-                rows={4}
-                required
-              />
-            </div>
-            <button
-              type="submit"
-              className="bg-blue-600 text-white px-4 py-2 rounded mt-2"
+        {item.tags && (
+          <div style={{ marginBottom: "12px" }}>
+            <Text
+              type="secondary"
+              style={{ fontSize: "12px" }}
             >
-              ส่งคำถาม
-            </button>
-          </form>
+              แท็ก: {item.tags}
+            </Text>
+          </div>
         )}
 
-        <div className="space-y-8">
-          {Object.values(qt).map((q) => (
-            <div key={q.id} className="bg-white rounded shadow p-4">
-              <Link href={`/citizen/qa/${q.id}`}>
-                <h2 className="text-lg font-bold text-blue-800 mb-1 cursor-pointer">
-                  {q.title}
-                </h2>
-              </Link>
-              <div className="text-sm text-gray-600 mb-2">
-                โดย : {q.author} | เมื่อ : {q.date} | IP : ({q.ip})
-              </div>
-              <div className="mb-2 text-gray-800">{q.content}</div>
-              <Link
-                href={`/citizen/qa/${q.id}`}
-                className="text-blue-600 text-sm underline"
-              >
-                ดูรายละเอียด/แสดงความคิดเห็น
-              </Link>
-            </div>
-          ))}
+        <div
+          style={{ textAlign: "right", marginTop: "16px" }}
+        >
+          <Button
+            type="default"
+            size="small"
+            icon={<CommentOutlined />}
+            onClick={(e) => {
+              e.stopPropagation();
+              handleShowComment(item);
+            }}
+          >
+            แสดงความคิดเห็น
+          </Button>
+        </div>
+      </div>
+    ),
+  }));
+
+  return (
+    <div className="w-full bg-white h-screen">
+      <div style={{ padding: "24px", maxWidth: "1200px", margin: "0 auto" }}>
+        {/* Header */}
+        <div style={{ textAlign: "center", marginBottom: "32px" }}>
+          <Title level={2}>
+            <QuestionCircleOutlined
+              style={{ marginRight: "8px", color: "#1890ff" }}
+            />
+            คำถามที่พบบ่อย (FAQ)
+          </Title>
+          <Text type="secondary" style={{ fontSize: "16px" }}>
+            ค้นหาคำตอบสำหรับคำถามที่พบบ่อยเกี่ยวกับบริการของเทศบาลตำบลบ้านโพธิ์
+          </Text>
         </div>
 
-        <div className="mt-8 text-xs text-gray-500">
-          ข้อความที่ท่านได้อ่าน เกิดจากการเขียนโดยสาธารณชน
-          และส่งขึ้นมาแบบอัตโนมัติ
-          เจ้าของเว็บบอร์ดไม่รับผิดชอบต่อข้อความใดๆทั้งสิ้น
-          เพราะไม่สามารถระบุได้ว่าเป็นความจริงหรือชื่อผู้เขียนที่ได้เห็นคือชื่อจริง
-          ผู้อ่านจึงควรใช้วิจารณญาณในการกลั่นกรอง และถ้าท่านพบเห็นข้อความใด
-          ที่ขัดต่อกฎหมายและศีลธรรม หรือเป็นการกลั่นแกล้งเพื่อให้เกิดความเสียหาย
-          ต่อบุคคล หรือหน่วยงานใด กรุณาส่ง email มาที่ office@banphocity.go.th
-          เพื่อให้ผู้ควบคุมระบบทราบและทำการลบข้อความนั้น ออกจากระบบต่อไป
-        </div>
+        {/* Search */}
+        <Card style={{ marginBottom: "24px" }}>
+          <Search
+            placeholder="ค้นหาคำถาม เช่น ใบรับรอง, ภาษี, น้ำประปา..."
+            allowClear
+            enterButton={<SearchOutlined />}
+            size="large"
+            onSearch={handleSearch}
+            loading={searching}
+            style={{ marginBottom: "16px" }}
+          />
+
+          <div
+            style={{
+              display: "flex",
+              justifyContent: "space-between",
+              alignItems: "center",
+            }}
+          >
+            {(selectedCategory || searchQuery) && (
+              <Button type="link" onClick={resetFilter}>
+                แสดงทั้งหมด
+              </Button>
+            )}
+
+            <Button
+              type="primary"
+              icon={<PlusOutlined />}
+              onClick={() => setSubmitModalVisible(true)}
+              style={{ marginLeft: "auto" }}
+            >
+              ส่งคำถามใหม่
+            </Button>
+          </div>
+        </Card>
+
+        <Row gutter={[24, 24]}>
+          {/* Categories Sidebar */}
+          <Col xs={24} md={8}>
+            <Card
+              title={
+                <Space>
+                  <FireOutlined style={{ color: "#ff4d4f" }} />
+                  หมวดหมู่คำถาม
+                </Space>
+              }
+              size="small"
+            >
+              <List
+                dataSource={categories}
+                renderItem={(category) => (
+                  <List.Item
+                    style={{
+                      cursor: "pointer",
+                      backgroundColor:
+                        selectedCategory === category.id
+                          ? "#f0f8ff"
+                          : "transparent",
+                      borderRadius: "4px",
+                      padding: "8px",
+                    }}
+                    onClick={() => handleCategorySelect(category.id)}
+                  >
+                    <Space
+                      style={{ width: "100%", justifyContent: "space-between" }}
+                    >
+                      <Text strong={selectedCategory === category.id}>
+                        {category.category_name}
+                      </Text>
+                      <Badge count={category.items_count} showZero />
+                    </Space>
+                  </List.Item>
+                )}
+              />
+            </Card>
+
+            {/* Featured Q&A */}
+            {featuredItems.length > 0 && (
+              <Card
+                title={
+                  <Space>
+                    <StarOutlined style={{ color: "#faad14" }} />
+                    คำถามยอดนิยม
+                  </Space>
+                }
+                size="small"
+                style={{ marginTop: "16px" }}
+              >
+                <List
+                  dataSource={featuredItems}
+                  renderItem={(item) => (
+                    <List.Item style={{ padding: "8px 0" }}>
+                      <div>
+                        <Text
+                          strong
+                          style={{
+                            fontSize: "13px",
+                            cursor: "pointer",
+                            color: "#1890ff",
+                          }}
+                          onClick={() => handleItemView(item.id)}
+                        >
+                          {item.question}
+                        </Text>
+                        <div style={{ marginTop: "4px" }}>
+                          <Space size="small">
+                            <EyeOutlined />
+                            <Text type="secondary" style={{ fontSize: "12px" }}>
+                              {item.view_count || 0}
+                            </Text>
+                          </Space>
+                        </div>
+                      </div>
+                    </List.Item>
+                  )}
+                />
+              </Card>
+            )}
+          </Col>
+
+          {/* Main Content */}
+          <Col xs={24} md={16}>
+            <Card>
+              {searchQuery && (
+                <div style={{ marginBottom: "16px" }}>
+                  <Text type="secondary">
+                    ผลการค้นหาสำหรับ: <Text strong>{searchQuery}"</Text>
+                  </Text>
+                  <Text type="secondary" style={{ marginLeft: "16px" }}>
+                    ({displayItems.length} รายการ)
+                  </Text>
+                </div>
+              )}
+
+              {selectedCategory && (
+                <div style={{ marginBottom: "16px" }}>
+                  <Text type="secondary">
+                    หมวดหมู่:{" "}
+                    <Text strong>
+                      {
+                        categories.find((c) => c.id === selectedCategory)
+                          ?.category_name
+                      }
+                    </Text>
+                  </Text>
+                  <Text type="secondary" style={{ marginLeft: "16px" }}>
+                    ({displayItems.length} รายการ)
+                  </Text>
+                </div>
+              )}
+
+              <Spin spinning={loading}>
+                {displayItems.length === 0 ? (
+                  <Empty
+                    description={
+                      searchQuery
+                        ? "ไม่พบคำตอบที่ตรงกับคำค้นหา"
+                        : "ไม่มีคำถามในหมวดหมู่นี้"
+                    }
+                  />
+                ) : (
+                  <Collapse
+                    ghost
+                    expandIconPosition="end"
+                    items={collapseItems}
+                    onChange={(keys) => {
+                      // เพิ่มจำนวนการดูเมื่อเปิดคำตอบ
+                      keys.forEach((key) => {
+                        const item = displayItems[parseInt(key)];
+                        if (item) {
+                          handleItemView(item.id);
+                        }
+                      });
+                    }}
+                  />
+                )}
+              </Spin>
+            </Card>
+          </Col>
+        </Row>
+
+        {/* Submit Question Modal */}
+        <SubmitQuestionModal
+          visible={submitModalVisible}
+          onCancel={() => setSubmitModalVisible(false)}
+          categories={categories}
+        />
+
+        {/* Submit Comment Modal */}
+        <SubmitCommentModal
+          visible={commentModalVisible}
+          onCancel={() => {
+            setCommentModalVisible(false);
+            setSelectedQaItem(null);
+          }}
+          qaItem={selectedQaItem}
+        />
       </div>
     </div>
   );
