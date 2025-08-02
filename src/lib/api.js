@@ -762,14 +762,14 @@ export const lawsRegsFilesAPI = {
   },
 
   updateFile: async (id, fileData) => {
-    return apiCall(`/laws-regs-files/${id}`, {
+    return apiCall(`/laws-regs-files?id=${id}`, {
       method: "PUT",
       body: JSON.stringify(fileData),
     });
   },
 
   deleteFile: async (id) => {
-    return apiCall(`/laws-regs-files/${id}`, {
+    return apiCall(`/laws-regs-files?id=${id}`, {
       method: "DELETE",
     });
   },
