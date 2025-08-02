@@ -66,6 +66,8 @@ const LawsRegsFileUpload = ({
   const [uploading, setUploading] = useState(false);
   const [uploadProgress, setUploadProgress] = useState(0);
 
+  // Removed Form.useForm() from here. This component does not need its own form instance.
+
   const getFileIcon = (fileName) => {
     const extension = fileName.split(".").pop().toLowerCase();
     switch (extension) {
