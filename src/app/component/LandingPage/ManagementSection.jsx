@@ -22,8 +22,8 @@ const ManagementCard = ({
       {/* ภาพ */}
       <div className="relative w-full max-w-[120px] sm:max-w-[150px] md:max-w-[180px] lg:max-w-[215px] h-[200px] sm:h-[250px] md:h-[300px] lg:h-[360px] overflow-hidden rounded-lg">
         <img
-          src={imageSrc}
-          alt={`${name} ${position}`}
+          // src={imageSrc}
+          // alt={`${name} ${position}`}
           className="w-full h-full object-cover"
           style={{ transform: "scaleX(-1)" }}
         />
@@ -85,8 +85,8 @@ const ManagementCard2 = ({
       {/* ภาพ */}
       <div className="relative w-full max-w-[120px] sm:max-w-[150px] md:max-w-[180px] lg:max-w-[215px] h-[200px] sm:h-[250px] md:h-[300px] lg:h-[360px] overflow-hidden rounded-lg">
         <img
-          src={imageSrc}
-          alt={`${name} ${position}`}
+          // src={imageSrc}
+          // alt={`${name} ${position}`}
           className="w-full h-full object-cover"
           style={{ transform: "scaleX(-1)" }}
         />
