@@ -32,6 +32,9 @@ import {
   FileImageOutlined,
   VideoCameraOutlined,
   FilePdfOutlined,
+  LoadingOutlined,
+  CheckCircleOutlined,
+  ExclamationCircleOutlined,
 } from "@ant-design/icons";
 import { postTypesAPI, postDetailsAPI } from "@/lib/api";
 import { uploadFileToServer } from "@/lib/fileUploadUtils";
@@ -39,6 +42,196 @@ import dayjs from "dayjs";
 
 const { TextArea } = Input;
 const { Title } = Typography;
+
+// Enhanced File Upload Component for Posts
+const PostFileUpload = ({ 
+  value = [],
+  onChange,
+  fileType = 'image', // 'image', 'video', 'pdf'
+  maxCount = 8,
+  accept,
+  placeholder = "อัปโหลดไฟล์",
+  disabled = false
+}) => {
+  const [uploading, setUploading] = useState(false);
+  const [fileList, setFileList] = useState(value || []);
+  const [uploadProgress, setUploadProgress] = useState({});
+  const { message } = App.useApp();
+
+  useEffect(() => {
+    setFileList(value || []);
+  }, [value]);
+
+  const getFileIcon = (fileName) => {
+    const extension = fileName.split('.').pop().toLowerCase();
+    switch (extension) {
+      case 'pdf': return <FilePdfOutlined style={{ color: '#ff4d4f', fontSize: 16 }} />;
+      case 'mp4':
+      case 'avi':
+      case 'mov': return <VideoCameraOutlined style={{ color: '#722ed1', fontSize: 16 }} />;
+      case 'jpg':
+      case 'jpeg':
+      case 'png':
+      case 'gif':
+      case 'webp': return <FileImageOutlined style={{ color: '#52c41a', fontSize: 16 }} />;
+      default: return <UploadOutlined style={{ color: '#8c8c8c', fontSize: 16 }} />;
+    }
+  };
+
+  const handleUpload = async (file) => {
+    try {
+      setUploading(true);
+      setUploadProgress(prev => ({ ...prev, [file.uid]: 0 }));
+
+      // Simulate progress
+      const progressInterval = setInterval(() => {
+        setUploadProgress(prev => {
+          const currentProgress = prev[file.uid] || 0;
+          if (currentProgress >= 90) {
+            clearInterval(progressInterval);
+            return prev;
+          }
+          return { ...prev, [file.uid]: currentProgress + 10 };
+        });
+      }, 200);
+
+      const result = await uploadFileToServer(file);
+
+      clearInterval(progressInterval);
+      setUploadProgress(prev => ({ ...prev, [file.uid]: 100 }));
+
+      if (result.success) {
+        const uploadedFile = {
+          uid: file.uid,
+          name: file.name,
+          status: "done",
+          url: result.url,
+          path: result.path,
+          type: result.type,
+          size: result.size
+        };
+
+        const newFileList = [...fileList.filter(f => f.uid !== file.uid), uploadedFile];
+        setFileList(newFileList);
+        
+        if (onChange) {
+          onChange(newFileList);
+        }
+
+        message.success(`อัปโหลด ${file.name} สำเร็จ`);
+      }
+    } catch (error) {
+      console.error('Upload error:', error);
+      message.error(`เกิดข้อผิดพลาดในการอัปโหลด ${file.name}: ${error.message}`);
+      
+      // Remove failed file from list
+      const newFileList = fileList.filter(f => f.uid !== file.uid);
+      setFileList(newFileList);
+      if (onChange) {
+        onChange(newFileList);
+      }
+    } finally {
+      setUploading(false);
+      setUploadProgress(prev => {
+        const newProgress = { ...prev };
+        delete newProgress[file.uid];
+        return newProgress;
+      });
+    }
+    return false; // Prevent default upload
+  };
+
+  const handleRemove = (file) => {
+    const newFileList = fileList.filter(item => item.uid !== file.uid);
+    setFileList(newFileList);
+    
+    if (onChange) {
+      onChange(newFileList);
+    }
+  };
+
+  const handleChange = ({ fileList: newFileList }) => {
+    // Update file list but don't trigger onChange for uploading files
+    const processedList = newFileList.map(file => {
+      if (file.status === 'uploading' && uploadProgress[file.uid] !== undefined) {
+        return {
+          ...file,
+          percent: uploadProgress[file.uid]
+        };
+      }
+      return file;
+    });
+    setFileList(processedList);
+  };
+
+  const uploadButton = (
+    <div>
+      {uploading ? <LoadingOutlined /> : <PlusOutlined />}
+      <div style={{ marginTop: 8 }}>
+        {uploading ? 'กำลังอัปโหลด...' : 'อัปโหลด'}
+      </div>
+    </div>
+  );
+
+  if (fileType === 'image') {
+    return (
+      <div>
+        <Upload
+          listType="picture-card"
+          fileList={fileList}
+          onChange={handleChange}
+          onRemove={handleRemove}
+          beforeUpload={handleUpload}
+          accept={accept || "image/*"}
+          multiple
+          disabled={disabled || uploading}
+          showUploadList={{
+            showPreviewIcon: true,
+            showRemoveIcon: true,
+            showDownloadIcon: false,
+          }}
+        >
+          {fileList.length >= maxCount ? null : uploadButton}
+        </Upload>
+        <div style={{ marginTop: 8, fontSize: '12px', color: '#666' }}>
+          รองรับไฟล์: JPG, PNG, GIF, WebP | ขนาดสูงสุด: 5MB | สูงสุด {maxCount} ไฟล์
+        </div>
+      </div>
+    );
+  }
+
+  return (
+    <div>
+      <Upload
+        fileList={fileList}
+        onChange={handleChange}
+        onRemove={handleRemove}
+        beforeUpload={handleUpload}
+        accept={accept}
+        multiple
+        disabled={disabled || uploading}
+        showUploadList={{
+          showPreviewIcon: false,
+          showRemoveIcon: true,
+          showDownloadIcon: true,
+        }}
+      >
+        <Button 
+          icon={uploading ? <LoadingOutlined /> : getFileIcon(fileType)} 
+          loading={uploading}
+          disabled={disabled}
+          style={{ width: '100%' }}
+        >
+          {uploading ? 'กำลังอัปโหลด...' : placeholder}
+        </Button>
+      </Upload>
+      <div style={{ marginTop: 8, fontSize: '12px', color: '#666' }}>
+        {fileType === 'video' && 'รองรับไฟล์: MP4, AVI, MOV | ขนาดสูงสุด: 50MB'}
+        {fileType === 'pdf' && 'รองรับไฟล์: PDF | ขนาดสูงสุด: 10MB'}
+      </div>
+    </div>
+  );
+};
 
 export default function PostManagement() {
   const { message } = App.useApp();
@@ -226,31 +419,37 @@ export default function PostManagement() {
       date: record.date ? dayjs(record.date) : null,
     });
 
-    // Set existing files
+    // Set existing files with enhanced metadata
     setPhotoFileList(
       record.photos?.map((photo) => ({
         uid: photo.id,
-        name: photo.post_photo_file,
+        name: photo.post_photo_file.split('/').pop(),
         status: "done",
         url: `https://banpho.sosmartsolution.com/storage/${photo.post_photo_file}`,
+        path: photo.post_photo_file,
+        type: 'image'
       })) || []
     );
 
     setVideoFileList(
       record.videos?.map((video) => ({
         uid: video.id,
-        name: video.post_video_file,
+        name: video.post_video_file.split('/').pop(),
         status: "done",
         url: `https://banpho.sosmartsolution.com/storage/${video.post_video_file}`,
+        path: video.post_video_file,
+        type: 'video'
       })) || []
     );
 
     setPdfFileList(
       record.pdfs?.map((pdf) => ({
         uid: pdf.id,
-        name: pdf.post_pdf_file,
+        name: pdf.post_pdf_file.split('/').pop(),
         status: "done",
         url: `https://banpho.sosmartsolution.com/storage/${pdf.post_pdf_file}`,
+        path: pdf.post_pdf_file,
+        type: 'pdf'
       })) || []
     );
   };
@@ -273,77 +472,46 @@ export default function PostManagement() {
   };
 
   // File upload handlers
-  const handleFileUpload = async (file) => {
-    try {
-      setUploading(true);
-      const result = await uploadFileToServer(file);
+  const handlePhotoListChange = (newFileList) => {
+    setPhotoFileList(newFileList);
+  };
 
-      console.log("Upload result:", result);
+  const handleVideoListChange = (newFileList) => {
+    setVideoFileList(newFileList);
+  };
 
-      if (result.success) {
-        // API returns 'url' not 'file_url'
-        let fileUrl = result.url || result.file_url;
-        
-        // Clean up escaped slashes from JSON response
-        fileUrl = fileUrl.replace(/\\\//g, '/');
-        
-        // Extract path from URL - handle both /storage/ and /storage/uploads/ patterns
-        let filePath = fileUrl.replace(
-          "https://banpho.sosmartsolution.com/storage/",
-          ""
-        );
-
-        // If the path doesn't start with uploads/, it might be the filename only
-        if (!filePath.startsWith("uploads/") && result.filename) {
-          filePath = `uploads/${result.filename}`;
-        }
-
-        console.log("Original URL:", result.url);
-        console.log("Cleaned File URL:", fileUrl);
-        console.log("Extracted File Path:", filePath);
-
-        const uploadedFile = {
-          uid: file.uid,
-          name: file.name,
-          status: "done",
-          url: fileUrl,
-          path: filePath,
-        };
-
-        console.log("Uploaded file object:", uploadedFile);
-        return uploadedFile;
-      }
-    } catch (error) {
-      console.error("File upload error:", error);
-      message.error(`เกิดข้อผิดพลาดในการอัปโหลดไฟล์: ${file.name}`);
-      return null;
-    } finally {
-      setUploading(false);
-    }
+  const handlePdfListChange = (newFileList) => {
+    setPdfFileList(newFileList);
   };
 
   const handleSubmitPostDetail = async (values) => {
     try {
       setLoading(true);
 
-      // Prepare media data
+      // Validate that at least one field is filled
+      if (!values.title_name?.trim()) {
+        message.error("กรุณากรอกหัวข้อโพสต์");
+        return;
+      }
+
+      // Prepare media data with better path handling
       const photos = photoFileList
-        .filter((file) => file.status === "done")
+        .filter((file) => file.status === "done" && file.path)
         .map((file) => ({
-          post_photo_file: file.path || file.name,
+          post_photo_file: file.path,
           post_photo_status: "active",
         }));
 
       const videos = videoFileList
-        .filter((file) => file.status === "done")
+        .filter((file) => file.status === "done" && file.path)
         .map((file) => ({
-          post_video_file: file.path || file.name,
+          post_video_file: file.path,
         }));
 
       const pdfs = pdfFileList
-        .filter((file) => file.status === "done")
+        .filter((file) => file.status === "done" && file.path)
         .map((file) => ({
-          post_pdf_file: file.path || file.name,
+          post_pdf_file: file.path,
         }));
 
       const postData = {
@@ -354,11 +522,7 @@ export default function PostManagement() {
         pdfs,
       };
 
-      // Debug logging
       console.log("Submitting post data:", postData);
-      console.log("Photo file list:", photoFileList);
-      console.log("Video file list:", videoFileList);
-      console.log("PDF file list:", pdfFileList);
 
       let response;
       if (editingRecord) {
@@ -375,11 +539,20 @@ export default function PostManagement() {
           editingRecord ? "แก้ไขโพสต์สำเร็จ" : "เพิ่มโพสต์สำเร็จ"
         );
         setDetailModalVisible(false);
+        
+        // Reset form and file lists
+        detailForm.resetFields();
+        setPhotoFileList([]);
+        setVideoFileList([]);
+        setPdfFileList([]);
+        
         fetchPostDetails();
+      } else {
+        throw new Error(response.error || 'Failed to save post');
       }
     } catch (error) {
       console.error("Error submitting post detail:", error);
-      message.error("เกิดข้อผิดพลาดในการบันทึกข้อมูล");
+      message.error(`เกิดข้อผิดพลาดในการบันทึกข้อมูล: ${error.message}`);
     } finally {
       setLoading(false);
     }
@@ -717,85 +890,43 @@ export default function PostManagement() {
           <Row gutter={16}>
             <Col span={8}>
               <Form.Item label="รูปภาพ">
-                <Upload
-                  listType="picture-card"
-                  fileList={photoFileList}
-                  onChange={({ fileList }) => setPhotoFileList(fileList)}
-                  beforeUpload={async (file) => {
-                    const uploadedFile = await handleFileUpload(file);
-                    if (uploadedFile) {
-                      setPhotoFileList((prev) => {
-                        // Remove the uploading file and add the uploaded file
-                        const filteredList = prev.filter(
-                          (f) => f.uid !== file.uid
-                        );
-                        return [...filteredList, uploadedFile];
-                      });
-                    }
-                    return false;
-                  }}
+                <PostFileUpload
+                  value={photoFileList}
+                  onChange={handlePhotoListChange}
+                  fileType="image"
+                  maxCount={8}
                   accept="image/*"
-                  multiple
-                >
-                  {photoFileList.length >= 8 ? null : (
-                    <div>
-                      <PlusOutlined />
-                      <div style={{ marginTop: 8 }}>อัปโหลด</div>
-                    </div>
-                  )}
-                </Upload>
+                  placeholder="อัปโหลดรูปภาพ"
+                  disabled={uploading}
+                />
               </Form.Item>
             </Col>
 
             <Col span={8}>
               <Form.Item label="วิดีโอ">
-                <Upload
-                  fileList={videoFileList}
-                  onChange={({ fileList }) => setVideoFileList(fileList)}
-                  beforeUpload={async (file) => {
-                    const uploadedFile = await handleFileUpload(file);
-                    if (uploadedFile) {
-                      setVideoFileList((prev) => {
-                        // Remove the uploading file and add the uploaded file
-                        const filteredList = prev.filter(
-                          (f) => f.uid !== file.uid
-                        );
-                        return [...filteredList, uploadedFile];
-                      });
-                    }
-                    return false;
-                  }}
+                <PostFileUpload
+                  value={videoFileList}
+                  onChange={handleVideoListChange}
+                  fileType="video"
+                  maxCount={5}
                   accept="video/*"
-                  multiple
-                >
-                  <Button icon={<UploadOutlined />}>อัปโหลดวิดีโอ</Button>
-                </Upload>
+                  placeholder="อัปโหลดวิดีโอ"
+                  disabled={uploading}
+                />
               </Form.Item>
             </Col>
 
             <Col span={8}>
               <Form.Item label="ไฟล์ PDF">
-                <Upload
-                  fileList={pdfFileList}
-                  onChange={({ fileList }) => setPdfFileList(fileList)}
-                  beforeUpload={async (file) => {
-                    const uploadedFile = await handleFileUpload(file);
-                    if (uploadedFile) {
-                      setPdfFileList((prev) => {
-                        // Remove the uploading file and add the uploaded file
-                        const filteredList = prev.filter(
-                          (f) => f.uid !== file.uid
-                        );
-                        return [...filteredList, uploadedFile];
-                      });
-                    }
-                    return false;
-                  }}
+                <PostFileUpload
+                  value={pdfFileList}
+                  onChange={handlePdfListChange}
+                  fileType="pdf"
+                  maxCount={10}
                   accept=".pdf"
-                  multiple
-                >
-                  <Button icon={<UploadOutlined />}>อัปโหลด PDF</Button>
-                </Upload>
+                  placeholder="อัปโหลด PDF"
+                  disabled={uploading}
+                />
               </Form.Item>
             </Col>
           </Row>
@@ -864,11 +995,12 @@ export default function PostManagement() {
                 <Divider>ไฟล์สื่อ</Divider>
 
                 {selectedRecord.photos?.length > 0 && (
-                  <div className="mb-4">
+                  <div style={{ marginBottom: 16 }}>
                     <Title level={5}>
+                      <FileImageOutlined style={{ marginRight: 8, color: '#52c41a' }} />
                       รูปภาพ ({selectedRecord.photos.length})
                     </Title>
-                    <div className="grid grid-cols-4 gap-2">
+                    <div style={{ display: 'grid', gridTemplateColumns: 'repeat(auto-fill, minmax(150px, 1fr))', gap: 8 }}>
                       {selectedRecord.photos.map((photo, index) => (
                         <Image
                           key={photo.id}
@@ -876,7 +1008,19 @@ export default function PostManagement() {
                           height={150}
                           src={`https://banpho.sosmartsolution.com/storage/${photo.post_photo_file}`}
                           alt={`Photo ${index + 1}`}
-                          style={{ objectFit: "cover" }}
+                          style={{ objectFit: "cover", borderRadius: 6 }}
+                          placeholder={
+                            <div style={{ 
+                              width: 150, 
+                              height: 150, 
+                              display: 'flex', 
+                              alignItems: 'center', 
+                              justifyContent: 'center',
+                              backgroundColor: '#f5f5f5'
+                            }}>
+                              <LoadingOutlined />
+                            </div>
+                          }
                         />
                       ))}
                     </div>
@@ -884,54 +1028,72 @@ export default function PostManagement() {
                 )}
 
                 {selectedRecord.videos?.length > 0 && (
-                  <div className="mb-4">
+                  <div style={{ marginBottom: 16 }}>
                     <Title level={5}>
+                      <VideoCameraOutlined style={{ marginRight: 8, color: '#722ed1' }} />
                       วิดีโอ ({selectedRecord.videos.length})
                     </Title>
-                    <div className="space-y-2">
+                    <Space direction="vertical" style={{ width: '100%' }}>
                       {selectedRecord.videos.map((video, index) => (
-                        <div
-                          key={video.id}
-                          className="flex items-center gap-2 p-2 bg-gray-50 rounded"
+                        <Card 
+                          key={video.id} 
+                          size="small"
+                          style={{ backgroundColor: '#fafafa' }}
                         >
-                          <VideoCameraOutlined className="text-red-500" />
-                          <a
-                            href={`https://banpho.sosmartsolution.com/storage/${video.post_video_file}`}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            className="text-blue-600 hover:underline"
-                          >
-                            วิดีโอ {index + 1}
-                          </a>
-                        </div>
+                          <Space>
+                            <VideoCameraOutlined style={{ color: '#722ed1', fontSize: 18 }} />
+                            <div>
+                              <div style={{ fontWeight: 500 }}>วิดีโอ {index + 1}</div>
+                              <div style={{ fontSize: 12, color: '#666' }}>
+                                {video.post_video_file.split('/').pop()}
+                              </div>
+                            </div>
+                            <Button
+                              type="link"
+                              size="small"
+                              onClick={() => window.open(`https://banpho.sosmartsolution.com/storage/${video.post_video_file}`, '_blank')}
+                            >
+                              ดูวิดีโอ
+                            </Button>
+                          </Space>
+                        </Card>
                       ))}
-                    </div>
+                    </Space>
                   </div>
                 )}
 
                 {selectedRecord.pdfs?.length > 0 && (
-                  <div className="mb-4">
+                  <div style={{ marginBottom: 16 }}>
                     <Title level={5}>
+                      <FilePdfOutlined style={{ marginRight: 8, color: '#ff4d4f' }} />
                       ไฟล์ PDF ({selectedRecord.pdfs.length})
                     </Title>
-                    <div className="space-y-2">
+                    <Space direction="vertical" style={{ width: '100%' }}>
                       {selectedRecord.pdfs.map((pdf, index) => (
-                        <div
-                          key={pdf.id}
-                          className="flex items-center gap-2 p-2 bg-gray-50 rounded"
+                        <Card 
+                          key={pdf.id} 
+                          size="small"
+                          style={{ backgroundColor: '#fafafa' }}
                         >
-                          <FilePdfOutlined className="text-orange-500" />
-                          <a
-                            href={`https://banpho.sosmartsolution.com/storage/${pdf.post_pdf_file}`}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            className="text-blue-600 hover:underline"
-                          >
-                            PDF {index + 1}
-                          </a>
-                        </div>
+                          <Space>
+                            <FilePdfOutlined style={{ color: '#ff4d4f', fontSize: 18 }} />
+                            <div>
+                              <div style={{ fontWeight: 500 }}>PDF {index + 1}</div>
+                              <div style={{ fontSize: 12, color: '#666' }}>
+                                {pdf.post_pdf_file.split('/').pop()}
+                              </div>
+                            </div>
+                            <Button
+                              type="link"
+                              size="small"
+                              onClick={() => window.open(`https://banpho.sosmartsolution.com/storage/${pdf.post_pdf_file}`, '_blank')}
+                            >
+                              ดาวน์โหลด
+                            </Button>
+                          </Space>
+                        </Card>
                       ))}
-                    </div>
+                    </Space>
                   </div>
                 )}
               </>
