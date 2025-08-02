@@ -29,50 +29,7 @@ async function apiCall(endpoint, options = {}) {
   }
 }
 
-// User API functions
-export const userAPI = {
-  // Get all users with pagination and search
-  getUsers: async (params = {}) => {
-    const searchParams = new URLSearchParams();
 
-    if (params.page) searchParams.append("page", params.page);
-    if (params.limit) searchParams.append("limit", params.limit);
-    if (params.search) searchParams.append("search", params.search);
-
-    const queryString = searchParams.toString();
-    const endpoint = `/users${queryString ? `?${queryString}` : ""}`;
-
-    return apiCall(endpoint);
-  },
-
-  // Get single user by ID
-  getUser: async (id) => {
-    return apiCall(`/users/${id}`);
-  },
-
-  // Create new user
-  createUser: async (userData) => {
-    return apiCall("/users", {
-      method: "POST",
-      body: JSON.stringify(userData),
-    });
-  },
-
-  // Update user
-  updateUser: async (id, userData) => {
-    return apiCall(`/users/${id}`, {
-      method: "PUT",
-      body: JSON.stringify(userData),
-    });
-  },
-
-  // Delete user
-  deleteUser: async (id) => {
-    return apiCall(`/users/${id}`, {
-      method: "DELETE",
-    });
-  },
-};
 
 // Generic CRUD operations for future modules
 export const createCRUDAPI = (resource) => ({
@@ -341,14 +298,14 @@ export const perfResultsFilesAPI = {
   },
 
   updateFile: async (id, fileData) => {
-    return apiCall(`/perf-results-files/${id}`, {
+    return apiCall(`/perf-results-files?id=${id}`, {
       method: "PUT",
       body: JSON.stringify(fileData),
     });
   },
 
   deleteFile: async (id) => {
-    return apiCall(`/perf-results-files/${id}`, {
+    return apiCall(`/perf-results-files?id=${id}`, {
       method: "DELETE",
     });
   },
@@ -622,14 +579,14 @@ export const procurementPlanFilesAPI = {
   },
 
   updateFile: async (id, fileData) => {
-    return apiCall(`/procurement-plan-files/${id}`, {
+    return apiCall(`/procurement-plan-files?id=${id}`, {
       method: "PUT",
       body: JSON.stringify(fileData),
     });
   },
 
   deleteFile: async (id) => {
-    return apiCall(`/procurement-plan-files/${id}`, {
+    return apiCall(`/procurement-plan-files?id=${id}`, {
       method: "DELETE",
     });
   },
@@ -762,14 +719,14 @@ export const lawsRegsFilesAPI = {
   },
 
   updateFile: async (id, fileData) => {
-    return apiCall(`/laws-regs-files/${id}`, {
+    return apiCall(`/laws-regs-files?id=${id}`, {
       method: "PUT",
       body: JSON.stringify(fileData),
     });
   },
 
   deleteFile: async (id) => {
-    return apiCall(`/laws-regs-files/${id}`, {
+    return apiCall(`/laws-regs-files?id=${id}`, {
       method: "DELETE",
     });
   },
@@ -790,7 +747,6 @@ export const createLawsRegsTablesAPI = {
 
 // Export for easy use
 const apiExports = {
-  userAPI,
   staffAPI,
   perfResultsTypesAPI,
   perfResultsSectionsAPI,

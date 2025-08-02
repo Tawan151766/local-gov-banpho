@@ -77,9 +77,18 @@ const LocalDevPlanFileUpload = ({
   };
 
   const customUpload = async ({ file, onProgress, onSuccess, onError }) => {
+    console.log('🔥 customUpload called with file:', file.name, 'uploading state:', uploading);
+    
     if (!typeId) {
       message.error('กรุณาเลือกประเภทแผนพัฒนาท้องถิ่นก่อน');
       onError(new Error('Type ID is required'));
+      return;
+    }
+
+    // ป้องกันการ upload ซ้ำ - ถ้ากำลัง upload อยู่แล้วให้หยุด
+    if (uploading) {
+      console.log('❌ Upload already in progress, skipping...');
+      onError(new Error('Upload already in progress'));
       return;
     }
 
@@ -119,9 +128,12 @@ const LocalDevPlanFileUpload = ({
       }
 
       if (result.success) {
+        console.log('✅ Upload successful, calling callbacks...', result.data.id);
         if (onChange) {
+          console.log('📝 Calling onChange with:', result.data.file_path);
           onChange(result.data.file_path, result.data);
         }
+        console.log('🎯 Calling onSuccess...');
         onSuccess(result.data, file);
       } else {
         throw new Error(result.error || 'Upload failed');
@@ -131,6 +143,7 @@ const LocalDevPlanFileUpload = ({
       console.error('Upload error:', error);
       onError(error);
     } finally {
+      console.log('🏁 Upload process finished, setting uploading to false');
       setUploading(false);
       setUploadProgress(0);
     }
@@ -191,8 +204,16 @@ const LocalDevPlanFileUpload = ({
             </Space>
             
             <Space>
-              <Upload {...uploadProps}>
-                <Button size="small" type="link">เปลี่ยน</Button>
+              <Upload 
+                name='file'
+                customRequest={customUpload}
+                showUploadList={false}
+                accept={accept}
+                disabled={disabled || uploading}
+              >
+                <Button size="small" type="link" disabled={disabled || uploading}>
+                  เปลี่ยน
+                </Button>
               </Upload>
               <Button 
                 size="small" 
@@ -344,7 +365,7 @@ export default function LocalDevelopmentPlanManagement() {
     if (currentLevel === "types") {
       loadTypes(1, "");
     }
-  }, []);
+  }, [currentLevel, loadTypes]);
 
   // Handle search
   const handleSearch = useCallback((value) => {
@@ -363,7 +384,7 @@ export default function LocalDevelopmentPlanManagement() {
         loadTypes(paginationInfo.current, searchText);
       }
     }
-  }, [currentLevel, pagination.current, pagination.pageSize, searchText, loadTypes]);
+  }, [currentLevel, pagination, loadTypes, searchText]);
 
   // Type management functions
   const openTypeModal = (type = null) => {
@@ -450,6 +471,7 @@ export default function LocalDevelopmentPlanManagement() {
   };
 
   const handleFileSubmit = async (values) => {
+    console.log('📋 handleFileSubmit called with values:', values);
     try {
       // ตรวจสอบนาสกุลไฟล์อัตโนมัติจาก files_path
       let autoDetectedFileType = 'other';
@@ -488,6 +510,16 @@ export default function LocalDevelopmentPlanManagement() {
           closeFileModal();
         }
       } else {
+        // ตรวจสอบว่าไฟล์ถูก upload ผ่าน customUpload แล้วหรือไม่
+        // ถ้า files_path เป็น path ที่มี timestamp แสดงว่า upload แล้ว
+        if (values.files_path && values.files_path.includes('/storage/uploads/')) {
+          console.log('🚫 File already uploaded via customUpload, skipping API call');
+          message.success("เพิ่มไฟล์สำเร็จ");
+          loadFiles(selectedType.id);
+          closeFileModal();
+          return;
+        }
+        
         const response = await apiCall('/api/local-dev-plan/files', {
           method: 'POST',
           body: JSON.stringify(fileData),

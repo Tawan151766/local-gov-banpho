@@ -13,7 +13,6 @@ import {
   CustomerServiceOutlined,
 } from "@ant-design/icons";
 
-import UserManagement from "./components/UserManagement";
 import StaffManagement from "./components/StaffManagement";
 import PerformanceResultsManagement from "./components/PerformanceResultsManagement";
 import ItaManagement from "./components/ItaManagement";
@@ -118,11 +117,7 @@ export default function AdminPage() {
       label: "การจัดการพื้นฐาน",
       type: "group",
       children: [
-        {
-          key: "user-management",
-          icon: <UserOutlined />,
-          label: "จัดการผู้ใช้งาน",
-        },
+
       ],
     },
     {
@@ -205,8 +200,6 @@ export default function AdminPage() {
 
   const renderContent = () => {
     switch (selectedKey) {
-      case "user-management":
-        return <UserManagement />;
       case "staff-management":
         return <StaffManagement />;
       case "performance-results":

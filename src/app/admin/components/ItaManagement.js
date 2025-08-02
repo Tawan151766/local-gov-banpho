@@ -177,6 +177,11 @@ export default function ItaManagement() {
   // Handle pagination change
   const handleTableChange = (paginationInfo) => {
     if (currentLevel === 'evaluations') {
+      setPagination((prev) => ({
+        ...prev,
+        current: paginationInfo.current,
+        pageSize: paginationInfo.pageSize,
+      }));
       loadEvaluations(paginationInfo.current, searchText);
     }
   };

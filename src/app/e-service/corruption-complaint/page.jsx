@@ -363,7 +363,7 @@ export default function CorruptionComplaintForm() {
 
           {/* Form */}
           <div className="p-6">
-            <form onSubmit={handleSubmit} className="space-y-6">
+            <form onSubmit={handleSubmit} className="space-y-6 text-gray-700">
               {/* Date Section */}
               <div className="bg-gray-50 rounded-lg p-4 text-right">
                 <div className="flex items-center justify-end gap-2 text-sm flex-wrap">

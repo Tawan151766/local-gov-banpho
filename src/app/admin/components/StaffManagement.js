@@ -97,6 +97,11 @@ export default function StaffManagement() {
 
   // Handle pagination change
   const handleTableChange = (paginationInfo) => {
+    setPagination((prev) => ({
+      ...prev,
+      current: paginationInfo.current,
+      pageSize: paginationInfo.pageSize,
+    }));
     loadStaff(paginationInfo.current, searchText, selectedRole);
   };
 

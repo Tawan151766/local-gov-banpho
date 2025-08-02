@@ -129,6 +129,8 @@ export default function CorruptionComplaintsManagement() {
       current: paginationInfo.current,
       pageSize: paginationInfo.pageSize,
     }));
+    // เรียก fetchComplaints เพื่อโหลดข้อมูลหน้าใหม่
+    fetchComplaints();
   };
 
   const viewComplaint = async (id) => {
