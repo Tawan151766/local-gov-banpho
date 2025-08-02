@@ -151,7 +151,7 @@ export default function ManagementSection() {
     {
       icon: "/image/manage_item1.png",
       title: "สารจากนายก",
-      path: "/mayor-message",
+      path: "/integrity",
     },
     {
       icon: "/image/manage_item2.png",

@@ -19,17 +19,15 @@ export default function ImageUpload({ value, onChange, disabled = false }) {
     setImageUrl(value);
   }, [value]);
 
-  const beforeUpload = (file) => {
+  const handleUpload = async (file) => {
+    // Validate file first
     try {
       validateImageFile(file);
-      return true;
     } catch (error) {
       message.error(error.message);
-      return false;
+      return;
     }
-  };
 
-  const handleUpload = async (file) => {
     setLoading(true);
 
     try {
@@ -70,7 +68,7 @@ export default function ImageUpload({ value, onChange, disabled = false }) {
 
       <Space direction="vertical" size="small">
         <Upload
-          beforeUpload={beforeUpload}
+          beforeUpload={() => false}
           customRequest={({ file }) => handleUpload(file)}
           showUploadList={false}
           disabled={disabled || loading}

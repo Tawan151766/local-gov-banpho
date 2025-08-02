@@ -12,26 +12,28 @@ export default function HeroSection({ ui }) {
     if (ui?.setSlide) ui.setSlide(index);
   };
 
-
-
   return (
     <>
       <section className="relative w-full pb-[682px] flex items-end justify-center">
         {/* Background Image Slides */}
         <div className="absolute inset-0 z-0 overflow-hidden cursor-grab active:cursor-grabbing">
-  {slides.map((slide, idx) => (
-    <div
-      key={idx}
-      className={`absolute top-0 left-0 w-full h-full bg-cover bg-top bg-no-repeat transition-opacity duration-700 ${
-        activeSlide === idx ? "opacity-100" : "opacity-0"
-      }`}
-      style={{ backgroundImage: `url('${slide}')` }}
-    />
-  ))}
-</div>
-
-
-
+    {slides.map((slide, idx) => (
+      <div
+        key={idx}
+        className={`absolute transition-opacity duration-700 ${
+          activeSlide === idx ? "opacity-100" : "opacity-0"
+        }`}
+        style={{
+          width: "100vw",
+          height: "100vh", // หรือจะใช้ h-[100vh] ก็ได้ถ้าครอบด้วย Tailwind
+          backgroundImage: `url('${slide}')`,
+          backgroundSize: "100% 135%",
+          backgroundRepeat: "no-repeat",
+          backgroundPosition: "center top", // หรือ center center ถ้าต้องการกลางแนวดิ่งด้วย
+        }}
+      />
+    ))}
+  </div>
 
 
         {/* Overlay */}
@@ -85,18 +87,14 @@ export default function HeroSection({ ui }) {
 
       {/* Video Section */}
 
-      <div className="relative w-full h-[814px] overflow-hidden">
+      <div className="relative w-screen h-[65vh] overflow-hidden">
         <video
-          className="absolute inset-0 w-full h-auto object-cover object-bottom"
+          className="absolute top-0 left-0 w-full h-full object-cover"
           src="/image/mp_4_bg.mp4"
           autoPlay
           loop
           muted
           playsInline
-          style={{
-            transform: "translateY(-20%)", // ปรับค่านี้เพื่อแสดงส่วนล่างมากขึ้น
-            height: "120%", // ขยายความสูงเพื่อให้มีพื้นที่ในการครอบตัด
-          }}
         />
       </div>
     </>
