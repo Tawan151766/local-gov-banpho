@@ -745,8 +745,82 @@ export const createLawsRegsTablesAPI = {
   },
 };
 
+// Q&A API functions
+export const qaAPI = {
+  // Categories
+  getCategories: async (params = {}) => {
+    const searchParams = new URLSearchParams();
+    
+    if (params.page) searchParams.append('page', params.page);
+    if (params.limit) searchParams.append('limit', params.limit);
+    if (params.search) searchParams.append('search', params.search);
+    if (params.withItems) searchParams.append('withItems', params.withItems);
+    if (params.activeOnly !== undefined) searchParams.append('activeOnly', params.activeOnly);
+    
+    const queryString = searchParams.toString();
+    const endpoint = `/qa-categories${queryString ? `?${queryString}` : ''}`;
+    
+    return apiCall(endpoint);
+  },
+
+  createCategory: async (categoryData) => {
+    return apiCall('/qa-categories', {
+      method: 'POST',
+      body: JSON.stringify(categoryData),
+    });
+  },
+
+  // Q&A Items
+  getItems: async (params = {}) => {
+    const searchParams = new URLSearchParams();
+    
+    if (params.page) searchParams.append('page', params.page);
+    if (params.limit) searchParams.append('limit', params.limit);
+    if (params.search) searchParams.append('search', params.search);
+    if (params.categoryId) searchParams.append('categoryId', params.categoryId);
+    if (params.featuredOnly) searchParams.append('featuredOnly', params.featuredOnly);
+    if (params.activeOnly !== undefined) searchParams.append('activeOnly', params.activeOnly);
+    
+    const queryString = searchParams.toString();
+    const endpoint = `/qa-items${queryString ? `?${queryString}` : ''}`;
+    
+    return apiCall(endpoint);
+  },
+
+  createItem: async (itemData) => {
+    return apiCall('/qa-items', {
+      method: 'POST',
+      body: JSON.stringify(itemData),
+    });
+  },
+
+  incrementView: async (id) => {
+    return apiCall(`/qa-items/${id}/view`, {
+      method: 'POST',
+    });
+  },
+
+  // Search
+  search: async (query, limit = 10) => {
+    const searchParams = new URLSearchParams();
+    searchParams.append('q', query);
+    searchParams.append('limit', limit);
+    
+    return apiCall(`/qa-search?${searchParams.toString()}`);
+  },
+
+  // Submit new question from citizens
+  submitQuestion: async (questionData) => {
+    return apiCall('/qa-submit', {
+      method: 'POST',
+      body: JSON.stringify(questionData),
+    });
+  },
+};
+
 // Export for easy use
 const apiExports = {
+  qaAPI,
   staffAPI,
   perfResultsTypesAPI,
   perfResultsSectionsAPI,
