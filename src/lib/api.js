@@ -29,50 +29,7 @@ async function apiCall(endpoint, options = {}) {
   }
 }
 
-// User API functions
-export const userAPI = {
-  // Get all users with pagination and search
-  getUsers: async (params = {}) => {
-    const searchParams = new URLSearchParams();
 
-    if (params.page) searchParams.append("page", params.page);
-    if (params.limit) searchParams.append("limit", params.limit);
-    if (params.search) searchParams.append("search", params.search);
-
-    const queryString = searchParams.toString();
-    const endpoint = `/users${queryString ? `?${queryString}` : ""}`;
-
-    return apiCall(endpoint);
-  },
-
-  // Get single user by ID
-  getUser: async (id) => {
-    return apiCall(`/users/${id}`);
-  },
-
-  // Create new user
-  createUser: async (userData) => {
-    return apiCall("/users", {
-      method: "POST",
-      body: JSON.stringify(userData),
-    });
-  },
-
-  // Update user
-  updateUser: async (id, userData) => {
-    return apiCall(`/users/${id}`, {
-      method: "PUT",
-      body: JSON.stringify(userData),
-    });
-  },
-
-  // Delete user
-  deleteUser: async (id) => {
-    return apiCall(`/users/${id}`, {
-      method: "DELETE",
-    });
-  },
-};
 
 // Generic CRUD operations for future modules
 export const createCRUDAPI = (resource) => ({
@@ -790,7 +747,6 @@ export const createLawsRegsTablesAPI = {
 
 // Export for easy use
 const apiExports = {
-  userAPI,
   staffAPI,
   perfResultsTypesAPI,
   perfResultsSectionsAPI,

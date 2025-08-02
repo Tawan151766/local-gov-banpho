@@ -92,6 +92,13 @@ const PerformanceResultsFileUpload = ({
       return;
     }
 
+    // ป้องกันการ upload ซ้ำ - ถ้ากำลัง upload อยู่แล้วให้หยุด
+    if (uploading) {
+      console.log('Upload already in progress, skipping...');
+      onError(new Error('Upload already in progress'));
+      return;
+    }
+
     const formData = new FormData();
     formData.append('file', file);
     formData.append('sub_topic_id', subTopicId);
@@ -757,6 +764,15 @@ export default function PerformanceResultsManagement() {
           closeFileModal();
         }
       } else {
+        // ตรวจสอบว่าไฟล์ถูก upload ผ่าน customUpload แล้วหรือไม่
+        if (values.files_path && values.files_path.includes('/storage/uploads/')) {
+          console.log('🚫 File already uploaded via customUpload, skipping API call');
+          message.success("เพิ่มไฟล์สำเร็จ");
+          loadFiles(selectedSubTopic.id);
+          closeFileModal();
+          return;
+        }
+        
         const response = await perfResultsFilesAPI.createFile(fileData);
         if (response.success) {
           message.success("เพิ่มไฟล์สำเร็จ");

@@ -93,6 +93,13 @@ const ProcurementFileUpload = ({
       return;
     }
 
+    // ป้องกันการ upload ซ้ำ - ถ้ากำลัง upload อยู่แล้วให้หยุด
+    if (uploading) {
+      console.log('Upload already in progress, skipping...');
+      onError(new Error('Upload already in progress'));
+      return;
+    }
+
     const formData = new FormData();
     formData.append("file", file);
     formData.append("type_id", typeId);
@@ -380,6 +387,11 @@ export default function ProcurementPlanManagement() {
   // Handle pagination change
   const handleTableChange = (paginationInfo) => {
     if (currentLevel === "types") {
+      setPagination((prev) => ({
+        ...prev,
+        current: paginationInfo.current,
+        pageSize: paginationInfo.pageSize,
+      }));
       loadTypes(paginationInfo.current, searchText);
     }
   };
@@ -540,6 +552,15 @@ export default function ProcurementPlanManagement() {
           closeFileModal();
         }
       } else {
+        // ตรวจสอบว่าไฟล์ถูก upload ผ่าน customUpload แล้วหรือไม่
+        if (values.files_path && values.files_path.includes('/storage/uploads/')) {
+          console.log('🚫 File already uploaded via customUpload, skipping API call');
+          message.success("เพิ่มไฟล์ใหม่สำเร็จ");
+          loadFiles(selectedType.id);
+          closeFileModal();
+          return;
+        }
+        
         const response = await procurementPlanFilesAPI.createFile(fileData);
         if (response.success) {
           message.success("เพิ่มไฟล์ใหม่สำเร็จ");

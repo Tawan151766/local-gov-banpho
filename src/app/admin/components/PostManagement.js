@@ -181,7 +181,8 @@ const PostFileUpload = ({
           fileList={fileList}
           onChange={handleChange}
           onRemove={handleRemove}
-          beforeUpload={handleUpload}
+          beforeUpload={() => false}
+          customRequest={({ file }) => handleUpload(file)}
           accept={accept || "image/*"}
           multiple
           disabled={disabled || uploading}
@@ -206,7 +207,8 @@ const PostFileUpload = ({
         fileList={fileList}
         onChange={handleChange}
         onRemove={handleRemove}
-        beforeUpload={handleUpload}
+        beforeUpload={() => false}
+        customRequest={({ file }) => handleUpload(file)}
         accept={accept}
         multiple
         disabled={disabled || uploading}
@@ -335,7 +337,7 @@ export default function PostManagement() {
     if (activeTab === "types") {
       fetchPostTypes();
     }
-  }, [activeTab, fetchPostTypes, pagination.pageSize]);
+  }, [activeTab, fetchPostTypes, pagination.current, pagination.pageSize]);
 
   // Tab change and search/filter changes for post details
   useEffect(() => {
@@ -349,7 +351,7 @@ export default function PostManagement() {
     if (activeTab === "details") {
       fetchPostDetails();
     }
-  }, [activeTab, detailPagination.pageSize, fetchPostDetails]);
+  }, [activeTab, detailPagination.current, detailPagination.pageSize, fetchPostDetails]);
 
   // Post Types Management
   const handleCreatePostType = () => {
