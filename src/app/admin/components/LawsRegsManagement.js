@@ -1,4 +1,5 @@
 "use client";
+"use client";
 
 import { useState, useEffect, useCallback } from "react";
 import {
@@ -7,7 +8,15 @@ import {
   Modal,
   Form,
   Input,
+import { useState, useEffect, useCallback } from "react";
+import {
+  Table,
+  Button,
+  Modal,
+  Form,
+  Input,
   App,
+  Space,
   Space,
   Popconfirm,
   Card,
@@ -26,6 +35,14 @@ import {
   PlusOutlined,
   EditOutlined,
   DeleteOutlined,
+  Drawer,
+  Upload,
+  Progress,
+} from "antd";
+import {
+  PlusOutlined,
+  EditOutlined,
+  DeleteOutlined,
   SearchOutlined,
   BookOutlined,
   EyeOutlined,
@@ -35,6 +52,17 @@ import {
   FileWordOutlined,
   FileOutlined,
   LinkOutlined,
+  FolderOutlined,
+  UploadOutlined,
+  FileImageOutlined,
+  DownloadOutlined,
+} from "@ant-design/icons";
+import {
+  lawsRegsTypesAPI,
+  lawsRegsSectionsAPI,
+  lawsRegsFilesAPI,
+  createLawsRegsTablesAPI,
+} from "@/lib/api";
   FolderOutlined,
   UploadOutlined,
   FileImageOutlined,
@@ -66,8 +94,6 @@ const LawsRegsFileUpload = ({
   const [uploading, setUploading] = useState(false);
   const [uploadProgress, setUploadProgress] = useState(0);
 
-  // Removed Form.useForm() from here. This component does not need its own form instance.
-
   const getFileIcon = (fileName) => {
     const extension = fileName.split(".").pop().toLowerCase();
     switch (extension) {
@@ -94,13 +120,6 @@ const LawsRegsFileUpload = ({
     if (!sectionId) {
       console.error("กรุณาเลือกหมวดหมู่ก่อน");
       onError(new Error("Section ID is required"));
-      return;
-    }
-
-    // ป้องกันการ upload ซ้ำ - ถ้ากำลัง upload อยู่แล้วให้หยุด
-    if (uploading) {
-      console.log('Upload already in progress, skipping...');
-      onError(new Error('Upload already in progress'));
       return;
     }
 
@@ -254,31 +273,39 @@ export default function LawsRegsManagement() {
   const [sections, setSections] = useState([]);
   const [files, setFiles] = useState([]);
 
+
   // Loading states
   const [loading, setLoading] = useState(false);
   const [sectionsLoading, setSectionsLoading] = useState(false);
   const [filesLoading, setFilesLoading] = useState(false);
   const [tablesLoading, setTablesLoading] = useState(false);
 
+
   // Modal states
   const [typeModalVisible, setTypeModalVisible] = useState(false);
   const [sectionModalVisible, setSectionModalVisible] = useState(false);
   const [fileModalVisible, setFileModalVisible] = useState(false);
 
+
   // Drawer states
   const [sectionsDrawerVisible, setSectionsDrawerVisible] = useState(false);
   const [filesDrawerVisible, setFilesDrawerVisible] = useState(false);
+
 
   // Editing states
   const [editingType, setEditingType] = useState(null);
   const [editingSection, setEditingSection] = useState(null);
   const [editingFile, setEditingFile] = useState(null);
 
+
   // Selected items for navigation
   const [selectedType, setSelectedType] = useState(null);
   const [selectedSection, setSelectedSection] = useState(null);
 
+
   // Navigation state
+  const [currentLevel, setCurrentLevel] = useState("types"); // types, sections, files
+
   const [currentLevel, setCurrentLevel] = useState("types"); // types, sections, files
 
   // Table states
@@ -286,14 +313,18 @@ export default function LawsRegsManagement() {
     current: 1,
     pageSize: 10,
     total: 0,
+    total: 0,
   });
   const [searchText, setSearchText] = useState("");
+  const [searchText, setSearchText] = useState("");
   const [tablesExist, setTablesExist] = useState(false);
+
 
   // Forms
   const [typeForm] = Form.useForm();
   const [sectionForm] = Form.useForm();
   const [fileForm] = Form.useForm();
+
 
   const { message } = App.useApp();
 
@@ -306,9 +337,13 @@ export default function LawsRegsManagement() {
         const allTablesExist = Object.values(response.tablesExist).every(
           (exists) => exists
         );
+        const allTablesExist = Object.values(response.tablesExist).every(
+          (exists) => exists
+        );
         setTablesExist(allTablesExist);
       }
     } catch (error) {
+      console.error("Error checking tables:", error);
       console.error("Error checking tables:", error);
     } finally {
       setTablesLoading(false);
@@ -322,10 +357,13 @@ export default function LawsRegsManagement() {
       const response = await createLawsRegsTablesAPI.createTables();
       if (response.success) {
         message.success("สร้างตารางกฎหมายและระเบียบสำเร็จ");
+        message.success("สร้างตารางกฎหมายและระเบียบสำเร็จ");
         setTablesExist(true);
         loadTypes();
       }
     } catch (error) {
+      message.error("ไม่สามารถสร้างตารางกฎหมายและระเบียบได้");
+      console.error("Error creating tables:", error);
       message.error("ไม่สามารถสร้างตารางกฎหมายและระเบียบได้");
       console.error("Error creating tables:", error);
     } finally {
@@ -335,6 +373,7 @@ export default function LawsRegsManagement() {
 
   // Load types
   const loadTypes = async (page = 1, search = "") => {
+  const loadTypes = async (page = 1, search = "") => {
     setLoading(true);
     try {
       const response = await lawsRegsTypesAPI.getTypes({
@@ -342,17 +381,22 @@ export default function LawsRegsManagement() {
         limit: pagination.pageSize,
         search,
         withSections: false,
+        withSections: false,
       });
 
       if (response.success) {
         setTypes(response.data);
         setPagination((prev) => ({
+        setPagination((prev) => ({
           ...prev,
           current: response.pagination.page,
+          total: response.pagination.total,
           total: response.pagination.total,
         }));
       }
     } catch (error) {
+      message.error("ไม่สามารถโหลดข้อมูลประเภทกฎหมายได้");
+      console.error("Error loading types:", error);
       message.error("ไม่สามารถโหลดข้อมูลประเภทกฎหมายได้");
       console.error("Error loading types:", error);
     } finally {
@@ -367,12 +411,15 @@ export default function LawsRegsManagement() {
       const response = await lawsRegsSectionsAPI.getSections({
         typeId,
         withFiles: false,
+        withFiles: false,
       });
 
       if (response.success) {
         setSections(response.data);
       }
     } catch (error) {
+      message.error("ไม่สามารถโหลดข้อมูลหมวดหมู่ได้");
+      console.error("Error loading sections:", error);
       message.error("ไม่สามารถโหลดข้อมูลหมวดหมู่ได้");
       console.error("Error loading sections:", error);
     } finally {
@@ -387,12 +434,15 @@ export default function LawsRegsManagement() {
       const response = await lawsRegsFilesAPI.getFiles({
         sectionId,
         limit: 100, // Load all files for the section
+        limit: 100, // Load all files for the section
       });
 
       if (response.success) {
         setFiles(response.data);
       }
     } catch (error) {
+      message.error("ไม่สามารถโหลดข้อมูลไฟล์ได้");
+      console.error("Error loading files:", error);
       message.error("ไม่สามารถโหลดข้อมูลไฟล์ได้");
       console.error("Error loading files:", error);
     } finally {
@@ -415,6 +465,7 @@ export default function LawsRegsManagement() {
   const handleSearch = (value) => {
     setSearchText(value);
     if (currentLevel === "types") {
+    if (currentLevel === "types") {
       loadTypes(1, value);
     }
   };
@@ -422,11 +473,6 @@ export default function LawsRegsManagement() {
   // Handle pagination change
   const handleTableChange = (paginationInfo) => {
     if (currentLevel === "types") {
-      setPagination((prev) => ({
-        ...prev,
-        current: paginationInfo.current,
-        pageSize: paginationInfo.pageSize,
-      }));
       loadTypes(paginationInfo.current, searchText);
     }
   };
@@ -435,12 +481,14 @@ export default function LawsRegsManagement() {
   const navigateToSections = (type) => {
     setSelectedType(type);
     setCurrentLevel("sections");
+    setCurrentLevel("sections");
     loadSections(type.id);
     setSectionsDrawerVisible(true);
   };
 
   const navigateToFiles = (section) => {
     setSelectedSection(section);
+    setCurrentLevel("files");
     setCurrentLevel("files");
     loadFiles(section.id);
     setFilesDrawerVisible(true);
@@ -449,9 +497,13 @@ export default function LawsRegsManagement() {
   const navigateBack = () => {
     if (currentLevel === "files") {
       setCurrentLevel("sections");
+    if (currentLevel === "files") {
+      setCurrentLevel("sections");
       setSelectedSection(null);
       setFiles([]);
       setFilesDrawerVisible(false);
+    } else if (currentLevel === "sections") {
+      setCurrentLevel("types");
     } else if (currentLevel === "sections") {
       setCurrentLevel("types");
       setSelectedType(null);
@@ -465,8 +517,10 @@ export default function LawsRegsManagement() {
     setEditingType(type);
     setTypeModalVisible(true);
 
+
     if (type) {
       typeForm.setFieldsValue({
+        type_name: type.type_name,
         type_name: type.type_name,
       });
     } else {
@@ -484,8 +538,10 @@ export default function LawsRegsManagement() {
     setEditingSection(section);
     setSectionModalVisible(true);
 
+
     if (section) {
       sectionForm.setFieldsValue({
+        section_name: section.section_name,
         section_name: section.section_name,
       });
     } else {
@@ -503,9 +559,11 @@ export default function LawsRegsManagement() {
     setEditingFile(file);
     setFileModalVisible(true);
 
+
     if (file) {
       fileForm.setFieldsValue({
         files_path: file.files_path,
+        files_type: file.files_type,
         files_type: file.files_type,
       });
     } else {
@@ -527,7 +585,12 @@ export default function LawsRegsManagement() {
           editingType.id,
           values
         );
+        const response = await lawsRegsTypesAPI.updateType(
+          editingType.id,
+          values
+        );
         if (response.success) {
+          message.success("อัปเดตประเภทกฎหมายสำเร็จ");
           message.success("อัปเดตประเภทกฎหมายสำเร็จ");
           loadTypes(pagination.current, searchText);
           closeTypeModal();
@@ -536,11 +599,13 @@ export default function LawsRegsManagement() {
         const response = await lawsRegsTypesAPI.createType(values);
         if (response.success) {
           message.success("เพิ่มประเภทกฎหมายใหม่สำเร็จ");
+          message.success("เพิ่มประเภทกฎหมายใหม่สำเร็จ");
           loadTypes(pagination.current, searchText);
           closeTypeModal();
         }
       }
     } catch (error) {
+      message.error(error.message || "เกิดข้อผิดพลาด");
       message.error(error.message || "เกิดข้อผิดพลาด");
     }
   };
@@ -551,9 +616,11 @@ export default function LawsRegsManagement() {
       const response = await lawsRegsTypesAPI.deleteType(id);
       if (response.success) {
         message.success("ลบประเภทกฎหมายสำเร็จ");
+        message.success("ลบประเภทกฎหมายสำเร็จ");
         loadTypes(pagination.current, searchText);
       }
     } catch (error) {
+      message.error(error.message || "ไม่สามารถลบประเภทกฎหมายได้");
       message.error(error.message || "ไม่สามารถลบประเภทกฎหมายได้");
     }
   };
@@ -564,6 +631,7 @@ export default function LawsRegsManagement() {
       const sectionData = {
         ...values,
         type_id: selectedType.id,
+        type_id: selectedType.id,
       };
 
       if (editingSection) {
@@ -571,7 +639,12 @@ export default function LawsRegsManagement() {
           editingSection.id,
           sectionData
         );
+        const response = await lawsRegsSectionsAPI.updateSection(
+          editingSection.id,
+          sectionData
+        );
         if (response.success) {
+          message.success("อัปเดตหมวดหมู่สำเร็จ");
           message.success("อัปเดตหมวดหมู่สำเร็จ");
           loadSections(selectedType.id);
           closeSectionModal();
@@ -580,11 +653,13 @@ export default function LawsRegsManagement() {
         const response = await lawsRegsSectionsAPI.createSection(sectionData);
         if (response.success) {
           message.success("เพิ่มหมวดหมู่ใหม่สำเร็จ");
+          message.success("เพิ่มหมวดหมู่ใหม่สำเร็จ");
           loadSections(selectedType.id);
           closeSectionModal();
         }
       }
     } catch (error) {
+      message.error(error.message || "เกิดข้อผิดพลาดในการจัดการหมวดหมู่");
       message.error(error.message || "เกิดข้อผิดพลาดในการจัดการหมวดหมู่");
     }
   };
@@ -595,9 +670,11 @@ export default function LawsRegsManagement() {
       const response = await lawsRegsSectionsAPI.deleteSection(id);
       if (response.success) {
         message.success("ลบหมวดหมู่สำเร็จ");
+        message.success("ลบหมวดหมู่สำเร็จ");
         loadSections(selectedType.id);
       }
     } catch (error) {
+      message.error(error.message || "ไม่สามารถลบหมวดหมู่ได้");
       message.error(error.message || "ไม่สามารถลบหมวดหมู่ได้");
     }
   };
@@ -647,8 +724,52 @@ export default function LawsRegsManagement() {
         }
       }
 
+      // ตรวจสอบนาสกุลไฟล์อัตโนมัติจาก files_path
+      let autoDetectedFileType = "other";
+      if (values.files_path) {
+        const extension = values.files_path.split(".").pop().toLowerCase();
+        switch (extension) {
+          case "pdf":
+            autoDetectedFileType = "pdf";
+            break;
+          case "doc":
+            autoDetectedFileType = "doc";
+            break;
+          case "docx":
+            autoDetectedFileType = "docx";
+            break;
+          case "xls":
+            autoDetectedFileType = "xls";
+            break;
+          case "xlsx":
+            autoDetectedFileType = "xlsx";
+            break;
+          case "txt":
+            autoDetectedFileType = "txt";
+            break;
+          case "jpg":
+          case "jpeg":
+            autoDetectedFileType = "jpg";
+            break;
+          case "png":
+            autoDetectedFileType = "png";
+            break;
+          case "gif":
+            autoDetectedFileType = "gif";
+            break;
+          case "webp":
+            autoDetectedFileType = "webp";
+            break;
+          case "mp4":
+            autoDetectedFileType = "mp4";
+            break;
+        }
+      }
+
       const fileData = {
         ...values,
+        files_type: autoDetectedFileType, // ใช้ประเภทไฟล์ที่ตรวจสอบอัตโนมัติ
+        section_id: selectedSection.id,
         files_type: autoDetectedFileType, // ใช้ประเภทไฟล์ที่ตรวจสอบอัตโนมัติ
         section_id: selectedSection.id,
       };
@@ -658,7 +779,12 @@ export default function LawsRegsManagement() {
           editingFile.id,
           fileData
         );
+        const response = await lawsRegsFilesAPI.updateFile(
+          editingFile.id,
+          fileData
+        );
         if (response.success) {
+          message.success("อัปเดตไฟล์สำเร็จ");
           message.success("อัปเดตไฟล์สำเร็จ");
           loadFiles(selectedSection.id);
           closeFileModal();
@@ -676,11 +802,13 @@ export default function LawsRegsManagement() {
         const response = await lawsRegsFilesAPI.createFile(fileData);
         if (response.success) {
           message.success("เพิ่มไฟล์ใหม่สำเร็จ");
+          message.success("เพิ่มไฟล์ใหม่สำเร็จ");
           loadFiles(selectedSection.id);
           closeFileModal();
         }
       }
     } catch (error) {
+      message.error(error.message || "เกิดข้อผิดพลาดในการจัดการไฟล์");
       message.error(error.message || "เกิดข้อผิดพลาดในการจัดการไฟล์");
     }
   };
@@ -691,11 +819,34 @@ export default function LawsRegsManagement() {
       const response = await lawsRegsFilesAPI.deleteFile(id);
       if (response.success) {
         message.success("ลบไฟล์สำเร็จ");
+        message.success("ลบไฟล์สำเร็จ");
         loadFiles(selectedSection.id);
       }
     } catch (error) {
       message.error(error.message || "ไม่สามารถลบไฟล์ได้");
+      message.error(error.message || "ไม่สามารถลบไฟล์ได้");
     }
+  };
+
+  // Handle download file
+  const handleDownloadFile = (file) => {
+    // file.files_path เก็บเป็น /storage/uploads/filename
+    let fullUrl = "";
+    if (file.files_path.startsWith("/storage/")) {
+      // Laravel storage URL format
+      fullUrl = file.files_path.replace(
+        "/storage/",
+        "https://banpho.sosmartsolution.com/storage/"
+      );
+    } else if (file.files_path.startsWith("http")) {
+      // Already full URL
+      fullUrl = file.files_path;
+    } else {
+      // Fallback
+      fullUrl = `https://banpho.sosmartsolution.com${file.files_path}`;
+    }
+
+    window.open(fullUrl, "_blank");
   };
 
   // Handle download file
@@ -730,7 +881,16 @@ export default function LawsRegsManagement() {
       case "docx":
       case "doc":
         return <FileWordOutlined style={{ color: "#1890ff" }} />;
+      case "pdf":
+        return <FilePdfOutlined style={{ color: "#ff4d4f" }} />;
+      case "xlsx":
+      case "xls":
+        return <FileExcelOutlined style={{ color: "#52c41a" }} />;
+      case "docx":
+      case "doc":
+        return <FileWordOutlined style={{ color: "#1890ff" }} />;
       default:
+        return <FileOutlined style={{ color: "#8c8c8c" }} />;
         return <FileOutlined style={{ color: "#8c8c8c" }} />;
     }
   };
@@ -742,11 +902,15 @@ export default function LawsRegsManagement() {
         title: "ประเภทกฎหมาย",
         onClick: () => setCurrentLevel("types"),
       },
+        title: "ประเภทกฎหมาย",
+        onClick: () => setCurrentLevel("types"),
+      },
     ];
 
     if (selectedType) {
       items.push({
         title: selectedType.type_name,
+        onClick: () => setCurrentLevel("sections"),
         onClick: () => setCurrentLevel("sections"),
       });
     }
@@ -754,6 +918,7 @@ export default function LawsRegsManagement() {
     if (selectedSection) {
       items.push({
         title: selectedSection.section_name,
+        onClick: () => setCurrentLevel("files"),
         onClick: () => setCurrentLevel("files"),
       });
     }
@@ -768,9 +933,16 @@ export default function LawsRegsManagement() {
         title: "ID",
         dataIndex: "id",
         key: "id",
+        title: "ID",
+        dataIndex: "id",
+        key: "id",
         width: 80,
       },
       {
+        title: "ชื่อประเภท",
+        dataIndex: "type_name",
+        key: "type_name",
+        render: (name) => <Text strong>{name}</Text>,
         title: "ชื่อประเภท",
         dataIndex: "type_name",
         key: "type_name",
@@ -781,8 +953,14 @@ export default function LawsRegsManagement() {
         dataIndex: "created_at",
         key: "created_at",
         render: (date) => new Date(date).toLocaleDateString("th-TH"),
+        title: "วันที่สร้าง",
+        dataIndex: "created_at",
+        key: "created_at",
+        render: (date) => new Date(date).toLocaleDateString("th-TH"),
       },
       {
+        title: "การจัดการ",
+        key: "actions",
         title: "การจัดการ",
         key: "actions",
         width: 250,
@@ -812,6 +990,7 @@ export default function LawsRegsManagement() {
               cancelText="ยกเลิก"
             >
               <Button danger size="small" icon={<DeleteOutlined />}>
+              <Button danger size="small" icon={<DeleteOutlined />}>
                 ลบ
               </Button>
             </Popconfirm>
@@ -825,6 +1004,12 @@ export default function LawsRegsManagement() {
   if (!tablesExist && !tablesLoading) {
     return (
       <Card>
+        <Space
+          direction="vertical"
+          size="large"
+          style={{ width: "100%", textAlign: "center" }}
+        >
+          <BookOutlined style={{ fontSize: "64px", color: "#1890ff" }} />
         <Space
           direction="vertical"
           size="large"
@@ -851,11 +1036,15 @@ export default function LawsRegsManagement() {
   return (
     <Card>
       <Space direction="vertical" size="large" style={{ width: "100%" }}>
+      <Space direction="vertical" size="large" style={{ width: "100%" }}>
         <div>
           <Title level={3}>
             <BookOutlined style={{ marginRight: 8 }} />
             จัดการกฎหมายและระเบียบ
           </Title>
+          <Text type="secondary">
+            จัดการประเภทกฎหมาย หมวดหมู่ และไฟล์เอกสารที่เกี่ยวข้อง
+          </Text>
           <Text type="secondary">
             จัดการประเภทกฎหมาย หมวดหมู่ และไฟล์เอกสารที่เกี่ยวข้อง
           </Text>
@@ -872,6 +1061,7 @@ export default function LawsRegsManagement() {
               style={{ width: 300 }}
             />
           </Col>
+
 
           <Col>
             <Button
@@ -894,6 +1084,7 @@ export default function LawsRegsManagement() {
             showSizeChanger: true,
             showQuickJumper: true,
             showTotal: (total, range) =>
+            showTotal: (total, range) =>
               `${range[0]}-${range[1]} จาก ${total} รายการ`,
           }}
           onChange={handleTableChange}
@@ -902,24 +1093,30 @@ export default function LawsRegsManagement() {
         {/* Type Modal */}
         <Modal
           title={editingType ? "แก้ไขประเภทกฎหมาย" : "เพิ่มประเภทกฎหมายใหม่"}
+          title={editingType ? "แก้ไขประเภทกฎหมาย" : "เพิ่มประเภทกฎหมายใหม่"}
           open={typeModalVisible}
           onCancel={closeTypeModal}
           footer={null}
           width={600}
         >
           <Form form={typeForm} layout="vertical" onFinish={handleTypeSubmit}>
+          <Form form={typeForm} layout="vertical" onFinish={handleTypeSubmit}>
             <Form.Item
               name="type_name"
               label="ชื่อประเภท"
+              rules={[{ required: true, message: "กรุณากรอกชื่อประเภท" }]}
               rules={[{ required: true, message: "กรุณากรอกชื่อประเภท" }]}
             >
               <Input placeholder="กรอกชื่อประเภทกฎหมายและระเบียบ" />
             </Form.Item>
 
             <div style={{ textAlign: "right", marginTop: 24 }}>
+            <div style={{ textAlign: "right", marginTop: 24 }}>
               <Space>
                 <Button onClick={closeTypeModal}>ยกเลิก</Button>
+                <Button onClick={closeTypeModal}>ยกเลิก</Button>
                 <Button type="primary" htmlType="submit">
+                  {editingType ? "อัปเดต" : "เพิ่ม"}
                   {editingType ? "อัปเดต" : "เพิ่ม"}
                 </Button>
               </Space>
@@ -956,7 +1153,9 @@ export default function LawsRegsManagement() {
               <List.Item
                 actions={[
                   <Button
+                  <Button
                     key="view-files"
+                    type="link"
                     type="link"
                     icon={<EyeOutlined />}
                     onClick={() => navigateToFiles(section)}
@@ -964,7 +1163,9 @@ export default function LawsRegsManagement() {
                     ดูไฟล์
                   </Button>,
                   <Button
+                  <Button
                     key="edit"
+                    type="link"
                     type="link"
                     icon={<EditOutlined />}
                     onClick={() => openSectionModal(section)}
@@ -983,9 +1184,15 @@ export default function LawsRegsManagement() {
                       ลบ
                     </Button>
                   </Popconfirm>,
+                  </Popconfirm>,
                 ]}
               >
                 <List.Item.Meta
+                  avatar={
+                    <FolderOutlined
+                      style={{ fontSize: "20px", color: "#1890ff" }}
+                    />
+                  }
                   avatar={
                     <FolderOutlined
                       style={{ fontSize: "20px", color: "#1890ff" }}
@@ -996,12 +1203,15 @@ export default function LawsRegsManagement() {
                     <Text type="secondary">
                       สร้างเมื่อ:{" "}
                       {new Date(section.created_at).toLocaleDateString("th-TH")}
+                      สร้างเมื่อ:{" "}
+                      {new Date(section.created_at).toLocaleDateString("th-TH")}
                     </Text>
                   }
                 />
               </List.Item>
             )}
             locale={{
+              emptyText: "ยังไม่มีหมวดหมู่",
               emptyText: "ยังไม่มีหมวดหมู่",
             }}
           />
@@ -1044,7 +1254,17 @@ export default function LawsRegsManagement() {
                     ดาวน์โหลด
                   </Button>,
                   <Button
+                  <Button
+                    key="download"
+                    type="link"
+                    icon={<DownloadOutlined />}
+                    onClick={() => handleDownloadFile(file)}
+                  >
+                    ดาวน์โหลด
+                  </Button>,
+                  <Button
                     key="edit"
+                    type="link"
                     type="link"
                     icon={<EditOutlined />}
                     onClick={() => openFileModal(file)}
@@ -1063,10 +1283,12 @@ export default function LawsRegsManagement() {
                       ลบ
                     </Button>
                   </Popconfirm>,
+                  </Popconfirm>,
                 ]}
               >
                 <List.Item.Meta
                   avatar={getFileIcon(file.files_type)}
+                  title={file.original_name || file.files_path.split("/").pop()}
                   title={file.original_name || file.files_path.split("/").pop()}
                   description={
                     <Space direction="vertical" size="small">
@@ -1077,7 +1299,16 @@ export default function LawsRegsManagement() {
                       {file.description && (
                         <Text type="secondary">{file.description}</Text>
                       )}
+                      <Tag color="blue">{file.files_type?.toUpperCase()}</Tag>
+                      <Text type="secondary" style={{ fontSize: "12px" }}>
+                        Path: {file.files_path}
+                      </Text>
+                      {file.description && (
+                        <Text type="secondary">{file.description}</Text>
+                      )}
                       <Text type="secondary">
+                        สร้างเมื่อ:{" "}
+                        {new Date(file.created_at).toLocaleDateString("th-TH")}
                         สร้างเมื่อ:{" "}
                         {new Date(file.created_at).toLocaleDateString("th-TH")}
                       </Text>
@@ -1088,12 +1319,14 @@ export default function LawsRegsManagement() {
             )}
             locale={{
               emptyText: "ยังไม่มีไฟล์เอกสาร",
+              emptyText: "ยังไม่มีไฟล์เอกสาร",
             }}
           />
         </Drawer>
 
         {/* Section Modal */}
         <Modal
+          title={editingSection ? "แก้ไขหมวดหมู่" : "เพิ่มหมวดหมู่ใหม่"}
           title={editingSection ? "แก้ไขหมวดหมู่" : "เพิ่มหมวดหมู่ใหม่"}
           open={sectionModalVisible}
           onCancel={closeSectionModal}
@@ -1109,14 +1342,18 @@ export default function LawsRegsManagement() {
               name="section_name"
               label="ชื่อหมวดหมู่"
               rules={[{ required: true, message: "กรุณากรอกชื่อหมวดหมู่" }]}
+              rules={[{ required: true, message: "กรุณากรอกชื่อหมวดหมู่" }]}
             >
               <Input placeholder="กรอกชื่อหมวดหมู่" />
             </Form.Item>
 
             <div style={{ textAlign: "right", marginTop: 24 }}>
+            <div style={{ textAlign: "right", marginTop: 24 }}>
               <Space>
                 <Button onClick={closeSectionModal}>ยกเลิก</Button>
+                <Button onClick={closeSectionModal}>ยกเลิก</Button>
                 <Button type="primary" htmlType="submit">
+                  {editingSection ? "อัปเดต" : "เพิ่ม"}
                   {editingSection ? "อัปเดต" : "เพิ่ม"}
                 </Button>
               </Space>
@@ -1127,21 +1364,29 @@ export default function LawsRegsManagement() {
         {/* File Modal */}
         <Modal
           title={editingFile ? "แก้ไขไฟล์" : "เพิ่มไฟล์ใหม่"}
+          title={editingFile ? "แก้ไขไฟล์" : "เพิ่มไฟล์ใหม่"}
           open={fileModalVisible}
           onCancel={closeFileModal}
           footer={null}
           width={500}
+          width={500}
         >
+          <Form form={fileForm} layout="vertical" onFinish={handleFileSubmit}>
           <Form form={fileForm} layout="vertical" onFinish={handleFileSubmit}>
             <Form.Item
               name="files_path"
               label="ไฟล์เอกสาร"
               rules={[{ required: true, message: "กรุณาอัปโหลดไฟล์" }]}
+              rules={[{ required: true, message: "กรุณาอัปโหลดไฟล์" }]}
             >
               <LawsRegsFileUpload
                 sectionId={selectedSection?.id}
                 accept=".pdf,.doc,.docx,.xls,.xlsx,.txt,.jpg,.jpeg,.png,.gif,.webp"
+              <LawsRegsFileUpload
+                sectionId={selectedSection?.id}
+                accept=".pdf,.doc,.docx,.xls,.xlsx,.txt,.jpg,.jpeg,.png,.gif,.webp"
                 placeholder="เลือกไฟล์เอกสารกฎหมายและระเบียบ"
+                maxSize={10}
                 maxSize={10}
               />
             </Form.Item>
@@ -1211,11 +1456,79 @@ export default function LawsRegsManagement() {
                 </div>
               </Form.Item>
             )}
+            <Form.Item name="description" label="คำอธิบาย (ไม่บังคับ)">
+              <TextArea
+                rows={3}
+                placeholder="กรอกคำอธิบายไฟล์..."
+                maxLength={500}
+                showCount
+              />
+            </Form.Item>
 
+            {/* แสดงประเภทไฟล์ที่ตรวจสอบได้ (แบบ read-only) */}
+            {fileForm.getFieldValue("files_path") && (
+              <Form.Item label="ประเภทไฟล์ที่ตรวจสอบได้">
+                <div
+                  style={{
+                    padding: "8px 12px",
+                    backgroundColor: "#f5f5f5",
+                    borderRadius: "6px",
+                    border: "1px solid #d9d9d9",
+                  }}
+                >
+                  <Space>
+                    {getFileIcon(
+                      (() => {
+                        const path = fileForm.getFieldValue("files_path");
+                        return path ? path.split(".").pop().toLowerCase() : "";
+                      })()
+                    )}
+                    <Text>
+                      {(() => {
+                        const path = fileForm.getFieldValue("files_path");
+                        if (!path) return "ยังไม่ได้เลือกไฟล์";
+                        const extension = path.split(".").pop().toLowerCase();
+                        switch (extension) {
+                          case "pdf":
+                            return "PDF Document";
+                          case "doc":
+                            return "Word Document";
+                          case "docx":
+                            return "Word Document (DOCX)";
+                          case "xls":
+                            return "Excel Spreadsheet";
+                          case "xlsx":
+                            return "Excel Spreadsheet (XLSX)";
+                          case "txt":
+                            return "Text File";
+                          case "jpg":
+                          case "jpeg":
+                            return "JPEG Image";
+                          case "png":
+                            return "PNG Image";
+                          case "gif":
+                            return "GIF Image";
+                          case "webp":
+                            return "WebP Image";
+                          case "mp4":
+                            return "MP4 Video";
+                          default:
+                            return "ไฟล์อื่นๆ";
+                        }
+                      })()}
+                    </Text>
+                  </Space>
+                </div>
+              </Form.Item>
+            )}
+
+            <div style={{ textAlign: "right", marginTop: 24 }}>
             <div style={{ textAlign: "right", marginTop: 24 }}>
               <Space>
                 <Button onClick={closeFileModal}>ยกเลิก</Button>
+                <Button onClick={closeFileModal}>ยกเลิก</Button>
                 <Button type="primary" htmlType="submit">
+                  {editingFile ? "อัปเดต" : "เพิ่ม"}
                   {editingFile ? "อัปเดต" : "เพิ่ม"}
                 </Button>
               </Space>
@@ -1226,3 +1539,4 @@ export default function LawsRegsManagement() {
     </Card>
   );
 }
+
