@@ -3,11 +3,11 @@ export default function PeopleSupport() {
   const cards = [
     {
       icon: "/image/people_gui1.png",
-      link: "/manual",
+      link: "/citizen/citizen-manual",
     },
     {
       icon: "/image/people_gui2.png",
-      link: "/download-form",
+      link: "/citizen/documents",
     },
     {
       icon: "/image/people_gui3.png",
