@@ -27,11 +27,11 @@ export default function PeopleSupport() {
     },
     {
       icon: "/image/people_gui7.png",
-      link: "/qa",
+      link: "/citizen/qa",
     },
     {
       icon: "/image/people_gui8.png",
-      link: "/qa",
+      link: "/citizen/qa",
     },
   ];
 
