@@ -31,6 +31,7 @@ async function apiCall(endpoint, options = {}) {
 
 
 
+
 // Generic CRUD operations for future modules
 export const createCRUDAPI = (resource) => ({
   getAll: (params = {}) => {
@@ -962,8 +963,6 @@ const manualAPI = {
 
 // Export for easy use
 const apiExports = {
-  qaAPI,
-  manualAPI,
   staffAPI,
   perfResultsTypesAPI,
   perfResultsSectionsAPI,

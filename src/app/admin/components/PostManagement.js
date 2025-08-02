@@ -184,7 +184,8 @@ const PostFileUpload = ({
           fileList={fileList}
           onChange={handleChange}
           onRemove={handleRemove}
-          beforeUpload={handleUpload}
+          beforeUpload={() => false}
+          customRequest={({ file }) => handleUpload(file)}
           accept={accept || "image/*"}
           multiple
           disabled={disabled || uploading}
@@ -209,7 +210,8 @@ const PostFileUpload = ({
         fileList={fileList}
         onChange={handleChange}
         onRemove={handleRemove}
-        beforeUpload={handleUpload}
+        beforeUpload={() => false}
+        customRequest={({ file }) => handleUpload(file)}
         accept={accept}
         multiple
         disabled={disabled || uploading}
@@ -370,7 +372,7 @@ export default function PostManagement() {
     if (activeTab === "types") {
       fetchPostTypes();
     }
-  }, [pagination.current, pagination.pageSize]);
+  }, [activeTab, fetchPostTypes, pagination.current, pagination.pageSize]);
 
   // ✅ แก้ไข: ใช้ timeout เพื่อป้องกัน frequent API calls
   useEffect(() => {
@@ -388,27 +390,7 @@ export default function PostManagement() {
     if (activeTab === "details") {
       fetchPostDetails();
     }
-  }, [detailPagination.current, detailPagination.pageSize]);
-
-  // ✅ แก้ไข: เพิ่ม handler สำหรับการค้นหา
-  const handleSearch = useCallback((value) => {
-    console.log('Search triggered with value:', value);
-    setSearchText(value);
-    
-    // Reset pagination เมื่อค้นหา
-    if (activeTab === "types") {
-      setPagination(prev => ({ ...prev, current: 1 }));
-    } else {
-      setDetailPagination(prev => ({ ...prev, current: 1 }));
-    }
-  }, [activeTab]);
-
-  // ✅ แก้ไข: เพิ่ม handler สำหรับการเลือกประเภทโพสต์
-  const handlePostTypeFilter = useCallback((value) => {
-    console.log('Post type filter changed:', value);
-    setSelectedPostType(value);
-    setDetailPagination(prev => ({ ...prev, current: 1 }));
-  }, []);
+  }, [activeTab, detailPagination.current, detailPagination.pageSize, fetchPostDetails]);
 
   // Post Types Management
   const handleCreatePostType = () => {
