@@ -1,19 +1,19 @@
-import { NextResponse } from 'next/server';
-import mysql from 'mysql2/promise';
+import { NextResponse } from "next/server";
+import mysql from "mysql2/promise";
 
 // Database connection
 const dbConfig = {
- host: process.env.DB_HOST,
+  host: process.env.DB_HOST,
   port: process.env.DB_PORT ? parseInt(process.env.DB_PORT) : 3306,
   user: process.env.DB_USER,
   password: process.env.DB_PASSWORD,
-  database: process.env.DB_NAME
+  database: process.env.DB_NAME,
 };
 
 // POST /api/create-laws-regs-tables - สร้างตาราง Laws & Regulations Management
 export async function POST(request) {
   let connection;
-  
+
   try {
     connection = await mysql.createConnection(dbConfig);
 
@@ -53,6 +53,9 @@ export async function POST(request) {
           section_id INT NOT NULL,
           files_path VARCHAR(500) NOT NULL,
           files_type VARCHAR(50) NOT NULL,
+          original_name VARCHAR(255) NULL,
+          file_size BIGINT NULL,
+          description TEXT NULL,
           created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
           updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
           FOREIGN KEY (section_id) REFERENCES laws_regs_sections(id) ON DELETE CASCADE,
@@ -60,6 +63,42 @@ export async function POST(request) {
           INDEX idx_files_type (files_type)
         ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci
       `);
+
+      // Add new columns to existing table if they don't exist
+      try {
+        // Check if columns exist first
+        const [columns] = await connection.execute(
+          `
+          SELECT COLUMN_NAME 
+          FROM INFORMATION_SCHEMA.COLUMNS 
+          WHERE TABLE_SCHEMA = ? AND TABLE_NAME = 'laws_regs_files'
+        `,
+          [process.env.DB_NAME || "gmsky_banphokorat"]
+        );
+
+        const existingColumns = columns.map((col) => col.COLUMN_NAME);
+        const columnsToAdd = [];
+
+        if (!existingColumns.includes("original_name")) {
+          columnsToAdd.push("ADD COLUMN original_name VARCHAR(255) NULL");
+        }
+        if (!existingColumns.includes("file_size")) {
+          columnsToAdd.push("ADD COLUMN file_size BIGINT NULL");
+        }
+        if (!existingColumns.includes("description")) {
+          columnsToAdd.push("ADD COLUMN description TEXT NULL");
+        }
+
+        if (columnsToAdd.length > 0) {
+          const alterQuery = `ALTER TABLE laws_regs_files ${columnsToAdd.join(
+            ", "
+          )}`;
+          await connection.execute(alterQuery);
+          console.log("Added columns:", columnsToAdd);
+        }
+      } catch (alterError) {
+        console.log("Error adding columns:", alterError.message);
+      }
 
       // Insert sample data for laws_regs_types
       await connection.execute(`
@@ -123,22 +162,30 @@ export async function POST(request) {
       // Commit transaction
       await connection.commit();
 
-      return NextResponse.json({
-        success: true,
-        message: 'Laws & Regulations Management tables created successfully',
-        tables: ['laws_regs_types', 'laws_regs_sections', 'laws_regs_files']
-      }, { status: 201 });
-
+      return NextResponse.json(
+        {
+          success: true,
+          message: "Laws & Regulations Management tables created successfully",
+          tables: ["laws_regs_types", "laws_regs_sections", "laws_regs_files"],
+        },
+        { status: 201 }
+      );
     } catch (error) {
       // Rollback transaction on error
       await connection.rollback();
       throw error;
     }
-
   } catch (error) {
-    console.error('Error creating Laws & Regulations Management tables:', error);
+    console.error(
+      "Error creating Laws & Regulations Management tables:",
+      error
+    );
     return NextResponse.json(
-      { success: false, error: 'Failed to create Laws & Regulations Management tables', details: error.message },
+      {
+        success: false,
+        error: "Failed to create Laws & Regulations Management tables",
+        details: error.message,
+      },
       { status: 500 }
     );
   } finally {
@@ -151,26 +198,35 @@ export async function POST(request) {
 // GET /api/create-laws-regs-tables - ตรวจสอบสถานะตาราง
 export async function GET(request) {
   let connection;
-  
+
   try {
     connection = await mysql.createConnection(dbConfig);
 
     // Check if tables exist
-    const tableNames = ['laws_regs_types', 'laws_regs_sections', 'laws_regs_files'];
+    const tableNames = [
+      "laws_regs_types",
+      "laws_regs_sections",
+      "laws_regs_files",
+    ];
     const tablesExist = {};
     const recordCounts = {};
 
     for (const tableName of tableNames) {
-      const [tableCheck] = await connection.execute(`
+      const [tableCheck] = await connection.execute(
+        `
         SELECT COUNT(*) as count FROM information_schema.tables 
         WHERE table_schema = 'gmsky_banphokorat' AND table_name = ?
-      `, [tableName]);
+      `,
+        [tableName]
+      );
 
       tablesExist[tableName] = tableCheck[0].count > 0;
 
       // Get record counts if table exists
       if (tablesExist[tableName]) {
-        const [recordCount] = await connection.execute(`SELECT COUNT(*) as count FROM ${tableName}`);
+        const [recordCount] = await connection.execute(
+          `SELECT COUNT(*) as count FROM ${tableName}`
+        );
         recordCounts[tableName] = recordCount[0].count;
       }
     }
@@ -196,13 +252,19 @@ export async function GET(request) {
       success: true,
       tablesExist,
       recordCounts,
-      sampleData: typesWithCounts
+      sampleData: typesWithCounts,
     });
-
   } catch (error) {
-    console.error('Error checking Laws & Regulations Management tables:', error);
+    console.error(
+      "Error checking Laws & Regulations Management tables:",
+      error
+    );
     return NextResponse.json(
-      { success: false, error: 'Failed to check Laws & Regulations Management tables', details: error.message },
+      {
+        success: false,
+        error: "Failed to check Laws & Regulations Management tables",
+        details: error.message,
+      },
       { status: 500 }
     );
   } finally {
