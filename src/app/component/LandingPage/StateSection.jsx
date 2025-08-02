@@ -1,13 +1,59 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 
 export default function StateSection() {
-  const stats = [
-    { label: "ขณะนี้ 15,600 คน", value: 12 },
-    { label: "วันนี้ 3,100 คน", value: 56 },
-    { label: "สัปดาห์นี้ 46,300 คน", value: 320 },
-    { label: "เดือนนี้ 70,200 คน", value: 1200 },
-    { label: "ปีนี้ 126,800 คน", value: 5400 },
-    { label: "ทั้งหมด 250,600 คน", value: 12345 },
+  const [stats, setStats] = useState({
+    current: 0,
+    today: 0,
+    thisWeek: 0,
+    thisMonth: 0,
+    thisYear: 0,
+    total: 0,
+    lastUpdated: null
+  });
+  const [loading, setLoading] = useState(true);
+
+  // ดึงข้อมูลสถิติ
+  useEffect(() => {
+    const fetchStats = async () => {
+      try {
+        const response = await fetch('/api/website-stats');
+        const result = await response.json();
+        
+        if (result.success) {
+          setStats(result.data);
+        }
+      } catch (error) {
+        console.error('Failed to fetch website stats:', error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchStats();
+    
+    // อัปเดตข้อมูลทุก 30 วินาที
+    const interval = setInterval(fetchStats, 30000);
+    
+    return () => clearInterval(interval);
+  }, []);
+
+  // ฟอร์แมตตัวเลข
+  const formatNumber = (num) => {
+    if (num >= 1000000) {
+      return (num / 1000000).toFixed(1) + 'M';
+    } else if (num >= 1000) {
+      return (num / 1000).toFixed(1) + 'K';
+    }
+    return num.toLocaleString();
+  };
+
+  const statsDisplay = [
+    { label: `ขณะนี้ ${formatNumber(stats.current)} คน`, value: stats.current },
+    { label: `วันนี้ ${formatNumber(stats.today)} คน`, value: stats.today },
+    { label: `สัปดาห์นี้ ${formatNumber(stats.thisWeek)} คน`, value: stats.thisWeek },
+    { label: `เดือนนี้ ${formatNumber(stats.thisMonth)} คน`, value: stats.thisMonth },
+    { label: `ปีนี้ ${formatNumber(stats.thisYear)} คน`, value: stats.thisYear },
+    { label: `ทั้งหมด ${formatNumber(stats.total)} คน`, value: stats.total },
   ];
 
   return (
@@ -41,20 +87,44 @@ export default function StateSection() {
                   number of website visitors 
                 </span>
               </div>
-              {stats.map((stat, idx) => (
-                <div
-                  key={stat.label}
-                  className="flex flex-col items-center justify-center py-2 relative"
-                >
-                  <span className="text-[#394d1c] font-semibold text-base md:text-lg">
-                    {stat.label}
+              {loading ? (
+                // Loading state
+                Array.from({ length: 6 }).map((_, idx) => (
+                  <div
+                    key={idx}
+                    className="flex flex-col items-center justify-center py-2 relative"
+                  >
+                    <div className="animate-pulse bg-[#394d1c]/20 rounded h-6 w-24 mb-1"></div>
+                    {idx < 5 && (
+                      <span className="hidden md:block absolute right-0 top-1/2 -translate-y-1/2 h-8 w-px bg-[#01bdcc]" />
+                    )}
+                  </div>
+                ))
+              ) : (
+                statsDisplay.map((stat, idx) => (
+                  <div
+                    key={stat.label}
+                    className="flex flex-col items-center justify-center py-2 relative"
+                  >
+                    <span className="text-[#394d1c] font-semibold text-base md:text-lg transition-all duration-300">
+                      {stat.label}
+                    </span>
+                    {/* Vertical divider except last */}
+                    {idx < statsDisplay.length - 1 && (
+                      <span className="hidden md:block absolute right-0 top-1/2 -translate-y-1/2 h-8 w-px bg-[#01bdcc]" />
+                    )}
+                  </div>
+                ))
+              )}
+              
+              {/* Last updated indicator */}
+              {!loading && stats.lastUpdated && (
+                <div className="col-span-full text-center mt-2">
+                  <span className="text-[#394d1c]/60 text-xs">
+                    อัปเดตล่าสุด: {new Date(stats.lastUpdated).toLocaleTimeString('th-TH')}
                   </span>
-                  {/* Vertical divider except last */}
-                  {idx < stats.length - 1 && (
-                    <span className="hidden md:block absolute right-0 top-1/2 -translate-y-1/2 h-8 w-px bg-[#01bdcc]" />
-                  )}
                 </div>
-              ))}
+              )}
             </div>
           </div>
         </div>
