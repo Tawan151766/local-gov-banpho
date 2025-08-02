@@ -49,15 +49,38 @@ export default function ComplaintsPage() {
   const handleSubmit = (e) => {
     e.preventDefault();
     const newErrors = validateForm();
-    
     if (Object.keys(newErrors).length > 0) {
       setErrors(newErrors);
       return;
     }
-    
-    // Handle form submission here
-    console.log('Form submitted:', formData);
-    alert('ส่งเรื่องร้องทุกข์เรียบร้อยแล้ว');
+
+    // ส่งข้อมูลไปยัง API complaints
+    fetch('/api/complaints', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+      },
+      body: JSON.stringify(formData),
+    })
+      .then(async (res) => {
+        const result = await res.json();
+        if (result.success) {
+          alert('ส่งเรื่องร้องทุกข์เรียบร้อยแล้ว');
+          setFormData({
+            senderName: '',
+            senderEmail: '',
+            phone: '',
+            subject: '',
+            message: '',
+            captcha: '',
+          });
+        } else {
+          alert('เกิดข้อผิดพลาด: ' + (result.error || 'ไม่สามารถส่งข้อมูลได้'));
+        }
+      })
+      .catch((err) => {
+        alert('เกิดข้อผิดพลาด: ' + err.message);
+      });
   };
 
   return (
@@ -73,10 +96,10 @@ export default function ComplaintsPage() {
 
         {/* Form */}
         <div className="bg-white rounded-lg shadow-md p-8">
-          <form onSubmit={handleSubmit} className="space-y-6">
+          <form onSubmit={handleSubmit} className="space-y-6 text-gray-500">
             {/* ชื่อผู้ส่ง */}
             <div>
-              <label htmlFor="senderName" className="block text-sm font-medium text-gray-700 mb-2">
+              <label htmlFor="senderName" className="block text-sm font-medium text-gray-700 mb-2 ">
                 ชื่อผู้ส่ง <span className="text-red-500">*</span>
               </label>
               <input
