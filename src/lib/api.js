@@ -341,14 +341,14 @@ export const perfResultsFilesAPI = {
   },
 
   updateFile: async (id, fileData) => {
-    return apiCall(`/perf-results-files/${id}`, {
+    return apiCall(`/perf-results-files?id=${id}`, {
       method: "PUT",
       body: JSON.stringify(fileData),
     });
   },
 
   deleteFile: async (id) => {
-    return apiCall(`/perf-results-files/${id}`, {
+    return apiCall(`/perf-results-files?id=${id}`, {
       method: "DELETE",
     });
   },
@@ -622,14 +622,14 @@ export const procurementPlanFilesAPI = {
   },
 
   updateFile: async (id, fileData) => {
-    return apiCall(`/procurement-plan-files/${id}`, {
+    return apiCall(`/procurement-plan-files?id=${id}`, {
       method: "PUT",
       body: JSON.stringify(fileData),
     });
   },
 
   deleteFile: async (id) => {
-    return apiCall(`/procurement-plan-files/${id}`, {
+    return apiCall(`/procurement-plan-files?id=${id}`, {
       method: "DELETE",
     });
   },
