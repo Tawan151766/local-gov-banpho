@@ -14,9 +14,23 @@ import EService from "./EService";
 import MapsSection from "./MapSection";
 import StateSection from "./StateSection";
 
+import { useState } from "react";
+import { Modal } from "antd";
+
 export default function LandingPage() {
+  const [open, setOpen] = useState(true);
   return (
     <>
+      <Modal
+        open={open}
+        onCancel={() => setOpen(false)}
+        footer={null}
+        centered
+        width={794}
+        height={400}
+      >
+        <span className="h-[1000px]">No data</span>
+      </Modal>
       <HeroSection />
       <ManagementSection />
       <ContentSections />
