@@ -50,7 +50,7 @@ const { Title } = Typography;
 const PostFileUpload = ({ 
   value = [],
   onChange,
-  fileType = 'image', // 'image', 'video', 'pdf'
+  fileType = 'image',
   maxCount = 8,
   accept,
   placeholder = "อัปโหลดไฟล์",
@@ -86,7 +86,6 @@ const PostFileUpload = ({
       setUploading(true);
       setUploadProgress(prev => ({ ...prev, [file.uid]: 0 }));
 
-      // Simulate progress
       const progressInterval = setInterval(() => {
         setUploadProgress(prev => {
           const currentProgress = prev[file.uid] || 0;
@@ -127,7 +126,6 @@ const PostFileUpload = ({
       console.error('Upload error:', error);
       message.error(`เกิดข้อผิดพลาดในการอัปโหลด ${file.name}: ${error.message}`);
       
-      // Remove failed file from list
       const newFileList = fileList.filter(f => f.uid !== file.uid);
       setFileList(newFileList);
       if (onChange) {
@@ -141,7 +139,7 @@ const PostFileUpload = ({
         return newProgress;
       });
     }
-    return false; // Prevent default upload
+    return false;
   };
 
   const handleRemove = (file) => {
@@ -154,7 +152,6 @@ const PostFileUpload = ({
   };
 
   const handleChange = ({ fileList: newFileList }) => {
-    // Update file list but don't trigger onChange for uploading files
     const processedList = newFileList.map(file => {
       if (file.status === 'uploading' && uploadProgress[file.uid] !== undefined) {
         return {
@@ -276,9 +273,16 @@ export default function PostManagement() {
   const [uploading, setUploading] = useState(false);
 
   // ✅ แก้ไข: เพิ่ม dependency ที่ครบถ้วน
+  // ✅ แก้ไข: เพิ่ม dependency ที่ครบถ้วน
   const fetchPostTypes = useCallback(async () => {
     try {
       setLoading(true);
+      console.log('Fetching post types with params:', {
+        page: pagination.current,
+        limit: pagination.pageSize,
+        search: searchText,
+      });
+
       console.log('Fetching post types with params:', {
         page: pagination.current,
         limit: pagination.pageSize,
@@ -293,28 +297,45 @@ export default function PostManagement() {
 
       console.log('Post types response:', response);
 
+      console.log('Post types response:', response);
+
       if (response.success) {
         setPostTypes(response.data);
         setPagination((prev) => ({
           ...prev,
           total: response.pagination?.total || 0,
+          total: response.pagination?.total || 0,
         }));
+      } else {
+        console.error('Post types API error:', response.error);
+        message.error(response.error || "เกิดข้อผิดพลาดในการโหลดข้อมูลประเภทโพสต์");
       } else {
         console.error('Post types API error:', response.error);
         message.error(response.error || "เกิดข้อผิดพลาดในการโหลดข้อมูลประเภทโพสต์");
       }
     } catch (error) {
       console.error('Fetch post types error:', error);
+      console.error('Fetch post types error:', error);
       message.error("เกิดข้อผิดพลาดในการโหลดข้อมูลประเภทโพสต์");
     } finally {
       setLoading(false);
     }
   }, [pagination.current, pagination.pageSize, searchText, message]);
+  }, [pagination.current, pagination.pageSize, searchText, message]);
 
+  // ✅ แก้ไข: เพิ่ม dependency ที่ครบถ้วน
   // ✅ แก้ไข: เพิ่ม dependency ที่ครบถ้วน
   const fetchPostDetails = useCallback(async () => {
     try {
       setLoading(true);
+      console.log('Fetching post details with params:', {
+        page: detailPagination.current,
+        limit: detailPagination.pageSize,
+        search: searchText,
+        postTypeId: selectedPostType,
+        withMedia: true,
+      });
+
       console.log('Fetching post details with params:', {
         page: detailPagination.current,
         limit: detailPagination.pageSize,
@@ -333,29 +354,40 @@ export default function PostManagement() {
 
       console.log('Post details response:', response);
 
+      console.log('Post details response:', response);
+
       if (response.success) {
         setPostDetails(response.data);
         setDetailPagination((prev) => ({
           ...prev,
           total: response.pagination?.total || 0,
+          total: response.pagination?.total || 0,
         }));
+      } else {
+        console.error('Post details API error:', response.error);
+        message.error(response.error || "เกิดข้อผิดพลาดในการโหลดข้อมูลโพสต์");
       } else {
         console.error('Post details API error:', response.error);
         message.error(response.error || "เกิดข้อผิดพลาดในการโหลดข้อมูลโพสต์");
       }
     } catch (error) {
       console.error('Fetch post details error:', error);
+      console.error('Fetch post details error:', error);
       message.error("เกิดข้อผิดพลาดในการโหลดข้อมูลโพสต์");
     } finally {
       setLoading(false);
     }
   }, [detailPagination.current, detailPagination.pageSize, searchText, selectedPostType, message]);
+  }, [detailPagination.current, detailPagination.pageSize, searchText, selectedPostType, message]);
 
+  // ✅ Initial load - โหลดประเภทโพสต์ตั้งแต่แรก
   // ✅ Initial load - โหลดประเภทโพสต์ตั้งแต่แรก
   useEffect(() => {
     fetchPostTypes();
   }, [fetchPostTypes]);
+  }, [fetchPostTypes]);
 
+  // ✅ แก้ไข: ใช้ timeout เพื่อป้องกัน frequent API calls
   // ✅ แก้ไข: ใช้ timeout เพื่อป้องกัน frequent API calls
   useEffect(() => {
     if (activeTab === "types") {
@@ -364,16 +396,24 @@ export default function PostManagement() {
       }, 300); // รอ 300ms ก่อนเรียก API
 
       return () => clearTimeout(timeoutId);
+      const timeoutId = setTimeout(() => {
+        fetchPostTypes();
+      }, 300); // รอ 300ms ก่อนเรียก API
+
+      return () => clearTimeout(timeoutId);
     }
   }, [activeTab, searchText]);
+  }, [activeTab, searchText]);
 
+  // ✅ แก้ไข: แยก pagination effect สำหรับ post types
   // ✅ แก้ไข: แยก pagination effect สำหรับ post types
   useEffect(() => {
     if (activeTab === "types") {
       fetchPostTypes();
     }
-  }, [activeTab, fetchPostTypes, pagination.current, pagination.pageSize]);
+  }, [pagination.current, pagination.pageSize]);
 
+  // ✅ แก้ไข: ใช้ timeout เพื่อป้องกัน frequent API calls
   // ✅ แก้ไข: ใช้ timeout เพื่อป้องกัน frequent API calls
   useEffect(() => {
     if (activeTab === "details") {
@@ -382,15 +422,42 @@ export default function PostManagement() {
       }, 300); // รอ 300ms ก่อนเรียก API
 
       return () => clearTimeout(timeoutId);
+      const timeoutId = setTimeout(() => {
+        fetchPostDetails();
+      }, 300); // รอ 300ms ก่อนเรียก API
+
+      return () => clearTimeout(timeoutId);
     }
   }, [activeTab, searchText, selectedPostType]);
+  }, [activeTab, searchText, selectedPostType]);
 
+  // ✅ แก้ไข: แยก pagination effect สำหรับ post details
   // ✅ แก้ไข: แยก pagination effect สำหรับ post details
   useEffect(() => {
     if (activeTab === "details") {
       fetchPostDetails();
     }
-  }, [activeTab, detailPagination.current, detailPagination.pageSize, fetchPostDetails]);
+  }, [detailPagination.current, detailPagination.pageSize]);
+
+  // ✅ แก้ไข: เพิ่ม handler สำหรับการค้นหา
+  const handleSearch = useCallback((value) => {
+    console.log('Search triggered with value:', value);
+    setSearchText(value);
+    
+    // Reset pagination เมื่อค้นหา
+    if (activeTab === "types") {
+      setPagination(prev => ({ ...prev, current: 1 }));
+    } else {
+      setDetailPagination(prev => ({ ...prev, current: 1 }));
+    }
+  }, [activeTab]);
+
+  // ✅ แก้ไข: เพิ่ม handler สำหรับการเลือกประเภทโพสต์
+  const handlePostTypeFilter = useCallback((value) => {
+    console.log('Post type filter changed:', value);
+    setSelectedPostType(value);
+    setDetailPagination(prev => ({ ...prev, current: 1 }));
+  }, []);
 
   // Post Types Management
   const handleCreatePostType = () => {
@@ -460,7 +527,6 @@ export default function PostManagement() {
       date: record.date ? dayjs(record.date) : null,
     });
 
-    // Set existing files with enhanced metadata
     setPhotoFileList(
       record.photos?.map((photo) => ({
         uid: photo.id,
@@ -548,13 +614,11 @@ export default function PostManagement() {
     try {
       setLoading(true);
 
-      // Validate that at least one field is filled
       if (!values.title_name?.trim()) {
         message.error("กรุณากรอกหัวข้อโพสต์");
         return;
       }
 
-      // Prepare media data with better path handling
       const photos = photoFileList
         .filter((file) => file.status === "done" && file.path)
         .filter((file) => file.status === "done" && file.path)
@@ -606,7 +670,6 @@ export default function PostManagement() {
         );
         setDetailModalVisible(false);
         
-        // Reset form and file lists
         detailForm.resetFields();
         setPhotoFileList([]);
         setVideoFileList([]);
@@ -772,6 +835,7 @@ export default function PostManagement() {
                 placeholder="ค้นหาประเภทโพสต์..."
                 allowClear
                 onSearch={handleSearch}
+                onSearch={handleSearch}
                 style={{ width: 300 }}
               />
             </Space>
@@ -820,12 +884,15 @@ export default function PostManagement() {
                 placeholder="ค้นหาโพสต์..."
                 allowClear
                 onSearch={handleSearch}
+                onSearch={handleSearch}
                 style={{ width: 300 }}
               />
               <Select
                 placeholder="เลือกประเภทโพสต์"
                 allowClear
                 style={{ width: 200 }}
+                onChange={handlePostTypeFilter}
+                value={selectedPostType}
                 onChange={handlePostTypeFilter}
                 value={selectedPostType}
               >
@@ -877,6 +944,7 @@ export default function PostManagement() {
       <Title level={2}>จัดการโพสต์และเนื้อหา</Title>
       <Tabs activeKey={activeTab} onChange={setActiveTab} items={tabItems} />
       
+      
       {/* Post Type Modal */}
       <Modal
         title={editingRecord ? "แก้ไขประเภทโพสต์" : "เพิ่มประเภทโพสต์"}
@@ -903,6 +971,8 @@ export default function PostManagement() {
             </Space>
           </Form.Item>
         </Form>
+      </Modal>
+
       </Modal>
 
       {/* Post Detail Modal */}
@@ -1043,6 +1113,7 @@ export default function PostManagement() {
           </Form.Item>
         </Form>
       </Modal>
+
 
       {/* View Post Detail Modal */}
       <Modal
