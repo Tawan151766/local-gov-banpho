@@ -112,7 +112,7 @@ export default function InsideBander() {
               {/* Card 4 */}
               <div
                 className="bg-white rounded-2xl shadow-md hover:shadow-lg transition-shadow duration-300 flex items-center gap-4 p-4 cursor-pointer"
-                onClick={() => (window.location.href = "/ethics")}
+                onClick={() => (window.location.href = "/ethics-code")}
               >
                 <img
                   src="image/InsiderBander_4.png"
@@ -168,7 +168,7 @@ export default function InsideBander() {
               <div
                 className="bg-white rounded-2xl shadow-md hover:shadow-lg transition-shadow duration-300 flex items-center gap-4 p-4 cursor-pointer"
                 onClick={() =>
-                  (window.location.href = "/citizen/disabled-allowance")
+                  (window.location.href = "https://govwelfare.dep.go.th/")
                 }
               >
                 <img
