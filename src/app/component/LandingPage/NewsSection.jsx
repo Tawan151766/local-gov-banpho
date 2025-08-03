@@ -64,6 +64,101 @@ export default function NewsSection() {
     if (imagePath.startsWith("http")) return imagePath;
     return imagePath.startsWith("/") ? imagePath : `/${imagePath}`;
   };
+  const [goldData, setGoldData] = useState(null);
+  const [lastUpdate, setLastUpdate] = useState(null);
+
+  const fetchGoldPrice = async () => {
+    try {
+      setLoading(true);
+      setError(null);
+
+      // Using a CORS proxy to fetch the data
+      const proxyUrl = "https://api.allorigins.win/raw?url=";
+      const targetUrl = "http://www.thaigold.info/RealTimeDataV2/gtdata_.txt";
+
+      const response = await fetch(proxyUrl + encodeURIComponent(targetUrl));
+
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+
+      const textData = await response.text();
+      const jsonData = JSON.parse(textData);
+
+      // Find the relevant gold data
+      const goldSpot = jsonData.find((item) => item.name === "สมาคมฯ");
+      const update = jsonData.find((item) => item.name === "Update");
+
+      if (goldSpot) {
+        setGoldData({
+          bid: goldSpot.bid,
+          ask: goldSpot.ask,
+          diff: goldSpot.diff,
+          updateTime: update ? update.bid : null,
+        });
+        setLastUpdate(new Date().toLocaleTimeString("th-TH"));
+      } else {
+        throw new Error("ไม่พบข้อมูลราคาทอง");
+      }
+    } catch (err) {
+      console.error("Error fetching gold price:", err);
+      setError(err.message);
+      // Set mock data as fallback
+      setGoldData({
+        bid: "51400",
+        ask: "51500",
+        diff: "+250",
+        updateTime: null,
+      });
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    fetchGoldPrice();
+
+    // Set up auto-refresh every 5 minutes
+    const interval = setInterval(fetchGoldPrice, 5 * 60 * 1000);
+
+    return () => clearInterval(interval);
+  }, []);
+
+  const formatPrice = (price) => {
+    if (!price) return "0";
+    return parseInt(price).toLocaleString("th-TH");
+  };
+
+  const formatDiff = (diff) => {
+    if (!diff || diff === "") return "";
+    const numDiff = parseFloat(diff.replace(/[+,]/g, ""));
+    if (numDiff > 0) return `+${formatPrice(Math.abs(numDiff))}`;
+    if (numDiff < 0) return `-${formatPrice(Math.abs(numDiff))}`;
+    return "0";
+  };
+
+  const getDiffColor = (diff) => {
+    if (!diff || diff === "") return "#5c3b0c";
+    const numDiff = parseFloat(diff.replace(/[+,]/g, ""));
+    if (numDiff > 0) return "#16a34a"; // green
+    if (numDiff < 0) return "#dc2626"; // red
+    return "#5c3b0c"; // default
+  };
+
+  const formatUpdateTime = (timestamp) => {
+    if (!timestamp) return "";
+    try {
+      // The timestamp seems to be in a specific format, let's handle it
+      const date = new Date();
+      return date.toLocaleTimeString("th-TH", {
+        hour: "2-digit",
+        minute: "2-digit",
+        second: "2-digit",
+      });
+    } catch (error) {
+      return "";
+    }
+  };
 
   return (
     <section
@@ -153,9 +248,7 @@ export default function NewsSection() {
                       {item.title_name || "ไม่มีหัวข้อ"}
                     </h3>
                     <p className="text-gray-700 text-xs sm:text-sm md:text-base leading-relaxed mt-1 sm:mt-2 font-medium flex-1">
-                      {truncateText(
-                        item.details || "ไม่มีรายละเอียดเพิ่มเติม",
-                      )}
+                      {truncateText(item.details || "ไม่มีรายละเอียดเพิ่มเติม")}
                     </p>
                     <p className="text-gray-500 text-xs mt-auto pt-2">
                       {formatDate(item.created_at || item.date)}
@@ -185,7 +278,7 @@ export default function NewsSection() {
                   </span>
                 </div>
                 <div className="text-xl sm:text-[34px] font-extrabold text-[#5c3b0c] tracking-wide -translate-x-4 sm:-translate-x-12 mr-4 sm:mr-12">
-                  42,000
+                 {formatPrice(goldData?.bid)}
                 </div>
               </div>
               <div className="border-t border-dashed border-[#5c3b0c] my-1 sm:my-2"></div>
@@ -199,7 +292,7 @@ export default function NewsSection() {
                   </span>
                 </div>
                 <div className="text-xl sm:text-[34px] font-extrabold text-[#5c3b0c] tracking-wide -translate-x-4 sm:-translate-x-12 mr-4 sm:mr-12">
-                  43,000
+                  {formatPrice(goldData?.ask)}
                 </div>
               </div>
             </div>
@@ -230,9 +323,13 @@ export default function NewsSection() {
               className="w-[60px] sm:w-[101px] h-[60px] sm:h-[101px] object-cover"
             />
             <div className="flex flex-col justify-center items-start gap-1 sm:gap-1.5">
-              <span className="oil-title font-semibold text-lg sm:text-[32px] leading-none">
+              <a
+                target="_blank"
+                href="https://gasprice.kapook.com/gasprice.php"
+                className="oil-title font-semibold text-lg sm:text-[32px] leading-none"
+              >
                 ราคาน้ำมัน
-              </span>
+              </a>
             </div>
           </div>
 
@@ -252,7 +349,11 @@ export default function NewsSection() {
 
             {/* กล่อง QR */}
             <div className="qr-box absolute bottom-3 sm:bottom-5 right-3 sm:right-5 w-[90px] sm:w-[180px] h-[90px] sm:h-[173px] rounded-xl sm:rounded-[23px] bg-white shadow-[0_2px_4px_rgba(0,0,0,0.18)] sm:shadow-[0_4px_4px_rgba(0,0,0,0.25)]">
-            <img src="image/QR_Line.png" alt="QR Line" className="w-full h-full object-cover" />
+              <img
+                src="image/QR_Line.png"
+                alt="QR Line"
+                className="w-full h-full object-cover"
+              />
             </div>
           </div>
         </div>

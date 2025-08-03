@@ -46,10 +46,27 @@ const FaceBookSection = () => {
         เทศบาลตำบลบ้านโพธิ์ ฉะเชิงเทรา
       </div>
       <div className="flex flex-row gap-4 justify-center">
-        <button className="bg-white text-[#0383AA] font-semibold rounded-lg px-6 py-2 shadow hover:bg-gray-100 transition">
+        <button
+          onClick={() =>
+            window.open(
+              "https://www.facebook.com/thesbal.tabl.banphothi.chacheingthera/",
+              "_blank"
+            )
+          }
+          className="bg-white text-[#0383AA] font-semibold rounded-lg px-6 py-2 shadow hover:bg-gray-100 transition"
+        >
           กดติดตาม
         </button>
-        <button className="bg-white text-[#0383AA] font-semibold rounded-lg px-6 py-2 shadow hover:bg-gray-100 transition">
+        <button
+          className="bg-white text-[#0383AA] font-semibold rounded-lg px-6 py-2 shadow hover:bg-gray-100 transition"
+          onClick={() =>
+            window.open(
+              "https://www.facebook.com/thesbal.tabl.banphothi.chacheingthera/",
+              "_blank",
+              "noopener,noreferrer"
+            )
+          }
+        >
           ส่งข้อความ
         </button>
       </div>

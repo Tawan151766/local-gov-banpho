@@ -390,7 +390,7 @@ export default function Navbar() {
                 แผนพัฒนาท้องถิ่น
               </a>
               <a
-                href="#"
+                href="/laws-regulations"
                 className="text-white text-base font-medium hover:underline hover:text-[#01385F] hover:text-bold hover:text-[20px] transition-all duration-300"
               >
                 กฎหมายและระเบียบ
@@ -730,7 +730,7 @@ export default function Navbar() {
             แผนพัฒนาท้องถิ่น
           </a>
           <a
-            href="#"
+            href="/laws-regulations"
             className="text-white text-base font-medium hover:underline hover:text-[#01385F] hover:text-[20px] hover:text-bold transition-all duration-300"
           >
             กฎหมายและระเบียบ
