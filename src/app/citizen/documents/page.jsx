@@ -274,32 +274,6 @@ export default function DocumentsPage() {
             )}
           </div>
         </div>
-
-        {/* Footer Information */}
-        <div className="mt-6">
-          <div className="bg-white bg-opacity-90 rounded-2xl shadow-md p-6 backdrop-blur-sm text-center">
-            <h4 className="text-lg font-semibold text-[#16a34a] mb-2">
-              ศูนย์บริการประชาชน
-            </h4>
-            <p className="text-gray-600 text-sm mb-2">
-              เทศบาลตำบลบ้านโพธิ์ พร้อมให้บริการด้วยความสะดวก รวดเร็ว และโปร่งใส
-            </p>
-            <div className="flex items-center justify-center gap-4 text-sm text-gray-500 mt-3">
-              <div className="flex items-center gap-1">
-                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 5a2 2 0 012-2h3.28a1 1 0 01.948.684l1.498 4.493a1 1 0 01-.502 1.21l-2.257 1.13a11.042 11.042 0 005.516 5.516l1.13-2.257a1 1 0 011.21-.502l4.493 1.498a1 1 0 01.684.949V19a2 2 0 01-2 2h-1C9.716 21 3 14.284 3 6V5z" />
-                </svg>
-                <span>โทร: 0XX-XXX-XXXX</span>
-              </div>
-              <div className="flex items-center gap-1">
-                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 8v4l3 3m6-3a9 9 0 11-18 0 9 9 0 0118 0z" />
-                </svg>
-                <span>เวลาทำการ: 08:30 - 16:30 น.</span>
-              </div>
-            </div>
-          </div>
-        </div>
       </div>
     </div>
   );

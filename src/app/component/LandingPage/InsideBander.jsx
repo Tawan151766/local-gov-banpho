@@ -28,7 +28,6 @@ const services = [
     image: "image/Logo5_onestop.png",
     alt: "One Stop Logo",
     url: "/e-service",
-
   },
   {
     title: "สาระดีๆจากศาลปกครอง",
@@ -48,11 +47,16 @@ export default function InsideBander() {
           {/* Left Column: Service Cards */}
           <div className="w-96 flex flex-col justify-center">
             /* ปุ่มลูกศรขึ้น */
+            /* ปุ่มลูกศรขึ้น */
             <button className="mb-4 p-2 rounded-full  hover:bg-gray-100 transition mx-auto">
               <ChevronUp className="w-10 h-10 text-gray-700" />
             </button>
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-1 gap-4">
               {/* Card 1 */}
+              <div
+                className="bg-white rounded-2xl shadow-md hover:shadow-lg transition-shadow duration-300 flex items-center gap-4 p-4 cursor-pointer"
+                onClick={() => (window.location.href = "/citizen/km")}
+              >
               <div
                 className="bg-white rounded-2xl shadow-md hover:shadow-lg transition-shadow duration-300 flex items-center gap-4 p-4 cursor-pointer"
                 onClick={() => (window.location.href = "/citizen/km")}
@@ -72,6 +76,10 @@ export default function InsideBander() {
                 className="bg-white rounded-2xl shadow-md hover:shadow-lg transition-shadow duration-300 flex items-center gap-4 p-4 cursor-pointer"
                 onClick={() => (window.location.href = "/publish")}
               >
+              <div
+                className="bg-white rounded-2xl shadow-md hover:shadow-lg transition-shadow duration-300 flex items-center gap-4 p-4 cursor-pointer"
+                onClick={() => (window.location.href = "/publish")}
+              >
                 <img
                   src="image/InsiderBander_2.png"
                   alt="สารสนเทศ"
@@ -83,6 +91,10 @@ export default function InsideBander() {
               </div>
 
               {/* Card 3 */}
+              <div
+                className="bg-white rounded-2xl shadow-md hover:shadow-lg transition-shadow duration-300 flex items-center gap-4 p-4 cursor-pointer"
+                onClick={() => (window.location.href = "/citizen/technology")}
+              >
               <div
                 className="bg-white rounded-2xl shadow-md hover:shadow-lg transition-shadow duration-300 flex items-center gap-4 p-4 cursor-pointer"
                 onClick={() => (window.location.href = "/citizen/technology")}
@@ -100,7 +112,7 @@ export default function InsideBander() {
               {/* Card 4 */}
               <div
                 className="bg-white rounded-2xl shadow-md hover:shadow-lg transition-shadow duration-300 flex items-center gap-4 p-4 cursor-pointer"
-                onClick={() => (window.location.href = "/ethics-code")}
+                onClick={() => (window.location.href = "/ethics")}
               >
                 <img
                   src="image/InsiderBander_4.png"
@@ -115,7 +127,9 @@ export default function InsideBander() {
               {/* Card 5 */}
               <div
                 className="bg-white rounded-2xl shadow-md hover:shadow-lg transition-shadow duration-300 flex items-center gap-4 p-4 cursor-pointer"
-                onClick={() => (window.location.href = "/citizen/qa")}
+                onClick={() =>
+                  (window.location.href = "/citizen/qa")
+                }
               >
                 <img
                   src="image/InsiderBander_5.png"
@@ -128,6 +142,12 @@ export default function InsideBander() {
               </div>
 
               {/* Card 6 */}
+              <div
+                className="bg-white rounded-2xl shadow-md hover:shadow-lg transition-shadow duration-300 flex items-center gap-4 p-4 cursor-pointer"
+                onClick={() =>
+                  (window.location.href = "/citizen/elderly-allowance")
+                }
+              >
               <div
                 className="bg-white rounded-2xl shadow-md hover:shadow-lg transition-shadow duration-300 flex items-center gap-4 p-4 cursor-pointer"
                 onClick={() =>
@@ -148,7 +168,7 @@ export default function InsideBander() {
               <div
                 className="bg-white rounded-2xl shadow-md hover:shadow-lg transition-shadow duration-300 flex items-center gap-4 p-4 cursor-pointer"
                 onClick={() =>
-                  (window.location.href = "https://govwelfare.dep.go.th/")
+                  (window.location.href = "/citizen/disabled-allowance")
                 }
               >
                 <img
@@ -316,7 +336,7 @@ export default function InsideBander() {
             <div className="flex flex-wrap justify-center gap-5 max-w-[1240px] mx-auto">
               {services.map((service, idx) => (
                 <div
-                onClick={() => window.location.href =  service.url}
+                  onClick={() => (window.location.href = service.url)}
                   key={idx}
                   className="w-[310px] h-[72px] flex justify-center cursor-pointer"
                   className="w-[310px] h-[72px] flex justify-center cursor-pointer"

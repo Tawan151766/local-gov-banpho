@@ -16,10 +16,11 @@ export default function PeopleSupport() {
     {
       icon: "/image/people_gui4.png",
       link: "/citizen/elderly-allowance",
+      link: "/citizen/elderly-allowance",
     },
     {
       icon: "/image/people_gui5.png",
-      link: "https://govwelfare.dep.go.th/",
+      link: "/citizen/disabled-allowance",
     },
     {
       icon: "/image/people_gui6.png",
