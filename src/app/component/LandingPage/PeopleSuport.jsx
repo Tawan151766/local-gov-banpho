@@ -23,7 +23,7 @@ export default function PeopleSupport() {
     },
     {
       icon: "/image/people_gui6.png",
-      link: "/work-manual",
+      link: "/citizen/work-manual",
     },
     {
       icon: "/image/people_gui7.png",

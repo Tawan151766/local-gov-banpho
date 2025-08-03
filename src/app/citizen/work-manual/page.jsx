@@ -2,33 +2,21 @@
 
 import { useState, useEffect } from "react";
 
-export default function CitizenManualPage() {
-  const [searchTerm, setSearchTerm] = useState("");
+export default function WorkManualPage() {
   const [categories, setCategories] = useState([]);
   const [manuals, setManuals] = useState([]);
-  const [selectedCategory, setSelectedCategory] = useState("คู่มือสำหรับประชาชน");
+  const [selectedCategory, setSelectedCategory] = useState("คู่มือการปฏิบัติงาน");
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
 
-  // โหลดข้อมูลใหม่เมื่อ searchTerm เปลี่ยน
+  // โหลดข้อมูลเมื่อ component mount
   useEffect(() => {
     const fetchData = async () => {
       setLoading(true);
       setError(null);
       
       try {
-        // สร้าง URL สำหรับ API ที่มีอยู่แล้ว
-        const params = new URLSearchParams();
-        
-        // เพิ่ม search query ถ้ามี
-        if (searchTerm.trim()) {
-          params.append('q', searchTerm.trim());
-        }
-        
-        params.append('limit', '50');
-        
-        const apiUrl = `/api/manual-search${params.toString() ? '?' + params.toString() : ''}`;
-        const res = await fetch(apiUrl);
+        const res = await fetch('/api/manual-search?limit=100');
         
         if (!res.ok) {
           throw new Error(`HTTP error! status: ${res.status}`);
@@ -37,13 +25,15 @@ export default function CitizenManualPage() {
         const result = await res.json();
         
         if (result.success && Array.isArray(result.data)) {
-          // เก็บข้อมูลทั้งหมดไว้สำหรับการกรอง
-          const allManuals = result.data;
+          // กรองเฉพาะหมวดหมู่ 'คู่มือการปฏิบัติงาน'
+          const filteredManuals = result.data.filter(manual => 
+            manual.category_name === 'คู่มือการปฏิบัติงาน'
+          );
           
-          // สร้างรายการหมวดหมู่จากข้อมูลทั้งหมด
-          const allCategories = [...new Set(allManuals.map(manual => manual.category_name))];
-          setCategories(['ทั้งหมด', ...allCategories]);
-          setManuals(allManuals);
+          // สร้างรายการหมวดหมู่จากข้อมูลที่กรองแล้ว
+          const uniqueCategories = [...new Set(filteredManuals.map(manual => manual.category_name))];
+          setCategories(['ทั้งหมด', ...uniqueCategories]);
+          setManuals(filteredManuals);
         } else {
           setCategories(['ทั้งหมด']);
           setManuals([]);
@@ -58,10 +48,8 @@ export default function CitizenManualPage() {
       }
     };
 
-    // เพิ่ม debounce เพื่อลดการเรียก API
-    const timeoutId = setTimeout(fetchData, 300);
-    return () => clearTimeout(timeoutId);
-  }, [searchTerm]);
+    fetchData();
+  }, []);
 
   const filteredManuals = manuals.filter((manual) => {
     const matchesCategory =
@@ -90,20 +78,16 @@ export default function CitizenManualPage() {
     document.body.removeChild(link);
   };
 
-  const handleSearchChange = (e) => {
-    setSearchTerm(e.target.value);
-  };
-
   const handleCategoryChange = (e) => {
     setSelectedCategory(e.target.value);
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-green-50 via-white to-blue-50 py-8">
+    <div className="min-h-screen bg-gradient-to-br from-orange-50 via-white to-red-50 py-8">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
         {/* Header */}
         <div className="text-center mb-12">
-          <div className="inline-flex items-center justify-center w-20 h-20 bg-gradient-to-r from-green-600 to-blue-600 rounded-full mb-6 shadow-lg">
+          <div className="inline-flex items-center justify-center w-20 h-20 bg-gradient-to-r from-orange-600 to-red-600 rounded-full mb-6 shadow-lg">
             <svg
               className="w-10 h-10 text-white"
               fill="none"
@@ -114,20 +98,20 @@ export default function CitizenManualPage() {
                 strokeLinecap="round"
                 strokeLinejoin="round"
                 strokeWidth={2}
-                d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.746 0 3.332.477 4.5 1.253v13C19.832 18.477 18.246 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"
+                d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"
               />
             </svg>
           </div>
           <h1 className="text-4xl font-bold text-gray-900 mb-4">
-            คู่มือประชาชน
+            คู่มือการปฏิบัติงาน
           </h1>
           <p className="text-lg text-gray-600 max-w-3xl mx-auto mb-6">
-            รวบรวมคู่มือและเอกสารต่างๆ ที่ประชาชนสามารถดาวน์โหลดและใช้งานได้
+            คู่มือแนวทางการปฏิบัติงาน ขั้นตอนการดำเนินงาน และมาตรฐานการทำงานสำหรับเจ้าหน้าที่เทศบาลตำบลบ้านโพธิ์
           </p>
-          <div className="w-32 h-1 bg-gradient-to-r from-green-600 to-blue-600 mx-auto mb-8"></div>
+          <div className="w-32 h-1 bg-gradient-to-r from-orange-600 to-red-600 mx-auto mb-8"></div>
 
           {/* Publication Date */}
-          <div className="inline-flex items-center bg-blue-100 text-blue-800 px-6 py-3 rounded-full text-sm font-medium">
+          <div className="inline-flex items-center bg-orange-100 text-orange-800 px-6 py-3 rounded-full text-sm font-medium">
             <svg
               className="w-5 h-5 mr-2"
               fill="none"
@@ -138,12 +122,13 @@ export default function CitizenManualPage() {
                 strokeLinecap="round"
                 strokeLinejoin="round"
                 strokeWidth={2}
-                d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"
+                d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10"
               />
             </svg>
-            ประกาศเมื่อ 30 มิถุนายน 2563
+            คู่มือการปฏิบัติงานสำหรับเจ้าหน้าที่
           </div>
         </div>
+
 
         {/* Error Message */}
         {error && (
@@ -155,7 +140,7 @@ export default function CitizenManualPage() {
         {/* Loading State */}
         {loading && (
           <div className="text-center py-8">
-            <div className="inline-block animate-spin rounded-full h-8 w-8 border-b-2 border-blue-600"></div>
+            <div className="inline-block animate-spin rounded-full h-8 w-8 border-b-2 border-orange-600"></div>
             <p className="mt-2 text-gray-600">กำลังโหลดข้อมูล...</p>
           </div>
         )}
@@ -165,7 +150,7 @@ export default function CitizenManualPage() {
           <div className="overflow-x-auto mb-8">
             <table className="min-w-full bg-white rounded-xl shadow-lg">
               <thead>
-                <tr className="bg-blue-50 text-blue-900">
+                <tr className="bg-orange-50 text-orange-900">
                   <th className="px-4 py-3 text-left font-semibold">ชื่อคู่มือ</th>
                   <th className="px-4 py-3 text-left font-semibold">หมวดหมู่</th>
                   <th className="px-4 py-3 text-left font-semibold">คำอธิบาย</th>
@@ -179,16 +164,16 @@ export default function CitizenManualPage() {
                     <td colSpan={5} className="text-center py-12">
                       <div className="text-gray-400">
                         <svg className="w-12 h-12 mx-auto mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1} d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z" />
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1} d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" />
                         </svg>
                         <p className="text-lg font-medium">ไม่พบข้อมูลคู่มือ</p>
-                        <p className="text-sm">ลองเปลี่ยนคำค้นหาหรือหมวดหมู่</p>
+                        <p className="text-sm">ลองเปลี่ยนหมวดหมู่</p>
                       </div>
                     </td>
                   </tr>
                 ) : (
                   filteredManuals.map((manual) => (
-                    <tr key={manual.id} className="border-b border-gray-100 hover:bg-blue-50 transition-colors">
+                    <tr key={manual.id} className="border-b border-gray-100 hover:bg-orange-50 transition-colors">
                       <td className="px-4 py-4">
                         <div className="font-semibold text-gray-900 mb-1">
                           {manual.title}
@@ -200,7 +185,7 @@ export default function CitizenManualPage() {
                         )}
                       </td>
                       <td className="px-4 py-4">
-                        <span className="inline-block px-3 py-1 rounded-full text-xs font-medium bg-blue-100 text-blue-800">
+                        <span className="inline-block px-3 py-1 rounded-full text-xs font-medium bg-orange-100 text-orange-800">
                           {manual.category_name}
                         </span>
                       </td>
@@ -233,7 +218,7 @@ export default function CitizenManualPage() {
                           disabled={!manual.file_path}
                           className={`inline-flex items-center px-4 py-2 rounded-lg font-medium text-sm transition-all duration-200 ${
                             manual.file_path
-                              ? 'bg-gradient-to-r from-green-600 to-blue-600 hover:from-green-700 hover:to-blue-700 text-white shadow-md hover:shadow-lg'
+                              ? 'bg-gradient-to-r from-orange-600 to-red-600 hover:from-orange-700 hover:to-red-700 text-white shadow-md hover:shadow-lg'
                               : 'bg-gray-200 text-gray-400 cursor-not-allowed'
                           }`}
                         >

@@ -440,7 +440,7 @@ export default function Navbar() {
                     รับแจ้งร้องเรียนกวรคุณภาพดีมีชอบ
                   </a>
                   <a
-                    href="/citizen/manual"
+                    href="/citizen/work-manual"
                     className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
                     onClick={() => setShowCitizenDropdown(false)}
                   >
@@ -781,7 +781,7 @@ export default function Navbar() {
                   รับแจ้งร้องเรียนกวรคุณภาพดีมีชอบ
                 </a>
                 <a
-                  href="/citizen/manual"
+                  href="/citizen/work-manual"
                   className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 cursor-pointer"
                   onClick={() => setShowCitizenDropdown(false)}
                 >
