@@ -11,7 +11,7 @@ export default function PeopleSupport() {
     },
     {
       icon: "/image/people_gui3.png",
-      link: "/survey",
+      link: "/e-service/survey",
     },
     {
       icon: "/image/people_gui4.png",
@@ -19,7 +19,7 @@ export default function PeopleSupport() {
     },
     {
       icon: "/image/people_gui5.png",
-      link: "/citizen/disabled-allowance",
+      link: "https://govwelfare.dep.go.th/",
     },
     {
       icon: "/image/people_gui6.png",

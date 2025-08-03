@@ -2,36 +2,64 @@
 import React, { useEffect, useState } from "react";
 import { useRouter } from "next/navigation";
 
-export default function LocalDevelopmentPlanPage() {
+export default function LawsRegulationsPage() {
   const router = useRouter();
-  const [plans, setPlans] = useState([]);
+  const [lawsRegs, setLawsRegs] = useState([]);
   const [loading, setLoading] = useState(true);
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
-  const [totalPlans, setTotalPlans] = useState(0);
-  const plansPerPage = 6;
+  const [totalLawsRegs, setTotalLawsRegs] = useState(0);
+  const [searchText, setSearchText] = useState("");
+  const [selectedCategory, setSelectedCategory] = useState("");
+  const lawsRegsPerPage = 6;
+
+  // Categories for filtering
+  const categories = [
+    { value: "", label: "ทั้งหมด" },
+    { value: "กฎหมาย", label: "กฎหมาย" },
+    { value: "ระเบียบ", label: "ระเบียบ" },
+    { value: "ข้อบังคับ", label: "ข้อบังคับ" },
+    { value: "คำสั่ง", label: "คำสั่ง" },
+    { value: "ประกาศ", label: "ประกาศ" },
+    { value: "มติ", label: "มติ" },
+    { value: "นโยบาย", label: "นโยบาย" }
+  ];
 
   useEffect(() => {
-    fetchPlans();
-  }, [currentPage]);
+    fetchLawsRegs();
+  }, [currentPage, searchText, selectedCategory]);
 
-  const fetchPlans = async () => {
+  const fetchLawsRegs = async () => {
     setLoading(true);
     try {
-      // เพิ่ม pagination parameters
-      const response = await fetch(`/api/local-dev-plan?page=${currentPage}&limit=${plansPerPage}`);
+      // Build query parameters
+      const params = new URLSearchParams({
+        page: currentPage.toString(),
+        limit: lawsRegsPerPage.toString(),
+        withSections: 'true'
+      });
+
+      if (searchText.trim()) {
+        params.append('search', searchText.trim());
+      }
+
+      if (selectedCategory) {
+        params.append('category', selectedCategory);
+      }
+
+      const response = await fetch(`/api/laws-regs-types?${params.toString()}`);
       const result = await response.json();
       
       if (result.success) {
-        setPlans(result.data || []);
-        setTotalPlans(result.pagination?.total || result.data?.length || 0);
-        setTotalPages(Math.ceil((result.pagination?.total || result.data?.length || 0) / plansPerPage));
+        setLawsRegs(result.data || []);
+        setTotalLawsRegs(result.pagination?.total || result.data?.length || 0);
+        setTotalPages(Math.ceil((result.pagination?.total || result.data?.length || 0) / lawsRegsPerPage));
       } else {
-        setPlans([]);
+        setLawsRegs([]);
       }
     } catch (error) {
-      console.error("Error fetching plans:", error);
-      setPlans([]);
+      console.error("Error fetching laws and regulations:", error);
+      setLawsRegs([]);
     } finally {
       setLoading(false);
     }
@@ -70,42 +98,35 @@ export default function LocalDevelopmentPlanPage() {
     }
   };
 
-  const handleShowDetail = (plan) => {
-    router.push(`/local-development-plan/detail/${plan.id}`);
+  const handleShowDetail = (lawReg) => {
+    router.push(`/laws-regulations/detail/${lawReg.id}`);
   };
 
-  const handleFileDownload = (filePath, fileName) => {
-    const baseUrl = 'https://banpho.sosmartsolution.com/storage/';
-    const fileUrl = filePath?.startsWith('http') ? filePath : `${baseUrl}${filePath}`;
-    
-    const link = document.createElement('a');
-    link.href = fileUrl;
-    link.download = fileName || filePath.split('/').pop();
-    link.target = '_blank';
-    document.body.appendChild(link);
-    link.click();
-    document.body.removeChild(link);
+  const handleSearch = (value) => {
+    setSearchText(value);
+    setCurrentPage(1); // Reset to first page when searching
   };
 
-  const getFileIcon = (fileType) => {
-    const type = fileType?.toLowerCase();
-    if (type?.includes('pdf')) return '📄';
-    if (type?.includes('image') || type?.includes('jpg') || type?.includes('png')) return '🖼️';
-    if (type?.includes('video') || type?.includes('mp4')) return '🎥';
-    if (type?.includes('doc') || type?.includes('word')) return '📝';
-    if (type?.includes('excel') || type?.includes('xls')) return '📊';
-    return '📎';
+  const handleCategoryFilter = (category) => {
+    setSelectedCategory(category);
+    setCurrentPage(1); // Reset to first page when filtering
   };
 
-  const getPlanColor = (typeName) => {
+  const clearFilters = () => {
+    setSearchText("");
+    setSelectedCategory("");
+    setCurrentPage(1);
+  };
+
+  const getLawRegColor = (typeName) => {
     if (!typeName) return "#01bdcc";
     
-    if (typeName.includes("แผนพัฒนาสี่ปี")) return "#28a745";
-    if (typeName.includes("แผนปฏิบัติการ")) return "#dc3545";
-    if (typeName.includes("แผนชุมชน")) return "#ffc107";
-    if (typeName.includes("แผนยุทธศาสตร์")) return "#6f42c1";
-    if (typeName.includes("แผนอัตรากำลัง")) return "#fd7e14";
-    if (typeName.includes("แผนการจัดหาพัสดุ")) return "#20c997";
+    if (typeName.includes("กฎหมาย") || typeName.includes("พระราชบัญญัติ")) return "#dc3545";
+    if (typeName.includes("ระเบียบ") || typeName.includes("ข้อบังคับ")) return "#28a745";
+    if (typeName.includes("คำสั่ง") || typeName.includes("ประกาศ")) return "#ffc107";
+    if (typeName.includes("มติ") || typeName.includes("นโยบาย")) return "#6f42c1";
+    if (typeName.includes("แนวทาง") || typeName.includes("หลักเกณฑ์")) return "#fd7e14";
+    if (typeName.includes("มาตรฐาน") || typeName.includes("เกณฑ์")) return "#20c997";
     
     return "#01bdcc";
   };
@@ -220,7 +241,104 @@ export default function LocalDevelopmentPlanPage() {
           {pages}
         </div>
         <div className="text-sm text-white bg-black bg-opacity-20 px-4 py-2 rounded-full backdrop-blur-sm">
-          แสดงหน้า {currentPage} จาก {totalPages} หน้า | ทั้งหมด {totalPlans} แผน
+          แสดงหน้า {currentPage} จาก {totalPages} หน้า | ทั้งหมด {totalLawsRegs} กฎหมาย
+          {(searchText || selectedCategory) && (
+            <span className="ml-2">
+              ({searchText && `ค้นหา: "${searchText}"`}
+              {searchText && selectedCategory && ", "}
+              {selectedCategory && `ประเภท: ${categories.find(c => c.value === selectedCategory)?.label}`})
+            </span>
+          )}
+        </div>
+
+        {/* Filter Section */}
+        <div className="bg-white bg-opacity-90 rounded-2xl shadow-md p-4 backdrop-blur-sm">
+          <h3 className="text-lg font-semibold text-gray-800 mb-3">ค้นหาและกรอง</h3>
+          
+          {/* Search Bar */}
+          <div className="mb-4">
+            <div className="relative">
+              <input
+                type="text"
+                placeholder="ค้นหากฎหมาย ระเบียบ ข้อบังคับ..."
+                value={searchText}
+                onChange={(e) => setSearchText(e.target.value)}
+                onKeyPress={(e) => {
+                  if (e.key === 'Enter') {
+                    handleSearch(e.target.value);
+                  }
+                }}
+                className="w-full px-4 py-2 pr-10 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#01bdcc] focus:border-transparent"
+              />
+              <button
+                onClick={() => handleSearch(searchText)}
+                className="absolute right-2 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-[#01bdcc]"
+              >
+                🔍
+              </button>
+            </div>
+          </div>
+
+          {/* Category Filter */}
+          <div className="mb-4">
+            <label className="block text-sm font-medium text-gray-700 mb-2">กรองตามประเภท</label>
+            <div className="flex flex-wrap gap-2">
+              {categories.map((category) => (
+                <button
+                  key={category.value}
+                  onClick={() => handleCategoryFilter(category.value)}
+                  className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
+                    selectedCategory === category.value
+                      ? 'text-white shadow-md'
+                      : 'bg-white text-gray-700 border border-gray-300 hover:bg-gray-50'
+                  }`}
+                  style={{
+                    backgroundColor: selectedCategory === category.value 
+                      ? getLawRegColor(category.value || 'default') 
+                      : undefined
+                  }}
+                >
+                  {category.label}
+                </button>
+              ))}
+            </div>
+          </div>
+
+          {/* Active Filters & Clear */}
+          {(searchText || selectedCategory) && (
+            <div className="flex items-center justify-between pt-3 border-t border-gray-200">
+              <div className="flex flex-wrap gap-2">
+                {searchText && (
+                  <span className="inline-flex items-center gap-1 px-3 py-1 bg-blue-100 text-blue-800 rounded-full text-sm">
+                    ค้นหา: "{searchText}"
+                    <button
+                      onClick={() => handleSearch("")}
+                      className="ml-1 text-blue-600 hover:text-blue-800"
+                    >
+                      ×
+                    </button>
+                  </span>
+                )}
+                {selectedCategory && (
+                  <span className="inline-flex items-center gap-1 px-3 py-1 bg-purple-100 text-purple-800 rounded-full text-sm">
+                    ประเภท: {categories.find(c => c.value === selectedCategory)?.label}
+                    <button
+                      onClick={() => handleCategoryFilter("")}
+                      className="ml-1 text-purple-600 hover:text-purple-800"
+                    >
+                      ×
+                    </button>
+                  </span>
+                )}
+              </div>
+              <button
+                onClick={clearFilters}
+                className="px-3 py-1 text-sm text-gray-600 hover:text-gray-800 border border-gray-300 rounded-lg hover:bg-gray-50"
+              >
+                ล้างตัวกรอง
+              </button>
+            </div>
+          )}
         </div>
       </div>
     );
@@ -243,18 +361,18 @@ export default function LocalDevelopmentPlanPage() {
         <div className="bg-gradient-to-r from-[#03bdca] to-[#01bdcc] rounded-[36px] shadow-lg w-full flex flex-col md:flex-row items-center px-6 py-6 relative backdrop-blur-sm">
           <div className="bg-white rounded-full shadow-md w-32 h-16 flex items-center justify-center mb-4 md:mb-0 md:absolute md:left-6 md:top-1/2 md:-translate-y-1/2 border-2 border-[#01bdcc]">
             <span className="text-[#01385f] font-bold text-2xl tracking-wide">
-              📋
+              ⚖️
             </span>
           </div>
           <div className="flex-1 flex flex-wrap flex-row items-center justify-center gap-6 md:gap-12 md:ml-40">
             <span className="text-white font-semibold text-lg md:text-2xl drop-shadow-lg">
-              แผนพัฒนาท้องถิ่น
+              กฎหมายและระเบียบ
             </span>
             <span className="text-white font-semibold text-lg md:text-2xl drop-shadow-lg">
-              Local Development Plan
+              Laws & Regulations
             </span>
             <span className="text-white font-semibold text-lg md:text-2xl drop-shadow-lg">
-              แผนงานหลัก
+              ข้อบังคับท้องถิ่น
             </span>
           </div>
         </div>
@@ -279,20 +397,20 @@ export default function LocalDevelopmentPlanPage() {
               <div className="h-4 bg-gray-300 rounded w-24"></div>
             </div>
           ))
-        ) : plans.length > 0 ? (
-          plans.map((plan) => (
+        ) : lawsRegs.length > 0 ? (
+          lawsRegs.map((lawReg) => (
             <div
-              key={plan.id}
+              key={lawReg.id}
               className="bg-white bg-opacity-95 rounded-[29px] border-4 border-[#01bdcc] shadow-lg p-6 flex flex-col gap-3 relative cursor-pointer hover:shadow-xl hover:bg-opacity-100 transition-all duration-300 transform hover:-translate-y-1 backdrop-blur-sm"
-              onClick={() => handleShowDetail(plan)}
+              onClick={() => handleShowDetail(lawReg)}
             >
               {/* Header */}
               <div className="flex items-start justify-between mb-2">
                 <h2 className="text-xl font-bold text-[#01385f] line-clamp-2 flex-1">
-                  {plan.type_name}
+                  {lawReg.type_name}
                 </h2>
                 <div className="ml-2 bg-blue-100 text-blue-600 px-2 py-1 rounded-full text-xs font-medium">
-                  ID: {plan.id}
+                  ID: {lawReg.id}
                 </div>
               </div>
 
@@ -300,19 +418,19 @@ export default function LocalDevelopmentPlanPage() {
               <div className="mb-3">
                 <span 
                   className="inline-block px-3 py-1 rounded-full text-white text-sm font-medium"
-                  style={{ backgroundColor: getPlanColor(plan.type_name) }}
+                  style={{ backgroundColor: getLawRegColor(lawReg.type_name) }}
                 >
-                  แผนพัฒนาท้องถิ่น
+                  กฎหมายและระเบียบ
                 </span>
               </div>
 
               {/* Stats */}
               <div className="flex flex-wrap gap-2 mb-4">
                 <span className="bg-green-100 text-green-600 px-3 py-1 rounded-full text-xs font-medium">
-                  📄 {plan.files_count || 0} ไฟล์
+                  📄 {lawReg.sections?.length || 0} มาตรา
                 </span>
                 <span className="bg-purple-100 text-purple-600 px-3 py-1 rounded-full text-xs font-medium">
-                  📊 แผนงาน
+                  ⚖️ กฎหมาย
                 </span>
               </div>
 
@@ -320,30 +438,30 @@ export default function LocalDevelopmentPlanPage() {
               <div className="text-sm text-gray-600 space-y-1">
                 <div className="flex items-center gap-2">
                   <span className="text-gray-500">สร้างเมื่อ:</span>
-                  <span className="font-medium">{formatDate(plan.created_at)}</span>
+                  <span className="font-medium">{formatDate(lawReg.created_at)}</span>
                 </div>
-                {plan.updated_at && (
+                {lawReg.updated_at && (
                   <div className="flex items-center gap-2">
                     <span className="text-gray-500">อัพเดท:</span>
-                    <span className="font-medium">{formatDate(plan.updated_at)}</span>
+                    <span className="font-medium">{formatDate(lawReg.updated_at)}</span>
                   </div>
                 )}
               </div>
 
-              {/* Preview of recent files */}
-              {plan.files && plan.files.length > 0 && (
+              {/* Preview of recent sections */}
+              {lawReg.sections && lawReg.sections.length > 0 && (
                 <div className="mt-3 pt-3 border-t border-gray-100">
-                  <p className="text-xs text-gray-500 mb-2">ไฟล์ล่าสุด:</p>
+                  <p className="text-xs text-gray-500 mb-2">มาตราล่าสุด:</p>
                   <div className="space-y-1">
-                    {plan.files.slice(0, 2).map((file, idx) => (
+                    {lawReg.sections.slice(0, 2).map((section, idx) => (
                       <div key={idx} className="text-sm text-gray-700 bg-gray-50 px-2 py-1 rounded truncate flex items-center gap-1">
-                        <span>{getFileIcon(file.files_type)}</span>
-                        <span>{file.files_path?.split('/').pop() || `ไฟล์ ${idx + 1}`}</span>
+                        <span>⚖️</span>
+                        <span>{section.section_name}</span>
                       </div>
                     ))}
-                    {plan.files_count > 2 && (
+                    {lawReg.sections.length > 2 && (
                       <div className="text-xs text-gray-400">
-                        และอีก {plan.files_count - 2} ไฟล์...
+                        และอีก {lawReg.sections.length - 2} มาตรา...
                       </div>
                     )}
                   </div>
@@ -362,13 +480,27 @@ export default function LocalDevelopmentPlanPage() {
           // No data message
           <div className="col-span-full flex flex-col items-center justify-center py-12">
             <div className="bg-white bg-opacity-90 rounded-xl p-8 text-center shadow-lg backdrop-blur-sm">
-              <div className="text-gray-400 text-6xl mb-4">📋</div>
+              <div className="text-gray-400 text-6xl mb-4">⚖️</div>
               <div className="text-gray-500 text-xl mb-2">
-                ไม่มีข้อมูลแผนพัฒนาท้องถิ่น
+                {searchText || selectedCategory 
+                  ? "ไม่พบกฎหมายและระเบียบที่ตรงกับการค้นหา" 
+                  : "ไม่มีข้อมูลกฎหมายและระเบียบ"
+                }
               </div>
               <div className="text-gray-400 text-sm mb-4">
-                กรุณาเพิ่มข้อมูลแผนพัฒนาในระบบจัดการ
+                {searchText || selectedCategory 
+                  ? "ลองเปลี่ยนคำค้นหาหรือตัวกรองใหม่" 
+                  : "กรุณาเพิ่มข้อมูลกฎหมายในระบบจัดการ"
+                }
               </div>
+              {(searchText || selectedCategory) && (
+                <button
+                  onClick={clearFilters}
+                  className="px-4 py-2 bg-[#01bdcc] text-white rounded-lg hover:bg-[#01a5b3] transition-colors"
+                >
+                  ดูทั้งหมด
+                </button>
+              )}
             </div>
           </div>
         )}
