@@ -11,7 +11,7 @@ export default function PeopleSupport() {
     },
     {
       icon: "/image/people_gui3.png",
-      link: "/survey",
+      link: "/e-service/survey",
     },
     {
       icon: "/image/people_gui4.png",
