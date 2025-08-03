@@ -27,7 +27,8 @@ import {
 } from "@ant-design/icons";
 import { qaAPI } from "@/lib/api";
 import SubmitQuestionModal from "@/components/SubmitQuestionModal";
-import SubmitCommentModal from "@/components/SubmitCommentModal";
+import SimpleCommentModal from "@/components/SimpleCommentModal";
+import CommentsSection from "@/components/CommentsSection";
 
 const { Title, Text, Paragraph } = Typography;
 const { Search } = Input;
@@ -44,6 +45,8 @@ export default function QAPage() {
   const [submitModalVisible, setSubmitModalVisible] = useState(false);
   const [commentModalVisible, setCommentModalVisible] = useState(false);
   const [selectedQaItem, setSelectedQaItem] = useState(null);
+  const [commentsRefreshTrigger, setCommentsRefreshTrigger] = useState(0);
+  const [qaRefreshTrigger, setQaRefreshTrigger] = useState(0);
 
   // โหลดข้อมูลเริ่มต้น
   useEffect(() => {
@@ -151,6 +154,17 @@ export default function QAPage() {
     setCommentModalVisible(true);
   };
 
+  // รีเฟรชความคิดเห็นหลังเพิ่มใหม่
+  const handleCommentAdded = () => {
+    setCommentsRefreshTrigger(prev => prev + 1);
+  };
+
+  // รีเฟรช Q&A หลังส่งคำถามใหม่
+  const handleQuestionAdded = () => {
+    setQaRefreshTrigger(prev => prev + 1);
+    loadInitialData(); // รีโหลดข้อมูล Q&A
+  };
+
   // รีเซ็ตการกรอง
   const resetFilter = () => {
     setSelectedCategory(null);
@@ -183,10 +197,7 @@ export default function QAPage() {
             )}
             <Space size="small">
               <EyeOutlined style={{ fontSize: "12px" }} />
-              <Text
-                type="secondary"
-                style={{ fontSize: "12px" }}
-              >
+              <Text type="secondary" style={{ fontSize: "12px" }}>
                 {item.view_count || 0}
               </Text>
             </Space>
@@ -196,38 +207,23 @@ export default function QAPage() {
     ),
     children: (
       <div style={{ paddingLeft: "16px" }}>
-        <Paragraph
-          style={{ marginBottom: "16px", lineHeight: "1.6" }}
-        >
+        <Paragraph style={{ marginBottom: "16px", lineHeight: "1.6" }}>
           {item.answer}
         </Paragraph>
 
         {item.tags && (
           <div style={{ marginBottom: "12px" }}>
-            <Text
-              type="secondary"
-              style={{ fontSize: "12px" }}
-            >
+            <Text type="secondary" style={{ fontSize: "12px" }}>
               แท็ก: {item.tags}
             </Text>
           </div>
         )}
 
-        <div
-          style={{ textAlign: "right", marginTop: "16px" }}
-        >
-          <Button
-            type="default"
-            size="small"
-            icon={<CommentOutlined />}
-            onClick={(e) => {
-              e.stopPropagation();
-              handleShowComment(item);
-            }}
-          >
-            แสดงความคิดเห็น
-          </Button>
-        </div>
+        <CommentsSection 
+          qaItem={item}
+          onAddComment={() => handleShowComment(item)}
+          refreshTrigger={commentsRefreshTrigger}
+        />
       </div>
     ),
   }));
@@ -434,16 +430,18 @@ export default function QAPage() {
           visible={submitModalVisible}
           onCancel={() => setSubmitModalVisible(false)}
           categories={categories}
+          onQuestionAdded={handleQuestionAdded}
         />
 
         {/* Submit Comment Modal */}
-        <SubmitCommentModal
+        <SimpleCommentModal
           visible={commentModalVisible}
           onCancel={() => {
             setCommentModalVisible(false);
             setSelectedQaItem(null);
           }}
           qaItem={selectedQaItem}
+          onCommentAdded={handleCommentAdded}
         />
       </div>
     </div>
