@@ -868,9 +868,103 @@ export const qaAPI = {
   },
 };
 
+// Manual API functions
+const manualAPI = {
+  // Categories
+  getCategories: async (params = {}) => {
+    const searchParams = new URLSearchParams();
+    
+    if (params.activeOnly !== undefined) searchParams.append('activeOnly', params.activeOnly);
+    if (params.withItems) searchParams.append('withItems', params.withItems);
+    
+    const queryString = searchParams.toString();
+    const endpoint = `/manual-categories${queryString ? `?${queryString}` : ''}`;
+    
+    return apiCall(endpoint);
+  },
+
+  createCategory: async (categoryData) => {
+    return apiCall('/manual-categories', {
+      method: 'POST',
+      body: JSON.stringify(categoryData),
+    });
+  },
+
+  // Manual Items
+  getItems: async (params = {}) => {
+    const searchParams = new URLSearchParams();
+    
+    if (params.page) searchParams.append('page', params.page);
+    if (params.limit) searchParams.append('limit', params.limit);
+    if (params.search) searchParams.append('search', params.search);
+    if (params.categoryId) searchParams.append('categoryId', params.categoryId);
+    if (params.featuredOnly) searchParams.append('featuredOnly', params.featuredOnly);
+    if (params.activeOnly !== undefined) searchParams.append('activeOnly', params.activeOnly);
+    
+    const queryString = searchParams.toString();
+    const endpoint = `/manual-items${queryString ? `?${queryString}` : ''}`;
+    
+    return apiCall(endpoint);
+  },
+
+  createItem: async (itemData) => {
+    return apiCall('/manual-items', {
+      method: 'POST',
+      body: JSON.stringify(itemData),
+    });
+  },
+
+  // Files
+  getFiles: async (params = {}) => {
+    const searchParams = new URLSearchParams();
+    
+    if (params.page) searchParams.append('page', params.page);
+    if (params.limit) searchParams.append('limit', params.limit);
+    if (params.search) searchParams.append('search', params.search);
+    if (params.manualId) searchParams.append('manualId', params.manualId);
+    if (params.filesType) searchParams.append('filesType', params.filesType);
+    if (params.activeOnly !== undefined) searchParams.append('activeOnly', params.activeOnly);
+    
+    const queryString = searchParams.toString();
+    const endpoint = `/manual-files${queryString ? `?${queryString}` : ''}`;
+    
+    return apiCall(endpoint);
+  },
+
+  addFile: async (fileData) => {
+    return apiCall('/manual-files', {
+      method: 'POST',
+      body: JSON.stringify(fileData),
+    });
+  },
+
+  // Search
+  search: async (query, params = {}) => {
+    const searchParams = new URLSearchParams();
+    searchParams.append('q', query);
+    
+    if (params.limit) searchParams.append('limit', params.limit);
+    if (params.categoryId) searchParams.append('categoryId', params.categoryId);
+    
+    return apiCall(`/manual-search?${searchParams.toString()}`);
+  },
+
+  // Upload file
+  uploadFile: async (file) => {
+    const formData = new FormData();
+    formData.append('file', file);
+    
+    return fetch('/api/upload/image', {
+      method: 'POST',
+      body: formData,
+    }).then(response => response.json());
+  },
+};
+
 // Export for easy use
 const apiExports = {
   qaAPI,
+  manualAPI,
   staffAPI,
   perfResultsTypesAPI,
   perfResultsSectionsAPI,
