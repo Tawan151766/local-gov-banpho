@@ -11,6 +11,7 @@ import {
   BookOutlined,
   SafetyOutlined,
   CustomerServiceOutlined,
+  ReadOutlined,
 } from "@ant-design/icons";
 
 import StaffManagement from "./components/StaffManagement";
@@ -43,6 +44,11 @@ const WastebinRequestsManagement = dynamic(
 
 const WasteCollectionRequestsManagement = dynamic(
   () => import("./components/WasteCollectionRequestsManagement"),
+  { ssr: false }
+);
+
+const ManualManagement = dynamic(
+  () => import("./components/ManualManagement"),
   { ssr: false }
 );
 import styles from "./admin.module.css";
@@ -162,6 +168,11 @@ export default function AdminPage() {
           icon: <FileTextOutlined />,
           label: "จัดการโพสต์",
         },
+        {
+          key: "manual-management",
+          icon: <ReadOutlined />,
+          label: "จัดการคู่มือ",
+        },
       ],
     },
     {
@@ -208,6 +219,8 @@ export default function AdminPage() {
         return <ItaManagement />;
       case "post-management":
         return <PostManagement />;
+      case "manual-management":
+        return <ManualManagement />;
       case "procurement-plan":
         return <ProcurementPlanManagement />;
       case "laws-regulations":
