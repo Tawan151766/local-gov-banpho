@@ -110,9 +110,7 @@ export default function InsideBander() {
               {/* Card 5 */}
               <div
                 className="bg-white rounded-2xl shadow-md hover:shadow-lg transition-shadow duration-300 flex items-center gap-4 p-4 cursor-pointer"
-                onClick={() =>
-                  (window.location.href = "/citizen/qa")
-                }
+                onClick={() => (window.location.href = "/citizen/qa")}
               >
                 <img
                   src="image/InsiderBander_5.png"
@@ -189,45 +187,62 @@ export default function InsideBander() {
 
                     <div className="space-y-2 cursor-pointer">
                       {[
-                        "หนังสือราชการของ สถ.",
-                        "กฎหมาย ระเบียบ และมติ ก.กลาง",
-                        "บทความที่น่าสนใจ",
-                        "พรบ. และประกาศเกี่ยวกับเทคโนโลยีสารสนเทศ",
+                        {
+                          label: "บทความที่น่าสนใจ",
+                          url: "https://www.dla.go.th/servlet/DocumentServlet?documentType=4",
+                        },
+                        {
+                          label: "พรบ. และประกาศเกี่ยวกับเทคโนโลยีสารสนเทศ",
+                          url: "https://www.dla.go.th/visit/it_royal.jsp",
+                        },
+                        {
+                          label:
+                            "วิสัยทัศน์ พันธกิจ กรมส่งเสริมการปกครองท้องถิ่น",
+                          url: "https://www.dla.go.th/servlet/DLAServlet?visit=mission",
+                        },
                       ].map((doc, idx) => (
-                        <div
+                        <a
                           key={idx}
+                          href={doc.url}
+                          target="_blank"
+                          rel="noopener noreferrer"
                           className={`text-gray-700 text-sm md:text-base py-[2px] transition-all duration-200
                             hover:bg-[#01BDCC] 
                             hover:rounded-[18.5px] hover:text-white px-3 flex items-center`}
                         >
-                          {doc}
-                        </div>
+                          {doc.label}
+                        </a>
                       ))}
                     </div>
                   </div>
-
-                  {/* Right Side */}
                   <div className="pl-3 md:pl-4">
                     <div className="font-semibold text-base md:text-lg text-gray-800">
-                      จากราชการจากท้องถิ่นจังหวัด
+                      จากกรมส่งเสริมการปกครองท้องถิ่น
                     </div>
-                    <div className="w-56 h-[3px] bg-[#01BDCC] my-2"></div>
+                    <div className="w-67 h-[3px] bg-[#01BDCC] my-2"></div>
 
                     <div className="space-y-2 cursor-pointer">
                       {[
-                        "หนังสือราชการของ สถ.",
-                        "บทความที่น่าสนใจ",
-                        "พรบ. และประกาศเกี่ยวกับเทคโนโลยีสารสนเทศ",
-                        "กฎหมาย ระเบียบ และมติ ก.กลาง",
+                        {
+                          label: "หนังสือราชการของ สถ.",
+                          url: "https://www.dla.go.th/servlet/DocumentServlet?documentType=2&isSbpac=N",
+                        },
+                        {
+                          label: "กฎหมาย ระเบียบ และมติ ก.กลาง",
+                          url: "https://www.dla.go.th/servlet/LawServlet?regType=1",
+                        },
                       ].map((doc, idx) => (
-                        <div
+                        <a
                           key={idx}
+                          href={doc.url}
+                          target="_blank"
+                          rel="noopener noreferrer"
                           className={`text-gray-700 text-sm md:text-base py-[2px] transition-all duration-200
                             hover:bg-[#01BDCC] 
                             hover:rounded-[18.5px] hover:text-white px-3 flex items-center`}
                         >
-                          {doc}
-                        </div>
+                          {doc.label}
+                        </a>
                       ))}
                     </div>
                   </div>
