@@ -6,26 +6,31 @@ const services = [
     title: "ศูนย์ข้อมูลข่าวสารอิเล็กทรอนิกส์ ของราชการ (OIC)",
     image: "image/Logo1_OIC.png",
     alt: "OIC Logo",
+    url: "https://www.oic.go.th/",
   },
   {
     title: "สำนักงานคณะกรรมการป้องกัน และปราบปรามการทุจริตแห่งชาติ",
     image: "image/Logo2_ppp.jpg",
     alt: "PPP Logo",
+    url: "https://www.nacc.go.th/",
   },
   {
     title: "ศูนย์ดำรงธรรม",
     image: "image/Logo3_tam.png",
     alt: "TAM Logo",
+    url: "http://www.damrongdhama.moi.go.th/",
   },
   {
     title: "งานบริการของศูนย์บริการร่วม One Stop Service",
     image: "image/Logo5_onestop.png",
     alt: "One Stop Logo",
+    url: "/e-service",
   },
   {
     title: "สาระดีๆจากศาลปกครอง",
     image: "image/Logo6_law.jpg",
     alt: "Law Logo",
+    url: "https://www.admincourt.go.th/admincourt/site/",
   },
 ];
 
@@ -37,16 +42,16 @@ export default function InsideBander() {
         <div className="flex flex-col lg:flex-row gap-6 p-4 md:p-6 lg:p-8">
           {/* Left Column: Service Cards */}
           <div className="w-96 flex flex-col justify-center">
-
-            {/* ปุ่มลูกศรขึ้น */}
+            /* ปุ่มลูกศรขึ้น */
             <button className="mb-4 p-2 rounded-full  hover:bg-gray-100 transition mx-auto">
               <ChevronUp className="w-10 h-10 text-gray-700" />
             </button>
-
-
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-1 gap-4">
               {/* Card 1 */}
-              <div className="bg-white rounded-2xl shadow-md hover:shadow-lg transition-shadow duration-300 flex items-center gap-4 p-4">
+              <div
+                className="bg-white rounded-2xl shadow-md hover:shadow-lg transition-shadow duration-300 flex items-center gap-4 p-4 cursor-pointer"
+                onClick={() => (window.location.href = "/citizen/km")}
+              >
                 <img
                   src="image/InsiderBander_1.png"
                   alt="เผยแพร่"
@@ -58,7 +63,10 @@ export default function InsideBander() {
               </div>
 
               {/* Card 2 */}
-              <div className="bg-white rounded-2xl shadow-md hover:shadow-lg transition-shadow duration-300 flex items-center gap-4 p-4">
+              <div
+                className="bg-white rounded-2xl shadow-md hover:shadow-lg transition-shadow duration-300 flex items-center gap-4 p-4 cursor-pointer"
+                onClick={() => (window.location.href = "/publish")}
+              >
                 <img
                   src="image/InsiderBander_2.png"
                   alt="สารสนเทศ"
@@ -70,7 +78,10 @@ export default function InsideBander() {
               </div>
 
               {/* Card 3 */}
-              <div className="bg-white rounded-2xl shadow-md hover:shadow-lg transition-shadow duration-300 flex items-center gap-4 p-4">
+              <div
+                className="bg-white rounded-2xl shadow-md hover:shadow-lg transition-shadow duration-300 flex items-center gap-4 p-4 cursor-pointer"
+                onClick={() => (window.location.href = "/citizen/technology")}
+              >
                 <img
                   src="image/InsiderBander_3.png"
                   alt="จริยธรรม"
@@ -82,7 +93,10 @@ export default function InsideBander() {
               </div>
 
               {/* Card 4 */}
-              <div className="bg-white rounded-2xl shadow-md hover:shadow-lg transition-shadow duration-300 flex items-center gap-4 p-4">
+              <div
+                className="bg-white rounded-2xl shadow-md hover:shadow-lg transition-shadow duration-300 flex items-center gap-4 p-4 cursor-pointer"
+                onClick={() => (window.location.href = "/ethics")}
+              >
                 <img
                   src="image/InsiderBander_4.png"
                   alt="ห้องสมุด"
@@ -94,7 +108,12 @@ export default function InsideBander() {
               </div>
 
               {/* Card 5 */}
-              <div className="bg-white rounded-2xl shadow-md hover:shadow-lg transition-shadow duration-300 flex items-center gap-4 p-4">
+              <div
+                className="bg-white rounded-2xl shadow-md hover:shadow-lg transition-shadow duration-300 flex items-center gap-4 p-4 cursor-pointer"
+                onClick={() =>
+                  (window.location.href = "/citizen/qa")
+                }
+              >
                 <img
                   src="image/InsiderBander_5.png"
                   alt="ผู้สูงอายุ"
@@ -106,7 +125,12 @@ export default function InsideBander() {
               </div>
 
               {/* Card 6 */}
-              <div className="bg-white rounded-2xl shadow-md hover:shadow-lg transition-shadow duration-300 flex items-center gap-4 p-4">
+              <div
+                className="bg-white rounded-2xl shadow-md hover:shadow-lg transition-shadow duration-300 flex items-center gap-4 p-4 cursor-pointer"
+                onClick={() =>
+                  (window.location.href = "/citizen/elderly-allowance")
+                }
+              >
                 <img
                   src="image/InsiderBander_6.png"
                   alt="คนพิการ"
@@ -118,7 +142,12 @@ export default function InsideBander() {
               </div>
 
               {/* Card 7 */}
-              <div className="bg-white rounded-2xl shadow-md hover:shadow-lg transition-shadow duration-300 flex items-center gap-4 p-4">
+              <div
+                className="bg-white rounded-2xl shadow-md hover:shadow-lg transition-shadow duration-300 flex items-center gap-4 p-4 cursor-pointer"
+                onClick={() =>
+                  (window.location.href = "/citizen/disabled-allowance")
+                }
+              >
                 <img
                   src="image/InsiderBander_7.png"
                   alt="คนพิการ"
@@ -129,12 +158,9 @@ export default function InsideBander() {
                 </div>
               </div>
             </div>
-
-            {/* ปุ่มลูกศรลง */}
             <button className="mt-4 p-2 rounded-full hover:bg-gray-100 transition mx-auto">
               <ChevronDown className="w-10 h-10 text-gray-700" />
             </button>
-
           </div>
 
           {/* Right Column: Combined Book Section and Opinion Poll */}
@@ -270,8 +296,9 @@ export default function InsideBander() {
             <div className="flex flex-wrap justify-center gap-5 max-w-[1240px] mx-auto">
               {services.map((service, idx) => (
                 <div
+                  onClick={() => (window.location.href = service.url)}
                   key={idx}
-                  className="w-[310px] h-[72px] flex justify-center"
+                  className="w-[310px] h-[72px] flex justify-center cursor-pointer"
                 >
                   <div className="relative flex items-center justify-center pr-6 py-4 rounded-full text-white w-full shadow-lg hover:shadow-xl hover:-translate-y-1 transition-all bg-gradient-to-b from-[#FFFF00] to-[#E5B878]">
                     {/* รูปภาพอยู่ชิดซ้ายแบบ absolute */}
