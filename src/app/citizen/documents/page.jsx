@@ -345,36 +345,6 @@ export default function DocumentsPage() {
             </div>
           </div>
         </div>
-
-        {/* Help Section */}
-        <div className="bg-gradient-to-r from-indigo-600 to-purple-600 rounded-2xl shadow-xl text-white p-8">
-          <div className="text-center">
-            <svg className="w-12 h-12 mx-auto mb-4 opacity-80" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M8.228 9c.549-1.165 2.03-2 3.772-2 2.21 0 4 1.343 4 3 0 1.4-1.278 2.575-3.006 2.907-.542.104-.994.54-.994 1.093m0 3h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-            </svg>
-            <h3 className="text-2xl font-semibold mb-4">ต้องการความช่วยเหลือในการกรอกแบบฟอร์ม?</h3>
-            <p className="text-indigo-100 max-w-2xl mx-auto mb-6">
-              หากมีปัญหาในการดาวน์โหลดหรือกรอกแบบฟอร์ม สามารถติดต่อเจ้าหน้าที่เพื่อขอคำแนะนำ
-            </p>
-            <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
-              <div className="text-center">
-                <div className="text-2xl mb-2">📞</div>
-                <p className="text-sm">โทรศัพท์: 02-XXX-XXXX</p>
-                <p className="text-xs text-indigo-200">สายด่วนแบบฟอร์ม</p>
-              </div>
-              <div className="text-center">
-                <div className="text-2xl mb-2">📧</div>
-                <p className="text-sm">อีเมล์: forms@banpho.go.th</p>
-                <p className="text-xs text-indigo-200">สำหรับสอบถามแบบฟอร์ม</p>
-              </div>
-              <div className="text-center">
-                <div className="text-2xl mb-2">🕒</div>
-                <p className="text-sm">เวลาทำการ: จันทร์-ศุกร์</p>
-                <p className="text-xs text-indigo-200">08:30-16:30 น.</p>
-              </div>
-            </div>
-          </div>
-        </div>
       </div>
     </div>
   );
