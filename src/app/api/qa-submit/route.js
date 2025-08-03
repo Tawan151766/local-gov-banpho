@@ -42,15 +42,15 @@ export async function POST(request) {
     
     connection = await mysql.createConnection(dbConfig);
     
-    // บันทึกคำถามใหม่ (ยังไม่มีคำตอบ, ไม่เปิดใช้งาน)
+    // บันทึกคำถามใหม่ (เผยแพร่ทันที)
     const [result] = await connection.execute(`
       INSERT INTO qa_items 
       (category_id, question, answer, is_active, is_featured, submitter_ip, submitter_user_agent) 
-      VALUES (?, ?, ?, FALSE, FALSE, ?, ?)
+      VALUES (?, ?, ?, TRUE, FALSE, ?, ?)
     `, [
       category_id || null,
       question.trim(),
-      'รอการตอบจากเจ้าหน้าที่', // คำตอบเริ่มต้น
+      'คำตอบจะถูกเพิ่มโดยเจ้าหน้าที่โดยเร็วที่สุด', // คำตอบเริ่มต้น
       ipAddress,
       userAgent
     ]);
