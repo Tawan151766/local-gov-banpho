@@ -15,15 +15,15 @@ export default function PeopleSupport() {
     },
     {
       icon: "/image/people_gui4.png",
-      link: "/elderly-allowance",
+      link: "/citizen/elderly-allowance",
     },
     {
       icon: "/image/people_gui5.png",
-      link: "/disabled-allowance",
+      link: "/citizen/disabled-allowance",
     },
     {
       icon: "/image/people_gui6.png",
-      link: "/work-manual",
+      link: "/citizen/work-manual",
     },
     {
       icon: "/image/people_gui7.png",
