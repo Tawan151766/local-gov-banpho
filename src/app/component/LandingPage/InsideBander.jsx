@@ -7,11 +7,13 @@ const services = [
     image: "image/Logo1_OIC.png",
     alt: "OIC Logo",
     url: "https://www.oic.go.th/",
+    url: "https://www.oic.go.th/",
   },
   {
     title: "สำนักงานคณะกรรมการป้องกัน และปราบปรามการทุจริตแห่งชาติ",
     image: "image/Logo2_ppp.jpg",
     alt: "PPP Logo",
+    url: "https://www.nacc.go.th/",
     url: "https://www.nacc.go.th/",
   },
   {
@@ -19,17 +21,20 @@ const services = [
     image: "image/Logo3_tam.png",
     alt: "TAM Logo",
     url: "http://www.damrongdhama.moi.go.th/",
+    url: "http://www.damrongdhama.moi.go.th/",
   },
   {
     title: "งานบริการของศูนย์บริการร่วม One Stop Service",
     image: "image/Logo5_onestop.png",
     alt: "One Stop Logo",
     url: "/e-service",
+
   },
   {
     title: "สาระดีๆจากศาลปกครอง",
     image: "image/Logo6_law.jpg",
     alt: "Law Logo",
+    url: "https://www.admincourt.go.th/admincourt/site/",
     url: "https://www.admincourt.go.th/admincourt/site/",
   },
 ];
@@ -311,8 +316,9 @@ export default function InsideBander() {
             <div className="flex flex-wrap justify-center gap-5 max-w-[1240px] mx-auto">
               {services.map((service, idx) => (
                 <div
-                  onClick={() => (window.location.href = service.url)}
+                onClick={() => window.location.href =  service.url}
                   key={idx}
+                  className="w-[310px] h-[72px] flex justify-center cursor-pointer"
                   className="w-[310px] h-[72px] flex justify-center cursor-pointer"
                 >
                   <div className="relative flex items-center justify-center pr-6 py-4 rounded-full text-white w-full shadow-lg hover:shadow-xl hover:-translate-y-1 transition-all bg-gradient-to-b from-[#FFFF00] to-[#E5B878]">
