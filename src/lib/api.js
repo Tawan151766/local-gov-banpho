@@ -816,6 +816,55 @@ export const qaAPI = {
       body: JSON.stringify(questionData),
     });
   },
+
+  // Admin functions
+  getPendingItems: async (params = {}) => {
+    const searchParams = new URLSearchParams();
+    
+    if (params.page) searchParams.append('page', params.page);
+    if (params.limit) searchParams.append('limit', params.limit);
+    if (params.search) searchParams.append('search', params.search);
+    
+    const queryString = searchParams.toString();
+    const endpoint = `/qa-pending${queryString ? `?${queryString}` : ''}`;
+    
+    return apiCall(endpoint);
+  },
+
+  getItem: async (id) => {
+    return apiCall(`/qa-items/${id}`);
+  },
+
+  updateItem: async (id, itemData) => {
+    return apiCall(`/qa-items/${id}`, {
+      method: 'PUT',
+      body: JSON.stringify(itemData),
+    });
+  },
+
+  deleteItem: async (id) => {
+    return apiCall(`/qa-items/${id}`, {
+      method: 'DELETE',
+    });
+  },
+
+  // Comments functions
+  getComments: async (qaItemId, params = {}) => {
+    const searchParams = new URLSearchParams();
+    searchParams.append('qa_item_id', qaItemId);
+    
+    if (params.page) searchParams.append('page', params.page);
+    if (params.limit) searchParams.append('limit', params.limit);
+    
+    return apiCall(`/qa-comments?${searchParams.toString()}`);
+  },
+
+  submitComment: async (commentData) => {
+    return apiCall('/qa-comments', {
+      method: 'POST',
+      body: JSON.stringify(commentData),
+    });
+  },
 };
 
 // Export for easy use
