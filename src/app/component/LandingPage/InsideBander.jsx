@@ -127,9 +127,7 @@ export default function InsideBander() {
               {/* Card 5 */}
               <div
                 className="bg-white rounded-2xl shadow-md hover:shadow-lg transition-shadow duration-300 flex items-center gap-4 p-4 cursor-pointer"
-                onClick={() =>
-                  (window.location.href = "/citizen/qa")
-                }
+                onClick={() => (window.location.href = "/citizen/qa")}
               >
                 <img
                   src="image/InsiderBander_5.png"
