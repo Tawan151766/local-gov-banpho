@@ -156,7 +156,7 @@ export default function ManagementSection() {
     {
       icon: "/image/manage_item2.png",
       title: "เจตจำนงสุจริต ของผู้บริหาร",
-      path: "/executive-integrity",
+      path: "/integrity",
     },
     {
       icon: "/image/manage_item3.png",
