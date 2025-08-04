@@ -69,15 +69,15 @@ export default function AnnouncementSections() {
     try {
       setLoading(true);
 
-      // First, get the post type ID for "ข่าวประชาสัมพันธ์"
+      // First, get the post type ID for "ป้ายประกาศ"
       const postTypesResponse = await postTypesAPI.getPostTypes({
         limit: 100,
-        search: "ข่าวประชาสัมพันธ์",
+        search: "ป้ายประกาศ",
       });
 
       if (postTypesResponse.success && postTypesResponse.data.length > 0) {
         const announcementTypeId = postTypesResponse.data.find(
-          (type) => type.type_name === "ข่าวประชาสัมพันธ์"
+          (type) => type.type_name === "ป้ายประกาศ"
         )?.id;
 
         if (announcementTypeId) {
@@ -154,7 +154,7 @@ export default function AnnouncementSections() {
   }
   return (
     <div
-      className="relative w-screen h-screen shadow-[0_18.4px_18.4px_rgba(0,0,0,0.49)] overflow-hidden"
+      className="mb-15 relative w-screen h-screen shadow-[0_18.4px_18.4px_rgba(0,0,0,0.49)] overflow-hidden"
       style={{
         backgroundImage: `linear-gradient(180deg, rgba(239, 228, 212, 0.6) 0%, rgba(1, 189, 204, 0.6) 100%),
         url("image/vision_bg.png")`,
@@ -188,9 +188,7 @@ export default function AnnouncementSections() {
       <div className="relative z-10 w-full max-w-4xl mx-auto flex flex-col items-center px-2 sm:px-4 md:px-6 lg:px-8">
         {/* Header Section */}
         <div className="flex w-full max-w-2xl justify-between items-center mb-6 mt-8">
-          <div className="text-[#01385F] text-xl sm:text-2xl lg:text-3xl font-bold w-full text-left">
-            ข่าวประชาสัมพันธ์
-          </div>
+          <div className="text-[#01385F] text-xl sm:text-2xl lg:text-3xl font-bold w-full text-left"></div>
           <Link href="/posts">
             <button className="bg-[#01385f] text-white rounded-[12.5px] px-4 py-2 text-sm shadow-md hover:bg-[#01385f]/90 transition-colors duration-200 whitespace-nowrap ml-4">
               เพิ่มเติม
@@ -392,59 +390,6 @@ export default function AnnouncementSections() {
             <div className="text-[#01385F]/60 text-xs">
               {current + 1} / {announcements.length}
             </div>
-          </div>
-        )}
-
-        {/* Post Details for non-image posts */}
-        {announcements[current] && !announcements[current]?.photos?.[0] && (
-          <div className="w-full max-w-2xl mt-4 p-4 bg-white/90 rounded-lg shadow-md">
-            <h3 className="text-[#01385F] text-sm sm:text-base font-bold mb-2 line-clamp-2">
-              {announcements[current].title_name}
-            </h3>
-            {announcements[current].topic_name && (
-              <p className="text-[#01385F]/80 text-xs sm:text-sm mb-2 line-clamp-1">
-                {announcements[current].topic_name}
-              </p>
-            )}
-            {announcements[current].details && (
-              <div
-                className="text-[#01385F]/70 text-xs sm:text-sm line-clamp-3"
-                dangerouslySetInnerHTML={{
-                  __html: announcements[current].details.replace(
-                    /<[^>]*>/g,
-                    ""
-                  ),
-                }}
-              />
-            )}
-            <div className="flex justify-between items-center mt-3">
-              <div className="text-[#01385F]/60 text-xs">
-                {announcements[current].date &&
-                  new Date(announcements[current].date).toLocaleDateString(
-                    "th-TH"
-                  )}
-              </div>
-              <div className="flex gap-2">
-                {announcements[current].pdfs?.length > 0 && (
-                  <span className="text-xs bg-orange-100 text-orange-600 px-2 py-1 rounded">
-                    PDF {announcements[current].pdfs.length}
-                  </span>
-                )}
-                {announcements[current].videos?.length > 0 && (
-                  <span className="text-xs bg-red-100 text-red-600 px-2 py-1 rounded">
-                    วิดีโอ {announcements[current].videos.length}
-                  </span>
-                )}
-              </div>
-            </div>
-          </div>
-        )}
-
-        {/* Controls Info */}
-        {announcements.length > 1 && (
-          <div className="text-center mt-2 text-[#01385F]/60 text-xs">
-            <p>ใช้ลูกศรซ้าย/ขวา, spacebar, หรือ Enter เพื่อควบคุม</p>
-            <p>วางเมาส์เพื่อหยุดชั่วคราว • คลิกหรือ Enter เพื่อดูรายละเอียด</p>
           </div>
         )}
       </div>
