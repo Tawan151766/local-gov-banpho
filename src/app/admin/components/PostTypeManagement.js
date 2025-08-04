@@ -621,7 +621,7 @@ export default function PostTypeManagement({ postType }) {
                 setUploadedFileData(fileData);
               }}
               placeholder={`เลือกไฟล์${config.title}`}
-              accept=".pdf,.doc,.docx,.xls,.xlsx,.ppt,.pptx"
+              accept=".pdf,.doc,.docx,.xls,.xlsx,.ppt,.pptx,.png,.jpg,.jpeg,.gif"
               maxSize={10}
             />
           </Form.Item>
