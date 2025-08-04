@@ -40,7 +40,7 @@ export default function Footer() {
           {/* Left: Logo */}
           <div className="flex-shrink-0">
             <img
-              src="image/logobanpho.png"
+              src="/image/logobanpho.png"
               alt="โลโก้เทศบาล"
               className="w-[162px] h-[162px] rounded-full shadow-lg"
               style={{ objectFit: "cover" }}

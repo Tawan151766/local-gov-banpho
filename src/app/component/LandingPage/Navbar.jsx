@@ -48,7 +48,7 @@ export default function Navbar() {
             className="pointer flex items-center gap-4 w-full md:w-auto"
           >
             <img
-              src="image/logobanpho.png"
+              src="/image/logobanpho.png"
               alt="โลโก้เทศบาล"
               className="h-16 w-16 rounded-full border-4 border-white shadow-md bg-white"
             />
