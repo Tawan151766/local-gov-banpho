@@ -14,18 +14,16 @@ export default function HeroSection({ ui }) {
 
   return (
     <>
-      <section className="relative w-full pb-[682px] flex items-end justify-center">
+      <section className="relative w-full md:pb-[682px] pb-[370px] flex items-end justify-center">
         {/* Background Image Slides */}
         <div className="absolute inset-0 z-0 overflow-hidden cursor-grab active:cursor-grabbing">
     {slides.map((slide, idx) => (
       <div
         key={idx}
-        className={`absolute transition-opacity duration-700 ${
+        className={`absolute transition-opacity duration-700 md:w-[100vw] w-[100vw] md:h-[100vh] h-[40vh] ${
           activeSlide === idx ? "opacity-100" : "opacity-0"
         }`}
         style={{
-          width: "100vw",
-          height: "100vh", // หรือจะใช้ h-[100vh] ก็ได้ถ้าครอบด้วย Tailwind
           backgroundImage: `url('${slide}')`,
           backgroundSize: "100% 135%",
           backgroundRepeat: "no-repeat",
@@ -40,7 +38,7 @@ export default function HeroSection({ ui }) {
         <div className="absolute inset-0 z-10 "></div>
 
         {/* Dots */}
-        <div className="absolute bottom-[90px] left-1/2 -translate-x-1/2 flex gap-[10px] z-20">
+        <div className="absolute bottom-[9px] left-1/2 -translate-x-1/2 flex gap-[10px] z-20">
           {slides.map((_, idx) => (
             <span
               key={idx}
@@ -87,9 +85,9 @@ export default function HeroSection({ ui }) {
 
       {/* Video Section */}
 
-      <div className="relative w-screen h-[65vh] overflow-hidden">
+      <div className="relative w-screen h-[25vh] md:h-[65vh] overflow-hidden">
         <video
-          className="absolute top-0 left-0 w-full h-full object-cover"
+          className="absolute top-0 left-0 w-full h-full object-cover scale-155"
           src="/image/mp_4_bg.mp4"
           autoPlay
           loop
