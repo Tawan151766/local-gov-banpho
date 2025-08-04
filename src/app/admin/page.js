@@ -12,13 +12,14 @@ import {
   SafetyOutlined,
   CustomerServiceOutlined,
   ReadOutlined,
+  MenuUnfoldOutlined,
+  MenuFoldOutlined,
 } from "@ant-design/icons";
 
 import StaffManagement from "./components/StaffManagement";
 import PerformanceResultsManagement from "./components/PerformanceResultsManagement";
 import ItaManagement from "./components/ItaManagement";
 import PostTypeManagement from "./components/PostTypeManagement";
-import ProcurementPlanManagement from "./components/ProcurementPlanManagement";
 import LawsRegsManagement from "./components/LawsRegsManagement";
 import dynamic from "next/dynamic";
 
@@ -62,6 +63,7 @@ const { Sider, Content } = Layout;
 
 export default function AdminPage() {
   const [selectedKey, setSelectedKey] = useState("dashboard");
+  const [collapsed, setCollapsed] = useState(false);
   const { data: session, status } = useSession();
   const router = useRouter();
 
@@ -115,16 +117,12 @@ export default function AdminPage() {
     },
   ];
 
-
-
   const menuItems = [
     {
       key: "basic-management",
       label: "การจัดการพื้นฐาน",
       type: "group",
-      children: [
-
-      ],
+      children: [],
     },
     {
       key: "performance-management",
@@ -140,11 +138,6 @@ export default function AdminPage() {
           key: "ita-management",
           icon: <FileProtectOutlined />,
           label: "ข้อมูล ITA",
-        },
-        {
-          key: "procurement-plan",
-          icon: <ShoppingCartOutlined />,
-          label: "แผนจัดซื้อจัดจ้าง",
         },
         {
           key: "laws-regulations",
@@ -263,8 +256,6 @@ export default function AdminPage() {
         return <PostTypeManagement postType="public-relations" />;
       case "activities":
         return <PostTypeManagement postType="activities" />;
-      case "procurement-plan":
-        return <ProcurementPlanManagement />;
       case "laws-regulations":
         return <LawsRegsManagement />;
       case "local-dev-plan":
@@ -293,17 +284,43 @@ export default function AdminPage() {
 
   return (
     <Layout style={{ minHeight: "100vh" }}>
-      <Sider width={250} className={styles.adminSidebar}>
+      <Sider
+        width={250}
+        className={styles.adminSidebar}
+        collapsible
+        collapsed={collapsed}
+        onCollapse={setCollapsed}
+        trigger={null}
+        style={{
+          background: "#fff",
+          height: "100vh",
+          overflow: "auto",
+        }}
+      >
         <div style={{ padding: "16px", borderBottom: "1px solid #f0f0f0" }}>
-          <Title level={4} style={{ margin: 0, textAlign: "center" }}>
-            Admin Panel
-          </Title>
-          <Text
-            type="secondary"
-            style={{ display: "block", textAlign: "center", fontSize: "12px" }}
-          >
-            อบต.บ้านโพธิ์
-          </Text>
+          {!collapsed ? (
+            <>
+              <Title level={4} style={{ margin: 0, textAlign: "center" }}>
+                Admin Panel
+              </Title>
+              <Text
+                type="secondary"
+                style={{
+                  display: "block",
+                  textAlign: "center",
+                  fontSize: "12px",
+                }}
+              >
+                อบต.บ้านโพธิ์
+              </Text>
+            </>
+          ) : (
+            <div style={{ textAlign: "center" }}>
+              <Title level={4} style={{ margin: 0, fontSize: "16px" }}>
+                AP
+              </Title>
+            </div>
+          )}
         </div>
 
         <div style={{ padding: "16px", borderBottom: "1px solid #f0f0f0" }}>
@@ -316,12 +333,14 @@ export default function AdminPage() {
               <Avatar
                 size="small"
                 icon={<UserOutlined />}
-                style={{ marginRight: "8px" }}
+                style={{ marginRight: collapsed ? "0" : "8px" }}
               />
-              <div className={styles.userInfo}>
-                <div className={styles.userName}>{session?.user?.name}</div>
-                <div className={styles.userEmail}>{session?.user?.email}</div>
-              </div>
+              {!collapsed && (
+                <div className={styles.userInfo}>
+                  <div className={styles.userName}>{session?.user?.name}</div>
+                  <div className={styles.userEmail}>{session?.user?.email}</div>
+                </div>
+              )}
             </div>
           </Dropdown>
         </div>
@@ -337,7 +356,44 @@ export default function AdminPage() {
         />
       </Sider>
 
-      <Layout>
+      <Layout
+        style={{
+          marginLeft: collapsed ? 80 : 250,
+          transition: "margin-left 0.2s",
+        }}
+      >
+        <div
+          style={{
+            padding: "0 24px",
+            backgroundColor: "#fff",
+            borderBottom: "1px solid #f0f0f0",
+            display: "flex",
+            alignItems: "center",
+            height: "64px",
+          }}
+        >
+          <button
+            onClick={() => setCollapsed(!collapsed)}
+            style={{
+              border: "none",
+              background: "none",
+              cursor: "pointer",
+              fontSize: "16px",
+              padding: "8px",
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+              borderRadius: "4px",
+              transition: "background-color 0.3s",
+            }}
+            onMouseEnter={(e) => (e.target.style.backgroundColor = "#f0f0f0")}
+            onMouseLeave={(e) =>
+              (e.target.style.backgroundColor = "transparent")
+            }
+          >
+            {collapsed ? <MenuUnfoldOutlined /> : <MenuFoldOutlined />}
+          </button>
+        </div>
         <Content style={{ padding: "24px", backgroundColor: "#f5f5f5" }}>
           {renderContent()}
         </Content>
