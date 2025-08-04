@@ -148,12 +148,29 @@ export default function PostTypeManagement({ postType }) {
 
   useEffect(() => {
     loadPosts();
-  }, [loadPosts]);
+    
+    // Cleanup function to prevent memory leaks
+    return () => {
+      // Reset form when component unmounts
+      if (form) {
+        form.resetFields();
+      }
+    };
+  }, [loadPosts, form]);
 
   const handleCreate = () => {
     setEditingRecord(null);
     setModalVisible(true);
-    form.resetFields();
+    
+    // Safely reset form
+    try {
+      if (form) {
+        form.resetFields();
+      }
+    } catch (error) {
+      console.warn("Error resetting form:", error);
+    }
+    
     setUploadedFilePath(null);
     setUploadedFileData(null);
   };
@@ -161,7 +178,15 @@ export default function PostTypeManagement({ postType }) {
   const handleEdit = (record) => {
     setEditingRecord(record);
     setModalVisible(true);
-    form.setFieldsValue(record);
+    
+    // Safely set form values
+    try {
+      if (form) {
+        form.setFieldsValue(record);
+      }
+    } catch (error) {
+      console.warn("Error setting form values:", error);
+    }
 
     // Load existing file if any
     if (record.file_path) {
@@ -263,7 +288,16 @@ export default function PostTypeManagement({ postType }) {
           description: editingRecord ? "แก้ไขโพสต์สำเร็จ" : "เพิ่มโพสต์สำเร็จ",
         });
         setModalVisible(false);
-        form.resetFields();
+        
+        // Safely reset form
+        try {
+          if (form) {
+            form.resetFields();
+          }
+        } catch (error) {
+          console.warn("Error resetting form after submit:", error);
+        }
+        
         setUploadedFilePath(null);
         setUploadedFileData(null);
         loadPosts();
