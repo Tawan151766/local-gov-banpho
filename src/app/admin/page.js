@@ -59,6 +59,9 @@ import { useState, useEffect } from "react";
 import { useSession, signOut } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import LocalDevPlanManagement from "./components/LocalDevPlanManagement";
+import PublishDocManagement from "./components/PublishDocManagement";
+import ChildDevelopmentCenterManagement from "./components/ChildDevelopmentCenterManagement";
+import ExternalWorkManagement from "./components/ExternalWorkManagement";
 
 const { Title, Text } = Typography;
 const { Sider, Content } = Layout;
@@ -150,6 +153,30 @@ export default function AdminPage() {
           key: "local-dev-plan",
           icon: <FileTextOutlined />,
           label: "แผนพัฒนาท้องถิ่น",
+        },
+      ],
+    },
+    {
+      key: "link-management",
+      label: "เนื้อหาและลิงก์",
+      type: "group",
+      children: [
+        {
+          key: "publish-docs",
+          icon: <FileTextOutlined />,
+          label: "เอกสารเผยแพร่",
+        },
+        {
+          key: "child-development-center",
+          icon: <UserOutlined />,
+          label: "ศูนย์พัฒนาเด็กเล็ก",
+          link: "/admin/child-development-center",
+        },
+        {
+          key: "external-works",
+          icon: <FileTextOutlined />,
+          label: "งานภายนอก",
+          link: "/admin/external-works",
         },
       ],
     },
@@ -277,12 +304,18 @@ export default function AdminPage() {
         return (
           <PostTypeManagement postType="procurement-announcements-reports" />
         );
+      case "child-development-center":
+        return <ChildDevelopmentCenterManagement />;
+      case "external-works":
+        return <ExternalWorkManagement />;
       case "announcement":
         return <PostTypeManagement postType="announcement" />;
       case "public-relations":
         return <PostTypeManagement postType="public-relations" />;
       case "activities":
         return <PostTypeManagement postType="activities" />;
+      case "publish-docs":
+        return <PublishDocManagement />;
       case "laws-regulations":
         return <LawsRegsManagement />;
       case "local-dev-plan":

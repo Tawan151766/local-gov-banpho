@@ -1,3 +1,87 @@
+model child_development_centers {
+  id          BigInt    @id @default(autoincrement()) @db.UnsignedBigInt
+  name        String    @db.VarChar(255)
+  description String?   @db.Text
+  center_date DateTime? @db.Date
+  deleted_at  DateTime? @db.Timestamp(0)
+  created_at  DateTime? @default(now()) @db.Timestamp(0)
+  updated_at  DateTime? @db.Timestamp(0)
+
+  contents    child_development_centers_contents[]
+
+  @@map("child_development_centers")
+}
+
+model child_development_centers_contents {
+  id              BigInt    @id @default(autoincrement()) @db.UnsignedBigInt
+  url             String    @db.VarChar(500)
+  description     String?   @db.Text
+  child_center_id BigInt   @db.UnsignedBigInt
+  created_at      DateTime? @db.Timestamp(0)
+  updated_at      DateTime? @db.Timestamp(0)
+  deleted_at      DateTime? @db.Timestamp(0)
+
+  child_center    child_development_centers @relation(fields: [child_center_id], references: [id], onUpdate: Restrict, map: "child_development_centers_contents_child_center_id_foreign")
+
+  @@index([child_center_id], map: "child_development_centers_contents_child_center_id_foreign")
+  @@map("child_development_centers_contents")
+}
+model external_works {
+  id          BigInt    @id @default(autoincrement()) @db.UnsignedBigInt
+  name        String    @db.VarChar(255)
+  description String?   @db.Text
+  work_date   DateTime? @db.Date
+  deleted_at  DateTime? @db.Timestamp(0)
+  created_at  DateTime? @default(now()) @db.Timestamp(0)
+  updated_at  DateTime? @db.Timestamp(0)
+
+  contents    external_works_contents[]
+
+  @@map("external_works")
+}
+
+model external_works_contents {
+  id              BigInt    @id @default(autoincrement()) @db.UnsignedBigInt
+  url             String    @db.VarChar(500)
+  description     String?   @db.Text
+  external_work_id BigInt   @db.UnsignedBigInt
+  created_at      DateTime? @db.Timestamp(0)
+  updated_at      DateTime? @db.Timestamp(0)
+  deleted_at      DateTime? @db.Timestamp(0)
+
+  external_work   external_works @relation(fields: [external_work_id], references: [id], onUpdate: Restrict, map: "external_works_contents_external_work_id_foreign")
+
+  @@index([external_work_id], map: "external_works_contents_external_work_id_foreign")
+  @@map("external_works_contents")
+}
+[model publish_docs {
+  id           BigInt    @id @default(autoincrement()) @db.UnsignedBigInt
+  link         String    @db.VarChar(500)
+  description  String?   @db.Text
+  publish_date DateTime? @db.Date
+  created_at   DateTime? @default(now()) @db.Timestamp(0)
+  updated_at   DateTime? @db.Timestamp(0)
+  deleted_at   DateTime? @db.Timestamp(0)
+
+  contents     publish_docs_contents[]
+
+  @@map("publish_docs")
+}
+
+model publish_docs_contents {
+  id            BigInt    @id @default(autoincrement()) @db.UnsignedBigInt
+  url           String    @db.VarChar(500)
+  description   String?   @db.Text
+  publish_doc_id BigInt   @db.UnsignedBigInt
+  created_at    DateTime? @db.Timestamp(0)
+  updated_at    DateTime? @db.Timestamp(0)
+  deleted_at    DateTime? @db.Timestamp(0)
+
+  publish_doc   publish_docs @relation(fields: [publish_doc_id], references: [id], onUpdate: Restrict, map: "publish_docs_contents_publish_doc_id_foreign")
+
+  @@index([publish_doc_id], map: "publish_docs_contents_publish_doc_id_foreign")
+  @@map("publish_docs_contents")
+}
 generator client {
   provider = "prisma-client-js"
 }
@@ -126,7 +210,7 @@ model ita_evaluations {
   ita_date    DateTime? @db.Date
   deleted_at  DateTime? @db.Timestamp(0)
   created_at  DateTime? @default(now()) @db.Timestamp(0)
-  updated_at  DateTime? @default(now()) @db.Timestamp(0)
+  updated_at  DateTime? @db.Timestamp(0)
 }
 
 model laws_regs_files {
@@ -410,7 +494,7 @@ model WaterSupportRequest {
   ip_address            String?                    @db.VarChar(45)
   user_agent            String?                    @db.Text
   created_at            DateTime?                  @default(now()) @db.Timestamp(0)
-  updated_at            DateTime?                  @default(now()) @updatedAt @db.Timestamp(0)
+  updated_at            DateTime?                  @default(now()) @db.Timestamp(0)
 
   @@index([request_date], map: "idx_water_request_date")
   @@index([requester_name], map: "idx_water_requester_name")
@@ -462,7 +546,7 @@ model WastebinRequest {
   ip_address             String?               @db.VarChar(45)
   user_agent             String?               @db.Text
   created_at             DateTime?             @default(now()) @db.Timestamp(0)
-  updated_at             DateTime?             @default(now()) @updatedAt @db.Timestamp(0)
+  updated_at             DateTime?             @default(now()) @db.Timestamp(0)
 
   @@index([request_date], map: "idx_wastebin_request_date")
   @@index([requester_name], map: "idx_wastebin_requester_name")
@@ -513,7 +597,7 @@ model WasteCollectionRequest {
   ip_address              String?                     @db.VarChar(45)
   user_agent              String?                     @db.Text
   created_at              DateTime?                   @default(now()) @db.Timestamp(0)
-  updated_at              DateTime?                   @default(now()) @updatedAt @db.Timestamp(0)
+  updated_at              DateTime?                   @default(now()) @db.Timestamp(0)
 
   @@index([request_date], map: "idx_waste_collection_request_date")
   @@index([requester_name], map: "idx_waste_collection_requester_name")
@@ -527,4 +611,34 @@ enum WasteCollectionRequestStatus {
   processing
   completed
   rejected
+}
+
+
+model publish_docs {
+  id          BigInt    @id @default(autoincrement()) @db.UnsignedBigInt
+  name        String    @db.VarChar(255)
+  description String?   @db.Text
+  publish_date DateTime? @db.Date
+  deleted_at  DateTime? @db.Timestamp(0)
+  created_at  DateTime? @default(now()) @db.Timestamp(0)
+  updated_at  DateTime? @db.Timestamp(0)
+
+  contents    publish_docs_contents[]
+
+  @@map("publish_docs")
+}
+
+model publish_docs_contents {
+  id            BigInt    @id @default(autoincrement()) @db.UnsignedBigInt
+  url           String    @db.VarChar(500)
+  description   String?   @db.Text
+  publish_doc_id BigInt   @db.UnsignedBigInt
+  created_at    DateTime? @db.Timestamp(0)
+  updated_at    DateTime? @db.Timestamp(0)
+  deleted_at    DateTime? @db.Timestamp(0)
+
+  publish_doc   publish_docs @relation(fields: [publish_doc_id], references: [id], onUpdate: Restrict, map: "publish_docs_contents_publish_doc_id_foreign")
+
+  @@index([publish_doc_id], map: "publish_docs_contents_publish_doc_id_foreign")
+  @@map("publish_docs_contents")
 }
