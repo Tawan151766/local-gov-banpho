@@ -7,10 +7,12 @@ export default withAuth(
   {
     callbacks: {
       authorized: ({ token, req }) => {
-        // Check if user is authenticated for admin routes
+        // Block level 0 from /admin (except /admin/login)
         if (req.nextUrl.pathname.startsWith('/admin') && 
             !req.nextUrl.pathname.startsWith('/admin/login')) {
-          return !!token;
+          if (!token) return false;
+          if (token.level === 0 || token.level === "0") return false;
+          return true;
         }
         return true;
       },
