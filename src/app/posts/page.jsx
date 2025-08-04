@@ -1,35 +1,35 @@
-'use client';
+"use client";
 
-import React, { useState, useEffect } from 'react';
-import { 
-  Card, 
-  Row, 
-  Col, 
-  Typography, 
-  Image, 
-  Tag, 
-  Button, 
-  Modal, 
+import React, { useState, useEffect } from "react";
+import {
+  Card,
+  Row,
+  Col,
+  Typography,
+  Image,
+  Tag,
+  Button,
+  Modal,
   Pagination,
   Select,
   Input,
   Space,
   Divider,
-  Empty
-} from 'antd';
+  Empty,
+} from "antd";
 import {
   EyeOutlined,
   CalendarOutlined,
   FileImageOutlined,
   VideoCameraOutlined,
   FilePdfOutlined,
-  SearchOutlined
-} from '@ant-design/icons';
-import { postTypesAPI, postDetailsAPI } from '@/lib/api';
-import dayjs from 'dayjs';
-import 'dayjs/locale/th';
+  SearchOutlined,
+} from "@ant-design/icons";
+import { postTypesAPI, postDetailsAPI } from "@/lib/api";
+import dayjs from "dayjs";
+import "dayjs/locale/th";
 
-dayjs.locale('th');
+dayjs.locale("th");
 
 const { Title, Text, Paragraph } = Typography;
 const { Search } = Input;
@@ -40,16 +40,16 @@ export default function PostsPage() {
   const [loading, setLoading] = useState(false);
   const [selectedPost, setSelectedPost] = useState(null);
   const [modalVisible, setModalVisible] = useState(false);
-  
+
   // Filter states
   const [selectedType, setSelectedType] = useState(null);
-  const [searchText, setSearchText] = useState('');
-  
+  const [searchText, setSearchText] = useState("");
+
   // Pagination
   const [pagination, setPagination] = useState({
     current: 1,
     pageSize: 12,
-    total: 0
+    total: 0,
   });
 
   useEffect(() => {
@@ -64,7 +64,7 @@ export default function PostsPage() {
         setPostTypes(response.data);
       }
     } catch (error) {
-      console.error('Error fetching post types:', error);
+      console.error("Error fetching post types:", error);
     }
   };
 
@@ -76,18 +76,18 @@ export default function PostsPage() {
         limit: pagination.pageSize,
         search: searchText,
         postTypeId: selectedType,
-        withMedia: true
+        withMedia: true,
       });
 
       if (response.success) {
         setPosts(response.data);
-        setPagination(prev => ({
+        setPagination((prev) => ({
           ...prev,
-          total: response.pagination.total
+          total: response.pagination.total,
         }));
       }
     } catch (error) {
-      console.error('Error fetching posts:', error);
+      console.error("Error fetching posts:", error);
     } finally {
       setLoading(false);
     }
@@ -100,25 +100,27 @@ export default function PostsPage() {
 
   const handleSearch = (value) => {
     setSearchText(value);
-    setPagination(prev => ({ ...prev, current: 1 }));
+    setPagination((prev) => ({ ...prev, current: 1 }));
   };
 
   const handleTypeFilter = (value) => {
     setSelectedType(value);
-    setPagination(prev => ({ ...prev, current: 1 }));
+    setPagination((prev) => ({ ...prev, current: 1 }));
   };
 
   const handlePageChange = (page, pageSize) => {
-    setPagination(prev => ({
+    setPagination((prev) => ({
       ...prev,
       current: page,
-      pageSize
+      pageSize,
     }));
   };
 
   const truncateText = (text, maxLength = 150) => {
-    if (!text) return '';
-    return text.length > maxLength ? text.substring(0, maxLength) + '...' : text;
+    if (!text) return "";
+    return text.length > maxLength
+      ? text.substring(0, maxLength) + "..."
+      : text;
   };
 
   const getMediaCount = (post) => {
@@ -151,7 +153,7 @@ export default function PostsPage() {
                 placeholder="ค้นหาข่าวสาร..."
                 allowClear
                 onSearch={handleSearch}
-                style={{ width: '100%' }}
+                style={{ width: "100%" }}
                 enterButton={<SearchOutlined />}
               />
             </Col>
@@ -159,11 +161,11 @@ export default function PostsPage() {
               <Select
                 placeholder="เลือกประเภทข่าว"
                 allowClear
-                style={{ width: '100%' }}
+                style={{ width: "100%" }}
                 onChange={handleTypeFilter}
                 value={selectedType}
               >
-                {postTypes.map(type => (
+                {postTypes.map((type) => (
                   <Select.Option key={type.id} value={type.id}>
                     {type.type_name}
                   </Select.Option>
@@ -171,9 +173,7 @@ export default function PostsPage() {
               </Select>
             </Col>
             <Col xs={24} sm={24} md={8}>
-              <Text type="secondary">
-                พบ {pagination.total} รายการ
-              </Text>
+              <Text type="secondary">พบ {pagination.total} รายการ</Text>
             </Col>
           </Row>
         </Card>
@@ -181,7 +181,7 @@ export default function PostsPage() {
         {/* Posts Grid */}
         {posts.length === 0 ? (
           <Card>
-            <Empty 
+            <Empty
               description="ไม่พบข่าวสารที่ค้นหา"
               image={Empty.PRESENTED_IMAGE_SIMPLE}
             />
@@ -189,10 +189,12 @@ export default function PostsPage() {
         ) : (
           <>
             <Row gutter={[16, 16]}>
-              {posts.map(post => {
-                const { photoCount, videoCount, pdfCount } = getMediaCount(post);
-                const hasMedia = photoCount > 0 || videoCount > 0 || pdfCount > 0;
-                
+              {posts.map((post) => {
+                const { photoCount, videoCount, pdfCount } =
+                  getMediaCount(post);
+                const hasMedia =
+                  photoCount > 0 || videoCount > 0 || pdfCount > 0;
+
                 return (
                   <Col xs={24} sm={12} lg={8} xl={6} key={post.id}>
                     <Card
@@ -200,55 +202,62 @@ export default function PostsPage() {
                       loading={loading}
                       cover={
                         post.photos && post.photos.length > 0 ? (
-                          <div style={{ height: 200, overflow: 'hidden' }}>
+                          <div style={{ height: 200, overflow: "hidden" }}>
                             <Image
                               alt={post.title_name}
-                              src={`https://banpho.sosmartsolution.com/storage/${post.photos[0].post_photo_file}`}
-                              style={{ 
-                                width: '100%', 
-                                height: '100%', 
-                                objectFit: 'cover' 
+                              src={`https://banpho.sosmartsolution.com${post.photos[0].post_photo_file}`}
+                              style={{
+                                width: "100%",
+                                height: "100%",
+                                objectFit: "cover",
                               }}
                               preview={false}
                             />
                           </div>
                         ) : (
-                          <div 
-                            style={{ 
-                              height: 200, 
-                              background: 'linear-gradient(135deg, #667eea 0%, #764ba2 100%)',
-                              display: 'flex',
-                              alignItems: 'center',
-                              justifyContent: 'center',
-                              color: 'white'
+                          <div
+                            style={{
+                              height: 200,
+                              background:
+                                "linear-gradient(135deg, #667eea 0%, #764ba2 100%)",
+                              display: "flex",
+                              alignItems: "center",
+                              justifyContent: "center",
+                              color: "white",
                             }}
                           >
-                            <FileImageOutlined style={{ fontSize: 48, opacity: 0.5 }} />
+                            <FileImageOutlined
+                              style={{ fontSize: 48, opacity: 0.5 }}
+                            />
                           </div>
                         )
                       }
                       actions={[
-                        <Button 
+                        <Button
                           key="view"
-                          type="text" 
+                          type="text"
                           icon={<EyeOutlined />}
                           onClick={() => handleViewPost(post)}
                         >
                           อ่านเพิ่มเติม
-                        </Button>
+                        </Button>,
                       ]}
                     >
                       <Card.Meta
                         title={
                           <div>
-                            <Title level={5} ellipsis={{ rows: 2 }} className="mb-2">
+                            <Title
+                              level={5}
+                              ellipsis={{ rows: 2 }}
+                              className="mb-2"
+                            >
                               {post.title_name}
                             </Title>
                             <Space size="small" wrap>
                               <Tag color="blue">{post.type_name}</Tag>
                               {post.date && (
                                 <Tag icon={<CalendarOutlined />} color="green">
-                                  {dayjs(post.date).format('DD MMM YYYY')}
+                                  {dayjs(post.date).format("DD MMM YYYY")}
                                 </Tag>
                               )}
                             </Space>
@@ -261,28 +270,40 @@ export default function PostsPage() {
                                 {post.topic_name}
                               </Text>
                             )}
-                            <Paragraph 
-                              ellipsis={{ rows: 3 }} 
+                            <Paragraph
+                              ellipsis={{ rows: 3 }}
                               className="mb-2"
                               style={{ minHeight: 60 }}
                             >
-                              {post.details || 'ไม่มีรายละเอียด'}
+                              {post.details || "ไม่มีรายละเอียด"}
                             </Paragraph>
-                            
+
                             {hasMedia && (
                               <Space size="small">
                                 {photoCount > 0 && (
-                                  <Tag icon={<FileImageOutlined />} color="green" size="small">
+                                  <Tag
+                                    icon={<FileImageOutlined />}
+                                    color="green"
+                                    size="small"
+                                  >
                                     {photoCount}
                                   </Tag>
                                 )}
                                 {videoCount > 0 && (
-                                  <Tag icon={<VideoCameraOutlined />} color="red" size="small">
+                                  <Tag
+                                    icon={<VideoCameraOutlined />}
+                                    color="red"
+                                    size="small"
+                                  >
                                     {videoCount}
                                   </Tag>
                                 )}
                                 {pdfCount > 0 && (
-                                  <Tag icon={<FilePdfOutlined />} color="orange" size="small">
+                                  <Tag
+                                    icon={<FilePdfOutlined />}
+                                    color="orange"
+                                    size="small"
+                                  >
                                     {pdfCount}
                                   </Tag>
                                 )}
@@ -306,10 +327,10 @@ export default function PostsPage() {
                 onChange={handlePageChange}
                 showSizeChanger
                 showQuickJumper
-                showTotal={(total, range) => 
+                showTotal={(total, range) =>
                   `${range[0]}-${range[1]} จาก ${total} รายการ`
                 }
-                pageSizeOptions={['12', '24', '48']}
+                pageSizeOptions={["12", "24", "48"]}
               />
             </div>
           </>
@@ -332,7 +353,7 @@ export default function PostsPage() {
               <Tag color="blue">{selectedPost.type_name}</Tag>
               {selectedPost.date && (
                 <Tag icon={<CalendarOutlined />} color="green">
-                  {dayjs(selectedPost.date).format('DD MMMM YYYY')}
+                  {dayjs(selectedPost.date).format("DD MMMM YYYY")}
                 </Tag>
               )}
             </Space>
@@ -345,7 +366,13 @@ export default function PostsPage() {
 
             {selectedPost.details && (
               <div className="mb-6">
-                <Paragraph style={{ whiteSpace: 'pre-wrap', fontSize: 16, lineHeight: 1.8 }}>
+                <Paragraph
+                  style={{
+                    whiteSpace: "pre-wrap",
+                    fontSize: 16,
+                    lineHeight: 1.8,
+                  }}
+                >
                   {selectedPost.details}
                 </Paragraph>
               </div>
@@ -361,11 +388,11 @@ export default function PostsPage() {
                       <Image
                         src={`https://banpho.sosmartsolution.com/storage/${photo.post_photo_file}`}
                         alt={`Photo ${index + 1}`}
-                        style={{ 
-                          width: '100%', 
-                          height: 150, 
-                          objectFit: 'cover',
-                          borderRadius: 8
+                        style={{
+                          width: "100%",
+                          height: 150,
+                          objectFit: "cover",
+                          borderRadius: 8,
                         }}
                       />
                     </Col>
