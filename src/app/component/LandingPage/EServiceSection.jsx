@@ -3,7 +3,7 @@ import React from "react";
 export function EServiceTop() {
   return (
     <div className="relative w-full flex flex-col md:flex-row items-center justify-center px-2 md:px-8 py-4 gap-4">
-      {/* Left Card with image background */}
+      {/* Left Card with image background  */}
       <a href="/e-service">
   <div className="relative w-full min-w-[370px] md:w-[734px] aspect-[16/9] sm:aspect-[2/1] md:aspect-[734/332] max-w-[734px] rounded-[20px] md:rounded-[35px] shadow-lg overflow-hidden border-2 border-white/10">
     <img
