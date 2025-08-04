@@ -185,31 +185,31 @@ export default function ManagementSection() {
       position: 1,
       name: "ปลัดเทศบาล",
       title: "นายวรยศ กิจพานิช",
-      phone: "-",
+      phone: "099-261-2498",
     },
     {
       position: 2,
       name: "ผู้อำนวยการกองช่าง",
       title: "นายพิเชฐ สระอุบล",
-      phone: "-",
+      phone: "089-833-3244",
     },
     {
       position: 3,
       name: "หัวหน้าสำนักปลัด",
       title: "นางสาววิไลรัตน์ ขาวมรดก",
-      phone: "-",
+      phone: "092-459-0549",
     },
     {
       position: 4,
       name: "ผู้อำนวยการกองการศึกษา",
       title: "นายวรยศ กิจพานิช",
-      phone: "-",
+      phone: "099-261-2498",
     },
     {
       position: 5,
       name: "รองปลัดเทศบาล",
       title: "นายภูธัชป์   โพธ์สวัสดิ์",
-      phone: "-",
+      phone: "099-261-2498",
     },
   ];
 

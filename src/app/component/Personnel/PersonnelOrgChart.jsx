@@ -971,6 +971,9 @@ const PersonnelOrgChart = () => {
                   <p className="text-sm text-gray-600 leading-relaxed">
                     รองปลัดเทศบาล
                   </p>
+                  <p className="text-xs text-blue-600 font-medium">
+                    โทร: 098-532-3953
+                  </p>
                 </div>
               </div>
 
