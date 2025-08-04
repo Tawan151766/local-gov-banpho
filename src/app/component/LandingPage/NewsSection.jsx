@@ -76,7 +76,14 @@ export default function NewsSection() {
       const proxyUrl = "https://api.allorigins.win/raw?url=";
       const targetUrl = "http://www.thaigold.info/RealTimeDataV2/gtdata_.txt";
 
-      const response = await fetch(proxyUrl + encodeURIComponent(targetUrl));
+      const response = await fetch(proxyUrl + encodeURIComponent(targetUrl), {
+        method: "GET",
+        headers: {
+          Accept: "text/plain",
+        },
+        // Add timeout
+        signal: AbortSignal.timeout(10000), // 10 seconds timeout
+      });
 
       if (!response.ok) {
         throw new Error(`HTTP error! status: ${response.status}`);
@@ -101,14 +108,17 @@ export default function NewsSection() {
         throw new Error("ไม่พบข้อมูลราคาทอง");
       }
     } catch (err) {
-      console.error("Error fetching gold price:", err);
-      setError(err.message);
+      console.warn(
+        "Gold price API unavailable, using fallback data:",
+        err.message
+      );
+      setError(null); // Don't show error to user
       // Set mock data as fallback
       setGoldData({
         bid: "51400",
         ask: "51500",
         diff: "+250",
-        updateTime: null,
+        updateTime: "ข้อมูลสำรอง",
       });
     } finally {
       setLoading(false);
@@ -116,7 +126,24 @@ export default function NewsSection() {
   };
 
   useEffect(() => {
-    fetchGoldPrice();
+    // Wrap in try-catch to prevent unhandled promise rejection
+    const loadGoldPrice = async () => {
+      try {
+        await fetchGoldPrice();
+      } catch (error) {
+        console.warn("Failed to load gold price:", error);
+        // Set fallback data
+        setGoldData({
+          bid: "51400",
+          ask: "51500",
+          diff: "+250",
+          updateTime: "ข้อมูลสำรอง",
+        });
+        setLoading(false);
+      }
+    };
+
+    loadGoldPrice();
 
     // Set up auto-refresh every 5 minutes
     const interval = setInterval(fetchGoldPrice, 5 * 60 * 1000);
@@ -278,7 +305,7 @@ export default function NewsSection() {
                   </span>
                 </div>
                 <div className="text-xl sm:text-[34px] font-extrabold text-[#5c3b0c] tracking-wide -translate-x-4 sm:-translate-x-12 mr-4 sm:mr-12">
-                 {formatPrice(goldData?.bid)}
+                  {formatPrice(goldData?.bid)}
                 </div>
               </div>
               <div className="border-t border-dashed border-[#5c3b0c] my-1 sm:my-2"></div>
