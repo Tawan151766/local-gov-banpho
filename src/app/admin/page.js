@@ -15,6 +15,7 @@ import {
   MenuUnfoldOutlined,
   MenuFoldOutlined,
   SnippetsOutlined,
+  AccountBookOutlined,
 } from "@ant-design/icons";
 
 import StaffManagement from "./components/StaffManagement";
@@ -195,6 +196,11 @@ export default function AdminPage() {
           label: "ผลประกาศจัดซื้อจัดจ้าง",
         },
         {
+          key: "procurement-announcements-reports",
+          icon: <AccountBookOutlined />,
+          label: "รายงานผลการจัดซื้อจัดจ้าง",
+        },
+        {
           key: "announcement",
           icon: <SnippetsOutlined />,
           label: "ป้ายประกาศ",
@@ -268,6 +274,10 @@ export default function AdminPage() {
       case "procurement-announcements-results":
         return (
           <PostTypeManagement postType="procurement-announcements-results" />
+        );
+      case "procurement-announcements-reports":
+        return (
+          <PostTypeManagement postType="procurement-announcements-reports" />
         );
       case "announcement":
         return <PostTypeManagement postType="announcement" />;
