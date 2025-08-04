@@ -46,13 +46,11 @@ export default function ContentSections() {
           <div className="text-[#01385F] text-xl sm:text-2xl lg:text-3xl font-bold w-full text-left">
             วิดีทัศน์แนะนำ
           </div>
-          <button className="bg-[#01385f] text-white rounded-[12.5px] px-4 py-2 text-sm shadow-md hover:bg-[#01385f]/90 transition-colors duration-200 whitespace-nowrap ml-4">
-            เพิ่มเติม
-          </button>
         </div>
+        
 
         {/* Video Container */}
-        <div className="relative w-[952px] h-[482px] rounded-[29px] border-[6px] border-white shadow-[0_4px_4px_rgba(0,0,0,0.25)] overflow-hidden bg-[url('/image/your_image.png')] bg-[length:100%_131.545%] bg-no-repeat bg-[position:1.644px_-90.28px]">
+        <div className="relative w-full max-w-[952px] h-[230px] md:h-[482px] rounded-[29px] border-[6px] border-white shadow-[0_4px_4px_rgba(0,0,0,0.25)] overflow-hidden bg-[url('/image/your_image.png')] bg-[length:100%_131.545%] bg-no-repeat bg-[position:1.644px_-90.28px]">
           <iframe
             className="w-full h-full"
             src={`https://www.youtube.com/embed/${
@@ -64,9 +62,13 @@ export default function ContentSections() {
             allowFullScreen
           />
         </div>
+        
 
         {/* Navigation Controls */}
         <div className="flex items-center justify-center mt-6 space-x-6">
+
+          
+          
           {/* Previous Button */}
           <button
             onClick={handlePrev}
@@ -115,6 +117,10 @@ export default function ContentSections() {
                 strokeLinejoin="round"
               />
             </svg>
+          </button>
+
+          <button className="bg-[#01385f] text-white rounded-[12.5px] px-4 py-2 text-sm shadow-md hover:bg-[#01385f]/90 transition-colors duration-200 whitespace-nowrap ml-4 absolute right-18">
+            เพิ่มเติม
           </button>
         </div>
       </div>

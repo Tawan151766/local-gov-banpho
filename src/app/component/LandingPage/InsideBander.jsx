@@ -172,7 +172,7 @@ export default function InsideBander() {
                 <img
                   src="image/leaf_blue.png"
                   alt="Leaf"
-                  className="absolute w-[240px] h-auto left-[43%] -translate-x-1/2 top-[-61px] pointer-events-none"
+                  className="absolute w-[240px] h-auto md:left-[44%] left-[25%] -translate-x-1/2 top-[-61px] pointer-events-none"
                 />
               </div>
 
