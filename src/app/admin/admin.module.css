@@ -1,8 +1,30 @@
 /* Admin Panel Styles */
 
 .adminSidebar {
-  background: #fff;
+  background: #fff !important;
   box-shadow: 2px 0 8px rgba(0,0,0,0.1);
+  height: 100vh !important;
+  overflow-y: auto !important;
+  position: fixed !important;
+  left: 0 !important;
+  top: 0 !important;
+  bottom: 0 !important;
+  z-index: 1000 !important;
+}
+
+.adminSidebar .ant-layout-sider-children {
+  background: #fff !important;
+  height: 100% !important;
+}
+
+.adminSidebar .ant-menu {
+  background: #fff !important;
+}
+
+.adminSidebar .ant-layout-sider-trigger {
+  background: #fff !important;
+  color: #666 !important;
+  border-top: 1px solid #f0f0f0 !important;
 }
 
 .adminSidebar .ant-menu-item-group-title {
