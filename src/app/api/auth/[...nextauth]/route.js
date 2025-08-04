@@ -43,6 +43,7 @@ const handler = NextAuth({
             id: user.id.toString(),
             name: user.name,
             email: user.email,
+            level: user.level,
           };
         } catch (error) {
           console.error('Auth error:', error);
@@ -61,12 +62,14 @@ const handler = NextAuth({
     async jwt({ token, user }) {
       if (user) {
         token.id = user.id;
+        token.level = user.level;
       }
       return token;
     },
     async session({ session, token }) {
       if (token) {
         session.user.id = token.id;
+        session.user.level = token.level;
       }
       return session;
     },
