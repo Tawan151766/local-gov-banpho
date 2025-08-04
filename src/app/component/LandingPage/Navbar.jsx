@@ -6,7 +6,7 @@ export default function Navbar() {
   const [activeDropdown, setActiveDropdown] = useState(null);
   const navRef = useRef(null);
 
-  // ปิด dropdown เมื่อคลิกข้างนอก
+
   useEffect(() => {
     const handleClickOutside = (event) => {
       if (navRef.current && !navRef.current.contains(event.target)) {
@@ -24,7 +24,7 @@ export default function Navbar() {
 
   const closeDropdown = () => setActiveDropdown(null);
 
-  // ข้อมูลเมนู
+
   const basicInfoMenu = [
     { href: "/", label: "หน้าหลัก" },
     { href: "/history", label: "ประวัติความเป็นมา" },
@@ -59,12 +59,12 @@ export default function Navbar() {
 
   const citizenMenu = [
     { href: "/citizen/complaints", label: "รับเรื่องราวร้องทุกข์" },
-    { href: "/citizen/complaints-quality", label: "รับแจ้งร้องเรียนกวรคุณภาพดีมีชอบ" },
+    { href: "/citizen/complaints-quality", label: "รับแจ้งเรื่องราวร้องเรียนการทุจริตและประพฤติมิชอบ" },
     { href: "/citizen/work-manual", label: "คู่มือปฏิบัติงาน" },
     { href: "/citizen/service-standards", label: "คู่มือหรือมาตรฐานการให้บริการประชาชน" },
     { href: "/citizen/citizen-manual", label: "คู่มือประชาชน" },
     { href: "/citizen/documents", label: "เอกสารดาวน์โหลด/แบบฟอร์มต่างๆ" },
-    { href: "/citizen/work-process", label: "ลิดขั้นตอนการปฏิบัติงาน" },
+    { href: "/citizen/work-process", label: "ลดขั้นตอนการปฏิบัติงาน" },
   ];
 
   const languages = [
@@ -113,7 +113,7 @@ export default function Navbar() {
     </div>
   );
 
-  // Component สำหรับ Desktop Menu Item
+  // Component  Desktop Menu Item
   const MenuItem = ({ title, items, dropdownKey, width = "w-80" }) => (
     <div className="group relative">
       <div
@@ -136,7 +136,7 @@ export default function Navbar() {
     </div>
   );
 
-  // Component สำหรับ Mobile Menu Item
+  // Component  Mobile Menu Item
   const MobileMenuItem = ({ title, items, dropdownKey }) => {
     const isActive = activeDropdown === dropdownKey;
     
@@ -301,7 +301,7 @@ export default function Navbar() {
         <div className={`md:hidden fixed top-0 right-0 h-full w-80 max-w-[85vw] bg-gradient-to-b from-[#1cb5e0]/95 to-[#000046]/95 backdrop-blur-sm transform transition-transform duration-300 ease-in-out z-[9999] ${
           showMenu ? "translate-x-0" : "translate-x-full"
         }`}>
-          <div className="p-6 h-full overflow-y-auto">
+          <div className="p-6 h-full overflow-y-auto ">
             {/* Mobile Top Section */}
             <div className="mb-6 space-y-4">
               {/* Language Selector - แก้ไขให้มีขนาดที่เหมาะสม */}

@@ -111,7 +111,7 @@ export default function Footer() {
                       fill="white"
                     />
                   </svg>
-                  <span className="text-[13px] lg:text-[14px]">Email : office@banphocity.go.th</span>
+                  <span className="text-[13px] lg:text-[14px]">Email : admin@banphocity.go.th</span>
                 </div>
               </div>
             </div>
