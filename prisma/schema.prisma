@@ -1,3 +1,31 @@
+model external_works {
+  id          BigInt    @id @default(autoincrement()) @db.UnsignedBigInt
+  name        String    @db.VarChar(255)
+  description String?   @db.Text
+  work_date   DateTime? @db.Date
+  deleted_at  DateTime? @db.Timestamp(0)
+  created_at  DateTime? @default(now()) @db.Timestamp(0)
+  updated_at  DateTime? @db.Timestamp(0)
+
+  contents    external_works_contents[]
+
+  @@map("external_works")
+}
+
+model external_works_contents {
+  id              BigInt    @id @default(autoincrement()) @db.UnsignedBigInt
+  url             String    @db.VarChar(500)
+  description     String?   @db.Text
+  external_work_id BigInt   @db.UnsignedBigInt
+  created_at      DateTime? @db.Timestamp(0)
+  updated_at      DateTime? @db.Timestamp(0)
+  deleted_at      DateTime? @db.Timestamp(0)
+
+  external_work   external_works @relation(fields: [external_work_id], references: [id], onUpdate: Restrict, map: "external_works_contents_external_work_id_foreign")
+
+  @@index([external_work_id], map: "external_works_contents_external_work_id_foreign")
+  @@map("external_works_contents")
+}
 [model publish_docs {
   id           BigInt    @id @default(autoincrement()) @db.UnsignedBigInt
   link         String    @db.VarChar(500)
