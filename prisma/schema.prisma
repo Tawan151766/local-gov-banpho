@@ -54,7 +54,7 @@ model external_works_contents {
   @@index([external_work_id], map: "external_works_contents_external_work_id_foreign")
   @@map("external_works_contents")
 }
-[model publish_docs {
+model publish_docs {
   id           BigInt    @id @default(autoincrement()) @db.UnsignedBigInt
   link         String    @db.VarChar(500)
   description  String?   @db.Text
@@ -619,31 +619,3 @@ enum WasteCollectionRequestStatus {
 }
 
 
-model publish_docs {
-  id          BigInt    @id @default(autoincrement()) @db.UnsignedBigInt
-  name        String    @db.VarChar(255)
-  description String?   @db.Text
-  publish_date DateTime? @db.Date
-  deleted_at  DateTime? @db.Timestamp(0)
-  created_at  DateTime? @default(now()) @db.Timestamp(0)
-  updated_at  DateTime? @db.Timestamp(0)
-
-  contents    publish_docs_contents[]
-
-  @@map("publish_docs")
-}
-
-model publish_docs_contents {
-  id            BigInt    @id @default(autoincrement()) @db.UnsignedBigInt
-  url           String    @db.VarChar(500)
-  description   String?   @db.Text
-  publish_doc_id BigInt   @db.UnsignedBigInt
-  created_at    DateTime? @db.Timestamp(0)
-  updated_at    DateTime? @db.Timestamp(0)
-  deleted_at    DateTime? @db.Timestamp(0)
-
-  publish_doc   publish_docs @relation(fields: [publish_doc_id], references: [id], onUpdate: Restrict, map: "publish_docs_contents_publish_doc_id_foreign")
-
-  @@index([publish_doc_id], map: "publish_docs_contents_publish_doc_id_foreign")
-  @@map("publish_docs_contents")
-}
