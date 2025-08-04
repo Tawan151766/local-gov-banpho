@@ -21,6 +21,7 @@ import StaffManagement from "./components/StaffManagement";
 import PerformanceResultsManagement from "./components/PerformanceResultsManagement";
 import ItaManagement from "./components/ItaManagement";
 import PostTypeManagement from "./components/PostTypeManagement";
+import ProcurementPlanManagement from "./components/ProcurementPlanManagement";
 import LawsRegsManagement from "./components/LawsRegsManagement";
 import dynamic from "next/dynamic";
 
@@ -190,16 +191,6 @@ export default function AdminPage() {
           label: "ประกาศจัดซื้อจัดจ้าง",
         },
         {
-          key: "procurement-announcements-results",
-          icon: <FileTextOutlined />,
-          label: "ผลประกาศจัดซื้อจัดจ้าง",
-        },
-        {
-          key: "announcement",
-          icon: <SnippetsOutlined />,
-          label: "ป้ายประกาศ",
-        },
-        {
           key: "public-relations",
           icon: <CustomerServiceOutlined />,
           label: "ข่าวประชาสัมพันธ์",
@@ -265,16 +256,12 @@ export default function AdminPage() {
         return <PostTypeManagement postType="important-announcements" />;
       case "procurement-announcements":
         return <PostTypeManagement postType="procurement-announcements" />;
-      case "procurement-announcements-results":
-        return (
-          <PostTypeManagement postType="procurement-announcements-results" />
-        );
-      case "announcement":
-        return <PostTypeManagement postType="announcement" />;
       case "public-relations":
         return <PostTypeManagement postType="public-relations" />;
       case "activities":
         return <PostTypeManagement postType="activities" />;
+      case "procurement-plan":
+        return <ProcurementPlanManagement />;
       case "laws-regulations":
         return <LawsRegsManagement />;
       case "local-dev-plan":
