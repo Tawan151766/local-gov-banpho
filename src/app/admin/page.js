@@ -187,6 +187,11 @@ export default function AdminPage() {
           label: "ประกาศจัดซื้อจัดจ้าง",
         },
         {
+          key: "procurement-announcements-results",
+          icon: <FileTextOutlined />,
+          label: "ผลประกาศจัดซื้อจัดจ้าง",
+        },
+        {
           key: "public-relations",
           icon: <CustomerServiceOutlined />,
           label: "ข่าวประชาสัมพันธ์",
@@ -252,6 +257,10 @@ export default function AdminPage() {
         return <PostTypeManagement postType="important-announcements" />;
       case "procurement-announcements":
         return <PostTypeManagement postType="procurement-announcements" />;
+      case "procurement-announcements-results":
+        return (
+          <PostTypeManagement postType="procurement-announcements-results" />
+        );
       case "public-relations":
         return <PostTypeManagement postType="public-relations" />;
       case "activities":
