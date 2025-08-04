@@ -23,7 +23,6 @@ import {
   EyeOutlined,
   UploadOutlined,
   FileTextOutlined,
-  SnippetsOutlined,
 } from "@ant-design/icons";
 
 const { TextArea } = Input;
@@ -67,23 +66,11 @@ const POST_TYPES = {
     icon: <FileTextOutlined />,
     color: "cyan",
   },
-  "procurement-announcements-results": {
-    title: "ผลประกาศจัดซื้อจัดจ้าง",
-    type: "ผลประกาศจัดซื้อจัดจ้าง",
-    icon: <FileTextOutlined />,
-    color: "volcano",
-  },
   "public-relations": {
     title: "ข่าวประชาสัมพันธ์",
     type: "ข่าวประชาสัมพันธ์",
     icon: <FileTextOutlined />,
     color: "magenta",
-  },
-  announcement: {
-    title: "ป้ายประกาศ",
-    type: "ป้ายประกาศ",
-    icon: <SnippetsOutlined />,
-    color: "geekblue",
   },
   activities: {
     title: "กิจกรรม",
@@ -98,16 +85,6 @@ export default function PostTypeManagement({ postType }) {
 
   // Data states
   const [posts, setPosts] = useState([]);
-
-  // Add pagination state
-  const [pagination, setPagination] = useState({
-    current: 1,
-    pageSize: 10,
-    total: 0,
-    showSizeChanger: true,
-    showQuickJumper: true,
-    showTotal: (total, range) => `${range[0]}-${range[1]} จาก ${total} รายการ`,
-  });
 
   // Loading states
   const [loading, setLoading] = useState(false);
@@ -127,106 +104,56 @@ export default function PostTypeManagement({ postType }) {
 
   const config = POST_TYPES[postType] || POST_TYPES["general-news"];
 
-  const loadPosts = useCallback(
-    async (page = 1, pageSize = 10) => {
-      try {
-        setLoading(true);
-        console.log(
-          "Loading posts for type:",
-          config.type,
-          "Page:",
-          page,
-          "PageSize:",
-          pageSize
-        );
+  const loadPosts = useCallback(async () => {
+    try {
+      setLoading(true);
+      console.log("Loading posts for type:", config.type);
 
-        // Use pagination parameters from API
-        const encodedType = encodeURIComponent(config.type);
-        const response = await fetch(
-          `/api/posts?type=${encodedType}&page=${page}&limit=${pageSize}`,
-          {
-            method: "GET",
-            headers: {
-              "Content-Type": "application/json",
-            },
-          }
-        );
+      // Use direct fetch with proper URL encoding to avoid apiCall issues
+      const encodedType = encodeURIComponent(config.type);
+      const response = await fetch(`/api/posts?type=${encodedType}`, {
+        method: "GET",
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
 
-        if (!response.ok) {
-          throw new Error(`HTTP error! status: ${response.status}`);
-        }
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
 
-        const data = await response.json();
-        console.log("API response:", data);
+      const data = await response.json();
+      console.log("API response:", data);
 
-        if (data.success) {
-          setPosts(data.data || []);
-
-          // Update pagination state with data from API
-          setPagination((prev) => ({
-            ...prev,
-            current: data.pagination?.page || page,
-            pageSize: data.pagination?.limit || pageSize,
-            total: data.pagination?.total || 0,
-          }));
-
-          console.log(
-            "Posts loaded:",
-            data.data?.length || 0,
-            "Total:",
-            data.pagination?.total || 0
-          );
-        } else {
-          console.error("API error:", data.error);
-          notification.error({
-            message: "เกิดข้อผิดพลาด",
-            description: data.error || "เกิดข้อผิดพลาดในการโหลดข้อมูล",
-          });
-        }
-      } catch (error) {
-        console.error("Load posts error:", error);
+      if (data.success) {
+        setPosts(data.data || []);
+        console.log("Posts loaded:", data.data?.length || 0);
+      } else {
+        console.error("API error:", data.error);
         notification.error({
           message: "เกิดข้อผิดพลาด",
-          description: "เกิดข้อผิดพลาดในการโหลดข้อมูลร",
+          description: data.error || "เกิดข้อผิดพลาดในการโหลดข้อมูล",
         });
-      } finally {
-        setLoading(false);
       }
-    },
-    [config.type, notification]
-  );
+    } catch (error) {
+      console.error("Load posts error:", error);
+      notification.error({
+        message: "เกิดข้อผิดพลาด",
+        description: "เกิดข้อผิดพลาดในการโหลดข้อมูล",
+      });
+    } finally {
+      setLoading(false);
+    }
+  }, [config.type, notification]);
 
   useEffect(() => {
-    loadPosts(1, 10);
-
-    // Cleanup function to prevent memory leaks
-    return () => {
-      // Reset form when component unmounts
-      if (form) {
-        form.resetFields();
-      }
-    };
-  }, [loadPosts, form]);
-
-  // Handle table pagination change
-  const handleTableChange = (paginationConfig) => {
-    const { current, pageSize } = paginationConfig;
-    loadPosts(current, pageSize);
-  };
+    loadPosts();
+  }, [loadPosts]);
 
   const handleCreate = () => {
     setEditingRecord(null);
     setModalVisible(true);
-
-    // Safely reset form
-    try {
-      if (form) {
-        form.resetFields();
-      }
-    } catch (error) {
-      console.warn("Error resetting form:", error);
-    }
-
+    form.resetFields();
     setUploadedFilePath(null);
     setUploadedFileData(null);
   };
@@ -234,15 +161,7 @@ export default function PostTypeManagement({ postType }) {
   const handleEdit = (record) => {
     setEditingRecord(record);
     setModalVisible(true);
-
-    // Safely set form values
-    try {
-      if (form) {
-        form.setFieldsValue(record);
-      }
-    } catch (error) {
-      console.warn("Error setting form values:", error);
-    }
+    form.setFieldsValue(record);
 
     // Load existing file if any
     if (record.file_path) {
@@ -282,9 +201,7 @@ export default function PostTypeManagement({ postType }) {
           message: "สำเร็จ",
           description: "ลบโพสต์สำเร็จ",
         });
-
-        // Reload current page data
-        loadPosts(pagination.current, pagination.pageSize);
+        loadPosts();
       } else {
         notification.error({
           message: "เกิดข้อผิดพลาด",
@@ -346,21 +263,10 @@ export default function PostTypeManagement({ postType }) {
           description: editingRecord ? "แก้ไขโพสต์สำเร็จ" : "เพิ่มโพสต์สำเร็จ",
         });
         setModalVisible(false);
-
-        // Safely reset form
-        try {
-          if (form) {
-            form.resetFields();
-          }
-        } catch (error) {
-          console.warn("Error resetting form after submit:", error);
-        }
-
+        form.resetFields();
         setUploadedFilePath(null);
         setUploadedFileData(null);
-
-        // Reload current page data
-        loadPosts(pagination.current, pagination.pageSize);
+        loadPosts();
       } else {
         notification.error({
           message: "เกิดข้อผิดพลาด",
@@ -496,10 +402,7 @@ export default function PostTypeManagement({ postType }) {
       title: "ลำดับ",
       key: "index",
       width: 80,
-      render: (_, record, index) => {
-        // Calculate correct index based on pagination
-        return (pagination.current - 1) * pagination.pageSize + index + 1;
-      },
+      render: (_, record, index) => index + 1,
     },
     {
       title: "ชื่อโพสต์",
@@ -536,6 +439,7 @@ export default function PostTypeManagement({ postType }) {
         );
       },
     },
+
     {
       title: "การจัดการ",
       key: "actions",
@@ -588,7 +492,7 @@ export default function PostTypeManagement({ postType }) {
               {config.icon} {config.title}
             </Title>
             <Text type="secondary" style={{ fontSize: "14px" }}>
-              ทั้งหมด {pagination.total} รายการ
+              ทั้งหมด {posts.length} รายการ
             </Text>
           </div>
           <Button type="primary" icon={<PlusOutlined />} onClick={handleCreate}>
@@ -601,8 +505,13 @@ export default function PostTypeManagement({ postType }) {
           dataSource={posts}
           rowKey="id"
           loading={loading}
-          pagination={pagination}
-          onChange={handleTableChange}
+          pagination={{
+            pageSize: 10,
+            showSizeChanger: true,
+            showQuickJumper: true,
+            showTotal: (total, range) =>
+              `${range[0]}-${range[1]} จาก ${total} รายการ`,
+          }}
         />
       </Card>
 
