@@ -11,7 +11,6 @@ const dbConfig = {
 };
 
 // GET - ดึงรายการโพสต์
-// GET - ดึงรายการโพสต์
 export async function GET(request) {
   let connection;
   
@@ -69,7 +68,6 @@ export async function GET(request) {
     return NextResponse.json({
       success: true,
       data: items,
-      data: items,
       pagination: {
         page,
         limit,
@@ -93,13 +91,9 @@ export async function GET(request) {
     if (connection) {
       await connection.end();
     }
-    if (connection) {
-      await connection.end();
-    }
   }
 }
 
-// POST - สร้างโพสต์ใหม่
 // POST - สร้างโพสต์ใหม่
 export async function POST(request) {
   let connection;
@@ -214,9 +208,6 @@ export async function POST(request) {
       { status: 500 }
     );
   } finally {
-    if (connection) {
-      await connection.end();
-    }
     if (connection) {
       await connection.end();
     }
