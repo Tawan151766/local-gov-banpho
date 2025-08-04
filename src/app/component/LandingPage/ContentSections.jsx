@@ -5,15 +5,15 @@ export default function ContentSections() {
   const youtubeVideos = [
     {
       thumbnail: "/image/ktc_nakhon3.png", // เปลี่ยนเป็นภาพจริง
-      url: "https://www.youtube.com/watch?v=dQw4w9WgXcQ",
+      url: "https://www.youtube.com/watch?v=e76y6siOuVw",
     },
     {
       thumbnail: "/image/ktc_nakhon33.png",
-      url: "https://www.youtube.com/watch?v=ptnRdZeNr4g",
+      url: "https://www.youtube.com/watch?v=e76y6siOuVw",
     },
     {
       thumbnail: "/image/ktc_nakhon3.png",
-      url: "https://www.youtube.com/watch?v=dQw4w9WgXcQ",
+      url: "https://www.youtube.com/watch?v=e76y6siOuVw",
     },
   ];
 
