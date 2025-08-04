@@ -960,6 +960,9 @@ const manualAPI = {
   },
 };
 
+// Export apiCall function
+export { apiCall };
+
 // Export for easy use
 const apiExports = {
   qaAPI,
