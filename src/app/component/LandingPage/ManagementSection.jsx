@@ -1,4 +1,5 @@
 import React from "react";
+import Link from 'next/link';
 
 // Management Card Component
 const ManagementCard = ({
@@ -33,7 +34,8 @@ const ManagementCard = ({
           style={{
             height: "40%",
             background:
-              "linear-gradient(180deg, rgba(137, 215, 220, 0) 0%, #89D7DC 90.34%)",
+              "linear-gradient(180deg, rgba(222, 230, 226, 0) 0%, #DEE6E2 90.34%)",
+
           }}
         />
       </div>
@@ -54,7 +56,7 @@ const ManagementCard = ({
           </div>
         </div>
 
-        {/* แถบฟ้า ใส่เบอร์โทรตรงนี้ */}
+        {/* แถบฟ้า  */}
         <div className="h-[24px] sm:h-[32px] md:h-[36px] bg-[#01BDCC] rounded-b-[10px] sm:rounded-b-[17px] flex items-center justify-center px-1 sm:px-3">
           <span className="text-white text-[8px] sm:text-xs md:text-sm font-medium">
             {phone}
@@ -128,9 +130,10 @@ const ManagementCard2 = ({
   );
 };
 
-// Service Item Component
+
 const ServiceItem = ({ icon, title, path }) => {
   return (
+    <Link href={path}>
     <div className="bg-white rounded-lg p-3 sm:p-4 md:p-6 min-w-[160px] sm:min-w-[200px] md:min-w-[240px] max-w-[160px] sm:max-w-[200px] md:max-w-[240px] text-center hover:shadow-lg transition-shadow cursor-pointer flex flex-col items-center justify-center h-full">
       <img
         src={icon}
@@ -144,6 +147,7 @@ const ServiceItem = ({ icon, title, path }) => {
         {title}
       </a>
     </div>
+    </Link>
   );
 };
 
@@ -162,7 +166,7 @@ export default function ManagementSection() {
     {
       icon: "/image/manage_item3.png",
       title: "รับเเจ้งเรื่องราว ร้องทุกข์",
-      path: "/complaint",
+      path: "/citizen/complaints",
     },
     {
       icon: "/image/manage_item4.png",
@@ -181,81 +185,80 @@ export default function ManagementSection() {
     },
   ];
 
-  // ผู้บริหารส่วนราชการ - เพิ่ม imageSrc สำหรับแต่ละคน
+    
   const managementTeam1 = [
     {
       position: 1,
       name: "ปลัดเทศบาล",
       title: "นายวรยศ กิจพานิช",
       phone: "099-261-2498",
-      imageSrc: "/image/Avatar.png", // เปลี่ยนเป็นภาพของปลัดเทศบาล
+      imageSrc: "/image/Avatar.png", 
     },
     {
       position: 2,
       name: "ผู้อำนวยการกองช่าง",
       title: "นายพิเชฐ สระอุบล",
       phone: "089-833-3244",
-      imageSrc: "/image/Avatar.png", // เปลี่ยนเป็นภาพของผู้อำนวยการกองช่าง
+      imageSrc: "/image/Avatar.png", 
     },
     {
       position: 3,
       name: "หัวหน้าสำนักปลัด",
       title: "นางสาววิไลรัตน์ ขาวมรดก",
       phone: "092-459-0549",
-      imageSrc: "/image/Avatar.png", // เปลี่ยนเป็นภาพของหัวหน้าสำนักปลัด
+      imageSrc: "/image/Avatar.png", 
     },
     {
       position: 4,
       name: "ผู้อำนวยการกองการศึกษา",
       title: "นายวรยศ กิจพานิช",
       phone: "099-261-2498",
-      imageSrc: "/image/Avatar.png", // ใช้ภาพเดียวกันกับปลัดเทศบาล (คนเดียวกัน)
+      imageSrc: "/image/Avatar.png", 
     },
     {
       position: 5,
       name: "รองปลัดเทศบาล",
       title: "นายภูธัชป์   โพธ์สวัสดิ์",
       phone: "099-261-2498",
-      imageSrc: "/image/Avatar.png", // เปลี่ยนเป็นภาพของรองปลัดเทศบาล
+      imageSrc: "/image/Avatar.png", 
     },
   ];
 
-  // คณะผู้บริหาร - เพิ่ม imageSrc สำหรับแต่ละคน
   const managementTeam2 = [
     {
       position: 1,
       name: "ที่ปรึกษานายกเทศมนตรี",
       title: "นายประดิษฐ โรจนพร",
       phone: "081-686-8366",
-      imageSrc: "/image/Avatar.png", // เปลี่ยนเป็นภาพของที่ปรึกษา
+      imageSrc: "/image/Avatar.png",
     },
     {
       position: 2,
       name: "รองนายกเทศมนตรี",
       title: "นายไชยวัฒน์ ศรีวิไลสกุลวงศ์",
       phone: "081-910-0491",
-      imageSrc: "/image/Avatar.png", // เปลี่ยนเป็นภาพของรองนายกคนที่ 1
+      imageSrc: "/image/Avatar.png",
     },
     {
       position: 3,
       name: "นายกเทศมนตรี",
       title: "นายรุ่งโรจน์ กิติพิศาลกุล",
       phone: "063-795-2282",
-      imageSrc: "/image/Avatar.png", // เปลี่ยนเป็นภาพของนายกเทศมนตรี
+      imageSrc: "/image/Avatar.png",
     },
     {
       position: 4,
       name: "รองนายกเทศมนตรี",
       title: "นายจำเนียร  จันทร์สร้อย",
       phone: "086-733-5064",
-      imageSrc: "/image/Avatar.png", // เปลี่ยนเป็นภาพของรองนายกคนที่ 2
+      imageSrc: "/image/Avatar.png", 
     },
     {
       position: 5,
       name: "เลขานุการนายกเทศมนตรี",
       title: "นายณัฐพล วงศ์วัฒน์",
       phone: "-",
-      imageSrc: "/image/Avatar.png", // เปลี่ยนเป็นภาพของเลขานุการ
+      imageSrc: "/image/Avatar.png", 
     },
   ];
 
@@ -305,7 +308,7 @@ export default function ManagementSection() {
             {/* แถวบนสำหรับ mobile - นายกเทศมนตรีอยู่ตรงกลาง */}
             <div className="lg:hidden col-start-1 col-end-4 flex justify-center mb-2">
               <ManagementCard
-                {...managementTeam1[2]} // นายกเทศมนตรี (position 3)
+                {...managementTeam1[2]}   
                 textColor="text-[#01385F]"
               />
             </div>
@@ -313,19 +316,19 @@ export default function ManagementSection() {
             {/* แถวล่างสำหรับ mobile - 4 คนที่เหลือ */}
             <div className="lg:hidden col-start-1 col-end-4 grid grid-cols-2 gap-1 justify-items-center">
               <ManagementCard
-                {...managementTeam1[0]} // ปลัดเทศบาล
+                {...managementTeam1[0]} 
                 textColor="text-[#01385F]"
               />
               <ManagementCard
-                {...managementTeam1[1]} // ผู้อำนวยการกองช่าง
+                {...managementTeam1[1]} 
                 textColor="text-[#01385F]"
               />
               <ManagementCard
-                {...managementTeam1[3]} // ผู้อำนวยการกองการศึกษา
+                {...managementTeam1[3]} 
                 textColor="text-[#01385F]"
               />
               <ManagementCard
-                {...managementTeam1[4]} // รองปลัดเทศบาล
+                {...managementTeam1[4]} 
                 textColor="text-[#01385F]"
               />
             </div>
@@ -369,7 +372,7 @@ export default function ManagementSection() {
             {/* แถวบนสำหรับ mobile - นายกเทศมนตรีอยู่ตรงกลาง */}
             <div className="lg:hidden col-start-1 col-end-4 flex justify-center mb-2">
               <ManagementCard2
-                {...managementTeam2[2]} // นายกเทศมนตรี (position 3)
+                {...managementTeam2[2]}   
                 textColor="text-[#01385F]"
               />
             </div>
@@ -377,19 +380,19 @@ export default function ManagementSection() {
             {/* แถวล่างสำหรับ mobile - 4 คนที่เหลือ */}
             <div className="lg:hidden col-start-1 col-end-4 grid grid-cols-2 gap-1 justify-items-center">
               <ManagementCard2
-                {...managementTeam2[0]} // ที่ปรึกษา
+                {...managementTeam2[0]}   
                 textColor="text-[#01385F]"
               />
               <ManagementCard2
-                {...managementTeam2[1]} // รองนายกคนที่ 1
+                {...managementTeam2[1]} 
                 textColor="text-[#01385F]"
               />
               <ManagementCard2
-                {...managementTeam2[3]} // รองนายกคนที่ 2
+                {...managementTeam2[3]} 
                 textColor="text-[#01385F]"
               />
               <ManagementCard2
-                {...managementTeam2[4]} // เลขานุการ
+                {...managementTeam2[4]} 
                 textColor="text-[#01385F]"
               />
             </div>

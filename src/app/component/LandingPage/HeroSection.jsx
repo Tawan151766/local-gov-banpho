@@ -27,7 +27,7 @@ export default function HeroSection({ ui }) {
           backgroundImage: `url('${slide}')`,
           backgroundSize: "100% 135%",
           backgroundRepeat: "no-repeat",
-          backgroundPosition: "center top", // หรือ center center ถ้าต้องการกลางแนวดิ่งด้วย
+          backgroundPosition: "center top",
         }}
       />
     ))}

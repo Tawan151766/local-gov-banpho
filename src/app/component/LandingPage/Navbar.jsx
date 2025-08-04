@@ -6,7 +6,7 @@ export default function Navbar() {
   const [activeDropdown, setActiveDropdown] = useState(null);
   const navRef = useRef(null);
 
-  // ปิด dropdown เมื่อคลิกข้างนอก
+
   useEffect(() => {
     const handleClickOutside = (event) => {
       if (navRef.current && !navRef.current.contains(event.target)) {
@@ -24,7 +24,7 @@ export default function Navbar() {
 
   const closeDropdown = () => setActiveDropdown(null);
 
-  // ข้อมูลเมนู
+
   const basicInfoMenu = [
     { href: "/", label: "หน้าหลัก" },
     { href: "/history", label: "ประวัติความเป็นมา" },
@@ -59,7 +59,7 @@ export default function Navbar() {
 
   const citizenMenu = [
     { href: "/citizen/complaints", label: "รับเรื่องราวร้องทุกข์" },
-    { href: "/citizen/complaints-quality", label: "รับแจ้งเรื่องร้องเรียนเกี่ยวกับการทุจริตและประพฤติมิชอบ" },
+    { href: "/citizen/complaints-quality", label: "รับแจ้งเรื่องราวร้องเรียนการทุจริตและประพฤติมิชอบ" },
     { href: "/citizen/work-manual", label: "คู่มือปฏิบัติงาน" },
     { href: "/citizen/service-standards", label: "คู่มือหรือมาตรฐานการให้บริการประชาชน" },
     { href: "/citizen/citizen-manual", label: "คู่มือประชาชน" },
@@ -113,7 +113,7 @@ export default function Navbar() {
     </div>
   );
 
-  // Component สำหรับ Desktop Menu Item
+  // Component  Desktop Menu Item
   const MenuItem = ({ title, items, dropdownKey, width = "w-80" }) => (
     <div className="group relative">
       <div
@@ -136,7 +136,7 @@ export default function Navbar() {
     </div>
   );
 
-  // Component สำหรับ Mobile Menu Item
+  // Component  Mobile Menu Item
   const MobileMenuItem = ({ title, items, dropdownKey }) => {
     const isActive = activeDropdown === dropdownKey;
     

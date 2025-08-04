@@ -676,7 +676,7 @@ export default function MunicipalSurveyForm() {
             <div className="flex items-center justify-center gap-4 text-sm text-gray-500 mt-3">
               <div className="flex items-center gap-1">
                 <Phone size={16} />
-                <span>โทร: 0XX-XXX-XXXX</span>
+                <span>โทร: 0-3858-7308</span>
               </div>
               <div className="flex items-center gap-1">
                 <Home size={16} />
