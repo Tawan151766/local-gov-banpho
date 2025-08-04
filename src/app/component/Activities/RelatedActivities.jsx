@@ -14,12 +14,12 @@ export default function RelatedActivities({ currentActivityId, limit = 3 }) {
     try {
       setLoading(true);
       const response = await fetch(`/api/posts?type=กิจกรรม&limit=${limit + 1}`);
-      
       if (response.ok) {
         const data = await response.json();
         if (data.success) {
-          // Filter out current activity and limit results
-          const filtered = data.posts
+          // ใช้ data.data และ fallback เป็น array
+          const activitiesArr = Array.isArray(data.data) ? data.data : [];
+          const filtered = activitiesArr
             .filter(activity => activity.id !== parseInt(currentActivityId))
             .slice(0, limit);
           setActivities(filtered);

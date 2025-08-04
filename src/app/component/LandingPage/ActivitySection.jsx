@@ -15,7 +15,7 @@ export default function ActivitySection() {
       setLoading(true);
       setError(null);
       const response = await fetch(
-        "/api/post-details?page=1&limit=4&postTypeId=2&withMedia=true",
+        "/api/post-details?page=1&limit=6&postTypeId=2&withMedia=true",
         {
           method: "GET",
           headers: {
@@ -213,7 +213,9 @@ export default function ActivitySection() {
                       </p>
                     </div>
                     <p className="text-sm sm:text-base md:text-lg lg:text-[18px] text-gray-600 mb-2 sm:mb-3 line-clamp-2">
-                      {truncateText(activity.details || "ไม่มีรายละเอียดเพิ่มเติม")}
+                      {truncateText(
+                        activity.details || "ไม่มีรายละเอียดเพิ่มเติม"
+                      )}
                     </p>
                   </div>
                   <span className="text-base sm:text-lg md:text-xl lg:text-[20px] text-[#1E1E1E] hover:text-blue-800 transition-colors duration-200">
@@ -224,6 +226,12 @@ export default function ActivitySection() {
             ))}
           </div>
         )}
+        <button
+          onClick={() => (window.location.href = "/activities")}
+          className="mt-4 px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+        >
+          ดูทั้งหมด
+        </button>
       </div>
     </section>
   );

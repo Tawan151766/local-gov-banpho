@@ -14,7 +14,7 @@ export default function NewsSection() {
     try {
       setLoading(true);
       const response = await fetch(
-        "/api/post-details?page=1&limit=4&postTypeId=1&withMedia=true"
+        "/api/post-details?page=1&limit=10&postTypeId=1&withMedia=true"
       );
 
       if (!response.ok) {
@@ -284,6 +284,14 @@ export default function NewsSection() {
                 </a>
               ))
             )}
+            <button
+              onClick={() => {
+                window.location.href = "/news";
+              }}
+              className="mt-4 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+            >
+              ดูเพิ่มเติม
+            </button>
           </div>
         </div>
 
