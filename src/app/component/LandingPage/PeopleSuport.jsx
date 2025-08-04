@@ -47,7 +47,7 @@ export default function PeopleSupport() {
       <img
         src="/image/people_support.png"
         alt="งานบริการประชาชน"
-        className="w-[240px] sm:w-[180px] md:w-[300px] object-contain mb-4"
+        className="w-[240px] sm:w-[180px] md:w-[500px] object-contain mb-4"
       />
       <div className="w-full max-w-6xl mx-auto grid grid-cols-2 xs:grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-x-6 gap-y-1 xs:gap-y-8 sm:gap-x-130 sm:gap-y-16 px-4 sm:px-10 justify-items-center md:justify-items-end">
         {cards.map((card, idx) => (
