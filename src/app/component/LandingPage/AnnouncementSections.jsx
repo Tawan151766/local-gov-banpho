@@ -69,15 +69,15 @@ export default function AnnouncementSections() {
     try {
       setLoading(true);
 
-      // First, get the post type ID for "ป้ายประกาศ"
+      // First, get the post type ID for "ผลประกาศจัดซื้อจัดจ้าง"
       const postTypesResponse = await postTypesAPI.getPostTypes({
         limit: 100,
-        search: "ป้ายประกาศ",
+        search: "ผลประกาศจัดซื้อจัดจ้าง",
       });
 
       if (postTypesResponse.success && postTypesResponse.data.length > 0) {
         const announcementTypeId = postTypesResponse.data.find(
-          (type) => type.type_name === "ป้ายประกาศ"
+          (type) => type.type_name === "ผลประกาศจัดซื้อจัดจ้าง"
         )?.id;
 
         if (announcementTypeId) {
@@ -155,6 +155,7 @@ export default function AnnouncementSections() {
   return (
     <div
       className="mb-15 relative w-screen h-screen shadow-[0_18.4px_18.4px_rgba(0,0,0,0.49)] overflow-hidden"
+      className="mb-15 relative w-screen h-screen shadow-[0_18.4px_18.4px_rgba(0,0,0,0.49)] overflow-hidden"
       style={{
         backgroundImage: `linear-gradient(180deg, rgba(239, 228, 212, 0.6) 0%, rgba(1, 189, 204, 0.6) 100%),
         url("image/vision_bg.png")`,
@@ -188,6 +189,7 @@ export default function AnnouncementSections() {
       <div className="relative z-10 w-full max-w-4xl mx-auto flex flex-col items-center px-2 sm:px-4 md:px-6 lg:px-8">
         {/* Header Section */}
         <div className="flex w-full max-w-2xl justify-between items-center mb-6 mt-8">
+          <div className="text-[#01385F] text-xl sm:text-2xl lg:text-3xl font-bold w-full text-left"></div>
           <div className="text-[#01385F] text-xl sm:text-2xl lg:text-3xl font-bold w-full text-left"></div>
           <Link href="/posts">
             <button className="bg-[#01385f] text-white rounded-[12.5px] px-4 py-2 text-sm shadow-md hover:bg-[#01385f]/90 transition-colors duration-200 whitespace-nowrap ml-4">
