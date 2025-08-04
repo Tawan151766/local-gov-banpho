@@ -59,6 +59,7 @@ import { useState, useEffect } from "react";
 import { useSession, signOut } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import LocalDevPlanManagement from "./components/LocalDevPlanManagement";
+import PublishDocManagement from "./components/PublishDocManagement";
 
 const { Title, Text } = Typography;
 const { Sider, Content } = Layout;
@@ -213,6 +214,11 @@ export default function AdminPage() {
           icon: <BookOutlined />,
           label: "กิจกรรม",
         },
+        {
+          key: "publish-docs",
+          icon: <FileTextOutlined />,
+          label: "เอกสารเผยแพร่",
+        },
       ],
     },
     {
@@ -283,6 +289,8 @@ export default function AdminPage() {
         return <PostTypeManagement postType="public-relations" />;
       case "activities":
         return <PostTypeManagement postType="activities" />;
+        case "publish-docs":
+          return <PublishDocManagement />;
       case "laws-regulations":
         return <LawsRegsManagement />;
       case "local-dev-plan":
