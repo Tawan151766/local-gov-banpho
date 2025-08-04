@@ -241,7 +241,7 @@ export default function ManagementSection() {
     {
       position: 5,
       name: "เลขานุการนายกเทศมนตรี",
-      title: "นายณัฐพล งศ์วัฒน์",
+      title: "นายณัฐพล วงศ์วัฒน์",
       phone: "-",
     },
   ];
