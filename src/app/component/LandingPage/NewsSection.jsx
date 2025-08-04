@@ -178,7 +178,7 @@ export default function NewsSection() {
             <img
               src="image/leaf.png"
               alt="Leaf"
-              className="absolute w-[120px] sm:w-[180px] lg:w-[240px] h-auto left-[40%] -translate-x-1/2 top-[-15px] pointer-events-none"
+              className="absolute w-[150px] sm:w-[180px] lg:w-[240px] h-auto left-[30%] md:left-[40%] -translate-x-1/2 md:top-[-15px] top-[-5px] pointer-events-none"
             />
           </div>
 

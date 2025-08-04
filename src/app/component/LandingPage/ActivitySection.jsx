@@ -137,7 +137,7 @@ export default function ActivitySection() {
           <img
             src="image/leaf.png"
             alt="Leaf"
-            className="absolute w-[240px] h-auto left-[48%] -translate-x-1/2 top-[-61px] pointer-events-none"
+            className="absolute w-[240px] h-auto md:left-[48%] left-[40%] -translate-x-1/2 top-[-61px] pointer-events-none"
           />
         </div>
 

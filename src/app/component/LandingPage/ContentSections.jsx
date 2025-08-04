@@ -52,7 +52,7 @@ export default function ContentSections() {
         </div>
 
         {/* Video Container */}
-        <div className="relative w-[952px] h-[482px] rounded-[29px] border-[6px] border-white shadow-[0_4px_4px_rgba(0,0,0,0.25)] overflow-hidden bg-[url('/image/your_image.png')] bg-[length:100%_131.545%] bg-no-repeat bg-[position:1.644px_-90.28px]">
+        <div className="relative w-full max-w-[952px] h-[230px] md:h-[482px] rounded-[29px] border-[6px] border-white shadow-[0_4px_4px_rgba(0,0,0,0.25)] overflow-hidden bg-[url('/image/your_image.png')] bg-[length:100%_131.545%] bg-no-repeat bg-[position:1.644px_-90.28px]">
           <iframe
             className="w-full h-full"
             src={`https://www.youtube.com/embed/${
