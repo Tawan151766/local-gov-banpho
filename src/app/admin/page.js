@@ -17,7 +17,7 @@ import {
 import StaffManagement from "./components/StaffManagement";
 import PerformanceResultsManagement from "./components/PerformanceResultsManagement";
 import ItaManagement from "./components/ItaManagement";
-import PostManagement from "./components/PostManagement";
+import PostTypeManagement from "./components/PostTypeManagement";
 import ProcurementPlanManagement from "./components/ProcurementPlanManagement";
 import LawsRegsManagement from "./components/LawsRegsManagement";
 import dynamic from "next/dynamic";
@@ -164,14 +164,44 @@ export default function AdminPage() {
       type: "group",
       children: [
         {
-          key: "post-management",
-          icon: <FileTextOutlined />,
-          label: "จัดการโพสต์",
-        },
-        {
           key: "manual-management",
           icon: <ReadOutlined />,
-          label: "จัดการคู่มือ",
+          label: "คู่มือ",
+        },
+        {
+          key: "general-news",
+          icon: <FileTextOutlined />,
+          label: "ข่าวสารทั่วไป",
+        },
+        {
+          key: "community-activities",
+          icon: <UserOutlined />,
+          label: "กิจกรรมชุมชน",
+        },
+        {
+          key: "development-projects",
+          icon: <BarChartOutlined />,
+          label: "โครงการพัฒนา",
+        },
+        {
+          key: "important-announcements",
+          icon: <SafetyOutlined />,
+          label: "ประกาศสำคัญ",
+        },
+        {
+          key: "procurement-announcements",
+          icon: <ShoppingCartOutlined />,
+          label: "ประกาศจัดซื้อจัดจ้าง",
+        },
+        {
+          key: "public-relations",
+          icon: <CustomerServiceOutlined />,
+          label: "ข่าวประชาสัมพันธ์",
+        },
+        {
+          key: "activities",
+          icon: <BookOutlined />,
+          label: "กิจกรรม",
         },
       ],
     },
@@ -217,10 +247,22 @@ export default function AdminPage() {
         return <PerformanceResultsManagement />;
       case "ita-management":
         return <ItaManagement />;
-      case "post-management":
-        return <PostManagement />;
       case "manual-management":
         return <ManualManagement />;
+      case "general-news":
+        return <PostTypeManagement postType="general-news" />;
+      case "community-activities":
+        return <PostTypeManagement postType="community-activities" />;
+      case "development-projects":
+        return <PostTypeManagement postType="development-projects" />;
+      case "important-announcements":
+        return <PostTypeManagement postType="important-announcements" />;
+      case "procurement-announcements":
+        return <PostTypeManagement postType="procurement-announcements" />;
+      case "public-relations":
+        return <PostTypeManagement postType="public-relations" />;
+      case "activities":
+        return <PostTypeManagement postType="activities" />;
       case "procurement-plan":
         return <ProcurementPlanManagement />;
       case "laws-regulations":
