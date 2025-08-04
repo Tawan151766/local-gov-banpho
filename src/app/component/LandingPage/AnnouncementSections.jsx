@@ -69,15 +69,15 @@ export default function AnnouncementSections() {
     try {
       setLoading(true);
 
-      // First, get the post type ID for "ผลประกาศจัดซื้อจัดจ้าง"
+      // First, get the post type ID for "ป้ายประกาศ"
       const postTypesResponse = await postTypesAPI.getPostTypes({
         limit: 100,
-        search: "ผลประกาศจัดซื้อจัดจ้าง",
+        search: "ป้ายประกาศ",
       });
 
       if (postTypesResponse.success && postTypesResponse.data.length > 0) {
         const announcementTypeId = postTypesResponse.data.find(
-          (type) => type.type_name === "ผลประกาศจัดซื้อจัดจ้าง"
+          (type) => type.type_name === "ป้ายประกาศ"
         )?.id;
 
         if (announcementTypeId) {
