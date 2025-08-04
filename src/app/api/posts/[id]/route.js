@@ -2,6 +2,42 @@ import { NextResponse } from 'next/server';
 import mysql from 'mysql2/promise';
 
 // Database connection
+// GET - ดึงโพสต์ตาม id
+export async function GET(request, { params }) {
+  let connection;
+  try {
+    const postId = params.id;
+    if (!postId) {
+      return NextResponse.json({ success: false, error: "Missing post id" }, { status: 400 });
+    }
+    connection = await mysql.createConnection(dbConfig);
+    // ดึงข้อมูลโพสต์
+    const [posts] = await connection.execute(
+      `SELECT pd.*, pt.type_name FROM post_details pd LEFT JOIN post_types pt ON pd.post_type_id = pt.id WHERE pd.id = ?`,
+      [postId]
+    );
+    if (posts.length === 0) {
+      return NextResponse.json({ success: false, error: "Post not found" }, { status: 404 });
+    }
+    const post = posts[0];
+    // ดึงไฟล์แนบ
+    const [photos] = await connection.execute(`SELECT * FROM post_photos WHERE post_detail_id = ?`, [postId]);
+    const [videos] = await connection.execute(`SELECT * FROM post_videos WHERE post_detail_id = ?`, [postId]);
+    const [pdfs] = await connection.execute(`SELECT * FROM post_pdfs WHERE post_detail_id = ?`, [postId]);
+    post.photos = photos;
+    post.videos = videos;
+    post.pdfs = pdfs;
+    post.photos_count = photos.length;
+    post.videos_count = videos.length;
+    post.pdfs_count = pdfs.length;
+    return NextResponse.json({ success: true, data: post });
+  } catch (error) {
+    console.error("Get post by id error:", error);
+    return NextResponse.json({ success: false, error: "Failed to get post", details: error.message }, { status: 500 });
+  } finally {
+    if (connection) await connection.end();
+  }
+}
 const dbConfig = {
   host: process.env.DB_HOST,
   port: process.env.DB_PORT ? parseInt(process.env.DB_PORT) : 3306,
