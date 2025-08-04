@@ -23,6 +23,7 @@ import {
   EyeOutlined,
   UploadOutlined,
   FileTextOutlined,
+  SnippetsOutlined,
 } from "@ant-design/icons";
 
 const { TextArea } = Input;
@@ -78,6 +79,12 @@ const POST_TYPES = {
     icon: <FileTextOutlined />,
     color: "magenta",
   },
+  announcement: {
+    title: "ป้ายประกาศ",
+    type: "ป้ายประกาศ",
+    icon: <SnippetsOutlined />,
+    color: "geekblue",
+  },
   activities: {
     title: "กิจกรรม",
     type: "กิจกรรม",
@@ -91,7 +98,7 @@ export default function PostTypeManagement({ postType }) {
 
   // Data states
   const [posts, setPosts] = useState([]);
-  
+
   // Add pagination state
   const [pagination, setPagination] = useState({
     current: 1,
@@ -120,59 +127,74 @@ export default function PostTypeManagement({ postType }) {
 
   const config = POST_TYPES[postType] || POST_TYPES["general-news"];
 
-  const loadPosts = useCallback(async (page = 1, pageSize = 10) => {
-    try {
-      setLoading(true);
-      console.log("Loading posts for type:", config.type, "Page:", page, "PageSize:", pageSize);
+  const loadPosts = useCallback(
+    async (page = 1, pageSize = 10) => {
+      try {
+        setLoading(true);
+        console.log(
+          "Loading posts for type:",
+          config.type,
+          "Page:",
+          page,
+          "PageSize:",
+          pageSize
+        );
 
-      // Use pagination parameters from API
-      const encodedType = encodeURIComponent(config.type);
-      const response = await fetch(
-        `/api/posts?type=${encodedType}&page=${page}&limit=${pageSize}`,
-        {
-          method: "GET",
-          headers: {
-            "Content-Type": "application/json",
-          },
+        // Use pagination parameters from API
+        const encodedType = encodeURIComponent(config.type);
+        const response = await fetch(
+          `/api/posts?type=${encodedType}&page=${page}&limit=${pageSize}`,
+          {
+            method: "GET",
+            headers: {
+              "Content-Type": "application/json",
+            },
+          }
+        );
+
+        if (!response.ok) {
+          throw new Error(`HTTP error! status: ${response.status}`);
         }
-      );
 
-      if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
-      }
+        const data = await response.json();
+        console.log("API response:", data);
 
-      const data = await response.json();
-      console.log("API response:", data);
+        if (data.success) {
+          setPosts(data.data || []);
 
-      if (data.success) {
-        setPosts(data.data || []);
-        
-        // Update pagination state with data from API
-        setPagination(prev => ({
-          ...prev,
-          current: data.pagination?.page || page,
-          pageSize: data.pagination?.limit || pageSize,
-          total: data.pagination?.total || 0,
-        }));
-        
-        console.log("Posts loaded:", data.data?.length || 0, "Total:", data.pagination?.total || 0);
-      } else {
-        console.error("API error:", data.error);
+          // Update pagination state with data from API
+          setPagination((prev) => ({
+            ...prev,
+            current: data.pagination?.page || page,
+            pageSize: data.pagination?.limit || pageSize,
+            total: data.pagination?.total || 0,
+          }));
+
+          console.log(
+            "Posts loaded:",
+            data.data?.length || 0,
+            "Total:",
+            data.pagination?.total || 0
+          );
+        } else {
+          console.error("API error:", data.error);
+          notification.error({
+            message: "เกิดข้อผิดพลาด",
+            description: data.error || "เกิดข้อผิดพลาดในการโหลดข้อมูล",
+          });
+        }
+      } catch (error) {
+        console.error("Load posts error:", error);
         notification.error({
           message: "เกิดข้อผิดพลาด",
-          description: data.error || "เกิดข้อผิดพลาดในการโหลดข้อมูล",
+          description: "เกิดข้อผิดพลาดในการโหลดข้อมูลร",
         });
+      } finally {
+        setLoading(false);
       }
-    } catch (error) {
-      console.error("Load posts error:", error);
-      notification.error({
-        message: "เกิดข้อผิดพลาด",
-        description: "เกิดข้อผิดพลาดในการโหลดข้อมูลร",
-      });
-    } finally {
-      setLoading(false);
-    }
-  }, [config.type, notification]);
+    },
+    [config.type, notification]
+  );
 
   useEffect(() => {
     loadPosts(1, 10);
@@ -260,7 +282,7 @@ export default function PostTypeManagement({ postType }) {
           message: "สำเร็จ",
           description: "ลบโพสต์สำเร็จ",
         });
-        
+
         // Reload current page data
         loadPosts(pagination.current, pagination.pageSize);
       } else {
@@ -336,7 +358,7 @@ export default function PostTypeManagement({ postType }) {
 
         setUploadedFilePath(null);
         setUploadedFileData(null);
-        
+
         // Reload current page data
         loadPosts(pagination.current, pagination.pageSize);
       } else {
