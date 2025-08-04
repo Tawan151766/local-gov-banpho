@@ -14,15 +14,12 @@ import {
   ReadOutlined,
   MenuUnfoldOutlined,
   MenuFoldOutlined,
-  SnippetsOutlined,
-  AccountBookOutlined,
 } from "@ant-design/icons";
 
 import StaffManagement from "./components/StaffManagement";
 import PerformanceResultsManagement from "./components/PerformanceResultsManagement";
 import ItaManagement from "./components/ItaManagement";
 import PostTypeManagement from "./components/PostTypeManagement";
-import ProcurementPlanManagement from "./components/ProcurementPlanManagement";
 import LawsRegsManagement from "./components/LawsRegsManagement";
 import dynamic from "next/dynamic";
 
@@ -261,8 +258,6 @@ export default function AdminPage() {
         return <PostTypeManagement postType="public-relations" />;
       case "activities":
         return <PostTypeManagement postType="activities" />;
-      case "procurement-plan":
-        return <ProcurementPlanManagement />;
       case "laws-regulations":
         return <LawsRegsManagement />;
       case "local-dev-plan":
