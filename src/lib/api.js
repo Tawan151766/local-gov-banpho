@@ -868,7 +868,7 @@ export const qaAPI = {
 };
 
 // Manual API functions
-const manualAPI = {
+export const manualAPI = {
   // Categories
   getCategories: async (params = {}) => {
     const searchParams = new URLSearchParams();
