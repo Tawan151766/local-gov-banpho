@@ -37,7 +37,13 @@ export default function AdminLogin() {
         message.error("อีเมลหรือรหัสผ่านไม่ถูกต้อง");
       } else {
         message.success("เข้าสู่ระบบสำเร็จ");
-        router.push("/admin");
+        // ดึง session เพื่อเช็ค users.level
+        const session = await getSession();
+        if (session?.user?.level === 0 || session?.user?.level === "0") {
+          router.push("/e-service/tracking");
+        } else {
+          router.push("/admin");
+        }
       }
     } catch (error) {
       message.error("เกิดข้อผิดพลาดในการเข้าสู่ระบบ");
