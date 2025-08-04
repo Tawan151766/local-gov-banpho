@@ -59,12 +59,12 @@ export default function Navbar() {
 
   const citizenMenu = [
     { href: "/citizen/complaints", label: "รับเรื่องราวร้องทุกข์" },
-    { href: "/citizen/complaints-quality", label: "รับแจ้งร้องเรียนกวรคุณภาพดีมีชอบ" },
+    { href: "/citizen/complaints-quality", label: "รับแจ้งเรื่องร้องเรียนเกี่ยวกับการทุจริตและประพฤติมิชอบ" },
     { href: "/citizen/work-manual", label: "คู่มือปฏิบัติงาน" },
     { href: "/citizen/service-standards", label: "คู่มือหรือมาตรฐานการให้บริการประชาชน" },
     { href: "/citizen/citizen-manual", label: "คู่มือประชาชน" },
     { href: "/citizen/documents", label: "เอกสารดาวน์โหลด/แบบฟอร์มต่างๆ" },
-    { href: "/citizen/work-process", label: "ลิดขั้นตอนการปฏิบัติงาน" },
+    { href: "/citizen/work-process", label: "ลดขั้นตอนการปฏิบัติงาน" },
   ];
 
   const languages = [

@@ -54,11 +54,11 @@ export default function HeroSection({ ui }) {
 
         {/* ✅ Banner แสดงตาม state */}
         {showBanner && (
-          <div className="fixed top-[360px] left-0 w-[275px] h-[349px] bg-white/95 rounded-[33px] shadow-[0_4px_20px_rgba(0,0,0,0.2)] z-[9999] flex flex-col overflow-hidden cursor-default transition-all duration-300 translate-y-[210px] ml-[25px] hover:shadow-[0_8px_30px_rgba(0,0,0,0.3)] hover:scale-[1.01]">
+          <div className="fixed md:top-[360px] top-[90px] left-0 md:w-[275px] w-[175px] md:h-[349px] h-[219px] bg-white/95 rounded-[33px] shadow-[0_4px_20px_rgba(0,0,0,0.2)] z-[9999] flex flex-col overflow-hidden cursor-default transition-all duration-300 translate-y-[210px] ml-[25px] hover:shadow-[0_8px_30px_rgba(0,0,0,0.3)] hover:scale-[1.01]">
             {/* ปุ่มปิด */}
             <button
               onClick={() => setShowBanner(false)} // ✅ ปิด banner เมื่อคลิก
-              className="absolute top-[15px] right-[15px] w-[30px] h-[30px] rounded-full bg-[rgba(206,222,240,0.8)] text-[18px] font-bold flex items-center justify-center z-20 cursor-pointer transition-all duration-300 hover:bg-[#4A90E2] hover:scale-110"
+              className="absolute top-[15px] right-[15px] md:w-[30px] md:h-[30px] w-[20px] h-[20px] rounded-full bg-[rgba(206,222,240,0.8)] text-[18px] font-bold flex items-center justify-center z-20 cursor-pointer transition-all duration-300 hover:bg-[#4A90E2] hover:scale-110"
             >
               ×
             </button>
@@ -76,7 +76,7 @@ export default function HeroSection({ ui }) {
 
         {/* Hero Text Box */}
         <div className="absolute bottom-0 left-1/2 -translate-x-1/2 w-full text-center px-4 py-5 bg-[#0000006B] shadow-[0_4px_15px_rgba(0,0,0,0.1)] z-10">
-          <p className="text-[18px] text-[#ffffff] leading-[1.6] m-0">
+          <p className="md:text-[18px] text-[12px] text-[#ffffff] leading-[1.6] m-0">
             เทศบาลตำบลบ้านโพธิ์ จัดให้มีบริการรับเเจ้งเรื่องราวร้องเรียน
             ร้องทุกข์ รับความคิดเห็นของประชาชน ผ่านทางตู้ไปรษณีย์ ปณ.9
           </p>

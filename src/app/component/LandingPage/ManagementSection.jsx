@@ -16,14 +16,15 @@ const ManagementCard = ({
     4: "text-sm sm:text-base",
     5: "text-xs sm:text-sm",
   };
+  
 
   return (
     <div className="flex flex-col items-center space-y-2 sm:space-y-4">
       {/* ภาพ */}
-      <div className="relative w-full max-w-[120px] sm:max-w-[150px] md:max-w-[180px] lg:max-w-[215px] h-[200px] sm:h-[250px] md:h-[300px] lg:h-[360px] overflow-hidden rounded-lg">
+      <div className="relative w-full max-w-[120px] sm:max-w-[150px] md:max-w-[180px] lg:max-w-[215px] h-[180px] sm:h-[250px] md:h-[300px] lg:h-[360px] overflow-hidden rounded-lg">
         <img
-          // src={imageSrc}
-          // alt={`${name} ${position}`}
+          src={imageSrc}
+          alt={`${name} ${title}`}
           className="w-full h-full object-cover"
           style={{ transform: "scaleX(-1)" }}
         />
@@ -37,25 +38,25 @@ const ManagementCard = ({
         />
       </div>
 
-      {/* ข้อมูل */}
-      <div className="w-full max-w-[120px] sm:max-w-[150px] md:max-w-[180px] lg:max-w-[215px] rounded-[10px] sm:rounded-[17px] shadow-[0_4px_4px_0_rgba(0,0,0,0.25)] overflow-hidden bg-white">
+      {/* ข้อมูล */}
+      <div className="w-full max-w-[180px] sm:max-w-[150px] md:max-w-[180px] lg:max-w-[215px] rounded-[10px] sm:rounded-[17px] shadow-[0_4px_4px_0_rgba(0,0,0,0.25)] overflow-hidden bg-white">
         {/* ส่วนชื่อและตำแหน่ง */}
-        <div className="h-[50px] sm:h-[55px] md:h-[60px] lg:h-[66px] flex flex-col justify-center items-center px-2 sm:px-3 text-center">
+        <div className="h-[55px] sm:h-[55px] md:h-[60px] lg:h-[66px] flex flex-col justify-center items-center px-1 sm:px-3 text-center">
           <div
             className={`font-bold ${textColor} ${textSizeClasses[position]} leading-tight`}
           >
             {name}
           </div>
           <div
-            className={`opacity-90 leading-relaxed ${textColor} text-[10px] sm:text-xs mt-1`}
+            className={`opacity-90 leading-tight ${textColor} text-[8px] sm:text-xs mt-0.5 sm:mt-1 px-1`}
           >
             {title}
           </div>
         </div>
 
         {/* แถบฟ้า ใส่เบอร์โทรตรงนี้ */}
-        <div className="h-[28px] sm:h-[32px] md:h-[36px] bg-[#01BDCC] rounded-b-[10px] sm:rounded-b-[17px] flex items-center justify-center px-2 sm:px-3">
-          <span className="text-white text-[10px] sm:text-xs md:text-sm font-medium">
+        <div className="h-[24px] sm:h-[32px] md:h-[36px] bg-[#01BDCC] rounded-b-[10px] sm:rounded-b-[17px] flex items-center justify-center px-1 sm:px-3">
+          <span className="text-white text-[8px] sm:text-xs md:text-sm font-medium">
             {phone}
           </span>
         </div>
@@ -83,10 +84,10 @@ const ManagementCard2 = ({
   return (
     <div className="flex flex-col items-center space-y-2 sm:space-y-4">
       {/* ภาพ */}
-      <div className="relative w-full max-w-[120px] sm:max-w-[150px] md:max-w-[180px] lg:max-w-[215px] h-[200px] sm:h-[250px] md:h-[300px] lg:h-[360px] overflow-hidden rounded-lg">
+      <div className="relative w-full max-w-[120px] sm:max-w-[150px] md:max-w-[180px] lg:max-w-[215px] h-[180px] sm:h-[250px] md:h-[300px] lg:h-[360px] overflow-hidden rounded-lg">
         <img
-          // src={imageSrc}
-          // alt={`${name} ${position}`}
+          src={imageSrc}
+          alt={`${name} ${title}`}
           className="w-full h-full object-cover"
           style={{ transform: "scaleX(-1)" }}
         />
@@ -101,24 +102,24 @@ const ManagementCard2 = ({
       </div>
 
       {/* ข้อมูล */}
-      <div className="w-full max-w-[120px] sm:max-w-[150px] md:max-w-[180px] lg:max-w-[215px] rounded-[10px] sm:rounded-[17px] shadow-[0_4px_4px_0_rgba(0,0,0,0.25)] overflow-hidden bg-white">
+      <div className="w-full max-w-[180px] sm:max-w-[150px] md:max-w-[180px] lg:max-w-[215px] rounded-[10px] sm:rounded-[17px] shadow-[0_4px_4px_0_rgba(0,0,0,0.25)] overflow-hidden bg-white">
         {/* ส่วนชื่อและตำแหน่ง */}
-        <div className="h-[50px] sm:h-[55px] md:h-[60px] lg:h-[66px] flex flex-col justify-center items-center px-2 sm:px-3 text-center">
+        <div className="h-[55px] sm:h-[55px] md:h-[60px] lg:h-[66px] flex flex-col justify-center items-center px-1 sm:px-3 text-center">
           <div
             className={`font-bold ${textColor} ${textSizeClasses[position]} leading-tight`}
           >
             {name}
           </div>
           <div
-            className={`opacity-90 leading-relaxed ${textColor} text-[10px] sm:text-xs mt-1`}
+            className={`opacity-90 leading-tight ${textColor} text-[8px] sm:text-xs mt-0.5 sm:mt-1 px-1`}
           >
             {title}
           </div>
         </div>
 
         {/* แถบฟ้า ใส่เบอร์โทรตรงนี้ */}
-        <div className="h-[28px] sm:h-[32px] md:h-[36px] bg-[#01BDCC] rounded-b-[10px] sm:rounded-b-[17px] flex items-center justify-center px-2 sm:px-3">
-          <span className="text-white text-[10px] sm:text-xs md:text-sm font-medium">
+        <div className="h-[24px] sm:h-[32px] md:h-[36px] bg-[#01BDCC] rounded-b-[10px] sm:rounded-b-[17px] flex items-center justify-center px-1 sm:px-3">
+          <span className="text-white text-[8px] sm:text-xs md:text-sm font-medium">
             {phone}
           </span>
         </div>
@@ -180,69 +181,81 @@ export default function ManagementSection() {
     },
   ];
 
+  // ผู้บริหารส่วนราชการ - เพิ่ม imageSrc สำหรับแต่ละคน
   const managementTeam1 = [
     {
       position: 1,
       name: "ปลัดเทศบาล",
       title: "นายวรยศ กิจพานิช",
       phone: "099-261-2498",
+      imageSrc: "/image/Avatar.png", // เปลี่ยนเป็นภาพของปลัดเทศบาล
     },
     {
       position: 2,
       name: "ผู้อำนวยการกองช่าง",
       title: "นายพิเชฐ สระอุบล",
       phone: "089-833-3244",
+      imageSrc: "/image/Avatar.png", // เปลี่ยนเป็นภาพของผู้อำนวยการกองช่าง
     },
     {
       position: 3,
       name: "หัวหน้าสำนักปลัด",
       title: "นางสาววิไลรัตน์ ขาวมรดก",
       phone: "092-459-0549",
+      imageSrc: "/image/Avatar.png", // เปลี่ยนเป็นภาพของหัวหน้าสำนักปลัด
     },
     {
       position: 4,
       name: "ผู้อำนวยการกองการศึกษา",
       title: "นายวรยศ กิจพานิช",
       phone: "099-261-2498",
+      imageSrc: "/image/Avatar.png", // ใช้ภาพเดียวกันกับปลัดเทศบาล (คนเดียวกัน)
     },
     {
       position: 5,
       name: "รองปลัดเทศบาล",
       title: "นายภูธัชป์   โพธ์สวัสดิ์",
       phone: "099-261-2498",
+      imageSrc: "/image/Avatar.png", // เปลี่ยนเป็นภาพของรองปลัดเทศบาล
     },
   ];
 
+  // คณะผู้บริหาร - เพิ่ม imageSrc สำหรับแต่ละคน
   const managementTeam2 = [
     {
       position: 1,
       name: "ที่ปรึกษานายกเทศมนตรี",
       title: "นายประดิษฐ โรจนพร",
       phone: "081-686-8366",
+      imageSrc: "/image/Avatar.png", // เปลี่ยนเป็นภาพของที่ปรึกษา
     },
     {
       position: 2,
       name: "รองนายกเทศมนตรี",
       title: "นายไชยวัฒน์ ศรีวิไลสกุลวงศ์",
       phone: "081-910-0491",
+      imageSrc: "/image/Avatar.png", // เปลี่ยนเป็นภาพของรองนายกคนที่ 1
     },
     {
       position: 3,
       name: "นายกเทศมนตรี",
       title: "นายรุ่งโรจน์ กิติพิศาลกุล",
       phone: "063-795-2282",
+      imageSrc: "/image/Avatar.png", // เปลี่ยนเป็นภาพของนายกเทศมนตรี
     },
     {
       position: 4,
       name: "รองนายกเทศมนตรี",
       title: "นายจำเนียร  จันทร์สร้อย",
       phone: "086-733-5064",
+      imageSrc: "/image/Avatar.png", // เปลี่ยนเป็นภาพของรองนายกคนที่ 2
     },
     {
       position: 5,
       name: "เลขานุการนายกเทศมนตรี",
       title: "นายณัฐพล วงศ์วัฒน์",
       phone: "-",
+      imageSrc: "/image/Avatar.png", // เปลี่ยนเป็นภาพของเลขานุการ
     },
   ];
 
@@ -285,15 +298,48 @@ export default function ManagementSection() {
           คณะผู้บริหาร
         </h2>
 
-        {/* Management Team 1 - Responsive Grid */}
-        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-2 sm:gap-4 md:gap-6 lg:gap-8 w-full mx-auto justify-center items-end px-2 sm:px-4">
-          {managementTeam1.map((member, index) => (
-            <ManagementCard
-              key={index}
-              {...member}
-              textColor="text-[#01385F]"
-            />
-          ))}
+        {/* Management Team 1 - Responsive Grid with better mobile layout */}
+        <div className="grid grid-cols-3 sm:grid-cols-3 lg:grid-cols-5 gap-1 sm:gap-4 md:gap-6 lg:gap-8 w-full mx-auto justify-center items-end px-1 sm:px-4">
+          {/* จัดเรียงใหม่สำหรับ mobile: แถวบน 2 คน แถวล่าง 3 คน */}
+          <div className="lg:contents grid grid-cols-3 col-span-3 lg:col-span-5 gap-1 sm:gap-4 md:gap-6 lg:gap-8">
+            {/* แถวบนสำหรับ mobile - นายกเทศมนตรีอยู่ตรงกลาง */}
+            <div className="lg:hidden col-start-1 col-end-4 flex justify-center mb-2">
+              <ManagementCard
+                {...managementTeam1[2]} // นายกเทศมนตรี (position 3)
+                textColor="text-[#01385F]"
+              />
+            </div>
+            
+            {/* แถวล่างสำหรับ mobile - 4 คนที่เหลือ */}
+            <div className="lg:hidden col-start-1 col-end-4 grid grid-cols-2 gap-1 justify-items-center">
+              <ManagementCard
+                {...managementTeam1[0]} // ปลัดเทศบาล
+                textColor="text-[#01385F]"
+              />
+              <ManagementCard
+                {...managementTeam1[1]} // ผู้อำนวยการกองช่าง
+                textColor="text-[#01385F]"
+              />
+              <ManagementCard
+                {...managementTeam1[3]} // ผู้อำนวยการกองการศึกษา
+                textColor="text-[#01385F]"
+              />
+              <ManagementCard
+                {...managementTeam1[4]} // รองปลัดเทศบาล
+                textColor="text-[#01385F]"
+              />
+            </div>
+
+            {/* Layout สำหรับ desktop (lg ขึ้นไป) */}
+            {managementTeam1.map((member, index) => (
+              <div key={index} className="hidden lg:block">
+                <ManagementCard
+                  {...member}
+                  textColor="text-[#01385F]"
+                />
+              </div>
+            ))}
+          </div>
         </div>
 
         {/* Services Section */}
@@ -316,15 +362,48 @@ export default function ManagementSection() {
           ผู้บริหารส่วนราชการ
         </h2>
 
-        {/* Management Team 2 - Responsive Grid */}
-        <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-2 sm:gap-4 md:gap-6 lg:gap-8 w-full mx-auto justify-center items-end px-2 sm:px-4 pb-8 sm:pb-12 md:pb-16">
-          {managementTeam2.map((member, index) => (
-            <ManagementCard2
-              key={index}
-              {...member}
-              textColor="text-[#01385F]"
-            />
-          ))}
+        {/* Management Team 2 - Responsive Grid with better mobile layout */}
+        <div className="grid grid-cols-3 sm:grid-cols-3 lg:grid-cols-5 gap-1 sm:gap-4 md:gap-6 lg:gap-8 w-full mx-auto justify-center items-end px-1 sm:px-4 pb-8 sm:pb-12 md:pb-16">
+          {/* จัดเรียงใหม่สำหรับ mobile: แถวบน 2 คน แถวล่าง 3 คน */}
+          <div className="lg:contents grid grid-cols-3 col-span-3 lg:col-span-5 gap-1 sm:gap-4 md:gap-6 lg:gap-8">
+            {/* แถวบนสำหรับ mobile - นายกเทศมนตรีอยู่ตรงกลาง */}
+            <div className="lg:hidden col-start-1 col-end-4 flex justify-center mb-2">
+              <ManagementCard2
+                {...managementTeam2[2]} // นายกเทศมนตรี (position 3)
+                textColor="text-[#01385F]"
+              />
+            </div>
+            
+            {/* แถวล่างสำหรับ mobile - 4 คนที่เหลือ */}
+            <div className="lg:hidden col-start-1 col-end-4 grid grid-cols-2 gap-1 justify-items-center">
+              <ManagementCard2
+                {...managementTeam2[0]} // ที่ปรึกษา
+                textColor="text-[#01385F]"
+              />
+              <ManagementCard2
+                {...managementTeam2[1]} // รองนายกคนที่ 1
+                textColor="text-[#01385F]"
+              />
+              <ManagementCard2
+                {...managementTeam2[3]} // รองนายกคนที่ 2
+                textColor="text-[#01385F]"
+              />
+              <ManagementCard2
+                {...managementTeam2[4]} // เลขานุการ
+                textColor="text-[#01385F]"
+              />
+            </div>
+
+            {/* Layout สำหรับ desktop (lg ขึ้นไป) */}
+            {managementTeam2.map((member, index) => (
+              <div key={index} className="hidden lg:block">
+                <ManagementCard2
+                  {...member}
+                  textColor="text-[#01385F]"
+                />
+              </div>
+            ))}
+          </div>
         </div>
       </div>
     </section>
