@@ -223,6 +223,8 @@ export default function AnnouncementSections() {
               />
             </svg>
           </button>
+
+
           <div
             className={`relative flex-1 aspect-[2.2/1] sm:aspect-[2.5/1] border-2 sm:border-4 md:border-6 border-solid border-white rounded-[12px] sm:rounded-[20px] md:rounded-[29px] shadow-[0_2px_4px_rgba(0,0,0,0.18)] sm:shadow-[0_4px_4px_rgba(0,0,0,0.25)] bg-white flex items-center justify-center overflow-hidden min-h-[120px] sm:min-h-[180px] md:min-h-[240px] transition-all duration-300 cursor-pointer hover:shadow-lg ${
               isTransitioning ? "scale-[0.98]" : "scale-100"
@@ -250,13 +252,15 @@ export default function AnnouncementSections() {
                     : "opacity-100 scale-100"
                 }`}
               >
-                {/* Icon based on content type */}
+
+                
+                
                 <div className="text-white/80 mb-2">
                   {announcements[current]?.pdfs?.length > 0 ? (
                     <img
                       src="image/annu.jpg"
                       alt="Announcement PDF"
-                      className="w-12 h-12 sm:w-[1140px] sm:h-[380px]" 
+                      className="w-12 h-12 sm:w-16 sm:h-16"
                     />
                   ) : announcements[current]?.videos?.length > 0 ? (
                     <svg
@@ -337,6 +341,7 @@ export default function AnnouncementSections() {
                 <div className="w-2 h-2 bg-yellow-400 rounded-full"></div>
               </div>
             )}
+            
           </div>
           {/* Next Button - right side outside image, responsive size */}
           <button
