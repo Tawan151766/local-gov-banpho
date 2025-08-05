@@ -54,7 +54,7 @@ export default function HeroSection({ ui }) {
 
         {/* ✅ Banner แสดงตาม state */}
         {showBanner && (
-          <div className="fixed top-[360px] left-0 w-[275px] h-[349px] bg-white/95 rounded-[33px] shadow-[0_4px_20px_rgba(0,0,0,0.2)] z-[9999] flex flex-col overflow-hidden cursor-default transition-all duration-300 translate-y-[210px] ml-[25px] hover:shadow-[0_8px_30px_rgba(0,0,0,0.3)] hover:scale-[1.01]">
+          <div className="fixed top-[260px] left-0 w-[275px] h-[349px] bg-white/95 rounded-[33px] shadow-[0_4px_20px_rgba(0,0,0,0.2)] z-[9999] flex flex-col overflow-hidden cursor-default transition-all duration-300 translate-y-[210px] ml-[25px] hover:shadow-[0_8px_30px_rgba(0,0,0,0.3)] hover:scale-[1.01]">
             {/* ปุ่มปิด */}
             <button
               onClick={() => setShowBanner(false)} // ✅ ปิด banner เมื่อคลิก
