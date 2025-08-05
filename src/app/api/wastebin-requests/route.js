@@ -39,8 +39,8 @@ export async function GET(request) {
     const params = [];
 
     if (search) {
-      whereClause += " AND (requester_name LIKE ? OR requester_village LIKE ?)";
-      params.push(`%${search}%`, `%${search}%`);
+      whereClause += " AND (requester_name LIKE ? OR requester_village LIKE ? OR requester_id_card = ?)";
+      params.push(`%${search}%`, `%${search}%`, search);
     }
 
     if (status) {
@@ -202,6 +202,7 @@ export async function POST(request) {
         request_date || new Date().toISOString().split("T")[0],
         requester_title || null,
         requester_name || null,
+        requester_id_card || null,
         requester_age || null,
         requester_house_number || null,
         requester_street || null,
@@ -244,6 +245,72 @@ export async function POST(request) {
       {
         success: false,
         error: "Failed to create wastebin request",
+        details: error.message,
+      },
+      { status: 500 }
+    );
+  } finally {
+    if (connection) {
+      await connection.end();
+    }
+  }
+}
+// PATCH /api/wastebin-requests - อัปเดตสถานะคำร้องขอรับถังขยะ
+export async function PATCH(request) {
+  let connection;
+
+  try {
+    const body = await request.json();
+    const { id, status } = body;
+
+    if (!id || !status) {
+      return NextResponse.json(
+        { success: false, error: "ID and status are required" },
+        { status: 400 }
+      );
+    }
+
+    // Validate status
+    const validStatuses = ["pending", "processing", "completed", "rejected"];
+    if (!validStatuses.includes(status)) {
+      return NextResponse.json(
+        { success: false, error: "Invalid status" },
+        { status: 400 }
+      );
+    }
+
+    connection = await mysql.createConnection(dbConfig);
+
+    // Update request status
+    const [result] = await connection.execute(
+      "UPDATE wastebin_requests SET status = ?, updated_at = NOW() WHERE id = ?",
+      [status, id]
+    );
+
+    if (result.affectedRows === 0) {
+      return NextResponse.json(
+        { success: false, error: "Request not found" },
+        { status: 404 }
+      );
+    }
+
+    // Get updated request
+    const [updatedRequest] = await connection.execute(
+      "SELECT * FROM wastebin_requests WHERE id = ?",
+      [id]
+    );
+
+    return NextResponse.json({
+      success: true,
+      data: updatedRequest[0],
+      message: "Request status updated successfully",
+    });
+  } catch (error) {
+    console.error("Error updating wastebin request status:", error);
+    return NextResponse.json(
+      {
+        success: false,
+        error: "Failed to update request status",
         details: error.message,
       },
       { status: 500 }

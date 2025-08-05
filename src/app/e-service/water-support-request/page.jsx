@@ -123,6 +123,7 @@ export default function WaterSupportRequestForm() {
         family_members: formData.familyMembers ? parseInt(formData.familyMembers) : null,
         water_needs: formData.needsWater || null,
         symptoms_description: formData.symptoms || null,
+        requester_id_card: formData.requester_id_card || null,
         captcha_answer: formData.captcha || null,
         ip_address: null, // Will be set by server
         user_agent: navigator.userAgent || null,

@@ -472,9 +472,6 @@ model WaterSupportRequest {
   
   // ข้อมูลผู้ยื่นคำร้อง (Requester Information)
   requester_id_card      String?                   @db.VarChar(20) // เลขบัตรประชาชน
-  requester_id_card      String?                   @db.VarChar(20) // เลขบัตรประชาชน
-  requester_id_card      String?                   @db.VarChar(20) // เลขบัตรประชาชน
-  requester_id_card      String?                   @db.VarChar(20) // เลขบัตรประชาชน
   requester_title       String                     @db.VarChar(20) // นาย, นาง, นางสาว
   requester_name        String                     @db.VarChar(255)
   requester_age         Int?
