@@ -1,15 +1,12 @@
 "use client";
 
-import React, { useState, useEffect, Suspense } from "react";
-import { useParams, useRouter, useSearchParams } from "next/navigation";
+import React, { useState, useEffect } from "react";
+import { useParams, useRouter } from "next/navigation";
 
-function PostDetailContent() {
+export default function PostDetailPage() {
   const params = useParams();
   const router = useRouter();
-  const searchParams = useSearchParams();
   const postId = params.id;
-  const egpId = searchParams.get("egp_id");
-  const postType = searchParams.get("type");
 
   const [post, setPost] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -27,65 +24,25 @@ function PostDetailContent() {
       setLoading(true);
       setError(null);
 
-      let apiUrl = "";
-      let postData = null;
+      // Try to fetch from the posts API first
+      const response = await fetch(`/api/posts/${postId}`, {
+        method: "GET",
+        headers: {
+          Accept: "application/json",
+          "Content-Type": "application/json",
+        },
+        cache: "no-cache",
+      });
 
-      // Check if this is an EGP post
-      if (postType === "egp" && egpId) {
-        // Fetch from EGP API
-        const response = await fetch(`/api/egp-proxy/${egpId}`, {
-          method: "GET",
-          headers: {
-            Accept: "application/json",
-            "Content-Type": "application/json",
-          },
-          cache: "no-cache",
-        });
-
-        if (!response.ok) {
-          throw new Error(`EGP API error! status: ${response.status}`);
-        }
-
-        const result = await response.json();
-
-        if (result.success && result.data && Array.isArray(result.data)) {
-          // Find the specific post by ID
-          postData = result.data.find(item => 
-            item.id?.toString() === postId || 
-            item.deptsub_id?.toString() === postId
-          );
-
-          if (!postData) {
-            throw new Error("EGP post not found");
-          }
-        } else {
-          throw new Error("Invalid EGP API response");
-        }
-      } else {
-        // Try to fetch from the regular posts API
-        const response = await fetch(`/api/posts/${postId}`, {
-          method: "GET",
-          headers: {
-            Accept: "application/json",
-            "Content-Type": "application/json",
-          },
-          cache: "no-cache",
-        });
-
-        if (!response.ok) {
-          throw new Error(`Posts API error! status: ${response.status}`);
-        }
-
-        const result = await response.json();
-
-        if (result.success && result.data) {
-          postData = result.data;
-        } else {
-          throw new Error("Post not found");
-        }
+      if (!response.ok) {
+        throw new Error(`API error! status: ${response.status}`);
       }
 
-      if (postData) {
+      const result = await response.json();
+
+      if (result.success && result.data) {
+        const postData = result.data;
+        
         // Transform the data to match expected format
         const transformedPost = {
           deptsub_id: (postData.id || postData.deptsub_id || postId).toString(),
@@ -98,14 +55,13 @@ function PostDetailContent() {
           topic_name: postData.topic_name,
           photos: postData.photos || [],
           videos: postData.videos || [],
-          pdfs: postData.pdfs || [],
-          isEgpPost: postType === "egp" // Flag to identify EGP posts
+          pdfs: postData.pdfs || []
         };
 
         setPost(transformedPost);
         setRetryCount(0);
       } else {
-        throw new Error("Post data not found");
+        throw new Error("Post not found");
       }
     } catch (error) {
       console.error("Error fetching post detail:", error);
@@ -182,12 +138,7 @@ function PostDetailContent() {
   };
 
   const handleGoBack = () => {
-    // If this is an EGP post, go back to EGP posts page
-    if (postType === "egp") {
-      router.push("/posts?type=ประกาศ EGP");
-    } else {
-      router.back();
-    }
+    router.back();
   };
 
   const handleExternalLink = () => {
@@ -308,11 +259,10 @@ function PostDetailContent() {
         <div className="bg-white rounded-[29px] border-4 border-[#01bdcc] shadow-lg p-8">
           {/* Header */}
           <div className="flex flex-col md:flex-row md:items-center md:justify-between mb-6 gap-4">
-            <div className="flex flex-col gap-2">
+            <div className="flex items-center gap-4">
               <span className="text-[#01385f] font-semibold text-lg">
                 {formatDate(post.pub_date)}
               </span>
-             
             </div>
             <span
               className="rounded-full px-6 py-2 text-white text-base font-medium shadow-sm self-start md:self-center"
@@ -490,6 +440,9 @@ function PostDetailContent() {
               <span className="bg-gray-100 px-3 py-1 rounded-full">
                 รหัส: {post.announce_type}
               </span>
+              <span className="bg-gray-100 px-3 py-1 rounded-full">
+                ID: {post.deptsub_id}
+              </span>
               {post.original_type && (
                 <span className="bg-gray-100 px-3 py-1 rounded-full">
                   ประเภท: {post.original_type}
@@ -500,37 +453,5 @@ function PostDetailContent() {
         </div>
       </div>
     </div>
-  );
-}
-
-// Loading component for Suspense fallback
-function LoadingFallback() {
-  return (
-    <div
-      className="min-h-screen bg-gradient-to-b from-[#A8F9FF] to-[#E8DDC4] py-8"
-    >
-      <div className="max-w-4xl mx-auto px-4">
-        <div className="bg-white rounded-lg shadow-md p-6 animate-pulse">
-          <div className="h-8 bg-gray-300 rounded w-3/4 mb-4"></div>
-          <div className="h-4 bg-gray-300 rounded w-1/2 mb-2"></div>
-          <div className="h-4 bg-gray-300 rounded w-2/3 mb-6"></div>
-          <div className="h-32 bg-gray-300 rounded mb-4"></div>
-          <div className="space-y-2">
-            <div className="h-4 bg-gray-300 rounded"></div>
-            <div className="h-4 bg-gray-300 rounded w-5/6"></div>
-            <div className="h-4 bg-gray-300 rounded w-4/6"></div>
-          </div>
-        </div>
-      </div>
-    </div>
-  );
-}
-
-// Main component with Suspense wrapper
-export default function PostDetailPage() {
-  return (
-    <Suspense fallback={<LoadingFallback />}>
-      <PostDetailContent />
-    </Suspense>
   );
 }
