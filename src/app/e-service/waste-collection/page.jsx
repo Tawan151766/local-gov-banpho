@@ -10,6 +10,7 @@ import {
   Send,
   Trash2,
 } from "lucide-react";
+import { wasteCollectionRequestsAPI } from "@/lib/api";
 
 export default function WasteCollectionForm() {
   const [formData, setFormData] = useState({
@@ -19,6 +20,7 @@ export default function WasteCollectionForm() {
     // ข้อมูลผู้ยื่นคำร้อง
     requesterTitle: "นาย",
     requesterName: "",
+    requesterIdCard: "",
     requesterAge: "",
     requesterHouseNumber: "",
     requesterVillage: "",
@@ -29,9 +31,9 @@ export default function WasteCollectionForm() {
     // ประเภทขยะที่ต้องการให้จัดเก็บ
     wasteTypes: {
       household: false,
-      garden: false,
+      rental: false,
       shop: false,
-      construction: false,
+      factory: false,
     },
     otherWasteType: "",
     // ข้อมูลสถานที่จัดเก็บ
@@ -82,6 +84,14 @@ export default function WasteCollectionForm() {
         [field]: "",
       }));
     }
+
+    // Clear submit error when user makes changes
+    if (errors.submit) {
+      setErrors((prev) => ({
+        ...prev,
+        submit: "",
+      }));
+    }
   };
 
   const handleWasteTypeChange = (type, checked) => {
@@ -100,6 +110,10 @@ export default function WasteCollectionForm() {
     // ข้อมูลผู้ยื่นคำร้อง
     if (!formData.requesterName)
       newErrors.requesterName = "กรุณากรอกชื่อ-นามสกุล";
+    if (!formData.requesterIdCard)
+      newErrors.requesterIdCard = "กรุณากรอกเลขบัตรประชาชน";
+    else if (formData.requesterIdCard.length !== 13)
+      newErrors.requesterIdCard = "เลขบัตรประชาชนต้องมี 13 หลัก";
     if (!formData.requesterAge) 
       newErrors.requesterAge = "กรุณากรอกอายุ";
     if (!formData.requesterHouseNumber)
@@ -136,16 +150,53 @@ export default function WasteCollectionForm() {
     setIsSubmitting(true);
 
     try {
-      // Simulate API call
-      await new Promise(resolve => setTimeout(resolve, 2000));
+      // Prepare form data for API
+      const requestData = {
+        request_date: `${formData.year}-${String(
+          thaiMonths.indexOf(formData.month) + 1
+        ).padStart(2, "0")}-${String(formData.day).padStart(2, "0")}`,
+        requester_title: formData.requesterTitle || null,
+        requester_name: formData.requesterName || null,
+        requester_id_card: formData.requesterIdCard || null,
+        requester_age: formData.requesterAge ? parseInt(formData.requesterAge) : null,
+        requester_house_number: formData.requesterHouseNumber || null,
+        requester_village: formData.requesterVillage || null,
+        requester_subdistrict: formData.requesterSubdistrict || "ตำบลบ้านโพธิ์",
+        requester_district: formData.requesterDistrict || "อำเภอบ้านโพธิ์",
+        requester_province: formData.requesterProvince || "จังหวัดฉะเชิงเทรา",
+        requester_phone: formData.requesterPhone || null,
+        waste_type_household: formData.wasteTypes.household ? 1 : 0,
+        waste_type_rental: formData.wasteTypes.rental ? 1 : 0,
+        waste_type_shop: formData.wasteTypes.shop ? 1 : 0,
+        waste_type_factory: formData.wasteTypes.factory ? 1 : 0,
+        other_waste_type: formData.otherWasteType || null,
+        collection_details: formData.collectionDetails || null,
+        reason_for_request: formData.reasonForRequest || null,
+        captcha_answer: formData.captcha || null,
+        ip_address: null, // Will be set by server
+        user_agent: navigator.userAgent || null,
+      };
+
+      console.log("Submitting waste collection request:", requestData);
+
+      const result = await wasteCollectionRequestsAPI.createRequest(requestData);
+
+      if (!result.success) {
+        throw new Error(result.error || "Failed to submit request");
+      }
+
+      console.log("Waste collection request submitted successfully:", result);
       
       setSubmitSuccess(true);
+      
+      // Reset form
       setFormData({
         day: "1",
         month: "สิงหาคม",
         year: "2568",
         requesterTitle: "นาย",
         requesterName: "",
+        requesterIdCard: "",
         requesterAge: "",
         requesterHouseNumber: "",
         requesterVillage: "",
@@ -155,9 +206,9 @@ export default function WasteCollectionForm() {
         requesterPhone: "",
         wasteTypes: {
           household: false,
-          garden: false,
+          rental: false,
           shop: false,
-          construction: false,
+          factory: false,
         },
         otherWasteType: "",
         collectionDetails: "",
@@ -170,8 +221,12 @@ export default function WasteCollectionForm() {
         setSubmitSuccess(false);
       }, 5000);
     } catch (error) {
-      console.error("Error submitting form:", error);
-      alert("เกิดข้อผิดพลาด: " + error.message);
+      console.error("Error submitting waste collection request:", error);
+      setErrors((prev) => ({
+        ...prev,
+        submit:
+          error.message || "เกิดข้อผิดพลาดในการส่งคำร้อง กรุณาลองใหม่อีกครั้ง",
+      }));
     } finally {
       setIsSubmitting(false);
     }
@@ -199,8 +254,18 @@ export default function WasteCollectionForm() {
             <p className="text-gray-600 mb-4">
               คำร้องขอรับบริการจัดเก็บขยะของคุณได้รับการบันทึกเรียบร้อยแล้ว
             </p>
+            <div className="bg-green-50 border border-green-200 rounded-lg p-4 mb-4">
+              <h3 className="font-semibold text-green-800 mb-2">
+                ขั้นตอนต่อไป:
+              </h3>
+              <ul className="text-sm text-green-700 space-y-1">
+                <li>• เจ้าหน้าที่จะตรวจสอบข้อมูลและสถานที่</li>
+                <li>• ติดต่อกลับภายใน 3-5 วันทำการ</li>
+                <li>• จัดเก็บขยะตามรายละเอียดที่ระบุไว้</li>
+              </ul>
+            </div>
             <p className="text-sm text-gray-500">
-              เจ้าหน้าที่จะติดต่อกลับภายใน 3-5 วันทำการ
+              หากมีข้อสงสัยเพิ่มเติม กรุณาติดต่อเทศบาลตำบลบ้านโพธิ์
             </p>
           </div>
         </div>
@@ -372,6 +437,25 @@ export default function WasteCollectionForm() {
                     <p className="text-red-500 text-sm">{errors.requesterName}</p>
                   )}
 
+                  {/* ID Card */}
+                  <div className="flex items-center gap-2 flex-wrap">
+                    <span className="text-sm">เลขบัตรประชาชน</span>
+                    <span className="text-red-500">*</span>
+                    <input
+                      type="text"
+                      value={formData.requesterIdCard}
+                      onChange={(e) => handleInputChange("requesterIdCard", e.target.value)}
+                      className={`px-3 py-2 border rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent ${
+                        errors.requesterIdCard ? "border-red-500" : "border-gray-300"
+                      }`}
+                      placeholder="เลขบัตรประชาชน 13 หลัก"
+                      maxLength={13}
+                    />
+                  </div>
+                  {errors.requesterIdCard && (
+                    <p className="text-red-500 text-sm">{errors.requesterIdCard}</p>
+                  )}
+
                   {/* Age */}
                   <div className="flex items-center gap-2">
                     <span className="text-sm">อายุ</span>
@@ -464,8 +548,8 @@ export default function WasteCollectionForm() {
                     <label className="flex items-center gap-2 cursor-pointer">
                       <input
                         type="checkbox"
-                        checked={formData.wasteTypes.garden}
-                        onChange={(e) => handleWasteTypeChange('garden', e.target.checked)}
+                        checked={formData.wasteTypes.rental}
+                        onChange={(e) => handleWasteTypeChange('rental', e.target.checked)}
                         className="text-orange-600 focus:ring-orange-500"
                       />
                       <span className="text-sm">2. บ้านเจ้า / อาคารให้เช่า</span>
@@ -484,8 +568,8 @@ export default function WasteCollectionForm() {
                     <label className="flex items-center gap-2 cursor-pointer">
                       <input
                         type="checkbox"
-                        checked={formData.wasteTypes.construction}
-                        onChange={(e) => handleWasteTypeChange('construction', e.target.checked)}
+                        checked={formData.wasteTypes.factory}
+                        onChange={(e) => handleWasteTypeChange('factory', e.target.checked)}
                         className="text-orange-600 focus:ring-orange-500"
                       />
                       <span className="text-sm">4. โรงงาน / ประกอบธุรกิจ</span>
@@ -597,6 +681,20 @@ export default function WasteCollectionForm() {
                   <p className="text-red-500 text-sm mt-2 text-center">{errors.captcha}</p>
                 )}
               </div>
+
+              {/* Submit Error */}
+              {errors.submit && (
+                <div className="bg-red-50 border-l-4 border-red-400 p-4">
+                  <div className="flex">
+                    <div className="flex-shrink-0">
+                      <AlertCircle className="text-red-400" size={20} />
+                    </div>
+                    <div className="ml-3">
+                      <p className="text-sm text-red-700">{errors.submit}</p>
+                    </div>
+                  </div>
+                </div>
+              )}
 
               {/* Submit Button */}
               <div className="pt-4 text-center">
