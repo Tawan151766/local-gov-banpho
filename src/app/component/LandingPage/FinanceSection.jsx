@@ -4,57 +4,138 @@ import { useState, useEffect } from "react";
 export default function FinanceSection() {
   const [posts, setPosts] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [activeCategory, setActiveCategory] = useState("all");
+  const [activeCategory, setActiveCategory] = useState("procurement");
   const [filteredPosts, setFilteredPosts] = useState([]);
+  const [error, setError] = useState(null);
+  const [retryCount, setRetryCount] = useState(0);
 
   useEffect(() => {
-    fetchEGPPosts();
-  }, []);
+    fetchPosts();
+  }, [activeCategory]); // เปลี่ยนให้ fetch ใหม่เมื่อ category เปลี่ยน
 
   useEffect(() => {
     filterPostsByCategory();
   }, [posts, activeCategory]);
 
-  const fetchEGPPosts = async () => {
+  const fetchPosts = async (retry = false) => {
     try {
       setLoading(true);
-      const response = await fetch(
-        "https://egp.sosmartsolution.com/api.php?deptsub=1509900857"
-      );
+      setError(null);
+
+      let apiUrl = "";
+      
+      // กำหนด API endpoint ตาม category
+      switch (activeCategory) {
+        case "procurement":
+          apiUrl = "/api/posts?type=ประกาศจัดซื้อจัดจ้าง";
+          break;
+        case "result":
+          apiUrl = "/api/posts?type=ผลประกาศจัดซื้อจัดจ้าง";
+          break;
+        case "report":
+          apiUrl = "/api/posts?type=รายงานผลการจัดซื้อจัดจ้าง";
+          break;
+        case "egp":
+          // ถ้ามี EGP API แยก หรือใช้ข้อมูลจาก external API
+          apiUrl = "/api/egp-proxy"; // หรือ API ที่เหมาะสม
+          break;
+        default:
+          apiUrl = "/api/posts?type=ประกาศจัดซื้อจัดจ้าง";
+      }
+
+      console.log(`Fetching from: ${apiUrl} for category: ${activeCategory}`);
+
+      const response = await fetch(apiUrl, {
+        method: "GET",
+        headers: {
+          Accept: "application/json",
+          "Content-Type": "application/json",
+        },
+        cache: "no-cache",
+      });
+
+      if (!response.ok) {
+        throw new Error(`API error! status: ${response.status}`);
+      }
+
       const result = await response.json();
-      console.log("result :>> ", result);
-      if (result.success) {
-        setPosts(result.data);
+      console.log(`Posts API result for ${activeCategory}:`, result);
+
+      if (result.success && result.data && Array.isArray(result.data)) {
+        // Transform the data to match expected format
+        const transformedPosts = result.data.map((post) => ({
+          deptsub_id: (post.id || post.deptsub_id || Math.random().toString()).toString(),
+          announce_type: getAnnounceType(post.type_name || getCategoryTypeName(activeCategory)),
+          title: post.title_name || post.title,
+          pub_date: formatApiDate(post.date || post.pub_date),
+          link: post.link || `/post/${post.id || post.deptsub_id}`,
+          original_type: post.type_name
+        }));
+
+        setPosts(transformedPosts);
+        setRetryCount(0);
+        console.log(`Successfully loaded ${transformedPosts.length} posts for ${activeCategory}`);
+      } else {
+        console.warn("API returned unexpected format:", result);
+        setPosts([]);
       }
     } catch (error) {
-      console.error("Error fetching EGP posts:", error);
+      console.error("Error fetching posts:", error);
+      setError(error.message);
+
+      // Retry logic - try up to 2 times
+      if (!retry && retryCount < 2) {
+        console.log(`Retrying... (attempt ${retryCount + 1})`);
+        setRetryCount((prev) => prev + 1);
+        setTimeout(() => fetchPosts(true), 2000);
+        return;
+      }
+
+      setPosts([]);
     } finally {
       setLoading(false);
     }
   };
 
-  const filterPostsByCategory = () => {
-    if (activeCategory === "all") {
-      setFilteredPosts(posts.slice(0, 4)); // แสดงเฉพาะ 4 รายการแรก
-    } else {
-      const filtered = posts.filter((post) => {
-        switch (activeCategory) {
-          case "egp":
-            return post.announce_type === "15"; // ประกาศ EGP
-          case "procurement":
-            return post.announce_type.startsWith("P0"); // ประกาศจัดซื้อจัดจ้าง
-          case "result":
-            return post.announce_type.startsWith("D"); // ผลประกาศจัดซื้อจัดจ้าง
-          case "price":
-            return post.announce_type.startsWith("M"); // ประกาศราคากลาง
-          case "report":
-            return post.announce_type.startsWith("W"); // รายงานผลจัดซื้อจัดจ้าง
-          default:
-            return true;
-        }
-      });
-      setFilteredPosts(filtered.slice(0, 4));
+  // ได้ type name จาก category
+  const getCategoryTypeName = (category) => {
+    switch (category) {
+      case "procurement":
+        return "ประกาศจัดซื้อจัดจ้าง";
+      case "result":
+        return "ผลประกาศจัดซื้อจัดจ้าง";
+      case "report":
+        return "รายงานผลการจัดซื้อจัดจ้าง";
+      case "egp":
+        return "ประกาศ EGP";
+      default:
+        return "ประกาศจัดซื้อจัดจ้าง";
     }
+  };
+
+  // Transform type_name to announce_type for compatibility
+  const getAnnounceType = (typeName) => {
+    if (!typeName) return "W0";
+
+    if (typeName.includes("ประกาศจัดซื้อจัดจ้าง")) return "P0";
+    if (typeName.includes("ผลประกาศจัดซื้อจัดจ้าง")) return "D0";
+    if (typeName.includes("รายงานผลการจัดซื้อจัดจ้าง")) return "W0";
+    if (typeName.includes("ประกาศราคากลาง")) return "M0";
+    if (typeName.includes("EGP")) return "15";
+
+    return "P0"; // Default เป็น procurement
+  };
+
+  // Format date from API
+  const formatApiDate = (dateString) => {
+    if (!dateString) return new Date().toISOString().split("T")[0];
+    return new Date(dateString).toISOString().split("T")[0];
+  };
+
+  const filterPostsByCategory = () => {
+    // เนื่องจากเราดึงข้อมูลแยกตาม category แล้ว 
+    // เราจึงแสดงข้อมูลทั้งหมดที่ได้มา (แต่จำกัดที่ 4 รายการ)
+    setFilteredPosts(posts.slice(0, 4));
   };
 
   const formatDate = (dateString) => {
@@ -62,18 +143,8 @@ export default function FinanceSection() {
 
     const date = new Date(dateString);
     const thaiMonths = [
-      "ม.ค.",
-      "ก.พ.",
-      "มี.ค.",
-      "เม.ย.",
-      "พ.ค.",
-      "มิ.ย.",
-      "ก.ค.",
-      "ส.ค.",
-      "ก.ย.",
-      "ต.ค.",
-      "พ.ย.",
-      "ธ.ค.",
+      "ม.ค.", "ก.พ.", "มี.ค.", "เม.ย.", "พ.ค.", "มิ.ย.",
+      "ก.ค.", "ส.ค.", "ก.ย.", "ต.ค.", "พ.ย.", "ธ.ค.",
     ];
 
     const day = date.getDate();
@@ -86,15 +157,10 @@ export default function FinanceSection() {
   const getPostTypeColor = (announceType) => {
     if (!announceType) return "#73cc6b";
 
-    // ประกาศ EGP
     if (announceType === "15") return "#e74c3c";
-    // ประกาศจัดซื้อจัดจ้าง
     if (announceType.startsWith("P")) return "#73cc6b";
-    // ผลประกาศจัดซื้อจัดจ้าง
     if (announceType.startsWith("D")) return "#f39c12";
-    // ประกาศราคากลาง
     if (announceType.startsWith("M")) return "#9b59b6";
-    // รายงานผลจัดซื้อจัดจ้าง
     if (announceType.startsWith("W")) return "#3498db";
 
     return "#73cc6b";
@@ -103,15 +169,10 @@ export default function FinanceSection() {
   const getPostTypeName = (announceType) => {
     if (!announceType) return "ประกาศ";
 
-    // ประกาศ EGP
     if (announceType === "15") return "ประกาศ EGP";
-    // ประกาศจัดซื้อจัดจ้าง
     if (announceType.startsWith("P")) return "ประกาศจัดซื้อจัดจ้าง";
-    // ผลประกาศจัดซื้อจัดจ้าง
     if (announceType.startsWith("D")) return "ผลประกาศจัดซื้อจัดจ้าง";
-    // ประกาศราคากลาง
     if (announceType.startsWith("M")) return "ประกาศราคากลาง";
-    // รายงานผลจัดซื้อจัดจ้าง
     if (announceType.startsWith("W")) return "รายงานผลจัดซื้อจัดจ้าง";
 
     return "ประกาศ";
@@ -126,12 +187,18 @@ export default function FinanceSection() {
 
   const handleCategoryClick = (category) => {
     setActiveCategory(category);
+    // fetchPosts จะถูกเรียกอัตโนมัติผ่าน useEffect
   };
 
   const handlePostClick = (post) => {
-    if (post.link) {
-      window.open(post.link, "_blank");
-    }
+    // Navigate to the post detail page
+    window.location.href = `/posts/${post.deptsub_id}`;
+  };
+
+  // สร้าง URL สำหรับ "ดูข้อมูลทั้งหมด"
+  const getViewAllUrl = () => {
+    const typeParam = encodeURIComponent(getCategoryTypeName(activeCategory));
+    return `/posts?type=${typeParam}`;
   };
 
   return (
@@ -148,8 +215,10 @@ export default function FinanceSection() {
       <div className="w-full max-w-[1268px] flex flex-col gap-4 mb-8">
         <div className="bg-gradient-to-r from-[#03bdca] to-[#01bdcc] rounded-[36px] shadow-lg w-full flex flex-col md:flex-row items-center px-3 sm:px-4 md:px-6 py-4 sm:py-5 md:py-6 relative">
           <div className="flex-1 flex flex-wrap flex-row items-center justify-center gap-2 sm:gap-3 md:gap-4 lg:gap-6">
+
+            {/* EGP Category */}
             {activeCategory === "egp" ? (
-              <div className="bg-white rounded-full shadow-md  h-10  flex items-center justify-center border-2 border-[#01bdcc]">
+              <div className="bg-white rounded-full shadow-md h-10 flex items-center justify-center border-2 border-[#01bdcc]">
                 <span className="text-[#01385f] font-bold text-xs sm:text-sm md:text-sm text-center leading-tight px-1 sm:px-2">
                   ประกาศ EGP
                 </span>
@@ -163,8 +232,9 @@ export default function FinanceSection() {
               </button>
             )}
 
+            {/* Procurement Category */}
             {activeCategory === "procurement" ? (
-              <div className="bg-white rounded-full shadow-md  h-10  flex items-center justify-center border-2 border-[#01bdcc]">
+              <div className="bg-white rounded-full shadow-md h-10 flex items-center justify-center border-2 border-[#01bdcc]">
                 <span className="text-[#01385f] font-bold text-xs sm:text-sm md:text-sm text-center leading-tight px-1 sm:px-2">
                   ประกาศจัดซื้อจัดจ้าง
                 </span>
@@ -178,8 +248,9 @@ export default function FinanceSection() {
               </button>
             )}
 
+            {/* Result Category */}
             {activeCategory === "result" ? (
-              <div className="bg-white rounded-full shadow-md  h-10  flex items-center justify-center border-2 border-[#01bdcc]">
+              <div className="bg-white rounded-full shadow-md h-10 flex items-center justify-center border-2 border-[#01bdcc]">
                 <span className="text-[#01385f] font-bold text-xs sm:text-sm md:text-sm text-center leading-tight px-1 sm:px-2">
                   ผลประกาศจัดซื้อจัดจ้าง
                 </span>
@@ -193,23 +264,9 @@ export default function FinanceSection() {
               </button>
             )}
 
-            {activeCategory === "price" ? (
-              <div className="bg-white rounded-full shadow-md  h-10  flex items-center justify-center border-2 border-[#01bdcc]">
-                <span className="text-[#01385f] font-bold text-xs sm:text-sm md:text-sm text-center leading-tight px-1 sm:px-2">
-                  ประกาศราคากลาง
-                </span>
-              </div>
-            ) : (
-              <button
-                onClick={() => handleCategoryClick("price")}
-                className="text-white font-semibold text-xs sm:text-sm md:text-base lg:text-lg drop-shadow transition-all duration-200 hover:scale-105 cursor-pointer hover:bg-white/10 px-2 sm:px-3 py-1 sm:py-2 rounded-xl"
-              >
-                ประกาศราคากลาง
-              </button>
-            )}
-
+            {/* Report Category */}
             {activeCategory === "report" ? (
-              <div className="bg-white rounded-full shadow-md  h-10  flex items-center justify-center border-2 border-[#01bdcc]">
+              <div className="bg-white rounded-full shadow-md h-10 flex items-center justify-center border-2 border-[#01bdcc]">
                 <span className="text-[#01385f] font-bold text-xs sm:text-sm md:text-sm text-center leading-tight px-1 sm:px-2">
                   รายงานผลจัดซื้อจัดจ้าง
                 </span>
@@ -245,6 +302,20 @@ export default function FinanceSection() {
               </div>
             </div>
           ))
+        ) : error && filteredPosts.length === 0 ? (
+          // Error state
+          <div className="col-span-full flex flex-col items-center justify-center py-12">
+            <div className="text-red-500 text-lg mb-2">
+              เกิดข้อผิดพลาดในการโหลดข้อมูล
+            </div>
+            <div className="text-gray-500 text-sm mb-4">{error}</div>
+            <button
+              onClick={() => fetchPosts()}
+              className="bg-[#01bdcc] text-white px-6 py-2 rounded-lg hover:bg-[#01a5b0] transition-colors duration-200"
+            >
+              ลองใหม่อีกครั้ง
+            </button>
+          </div>
         ) : filteredPosts.length > 0 ? (
           filteredPosts.map((post, idx) => (
             <div
@@ -293,7 +364,7 @@ export default function FinanceSection() {
                     strokeLinecap="round"
                     strokeLinejoin="round"
                     strokeWidth={2}
-                    d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"
+                    d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14"
                   />
                 </svg>
               </div>
@@ -303,22 +374,10 @@ export default function FinanceSection() {
           // No data message
           <div className="col-span-full flex flex-col items-center justify-center py-12">
             <div className="text-gray-500 text-lg mb-2">
-              {activeCategory === "all"
-                ? "ไม่มีข้อมูลประกาศจัดซื้อจัดจ้าง"
-                : `ไม่มีข้อมูล${
-                    activeCategory === "egp"
-                      ? "ประกาศ EGP"
-                      : activeCategory === "procurement"
-                      ? "ประกาศจัดซื้อจัดจ้าง"
-                      : activeCategory === "result"
-                      ? "ผลประกาศจัดซื้อจัดจ้าง"
-                      : activeCategory === "price"
-                      ? "ประกาศราคากลาง"
-                      : "รายงานผลจัดซื้อจัดจ้าง"
-                  }`}
+              ไม่มีข้อมูล{getCategoryTypeName(activeCategory)}
             </div>
             <div className="text-gray-400 text-sm">
-              กรุณาเพิ่มข้อมูลในระบบ EGP
+              ไม่พบข้อมูลในหมวดหมู่นี้
             </div>
           </div>
         )}
@@ -328,7 +387,7 @@ export default function FinanceSection() {
       {filteredPosts.length > 0 && (
         <div className="mt-8 flex justify-center">
           <button
-            onClick={() => (window.location.href = "/egp")}
+            onClick={() => (window.location.href = getViewAllUrl())}
             className="bg-[#01385f] text-white px-8 py-3 rounded-full font-semibold text-lg hover:bg-[#01385f]/90 hover:scale-105 transition-all duration-200 shadow-lg hover:shadow-xl"
           >
             ดูข้อมูลทั้งหมด ({posts.length} รายการ)
