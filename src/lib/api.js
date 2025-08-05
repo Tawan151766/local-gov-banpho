@@ -1033,6 +1033,60 @@ export const createWastebinTablesAPI = {
   },
 };
 
+// Waste Collection Requests API functions
+export const wasteCollectionRequestsAPI = {
+  getRequests: async (params = {}) => {
+    const searchParams = new URLSearchParams();
+
+    if (params.page) searchParams.append("page", params.page);
+    if (params.limit) searchParams.append("limit", params.limit);
+    if (params.search) searchParams.append("search", params.search);
+    if (params.status) searchParams.append("status", params.status);
+
+    const queryString = searchParams.toString();
+    const endpoint = `/waste-collection-requests${queryString ? `?${queryString}` : ""}`;
+
+    return apiCall(endpoint);
+  },
+
+  getRequest: async (id) => {
+    return apiCall(`/waste-collection-requests/${id}`);
+  },
+
+  createRequest: async (requestData) => {
+    return apiCall("/waste-collection-requests", {
+      method: "POST",
+      body: JSON.stringify(requestData),
+    });
+  },
+
+  updateRequest: async (id, requestData) => {
+    return apiCall(`/waste-collection-requests/${id}`, {
+      method: "PUT",
+      body: JSON.stringify(requestData),
+    });
+  },
+
+  deleteRequest: async (id) => {
+    return apiCall(`/waste-collection-requests/${id}`, {
+      method: "DELETE",
+    });
+  },
+};
+
+// Create Waste Collection Tables API
+export const createWasteCollectionTablesAPI = {
+  createTables: async () => {
+    return apiCall("/create-waste-collection-tables", {
+      method: "POST",
+    });
+  },
+
+  checkTables: async () => {
+    return apiCall("/create-waste-collection-tables");
+  },
+};
+
 // Export for easy use
 const apiExports = {
   qaAPI,
@@ -1057,6 +1111,8 @@ const apiExports = {
   createLawsRegsTablesAPI,
   wastebinRequestsAPI,
   createWastebinTablesAPI,
+  wasteCollectionRequestsAPI,
+  createWasteCollectionTablesAPI,
   createCRUDAPI,
 };
 
