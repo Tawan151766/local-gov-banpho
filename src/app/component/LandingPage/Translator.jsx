@@ -25,45 +25,48 @@ export default function Translator() {
         autoDisplay: false,
       }, 'google_translate_element')
 
-      // Polling ตรวจสอบ iframe ทุก 500ms ไม่เกิน 10 วินาที
-      let attempts = 0
-      const maxAttempts = 20
-      const interval = setInterval(() => {
+      // ใช้ MutationObserver รอดูการสร้าง iframe
+      const observer = new MutationObserver((mutations, obs) => {
         const iframe = document.querySelector('iframe.goog-te-menu-frame')
         if (iframe) {
           console.log('✅ เจอ iframe Google Translate')
-          clearInterval(interval)
-        } else {
-          attempts++
-          console.log(`❌ ไม่พบ iframe ของ Google Translate (พยายามครั้งที่ ${attempts})`)
-          if (attempts >= maxAttempts) {
-            clearInterval(interval)
-            console.error('❌ ไม่สามารถโหลด iframe Google Translate ได้')
+
+          // ปรับ style iframe และ container
+          iframe.style.width = '160px'
+          iframe.style.height = '300px'
+
+          const container = document.getElementById('google_translate_element')
+          if(container) {
+            container.style.fontSize = '14px'
+            container.style.width = '160px'
+            container.style.height = '40px'
           }
+
+          // ปรับ dropdown menu ของ Google
+          const iframeDoc = iframe.contentDocument || iframe.contentWindow.document
+          if(iframeDoc) {
+            const menu = iframeDoc.querySelector('.goog-te-menu2')
+            if(menu) {
+              menu.style.maxWidth = '160px'
+            }
+          }
+
+          obs.disconnect()
         }
-      }, 500)
+      })
+
+      observer.observe(document.body, {
+        childList: true,
+        subtree: true,
+      })
     }
-    function changeGoogleTranslateLanguage(langCode) {
-        const iframe = document.querySelector('iframe.goog-te-menu-frame');
-        if (!iframe) {
-          console.warn('Google Translate iframe not found');
-          return;
-        }
-        const iframeDoc = iframe.contentDocument || iframe.contentWindow.document;
-        const langAnchor = iframeDoc.querySelector(`a[href*='?lang=${langCode}']`);
-        if (langAnchor) {
-          langAnchor.click();
-        } else {
-          console.warn(`Language link for ${langCode} not found`);
-        }
-      }
-      
   }, [])
 
   return (
     <div
       id="google_translate_element"
-      style={{ visibility: "visible", height: "auto" }}
+      className="w-40 h-10"
+      style={{ visibility: "visible" }}
     />
   )
 }
