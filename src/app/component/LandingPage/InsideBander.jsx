@@ -42,7 +42,6 @@ export default function InsideBander() {
         <div className="flex flex-col lg:flex-row gap-6 p-4 md:p-6 lg:p-8">
           {/* Left Column: Service Cards */}
           <div className="w-96 flex flex-col justify-center">
-            /* ปุ่มลูกศรขึ้น */
             <button className="mb-4 p-2 rounded-full  hover:bg-gray-100 transition mx-auto">
               <ChevronUp className="w-10 h-10 text-gray-700" />
             </button>
