@@ -22,7 +22,7 @@ export default function FinanceSection() {
         "https://egp.sosmartsolution.com/api.php?deptsub=1509900857"
       );
       const result = await response.json();
-
+      console.log("result :>> ", result);
       if (result.success) {
         setPosts(result.data);
       }
@@ -42,7 +42,7 @@ export default function FinanceSection() {
           case "egp":
             return post.announce_type === "15"; // ประกาศ EGP
           case "procurement":
-            return post.announce_type.startsWith("P"); // ประกาศจัดซื้อจัดจ้าง
+            return post.announce_type.startsWith("P0"); // ประกาศจัดซื้อจัดจ้าง
           case "result":
             return post.announce_type.startsWith("D"); // ผลประกาศจัดซื้อจัดจ้าง
           case "price":
