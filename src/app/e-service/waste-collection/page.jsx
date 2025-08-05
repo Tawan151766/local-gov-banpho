@@ -126,8 +126,7 @@ export default function WasteCollectionForm() {
       newErrors.requesterIdCard = "กรุณากรอกเลขบัตรประชาชน";
     else if (formData.requesterIdCard.length !== 13)
       newErrors.requesterIdCard = "เลขบัตรประชาชนต้องมี 13 หลัก";
-    if (!formData.requesterAge) 
-      newErrors.requesterAge = "กรุณากรอกอายุ";
+    if (!formData.requesterAge) newErrors.requesterAge = "กรุณากรอกอายุ";
     if (!formData.requesterHouseNumber)
       newErrors.requesterHouseNumber = "กรุณากรอกเลขที่บ้าน";
     if (!formData.requesterVillage)
@@ -171,7 +170,9 @@ export default function WasteCollectionForm() {
         requester_title: formData.requesterTitle || null,
         requester_name: formData.requesterName || null,
         requester_id_card: formData.requesterIdCard || null,
-        requester_age: formData.requesterAge ? parseInt(formData.requesterAge) : null,
+        requester_age: formData.requesterAge
+          ? parseInt(formData.requesterAge)
+          : null,
         requester_house_number: formData.requesterHouseNumber || null,
         requester_village: formData.requesterVillage || null,
         requester_subdistrict: formData.requesterSubdistrict || "ตำบลบ้านโพธิ์",
@@ -192,16 +193,18 @@ export default function WasteCollectionForm() {
 
       console.log("Submitting waste collection request:", requestData);
 
-      const result = await wasteCollectionRequestsAPI.createRequest(requestData);
+      const result = await wasteCollectionRequestsAPI.createRequest(
+        requestData
+      );
 
       if (!result.success) {
         throw new Error(result.error || "Failed to submit request");
       }
 
       console.log("Waste collection request submitted successfully:", result);
-      
+
       setSubmitSuccess(true);
-      
+
       // Reset form
       setFormData({
         day: "1",
@@ -483,7 +486,9 @@ export default function WasteCollectionForm() {
                     />
                   </div>
                   {errors.requesterName && (
-                    <p className="text-red-500 text-sm">{errors.requesterName}</p>
+                    <p className="text-red-500 text-sm">
+                      {errors.requesterName}
+                    </p>
                   )}
 
                   {/* ID Card */}
@@ -493,16 +498,22 @@ export default function WasteCollectionForm() {
                     <input
                       type="text"
                       value={formData.requesterIdCard}
-                      onChange={(e) => handleInputChange("requesterIdCard", e.target.value)}
+                      onChange={(e) =>
+                        handleInputChange("requesterIdCard", e.target.value)
+                      }
                       className={`px-3 py-2 border rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent ${
-                        errors.requesterIdCard ? "border-red-500" : "border-gray-300"
+                        errors.requesterIdCard
+                          ? "border-red-500"
+                          : "border-gray-300"
                       }`}
                       placeholder="เลขบัตรประชาชน 13 หลัก"
                       maxLength={13}
                     />
                   </div>
                   {errors.requesterIdCard && (
-                    <p className="text-red-500 text-sm">{errors.requesterIdCard}</p>
+                    <p className="text-red-500 text-sm">
+                      {errors.requesterIdCard}
+                    </p>
                   )}
 
                   {/* Age */}
@@ -625,7 +636,9 @@ export default function WasteCollectionForm() {
                       <input
                         type="checkbox"
                         checked={formData.wasteTypes.rental}
-                        onChange={(e) => handleWasteTypeChange('rental', e.target.checked)}
+                        onChange={(e) =>
+                          handleWasteTypeChange("rental", e.target.checked)
+                        }
                         className="text-orange-600 focus:ring-orange-500"
                       />
                       <span className="text-sm">
@@ -649,7 +662,9 @@ export default function WasteCollectionForm() {
                       <input
                         type="checkbox"
                         checked={formData.wasteTypes.factory}
-                        onChange={(e) => handleWasteTypeChange('factory', e.target.checked)}
+                        onChange={(e) =>
+                          handleWasteTypeChange("factory", e.target.checked)
+                        }
                         className="text-orange-600 focus:ring-orange-500"
                       />
                       <span className="text-sm">4. โรงงาน / ประกอบธุรกิจ</span>

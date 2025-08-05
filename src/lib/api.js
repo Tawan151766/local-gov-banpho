@@ -1194,6 +1194,60 @@ export const createWasteCollectionTablesAPI = {
   },
 };
 
+// Water Support Requests API functions
+export const waterSupportRequestsAPI = {
+  getRequests: async (params = {}) => {
+    const searchParams = new URLSearchParams();
+
+    if (params.page) searchParams.append("page", params.page);
+    if (params.limit) searchParams.append("limit", params.limit);
+    if (params.search) searchParams.append("search", params.search);
+    if (params.status) searchParams.append("status", params.status);
+
+    const queryString = searchParams.toString();
+    const endpoint = `/water-support-requests${queryString ? `?${queryString}` : ""}`;
+
+    return apiCall(endpoint);
+  },
+
+  getRequest: async (id) => {
+    return apiCall(`/water-support-requests/${id}`);
+  },
+
+  createRequest: async (requestData) => {
+    return apiCall("/water-support-requests", {
+      method: "POST",
+      body: JSON.stringify(requestData),
+    });
+  },
+
+  updateRequest: async (id, requestData) => {
+    return apiCall(`/water-support-requests/${id}`, {
+      method: "PUT",
+      body: JSON.stringify(requestData),
+    });
+  },
+
+  deleteRequest: async (id) => {
+    return apiCall(`/water-support-requests/${id}`, {
+      method: "DELETE",
+    });
+  },
+};
+
+// Create Water Support Tables API
+export const createWaterSupportTablesAPI = {
+  createTables: async () => {
+    return apiCall("/create-water-support-tables", {
+      method: "POST",
+    });
+  },
+
+  checkTables: async () => {
+    return apiCall("/create-water-support-tables");
+  },
+};
+
 // Export for easy use
 const apiExports = {
   qaAPI,
@@ -1220,6 +1274,8 @@ const apiExports = {
   createWastebinTablesAPI,
   wasteCollectionRequestsAPI,
   createWasteCollectionTablesAPI,
+  waterSupportRequestsAPI,
+  createWaterSupportTablesAPI,
   createCRUDAPI,
 };
 
