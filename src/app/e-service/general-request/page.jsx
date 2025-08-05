@@ -4,6 +4,9 @@ import React, { useState } from 'react';
 import { uploadFileToServer, validateFileSize, validateFileType } from '@/lib/fileUploadUtils';
 import { User, Home, Phone, FileText, AlertCircle, RefreshCcw, Send, Edit, Upload, X } from "lucide-react";
 import { generalRequestsAPI } from "@/lib/api";
+import { uploadFileToServer, validateFileSize, validateFileType } from '@/lib/fileUploadUtils';
+import { User, Home, Phone, FileText, AlertCircle, RefreshCcw, Send, Edit, Upload, X } from "lucide-react";
+import { generalRequestsAPI } from "@/lib/api";
 
 export default function GeneralRequestPage() {
   const [formData, setFormData] = useState({
@@ -47,6 +50,15 @@ export default function GeneralRequestPage() {
     other_document_2: null,
   });
   const [uploadingFiles, setUploadingFiles] = useState({});
+  const [errors, setErrors] = useState({});
+  const [uploadedFiles, setUploadedFiles] = useState({
+    document_1: null,
+    document_2: null,
+    document_3: null,
+    other_document_1: null,
+    other_document_2: null,
+  });
+  const [uploadingFiles, setUploadingFiles] = useState({});
 
   function generateCaptcha() {
     const num1 = Math.floor(Math.random() * 900000) + 100000;
@@ -74,11 +86,31 @@ export default function GeneralRequestPage() {
         submit: ''
       }));
     }
+
+    // Clear error when user starts typing
+    if (errors[field]) {
+      setErrors(prev => ({
+        ...prev,
+        [field]: ''
+      }));
+    }
+
+    // Clear submit error when user makes changes
+    if (errors.submit) {
+      setErrors(prev => ({
+        ...prev,
+        submit: ''
+      }));
+    }
   };
 
   const handleFileUpload = async (field, file) => {
     if (!file) {
       handleInputChange(field, null);
+      setUploadedFiles(prev => ({
+        ...prev,
+        [field]: null
+      }));
       setUploadedFiles(prev => ({
         ...prev,
         [field]: null
@@ -96,11 +128,37 @@ export default function GeneralRequestPage() {
         [field]: true
       }));
 
+      // Validate file
+      validateFileSize(file, 10 * 1024 * 1024); // 10MB max
+      validateFileType(file, ['.pdf', '.jpg', '.jpeg', '.png', '.doc', '.docx']);
+
+      setUploadingFiles(prev => ({
+        ...prev,
+        [field]: true
+      }));
+
       const result = await uploadFileToServer(file);
       
       if (result.success) {
         const filePath = result.path;
+        const filePath = result.path;
         handleInputChange(field, filePath);
+        setUploadedFiles(prev => ({
+          ...prev,
+          [field]: {
+            name: file.name,
+            path: filePath,
+            url: result.url
+          }
+        }));
+
+        // Clear error if exists
+        if (errors[field]) {
+          setErrors(prev => ({
+            ...prev,
+            [field]: ''
+          }));
+        }
         setUploadedFiles(prev => ({
           ...prev,
           [field]: {
@@ -124,7 +182,15 @@ export default function GeneralRequestPage() {
         ...prev,
         [field]: error.message
       }));
+      setErrors(prev => ({
+        ...prev,
+        [field]: error.message
+      }));
     } finally {
+      setUploadingFiles(prev => ({
+        ...prev,
+        [field]: false
+      }));
       setUploadingFiles(prev => ({
         ...prev,
         [field]: false
@@ -169,24 +235,47 @@ export default function GeneralRequestPage() {
     return Object.keys(newErrors).length === 0;
   };
 
+  const handleFileRemove = (field) => {
+    handleInputChange(field, null);
+    setUploadedFiles(prev => ({
+      ...prev,
+      [field]: null
+    }));
+    
+    // Clear error if exists
+    if (errors[field]) {
+      setErrors(prev => ({
+        ...prev,
+        [field]: ''
+      }));
+    }
+  };
+
+  const validateForm = () => {
+    const newErrors = {};
+    
+    if (!formData.requester_name) newErrors.requester_name = 'กรุณากรอกชื่อ-นามสกุล';
+    if (!formData.requester_age) newErrors.requester_age = 'กรุณากรอกอายุ';
+    if (!formData.requester_id_card) newErrors.requester_id_card = 'กรุณากรอกเลขบัตรประชาชน';
+    else if (formData.requester_id_card.length !== 13) newErrors.requester_id_card = 'เลขบัตรประชาชนต้องมี 13 หลัก';
+    if (!formData.requester_house_number) newErrors.requester_house_number = 'กรุณากรอกเลขที่บ้าน';
+    if (!formData.requester_subdistrict) newErrors.requester_subdistrict = 'กรุณากรอกตำบล';
+    if (!formData.requester_district) newErrors.requester_district = 'กรุณากรอกอำเภอ';
+    if (!formData.requester_province) newErrors.requester_province = 'กรุณากรอกจังหวัด';
+    if (!formData.requester_phone) newErrors.requester_phone = 'กรุณากรอกเบอร์โทรศัพท์';
+    if (!formData.request_subject) newErrors.request_subject = 'กรุณากรอกหัวข้อคำร้อง';
+    if (!formData.request_details) newErrors.request_details = 'กรุณากรอกรายละเอียดคำร้อง';
+    if (!formData.captcha_answer) newErrors.captcha_answer = 'กรุณาป้อนรหัสตัวเลข';
+    else if (formData.captcha_answer !== captcha) newErrors.captcha_answer = 'รหัสตัวเลขไม่ถูกต้อง';
+    
+    setErrors(newErrors);
+    return Object.keys(newErrors).length === 0;
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
     
-    // Validation
-    if (!formData.requester_name || !formData.requester_age || !formData.request_subject || !formData.request_details) {
-      alert('กรุณากรอกข้อมูลที่จำเป็นให้ครบถ้วน');
-      return;
-    }
-    if (!formData.requester_id_card) {
-      alert('กรุณากรอกเลขบัตรประชาชน');
-      return;
-    }
-    if (formData.requester_id_card.length !== 13) {
-      alert('เลขบัตรประชาชนต้องมี 13 หลัก');
-      return;
-    }
-    if (!formData.captcha_answer) {
-      alert('กรุณากรอกรหัสยืนยัน');
+    if (!validateForm()) {
       return;
     }
 
@@ -225,9 +314,92 @@ export default function GeneralRequestPage() {
       };
 
       console.log("Submitting general request:", requestData);
+      // Prepare form data for API
+      const thaiMonths = ['มกราคม', 'กุมภาพันธ์', 'มีนาคม', 'เมษายน', 'พฤษภาคม', 'มิถุนายน', 'กรกฎาคม', 'สิงหาคม', 'กันยายน', 'ตุลาคม', 'พฤศจิกายน', 'ธันวาคม'];
+      
+      const requestData = {
+        request_date: `${parseInt(formData.request_year) - 543}-${String(
+          thaiMonths.indexOf(formData.request_month) + 1
+        ).padStart(2, "0")}-${String(formData.request_day).padStart(2, "0")}`,
+        requester_title: formData.requester_title || null,
+        requester_name: formData.requester_name || null,
+        requester_age: formData.requester_age ? parseInt(formData.requester_age) : null,
+        requester_nationality: formData.requester_nationality || 'ไทย',
+        requester_id_card: formData.requester_id_card || null,
+        requester_house_number: formData.requester_house_number || null,
+        requester_village: formData.requester_village || null,
+        requester_subdistrict: formData.requester_subdistrict || null,
+        requester_district: formData.requester_district || null,
+        requester_province: formData.requester_province || null,
+        requester_postal_code: formData.requester_postal_code || null,
+        requester_phone: formData.requester_phone || null,
+        request_subject: formData.request_subject || null,
+        request_details: formData.request_details || null,
+        document_1: formData.document_1 || null,
+        document_2: formData.document_2 || null,
+        document_3: formData.document_3 || null,
+        other_document_1: formData.other_document_1 || null,
+        other_document_2: formData.other_document_2 || null,
+        captcha_answer: formData.captcha_answer || null,
+        ip_address: null, // Will be set by server
+        user_agent: navigator.userAgent || null,
+      };
+
+      console.log("Submitting general request:", requestData);
 
       const result = await generalRequestsAPI.createRequest(requestData);
+      const result = await generalRequestsAPI.createRequest(requestData);
 
+      if (!result.success) {
+        throw new Error(result.error || "Failed to submit request");
+      }
+
+      console.log("General request submitted successfully:", result);
+
+      setSubmitSuccess(true);
+      
+      // Reset form
+      setFormData({
+        request_date: new Date().toISOString().split('T')[0],
+        request_day: new Date().getDate().toString(),
+        request_month: ['มกราคม', 'กุมภาพันธ์', 'มีนาคม', 'เมษายน', 'พฤษภาคม', 'มิถุนายน', 'กรกฎาคม', 'สิงหาคม', 'กันยายน', 'ตุลาคม', 'พฤศจิกายน', 'ธันวาคม'][new Date().getMonth()],
+        request_year: (new Date().getFullYear() + 543).toString(),
+        requester_title: 'นาย',
+        requester_name: '',
+        requester_age: '',
+        requester_id_card: '',
+        requester_nationality: 'ไทย',
+        requester_house_number: '',
+        requester_village: '',
+        requester_subdistrict: '',
+        requester_district: '',
+        requester_province: '',
+        requester_postal_code: '',
+        requester_phone: '',
+        request_subject: '',
+        request_details: '',
+        document_1: null,
+        document_2: null,
+        document_3: null,
+        other_document_1: null,
+        other_document_2: null,
+        captcha_answer: ''
+      });
+      
+      setUploadedFiles({
+        document_1: null,
+        document_2: null,
+        document_3: null,
+        other_document_1: null,
+        other_document_2: null,
+      });
+      
+      setCaptcha(generateCaptcha());
+      
+      // Reset success message after 5 seconds
+      setTimeout(() => {
+        setSubmitSuccess(false);
+      }, 5000);
       if (!result.success) {
         throw new Error(result.error || "Failed to submit request");
       }
@@ -285,6 +457,12 @@ export default function GeneralRequestPage() {
         submit:
           error.message || "เกิดข้อผิดพลาดในการส่งคำร้อง กรุณาลองใหม่อีกครั้ง",
       }));
+      console.error("Error submitting general request:", error);
+      setErrors((prev) => ({
+        ...prev,
+        submit:
+          error.message || "เกิดข้อผิดพลาดในการส่งคำร้อง กรุณาลองใหม่อีกครั้ง",
+      }));
     } finally {
       setSubmitting(false);
     }
@@ -320,7 +498,18 @@ export default function GeneralRequestPage() {
                 <li>• ดำเนินการตามความเหมาะสมและเป็นไปได้</li>
               </ul>
             </div>
+            <div className="bg-green-50 border border-green-200 rounded-lg p-4 mb-4">
+              <h3 className="font-semibold text-green-800 mb-2">
+                ขั้นตอนต่อไป:
+              </h3>
+              <ul className="text-sm text-green-700 space-y-1">
+                <li>• เจ้าหน้าที่จะตรวจสอบและพิจารณาคำร้อง</li>
+                <li>• ติดต่อกลับภายใน 3-5 วันทำการ</li>
+                <li>• ดำเนินการตามความเหมาะสมและเป็นไปได้</li>
+              </ul>
+            </div>
             <p className="text-sm text-gray-500">
+              หากมีข้อสงสัยเพิ่มเติม กรุณาติดต่อเทศบาลตำบลบ้านโพธิ์
               หากมีข้อสงสัยเพิ่มเติม กรุณาติดต่อเทศบาลตำบลบ้านโพธิ์
             </p>
           </div>
@@ -491,6 +680,7 @@ export default function GeneralRequestPage() {
                 </div>
 
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
                   <div>
                     <label className="block text-sm font-medium text-gray-700 mb-1">
                       ชื่อ-นามสกุล <span className="text-red-500">*</span>
@@ -499,6 +689,9 @@ export default function GeneralRequestPage() {
                       type="text"
                       value={formData.requester_name}
                       onChange={(e) => handleInputChange('requester_name', e.target.value)}
+                      className={`w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent ${
+                        errors.requester_name ? 'border-red-500' : 'border-gray-300'
+                      }`}
                       className={`w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent ${
                         errors.requester_name ? 'border-red-500' : 'border-gray-300'
                       }`}
@@ -526,17 +719,24 @@ export default function GeneralRequestPage() {
                   </div>
                   <div>
                     <label className="block text-sm font-medium text-gray-700 mb-1">
-                      เลขบัตรประชาชน <span className="text-red-500">*</span>
+                      อายุ <span className="text-red-500">*</span>
                     </label>
-                    <input
-                      type="text"
-                      value={formData.requester_id_card}
-                      onChange={(e) => handleInputChange('requester_id_card', e.target.value)}
-                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
-                      placeholder="เลขบัตรประชาชน 13 หลัก"
-                      maxLength={13}
-                      required
-                    />
+                    <div className="flex items-center gap-2">
+                      <input
+                        type="number"
+                        value={formData.requester_age}
+                        onChange={(e) => handleInputChange('requester_age', e.target.value)}
+                        className={`w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent ${
+                          errors.requester_age ? 'border-red-500' : 'border-gray-300'
+                        }`}
+                        placeholder="อายุ"
+                        min="1"
+                        max="120"
+                        required
+                      />
+                      <span className="text-sm text-gray-600">ปี</span>
+                    </div>
+                    {errors.requester_age && <p className="text-red-500 text-sm mt-1">{errors.requester_age}</p>}
                   </div>
                 </div>
 
@@ -738,6 +938,75 @@ export default function GeneralRequestPage() {
                       </>
                     );
                   })()}
+                  {/* File Upload Component */}
+                  {(() => {
+                    const FileUploadField = ({ field, label }) => {
+                      const isUploading = uploadingFiles[field];
+                      const uploadedFile = uploadedFiles[field];
+                      const hasError = errors[field];
+
+                      return (
+                        <div>
+                          <label className="block text-sm font-medium text-gray-700 mb-2">
+                            {label}
+                          </label>
+                          
+                          {!uploadedFile ? (
+                            <div className="relative">
+                              <input
+                                type="file"
+                                accept=".pdf,.jpg,.jpeg,.png,.doc,.docx"
+                                onChange={(e) => handleFileUpload(field, e.target.files[0])}
+                                disabled={isUploading}
+                                className={`w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent ${
+                                  hasError ? 'border-red-500' : 'border-gray-300'
+                                } ${isUploading ? 'opacity-50 cursor-not-allowed' : ''}`}
+                              />
+                              {isUploading && (
+                                <div className="absolute inset-0 flex items-center justify-center bg-white bg-opacity-75 rounded-lg">
+                                  <div className="flex items-center gap-2 text-purple-600">
+                                    <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-purple-600"></div>
+                                    <span className="text-sm">กำลังอัปโหลด...</span>
+                                  </div>
+                                </div>
+                              )}
+                            </div>
+                          ) : (
+                            <div className="flex items-center gap-2 p-3 bg-purple-50 border border-purple-200 rounded-lg">
+                              <FileText className="text-purple-600" size={16} />
+                              <span className="text-sm text-purple-700 flex-1">{uploadedFile.name}</span>
+                              <button
+                                type="button"
+                                onClick={() => handleFileRemove(field)}
+                                className="text-red-500 hover:text-red-700 p-1"
+                                title="ลบไฟล์"
+                              >
+                                <X size={16} />
+                              </button>
+                            </div>
+                          )}
+                          
+                          <p className="text-xs text-gray-500 mt-1">รองรับไฟล์: PDF, JPG, PNG, DOC, DOCX (ขนาดสูงสุด 10MB)</p>
+                          {hasError && <p className="text-red-500 text-sm mt-1">{hasError}</p>}
+                        </div>
+                      );
+                    };
+
+                    return (
+                      <>
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                          <FileUploadField field="document_1" label="เอกสารประกอบ 1" />
+                          <FileUploadField field="document_2" label="เอกสารประกอบ 2" />
+                        </div>
+                        
+                        <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                          <FileUploadField field="document_3" label="เอกสารประกอบ 3" />
+                          <FileUploadField field="other_document_1" label="เอกสารอื่นๆ 1" />
+                          <FileUploadField field="other_document_2" label="เอกสารอื่นๆ 2" />
+                        </div>
+                      </>
+                    );
+                  })()}
                 </div>
               </div>
 
@@ -801,12 +1070,28 @@ export default function GeneralRequestPage() {
                 </div>
               )}
 
+              {/* Submit Error */}
+              {errors.submit && (
+                <div className="bg-red-50 border-l-4 border-red-400 p-4">
+                  <div className="flex">
+                    <div className="flex-shrink-0">
+                      <AlertCircle className="text-red-400" size={20} />
+                    </div>
+                    <div className="ml-3">
+                      <p className="text-sm text-red-700">{errors.submit}</p>
+                    </div>
+                  </div>
+                </div>
+              )}
+
               {/* Submit Button */}
               <div className="pt-4">
                 <button
                   type="submit"
                   disabled={submitting || Object.values(uploadingFiles).some(uploading => uploading)}
+                  disabled={submitting || Object.values(uploadingFiles).some(uploading => uploading)}
                   className={`w-full py-3 px-4 rounded-lg font-medium transition-all duration-200 ${
+                    submitting || Object.values(uploadingFiles).some(uploading => uploading)
                     submitting || Object.values(uploadingFiles).some(uploading => uploading)
                       ? 'bg-gray-400 cursor-not-allowed text-white' 
                       : 'bg-gradient-to-r from-purple-500 to-purple-600 hover:from-purple-600 hover:to-purple-700 text-white shadow-lg hover:shadow-xl transform hover:scale-105'
@@ -817,6 +1102,7 @@ export default function GeneralRequestPage() {
                       <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-white"></div>
                       กำลังส่งคำร้อง...
                     </span>
+                  ) : Object.values(uploadingFiles).some(uploading => uploading) ? (
                   ) : Object.values(uploadingFiles).some(uploading => uploading) ? (
                     <span className="flex items-center justify-center gap-2">
                       <div className="animate-spin rounded-full h-5 w-5 border-b-2 border-white"></div>
