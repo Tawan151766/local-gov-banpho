@@ -5,7 +5,7 @@ import { useState } from "react";
 export default function HeroSection({ ui }) {
   const [activeSlide, setActiveSlide] = useState(0);
   const [showBanner, setShowBanner] = useState(true);
-  const slides = ["/image/เทศบาล.png", "/image/yak.jpg", "/image/yak.jpg"];
+  const slides = ["/image/บ้านโพ2.png", "/image/yak.jpg", "/image/yak.jpg"];
 
   const handleDotClick = (index) => {
     setActiveSlide(index);

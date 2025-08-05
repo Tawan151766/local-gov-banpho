@@ -186,44 +186,9 @@ export default function ManagementSection() {
 
     
   const managementTeam1 = [
-    {
-      position: 1,
-      name: "ปลัดเทศบาล",
-      title: "นายวรยศ กิจพานิช",
-      phone: "099-261-2498",
-      imageSrc: "/image/Avatar.png", 
-    },
-    {
-      position: 2,
-      name: "ผู้อำนวยการกองช่าง",
-      title: "นายพิเชฐ สระอุบล",
-      phone: "089-833-3244",
-      imageSrc: "/image/Avatar.png", 
-    },
-    {
-      position: 3,
-      name: "หัวหน้าสำนักปลัด",
-      title: "นางสาววิไลรัตน์ ขาวมรดก",
-      phone: "092-459-0549",
-      imageSrc: "/image/Avatar.png", 
-    },
-    {
-      position: 4,
-      name: "ผู้อำนวยการกองการศึกษา",
-      title: "นายวรยศ กิจพานิช",
-      phone: "099-261-2498",
-      imageSrc: "/image/Avatar.png", 
-    },
-    {
-      position: 5,
-      name: "รองปลัดเทศบาล",
-      title: "นายภูธัชป์   โพธ์สวัสดิ์",
-      phone: "099-261-2498",
-      imageSrc: "/image/Avatar.png", 
-    },
-  ];
 
-  const managementTeam2 = [
+
+
     {
       position: 1,
       name: "ที่ปรึกษานายกเทศมนตรี",
@@ -259,6 +224,62 @@ export default function ManagementSection() {
       phone: "-",
       imageSrc: "/image/Avatar.png", 
     },
+
+
+
+
+
+
+
+  ];
+
+  const managementTeam2 = [
+
+
+    {
+      position:1,
+      name: "ผู้อำนวยการกองช่าง",
+      title: "นายพิเชฐ สระอุบล",
+      phone: "089-833-3244",
+      imageSrc: "/image/Avatar.png", 
+    },
+  
+    {
+      position: 2,
+      name: "หัวหน้าสำนักปลัด",
+      title: "นางสาววิไลรัตน์ ขาวมรดก",
+      phone: "092-459-0549",
+      imageSrc: "/image/Avatar.png", 
+    },
+  
+  
+    {
+      position: 3,
+      name: "ปลัดเทศบาล",
+      title: "นายวรยศ กิจพานิช",
+      phone: "099-261-2498",
+      imageSrc: "/image/Avatar.png", 
+    },
+  
+    {
+      position: 4,
+      name: "รองปลัดเทศบาล",
+      title: "นายภูธัชป์   โพธ์สวัสดิ์",
+      phone: "099-261-2498",
+      imageSrc: "/image/Avatar.png", 
+    },
+  
+  
+    {
+      position: 5,
+      name: "ผู้อำนวยการกองการศึกษา",
+      title: "นายวรยศ กิจพานิช",
+      phone: "099-261-2498",
+      imageSrc: "/image/Avatar.png", 
+    },
+
+
+
   ];
 
   return (
