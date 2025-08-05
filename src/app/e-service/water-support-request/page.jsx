@@ -1,6 +1,7 @@
 "use client";
 import { useState } from "react";
 import {  User, Home, Phone, Users, FileText, AlertCircle, RefreshCcw, Send, Waves } from "lucide-react";
+import { waterSupportRequestsAPI } from "@/lib/api";
 
 export default function WaterSupportRequestForm() {
   const [formData, setFormData] = useState({
@@ -8,11 +9,13 @@ export default function WaterSupportRequestForm() {
     month: 'กรกฎาคม',
     year: '2568',
     gender: '',
+    requesterName: '',
+    requesterAge: '',
     houseNumber: '',
     village: '',
     subDistrict: 'ตำบลบ้านโพธิ์',
     district: 'อำเภอบ้านโพธิ์',
-    province: 'จังหวาดเชียงใหม่',
+    province: 'จังหวัดฉะเชิงเทรา',
     phone: '',
     familyMembers: '',
     needsWater: '',
@@ -52,12 +55,21 @@ export default function WaterSupportRequestForm() {
         [field]: ''
       }));
     }
+
+    // Clear submit error when user makes changes
+    if (errors.submit) {
+      setErrors(prev => ({
+        ...prev,
+        submit: ''
+      }));
+    }
   };
 
   const validateForm = () => {
     const newErrors = {};
     
     if (!formData.gender) newErrors.gender = 'กรุณาเลือกคำนำหน้า';
+    if (!formData.requesterName) newErrors.requesterName = 'กรุณากรอกชื่อ-นามสกุล';
     if (!formData.houseNumber) newErrors.houseNumber = 'กรุณากรอกเลขที่บ้าน';
     if (!formData.village) newErrors.village = 'กรุณากรอกหมู่ที่';
     if (!formData.needsWater) newErrors.needsWater = 'กรุณาระบุความต้องการใช้น้ำ';
@@ -81,33 +93,72 @@ export default function WaterSupportRequestForm() {
     setIsSubmitting(true);
     
     try {
-      // Simulate API call
-      await new Promise(resolve => setTimeout(resolve, 2000));
+      // Prepare form data for API
+      const requestData = {
+        request_date: `${formData.year}-${String(
+          thaiMonths.indexOf(formData.month) + 1
+        ).padStart(2, "0")}-${String(formData.day).padStart(2, "0")}`,
+        requester_title: formData.gender || null,
+        requester_name: formData.requesterName || null,
+        requester_age: formData.requesterAge ? parseInt(formData.requesterAge) : null,
+        requester_house_number: formData.houseNumber || null,
+        requester_village: formData.village || null,
+        requester_subdistrict: formData.subDistrict || "ตำบลบ้านโพธิ์",
+        requester_district: formData.district || "อำเภอบ้านโพธิ์",
+        requester_province: formData.province || "จังหวัดฉะเชิงเทรา",
+        requester_phone: formData.phone || null,
+        family_members: formData.familyMembers ? parseInt(formData.familyMembers) : null,
+        water_needs: formData.needsWater || null,
+        symptoms_description: formData.symptoms || null,
+        captcha_answer: formData.captcha || null,
+        ip_address: null, // Will be set by server
+        user_agent: navigator.userAgent || null,
+      };
+
+      console.log("Submitting water support request:", requestData);
+
+      const result = await waterSupportRequestsAPI.createRequest(requestData);
+
+      if (!result.success) {
+        throw new Error(result.error || "Failed to submit request");
+      }
+
+      console.log("Water support request submitted successfully:", result);
       
       setSubmitSuccess(true);
+      
+      // Reset form
       setFormData({
         day: '31',
         month: 'กรกฎาคม',
         year: '2568',
         gender: '',
+        requesterName: '',
+        requesterAge: '',
         houseNumber: '',
         village: '',
         subDistrict: 'ตำบลบ้านโพธิ์',
         district: 'อำเภอบ้านโพธิ์',
-        province: 'จังหวาดเชียงใหม่',
+        province: 'จังหวัดฉะเชิงเทรา',
         phone: '',
         familyMembers: '',
         needsWater: '',
         symptoms: '',
+        requester_id_card: '',
         captcha: ''
       });
       
-      // Reset success message after 3 seconds
+      // Reset success message after 5 seconds
       setTimeout(() => {
         setSubmitSuccess(false);
-      }, 3000);
+      }, 5000);
     } catch (error) {
-      console.error('Error submitting form:', error);
+      console.error("Error submitting water support request:", error);
+      setErrors((prev) => ({
+        ...prev,
+        submit:
+          error.message || "เกิดข้อผิดพลาดในการส่งคำร้อง กรุณาลองใหม่อีกครั้ง",
+      }));
     } finally {
       setIsSubmitting(false);
     }
@@ -133,8 +184,18 @@ export default function WaterSupportRequestForm() {
             <p className="text-gray-600 mb-4">
               คำร้องขอสนับสนุนน้ำอุปโภค-บริโภคของคุณได้รับการบันทึกเรียบร้อยแล้ว
             </p>
+            <div className="bg-green-50 border border-green-200 rounded-lg p-4 mb-4">
+              <h3 className="font-semibold text-green-800 mb-2">
+                ขั้นตอนต่อไป:
+              </h3>
+              <ul className="text-sm text-green-700 space-y-1">
+                <li>• เจ้าหน้าที่จะตรวจสอบข้อมูลและสำรวจพื้นที่</li>
+                <li>• ติดต่อกลับภายใน 3-5 วันทำการ</li>
+                <li>• ดำเนินการจัดหาน้ำตามความเหมาะสม</li>
+              </ul>
+            </div>
             <p className="text-sm text-gray-500">
-              เจ้าหน้าที่จะติดต่อกลับภายใน 3-5 วันทำการ
+              หากมีข้อสงสัยเพิ่มเติม กรุณาติดต่อเทศบาลตำบลบ้านโพธิ์
             </p>
           </div>
         </div>
@@ -283,6 +344,42 @@ export default function WaterSupportRequestForm() {
                   {errors.gender && <p className="text-red-500 text-sm mt-1">{errors.gender}</p>}
                 </div>
 
+                {/* Name and Age */}
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                      ชื่อ-นามสกุล <span className="text-red-500">*</span>
+                    </label>
+                    <input
+                      type="text"
+                      value={formData.requesterName}
+                      onChange={(e) => handleInputChange('requesterName', e.target.value)}
+                      className={`w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent ${
+                        errors.requesterName ? 'border-red-500' : 'border-gray-300'
+                      }`}
+                      placeholder="ชื่อ-นามสกุล"
+                    />
+                    {errors.requesterName && <p className="text-red-500 text-sm mt-1">{errors.requesterName}</p>}
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                      อายุ
+                    </label>
+                    <div className="flex items-center gap-2">
+                      <input
+                        type="number"
+                        value={formData.requesterAge}
+                        onChange={(e) => handleInputChange('requesterAge', e.target.value)}
+                        className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                        placeholder="อายุ"
+                        min="1"
+                        max="120"
+                      />
+                      <span className="text-sm text-gray-600">ปี</span>
+                    </div>
+                  </div>
+                </div>
+
                 {/* Address */}
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
                   <div>
@@ -319,7 +416,7 @@ export default function WaterSupportRequestForm() {
 
                 <div className="bg-gray-50 rounded-lg p-3 mb-4">
                   <p className="text-sm text-gray-700">
-                    <span className="font-medium">📍 ที่อยู่:</span> ตำบลบ้านโพธิ์ อำเภอบ้านโพธิ์ จังหวาดเชียงใหม่
+                    <span className="font-medium">📍 ที่อยู่:</span> ตำบลบ้านโพธิ์ อำเภอบ้านโพธิ์ จังหวัดฉะเชิงเทรา
                   </p>
                 </div>
 
@@ -458,6 +555,20 @@ export default function WaterSupportRequestForm() {
                 </div>
                 {errors.captcha && <p className="text-red-500 text-sm mt-1">{errors.captcha}</p>}
               </div>
+
+              {/* Submit Error */}
+              {errors.submit && (
+                <div className="bg-red-50 border-l-4 border-red-400 p-4">
+                  <div className="flex">
+                    <div className="flex-shrink-0">
+                      <AlertCircle className="text-red-400" size={20} />
+                    </div>
+                    <div className="ml-3">
+                      <p className="text-sm text-red-700">{errors.submit}</p>
+                    </div>
+                  </div>
+                </div>
+              )}
 
               {/* Submit Button */}
               <div className="pt-4">
