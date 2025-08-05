@@ -25,6 +25,7 @@ export async function POST() {
         -- ข้อมูลผู้ยื่นคำร้อง (Requester Information)
         requester_title VARCHAR(20) NOT NULL,
         requester_name VARCHAR(255) NOT NULL,
+        requester_id_card VARCHAR(20),
         requester_age INT NOT NULL,
         requester_house_number VARCHAR(50) NOT NULL,
         requester_street VARCHAR(100),
@@ -39,8 +40,8 @@ export async function POST() {
         delivery_village VARCHAR(100) NOT NULL,
         
         -- เอกสารประกอบ (Documents)
-        house_registration_doc VARCHAR(255),
-        id_card_doc VARCHAR(255),
+        house_registration VARCHAR(255),
+        id_card VARCHAR(255),
         document_1 VARCHAR(255),
         document_2 VARCHAR(255),
         document_3 VARCHAR(255),
