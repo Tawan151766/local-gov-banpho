@@ -256,7 +256,7 @@ export default function AnnouncementSections() {
                     <img
                       src="image/annu.jpg"
                       alt="Announcement PDF"
-                      className="w-12 h-12 sm:w-[1180px] sm:h-[380px]" 
+                      className="w-full h-auto max-h-[380px] object-cover rounded-lg"
                     />
                   ) : announcements[current]?.videos?.length > 0 ? (
                     <svg
