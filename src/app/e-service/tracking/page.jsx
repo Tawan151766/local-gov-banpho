@@ -15,6 +15,17 @@ import {
 import { GlassWater, FileText, Calendar, User } from "lucide-react";
 
 export default function TrackingPage() {
+      <div className="mb-4">
+        <label className="block text-sm font-medium text-gray-700 mb-1">เลขบัตรประชาชน (ถ้ามี)</label>
+        <input
+          type="text"
+          value={formData.requester_id_card || ""}
+          onChange={(e) => handleInputChange("requester_id_card", e.target.value)}
+          className="w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent border-gray-300"
+          placeholder="เลขบัตรประชาชน 13 หลัก"
+          maxLength={13}
+        />
+      </div>
   const [searchQuery, setSearchQuery] = useState("");
   const [selectedService, setSelectedService] = useState("all");
   const [selectedStatus, setSelectedStatus] = useState("all");

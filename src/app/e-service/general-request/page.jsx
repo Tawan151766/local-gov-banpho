@@ -13,6 +13,7 @@ export default function GeneralRequestPage() {
     requester_title: 'นาย',
     requester_name: '',
     requester_age: '',
+    requester_id_card: '',
     requester_nationality: 'ไทย',
     requester_house_number: '',
     requester_village: '',
@@ -78,7 +79,14 @@ export default function GeneralRequestPage() {
       alert('กรุณากรอกข้อมูลที่จำเป็นให้ครบถ้วน');
       return;
     }
-
+    if (!formData.requester_id_card) {
+      alert('กรุณากรอกเลขบัตรประชาชน');
+      return;
+    }
+    if (formData.requester_id_card.length !== 13) {
+      alert('เลขบัตรประชาชนต้องมี 13 หลัก');
+      return;
+    }
     if (!formData.captcha_answer) {
       alert('กรุณากรอกรหัสยืนยัน');
       return;
@@ -221,7 +229,7 @@ export default function GeneralRequestPage() {
           </div>
 
           {/* Form */}
-          <div className="p-6">
+          <div className="p-6 text-gray-700">
 
             <form onSubmit={handleSubmit} className="space-y-6">
               {/* Date Section */}
@@ -351,19 +359,17 @@ export default function GeneralRequestPage() {
                   </div>
                   <div>
                     <label className="block text-sm font-medium text-gray-700 mb-1">
-                      อายุ <span className="text-red-500">*</span>
+                      เลขบัตรประชาชน <span className="text-red-500">*</span>
                     </label>
-                    <div className="flex items-center gap-2">
-                      <input
-                        type="number"
-                        value={formData.requester_age}
-                        onChange={(e) => handleInputChange('requester_age', e.target.value)}
-                        className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
-                        placeholder="อายุ"
-                        required
-                      />
-                      <span className="text-sm text-gray-600">ปี</span>
-                    </div>
+                    <input
+                      type="text"
+                      value={formData.requester_id_card}
+                      onChange={(e) => handleInputChange('requester_id_card', e.target.value)}
+                      className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-purple-500 focus:border-transparent"
+                      placeholder="เลขบัตรประชาชน 13 หลัก"
+                      maxLength={13}
+                      required
+                    />
                   </div>
                 </div>
 

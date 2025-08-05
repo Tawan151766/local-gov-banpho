@@ -252,7 +252,7 @@ export default function WasteCollectionForm() {
           </div>
 
           {/* Form */}
-          <div className="p-6">
+          <div className="p-6 text-gray-700">
             <form onSubmit={handleSubmit} className="space-y-6">
               {/* Date Section */}
               <div className="bg-gray-50 rounded-lg p-4 text-right">

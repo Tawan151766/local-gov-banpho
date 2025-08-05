@@ -17,6 +17,7 @@ export default function WaterSupportRequestForm() {
     familyMembers: '',
     needsWater: '',
     symptoms: '',
+    requester_id_card: '',
     captcha: ''
   });
 
@@ -61,6 +62,8 @@ export default function WaterSupportRequestForm() {
     if (!formData.village) newErrors.village = 'กรุณากรอกหมู่ที่';
     if (!formData.needsWater) newErrors.needsWater = 'กรุณาระบุความต้องการใช้น้ำ';
     if (!formData.symptoms) newErrors.symptoms = 'กรุณาระบุอาการและประเภท';
+    if (!formData.requester_id_card) newErrors.requester_id_card = 'กรุณากรอกเลขบัตรประชาชน';
+    else if (formData.requester_id_card.length !== 13) newErrors.requester_id_card = 'เลขบัตรประชาชนต้องมี 13 หลัก';
     if (!formData.captcha) newErrors.captcha = 'กรุณาป้อนรหัสตัวเลข';
     else if (formData.captcha !== captchaValue) newErrors.captcha = 'รหัสตัวเลขไม่ถูกต้อง';
     
@@ -232,7 +235,7 @@ export default function WaterSupportRequestForm() {
               </div>
 
               {/* Personal Information */}
-              <div className="bg-white border-2 border-gray-100 rounded-lg p-4">
+              <div className="bg-white border-2 border-gray-100 rounded-lg p-4 text-gray-700">
                 <h3 className="text-lg font-semibold text-gray-800 mb-4 flex items-center gap-2">
                   <User className="text-blue-600" size={20} /> ข้อมูลผู้ยื่นคำร้อง
                 </h3>
@@ -323,9 +326,9 @@ export default function WaterSupportRequestForm() {
                 {/* Contact Info */}
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                   <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1 flex items-center gap-1">
-                    <Phone className="text-blue-600" size={16} /> หมายเลขโทรศัพท์
-                  </label>
+                    <label className="block text-sm font-medium text-gray-700 mb-1 flex items-center gap-1">
+                      <Phone className="text-blue-600" size={16} /> หมายเลขโทรศัพท์
+                    </label>
                     <input
                       type="tel"
                       value={formData.phone}
@@ -335,9 +338,9 @@ export default function WaterSupportRequestForm() {
                     />
                   </div>
                   <div>
-                  <label className="block text-sm font-medium text-gray-700 mb-1 flex items-center gap-1">
-                    <Users className="text-blue-600" size={16} /> จำนวนสมาชิกในครัวเรือน
-                  </label>
+                    <label className="block text-sm font-medium text-gray-700 mb-1 flex items-center gap-1">
+                      <Users className="text-blue-600" size={16} /> จำนวนสมาชิกในครัวเรือน
+                    </label>
                     <input
                       type="number"
                       value={formData.familyMembers}
@@ -346,6 +349,20 @@ export default function WaterSupportRequestForm() {
                       placeholder="จำนวนคน"
                       min="1"
                     />
+                  </div>
+                  <div>
+                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                      เลขบัตรประชาชน <span className="text-red-500">*</span>
+                    </label>
+                    <input
+                      type="text"
+                      value={formData.requester_id_card}
+                      onChange={(e) => handleInputChange('requester_id_card', e.target.value)}
+                      className={`w-full px-3 py-2 border rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent ${errors.requester_id_card ? 'border-red-500' : 'border-gray-300'}`}
+                      placeholder="เลขบัตรประชาชน 13 หลัก"
+                      maxLength={13}
+                    />
+                    {errors.requester_id_card && <p className="text-red-500 text-sm mt-1">{errors.requester_id_card}</p>}
                   </div>
                 </div>
               </div>
