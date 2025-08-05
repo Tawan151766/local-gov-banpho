@@ -209,7 +209,7 @@ export default function NewsSection() {
             />
           </div>
 
-          <div className="left-content max-h-[500px] sm:max-h-[700px] lg:h-[calc(100%-200px)] overflow-y-auto px-2 sm:px-4 md:px-8">
+          <div className="left-content h-full lg:h-[calc(100%-200px)] overflow-y-auto px-2 sm:px-4 md:px-8">
             {loading ? (
               // Loading State
               <div className="space-y-4">
@@ -288,7 +288,7 @@ export default function NewsSection() {
               onClick={() => {
                 window.location.href = "/news";
               }}
-              className="mt-4 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+              className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors absolute bottom-5"
             >
               ดูเพิ่มเติม
             </button>
@@ -378,7 +378,7 @@ export default function NewsSection() {
                 กับเราที่นี่
               </div>
               <div className="sub-text text-base sm:text-[20px] font-medium mb-6 sm:mb-[75px]">
-                Line@
+                Line@banphocity
               </div>
             </div>
 
@@ -391,6 +391,33 @@ export default function NewsSection() {
               />
             </div>
           </div>
+          {/* ปฏิทินกิจกรรม */}
+          <a
+            href="/calendar" // เปลี่ยน path ได้ตามจริง
+            className="service-button line-friend relative h-[160px] sm:h-[240px] rounded-xl sm:rounded-[35px] bg-gradient-to-b from-[#B7D3FF] to-[#5A89D0] shadow-[0_2px_4px_rgba(0,0,0,0.18)] sm:shadow-[0_4px_4px_rgba(0,0,0,0.25)] flex flex-col justify-center items-center p-3 sm:p-5 font-prompt text-[#1E1E1E] w-full cursor-pointer transition-all duration-300 hover:scale-[1.05] hover:shadow-lg focus:outline-none focus:ring-4 focus:ring-green-300"
+          >
+            <div className="flex flex-col items-center">
+              <div className="text-white bg-[#1E1E1E] p-4 rounded-full shadow-md mb-4">
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  className="w-9 h-9 sm:w-10 sm:h-10 text-white"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke="currentColor"
+                  strokeWidth="2"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    d="M8 7V3m8 4V3M5 11h14M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"
+                  />
+                </svg>
+              </div>
+              <div className="main-text text-lg sm:text-[32px] font-semibold whitespace-nowrap leading-[1.2] text-center">
+                ปฏิทินกิจกรรม
+              </div>
+            </div>
+          </a>
         </div>
       </div>
     </section>

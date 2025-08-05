@@ -12,6 +12,11 @@
   "dependencies": {
     "@ant-design/icons": "^6.0.0",
     "@prisma/client": "^6.12.0",
+    "@schedule-x/calendar": "^2.36.0",
+    "@schedule-x/drag-and-drop": "^2.36.0",
+    "@schedule-x/events-service": "^2.36.0",
+    "@schedule-x/react": "^2.36.0",
+    "@schedule-x/theme-default": "^2.36.0",
     "antd": "^5.26.6",
     "axios": "^1.11.0",
     "bcryptjs": "^3.0.2",
