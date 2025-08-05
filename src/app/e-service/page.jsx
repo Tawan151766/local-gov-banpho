@@ -75,6 +75,12 @@ export default function EServicePage() {
               Electronic Service
             </span>
           </div>
+          <Link
+            href="/admin/dashboard"
+            className="absolute right-6 top-1/2 transform -translate-y-1/2 bg-white bg-opacity-20 hover:bg-opacity-30 text-white px-3 py-2 rounded-lg text-sm font-medium transition-all duration-200 backdrop-blur-sm"
+          >
+            Admin
+          </Link>
         </div>
       </div>
 
