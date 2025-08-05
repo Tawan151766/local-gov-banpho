@@ -288,7 +288,7 @@ export default function NewsSection() {
               onClick={() => {
                 window.location.href = "/news";
               }}
-              className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors absolute bottom-8"
+              className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors absolute bottom-5"
             >
               ดูเพิ่มเติม
             </button>
