@@ -25,6 +25,7 @@ export async function POST() {
         -- ข้อมูลผู้ยื่นคำร้อง (Requester Information)
         requester_title ENUM('นาย', 'นาง', 'นางสาว') NOT NULL,
         requester_name VARCHAR(255) NOT NULL,
+        requester_id_card VARCHAR(20),
         requester_age INT NOT NULL,
         requester_nationality VARCHAR(100) NOT NULL DEFAULT 'ไทย',
         requester_house_number VARCHAR(50) NOT NULL,
