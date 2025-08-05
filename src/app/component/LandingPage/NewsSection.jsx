@@ -209,7 +209,7 @@ export default function NewsSection() {
             />
           </div>
 
-          <div className="left-content max-h-[500px] sm:max-h-[700px] lg:h-[calc(100%-200px)] overflow-y-auto px-2 sm:px-4 md:px-8">
+          <div className="left-content h-full lg:h-[calc(100%-200px)] overflow-y-auto px-2 sm:px-4 md:px-8">
             {loading ? (
               // Loading State
               <div className="space-y-4">
@@ -288,7 +288,7 @@ export default function NewsSection() {
               onClick={() => {
                 window.location.href = "/news";
               }}
-              className="mt-4 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+              className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors absolute bottom-8"
             >
               ดูเพิ่มเติม
             </button>
