@@ -1,5 +1,6 @@
 "use client";
 import React, { useState, useEffect, useRef } from "react";
+import Translator from './Translator.jsx'
 
 export default function Navbar() {
   const [showMenu, setShowMenu] = useState(false);
@@ -75,6 +76,8 @@ export default function Navbar() {
     { value: "cn", label: "🇨🇳 中文" },
     { value: "la", label: "🇱🇦 ລາວ" },
   ];
+
+  
 
   // Component สำหรับ Dropdown
   const DropdownMenu = ({ items, isActive, width = "w-80" }) => (
@@ -229,10 +232,12 @@ export default function Navbar() {
                 เทศบาลตำบลบ้านโพธิ์
               </span>
               <span className="text-white text-xs md:text-sm opacity-80">
-                Ban Pho Subdistrict, Chachoengsao
+                Ban Pho Subdistrict Municipality
               </span>
             </div>
           </a>
+
+          
 
           {/* Top Menu Items - Desktop Only */}
           <div className="hidden md:flex flex-row items-center gap-4 mt-0">
@@ -242,6 +247,10 @@ export default function Navbar() {
                 <option key={lang.value} value={lang.value}>{lang.label}</option>
               ))}
             </select>
+
+            {/* <Translator /> */}
+
+
 
             {/* Blind Icon */}
             <div className="bg-white rounded-sm p-2 cursor-pointer shadow hover:shadow-md transition-shadow">
