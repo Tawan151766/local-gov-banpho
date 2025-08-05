@@ -11,6 +11,7 @@ import {
   Trash2,
 } from "lucide-react";
 import { wasteCollectionRequestsAPI } from "@/lib/api";
+import { wasteCollectionRequestsAPI } from "@/lib/api";
 
 export default function WasteCollectionForm() {
   const [formData, setFormData] = useState({
@@ -20,6 +21,7 @@ export default function WasteCollectionForm() {
     // ข้อมูลผู้ยื่นคำร้อง
     requesterTitle: "นาย",
     requesterName: "",
+    requesterIdCard: "",
     requesterIdCard: "",
     requesterAge: "",
     requesterHouseNumber: "",
@@ -32,7 +34,9 @@ export default function WasteCollectionForm() {
     wasteTypes: {
       household: false,
       rental: false,
+      rental: false,
       shop: false,
+      factory: false,
       factory: false,
     },
     otherWasteType: "",
@@ -92,6 +96,14 @@ export default function WasteCollectionForm() {
         submit: "",
       }));
     }
+
+    // Clear submit error when user makes changes
+    if (errors.submit) {
+      setErrors((prev) => ({
+        ...prev,
+        submit: "",
+      }));
+    }
   };
 
   const handleWasteTypeChange = (type, checked) => {
@@ -114,7 +126,8 @@ export default function WasteCollectionForm() {
       newErrors.requesterIdCard = "กรุณากรอกเลขบัตรประชาชน";
     else if (formData.requesterIdCard.length !== 13)
       newErrors.requesterIdCard = "เลขบัตรประชาชนต้องมี 13 หลัก";
-    if (!formData.requesterAge) newErrors.requesterAge = "กรุณากรอกอายุ";
+    if (!formData.requesterAge) 
+      newErrors.requesterAge = "กรุณากรอกอายุ";
     if (!formData.requesterHouseNumber)
       newErrors.requesterHouseNumber = "กรุณากรอกเลขที่บ้าน";
     if (!formData.requesterVillage)
@@ -158,9 +171,7 @@ export default function WasteCollectionForm() {
         requester_title: formData.requesterTitle || null,
         requester_name: formData.requesterName || null,
         requester_id_card: formData.requesterIdCard || null,
-        requester_age: formData.requesterAge
-          ? parseInt(formData.requesterAge)
-          : null,
+        requester_age: formData.requesterAge ? parseInt(formData.requesterAge) : null,
         requester_house_number: formData.requesterHouseNumber || null,
         requester_village: formData.requesterVillage || null,
         requester_subdistrict: formData.requesterSubdistrict || "ตำบลบ้านโพธิ์",
@@ -181,18 +192,16 @@ export default function WasteCollectionForm() {
 
       console.log("Submitting waste collection request:", requestData);
 
-      const result = await wasteCollectionRequestsAPI.createRequest(
-        requestData
-      );
+      const result = await wasteCollectionRequestsAPI.createRequest(requestData);
 
       if (!result.success) {
         throw new Error(result.error || "Failed to submit request");
       }
 
       console.log("Waste collection request submitted successfully:", result);
-
+      
       setSubmitSuccess(true);
-
+      
       // Reset form
       setFormData({
         day: "1",
@@ -200,6 +209,7 @@ export default function WasteCollectionForm() {
         year: "2568",
         requesterTitle: "นาย",
         requesterName: "",
+        requesterIdCard: "",
         requesterIdCard: "",
         requesterAge: "",
         requesterHouseNumber: "",
@@ -211,7 +221,9 @@ export default function WasteCollectionForm() {
         wasteTypes: {
           household: false,
           rental: false,
+          rental: false,
           shop: false,
+          factory: false,
           factory: false,
         },
         otherWasteType: "",
@@ -225,6 +237,12 @@ export default function WasteCollectionForm() {
         setSubmitSuccess(false);
       }, 5000);
     } catch (error) {
+      console.error("Error submitting waste collection request:", error);
+      setErrors((prev) => ({
+        ...prev,
+        submit:
+          error.message || "เกิดข้อผิดพลาดในการส่งคำร้อง กรุณาลองใหม่อีกครั้ง",
+      }));
       console.error("Error submitting waste collection request:", error);
       setErrors((prev) => ({
         ...prev,
@@ -268,7 +286,18 @@ export default function WasteCollectionForm() {
                 <li>• จัดเก็บขยะตามรายละเอียดที่ระบุไว้</li>
               </ul>
             </div>
+            <div className="bg-green-50 border border-green-200 rounded-lg p-4 mb-4">
+              <h3 className="font-semibold text-green-800 mb-2">
+                ขั้นตอนต่อไป:
+              </h3>
+              <ul className="text-sm text-green-700 space-y-1">
+                <li>• เจ้าหน้าที่จะตรวจสอบข้อมูลและสถานที่</li>
+                <li>• ติดต่อกลับภายใน 3-5 วันทำการ</li>
+                <li>• จัดเก็บขยะตามรายละเอียดที่ระบุไว้</li>
+              </ul>
+            </div>
             <p className="text-sm text-gray-500">
+              หากมีข้อสงสัยเพิ่มเติม กรุณาติดต่อเทศบาลตำบลบ้านโพธิ์
               หากมีข้อสงสัยเพิ่มเติม กรุณาติดต่อเทศบาลตำบลบ้านโพธิ์
             </p>
           </div>
@@ -454,9 +483,7 @@ export default function WasteCollectionForm() {
                     />
                   </div>
                   {errors.requesterName && (
-                    <p className="text-red-500 text-sm">
-                      {errors.requesterName}
-                    </p>
+                    <p className="text-red-500 text-sm">{errors.requesterName}</p>
                   )}
 
                   {/* ID Card */}
@@ -466,22 +493,16 @@ export default function WasteCollectionForm() {
                     <input
                       type="text"
                       value={formData.requesterIdCard}
-                      onChange={(e) =>
-                        handleInputChange("requesterIdCard", e.target.value)
-                      }
+                      onChange={(e) => handleInputChange("requesterIdCard", e.target.value)}
                       className={`px-3 py-2 border rounded-lg focus:ring-2 focus:ring-orange-500 focus:border-transparent ${
-                        errors.requesterIdCard
-                          ? "border-red-500"
-                          : "border-gray-300"
+                        errors.requesterIdCard ? "border-red-500" : "border-gray-300"
                       }`}
                       placeholder="เลขบัตรประชาชน 13 หลัก"
                       maxLength={13}
                     />
                   </div>
                   {errors.requesterIdCard && (
-                    <p className="text-red-500 text-sm">
-                      {errors.requesterIdCard}
-                    </p>
+                    <p className="text-red-500 text-sm">{errors.requesterIdCard}</p>
                   )}
 
                   {/* Age */}
@@ -604,9 +625,7 @@ export default function WasteCollectionForm() {
                       <input
                         type="checkbox"
                         checked={formData.wasteTypes.rental}
-                        onChange={(e) =>
-                          handleWasteTypeChange("rental", e.target.checked)
-                        }
+                        onChange={(e) => handleWasteTypeChange('rental', e.target.checked)}
                         className="text-orange-600 focus:ring-orange-500"
                       />
                       <span className="text-sm">
@@ -630,9 +649,7 @@ export default function WasteCollectionForm() {
                       <input
                         type="checkbox"
                         checked={formData.wasteTypes.factory}
-                        onChange={(e) =>
-                          handleWasteTypeChange("factory", e.target.checked)
-                        }
+                        onChange={(e) => handleWasteTypeChange('factory', e.target.checked)}
                         className="text-orange-600 focus:ring-orange-500"
                       />
                       <span className="text-sm">4. โรงงาน / ประกอบธุรกิจ</span>
@@ -771,6 +788,20 @@ export default function WasteCollectionForm() {
                   </p>
                 )}
               </div>
+
+              {/* Submit Error */}
+              {errors.submit && (
+                <div className="bg-red-50 border-l-4 border-red-400 p-4">
+                  <div className="flex">
+                    <div className="flex-shrink-0">
+                      <AlertCircle className="text-red-400" size={20} />
+                    </div>
+                    <div className="ml-3">
+                      <p className="text-sm text-red-700">{errors.submit}</p>
+                    </div>
+                  </div>
+                </div>
+              )}
 
               {/* Submit Error */}
               {errors.submit && (
