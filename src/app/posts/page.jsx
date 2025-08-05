@@ -1,9 +1,9 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, Suspense } from "react";
 import { useSearchParams } from "next/navigation";
 
-export default function PostsPage() {
+function PostsPageContent() {
   const searchParams = useSearchParams();
   const typeParam = searchParams.get("type");
 
@@ -538,5 +538,55 @@ export default function PostsPage() {
         </div>
       </div>
     </div>
+  );
+}
+
+export default function PostsPage() {
+  return (
+    <Suspense
+      fallback={
+        <div
+          className="w-full min-h-screen py-8 px-2 md:px-8"
+          style={{
+            backgroundImage:
+              'linear-gradient(180deg, rgba(239, 228, 212, 0.6) 0%, rgba(1, 189, 204, 0.6) 100%), url("/image/Boat.jpg")',
+            backgroundSize: "cover",
+            backgroundPosition: "center",
+            backgroundRepeat: "no-repeat",
+          }}
+        >
+          <div className="w-full max-w-[1268px] mx-auto">
+            <div className="mb-8">
+              <h1 className="text-4xl font-bold text-[#01385f] mb-2 text-center">
+                กำลังโหลด...
+              </h1>
+              <p className="text-[#01385f] text-lg text-center">
+                องค์การบริหารส่วนตำบลบ้านโพธิ์
+              </p>
+            </div>
+            <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+              {[...Array(8)].map((_, idx) => (
+                <div
+                  key={idx}
+                  className="bg-white rounded-[29px] border-4 border-[#01bdcc] shadow-md p-6 flex flex-col gap-2 relative animate-pulse"
+                >
+                  <div className="flex flex-row items-center justify-between mb-2">
+                    <div className="h-6 bg-gray-300 rounded w-24"></div>
+                    <div className="h-8 bg-gray-300 rounded w-20"></div>
+                  </div>
+                  <div className="h-4 bg-gray-300 rounded w-full mb-2"></div>
+                  <div className="h-4 bg-gray-300 rounded w-3/4"></div>
+                  <div className="flex flex-row items-center justify-between mt-4">
+                    <div className="h-4 bg-gray-300 rounded w-16"></div>
+                  </div>
+                </div>
+              ))}
+            </div>
+          </div>
+        </div>
+      }
+    >
+      <PostsPageContent />
+    </Suspense>
   );
 }
