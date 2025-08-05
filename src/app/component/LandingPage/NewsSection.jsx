@@ -378,7 +378,7 @@ export default function NewsSection() {
                 กับเราที่นี่
               </div>
               <div className="sub-text text-base sm:text-[20px] font-medium mb-6 sm:mb-[75px]">
-                Line@
+                Line@banphocity
               </div>
             </div>
 
