@@ -17,11 +17,10 @@ export async function GET(request) {
   try {
     const url = new URL(request.url);
     const page = parseInt(url.searchParams.get("page")) || 1;
-    const limit = parseInt(url.searchParams.get("limit"));
+    const limitParam = url.searchParams.get("limit");
+    const limit = limitParam ? parseInt(limitParam) : null; // ถ้าไม่มี limit จะเป็น null
     const search = url.searchParams.get("search") || "";
     const postType = url.searchParams.get("type");
-
-    const offset = (page - 1) * limit;
 
     connection = await mysql.createConnection(dbConfig);
 
@@ -41,6 +40,16 @@ export async function GET(request) {
       params.push(`%${search}%`, `%${search}%`, `%${search}%`);
     }
 
+    // Build LIMIT clause
+    let limitClause = "";
+    const queryParams = [...params];
+    
+    if (limit !== null) {
+      const offset = (page - 1) * limit;
+      limitClause = "LIMIT ? OFFSET ?";
+      queryParams.push(limit, offset);
+    }
+
     // Get posts with file counts
     const [items] = await connection.execute(
       `
@@ -54,9 +63,9 @@ export async function GET(request) {
       LEFT JOIN post_types pt ON pd.post_type_id = pt.id
       ${whereClause}
       ORDER BY pd.date DESC, pd.created_at DESC
-      LIMIT ? OFFSET ?
-    `,
-      [...params, limit, offset]
+      ${limitClause}
+      `,
+      queryParams
     );
 
     // Get total count
@@ -66,24 +75,31 @@ export async function GET(request) {
       FROM post_details pd
       LEFT JOIN post_types pt ON pd.post_type_id = pt.id
       ${whereClause}
-    `,
+      `,
       params
     );
 
     const total = countResult[0].total;
-    const totalPages = Math.ceil(total / limit);
-
-    return NextResponse.json({
-      success: true,
-      data: items,
-      pagination: {
+    
+    // Pagination info (only if limit is specified)
+    let pagination = null;
+    if (limit !== null) {
+      const totalPages = Math.ceil(total / limit);
+      pagination = {
         page,
         limit,
         total,
         totalPages,
         hasNext: page < totalPages,
         hasPrev: page > 1,
-      },
+      };
+    }
+
+    return NextResponse.json({
+      success: true,
+      data: items,
+      total: total, // เพิ่มจำนวนทั้งหมดไว้ด้วย
+      pagination: pagination, // จะเป็น null ถ้าไม่มี limit
     });
   } catch (error) {
     console.error("Get posts error:", error);
@@ -157,7 +173,7 @@ export async function POST(request) {
           topic_name,
           details
         ) VALUES (?, ?, ?, ?, ?)
-      `,
+        `,
         [
           postTypeId,
           date || new Date().toISOString().split("T")[0],
@@ -174,7 +190,7 @@ export async function POST(request) {
         await connection.execute(
           `
           INSERT INTO post_pdfs (post_detail_id, post_pdf_file) VALUES (?, ?)
-        `,
+          `,
           [postDetailId, file_path]
         );
       }
@@ -193,7 +209,7 @@ export async function POST(request) {
         FROM post_details pd
         LEFT JOIN post_types pt ON pd.post_type_id = pt.id
         WHERE pd.id = ?
-      `,
+        `,
         [postDetailId]
       );
 
