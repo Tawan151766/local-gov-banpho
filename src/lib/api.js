@@ -1141,6 +1141,60 @@ export const createWaterSupportTablesAPI = {
   },
 };
 
+// General Requests API functions
+export const generalRequestsAPI = {
+  getRequests: async (params = {}) => {
+    const searchParams = new URLSearchParams();
+
+    if (params.page) searchParams.append("page", params.page);
+    if (params.limit) searchParams.append("limit", params.limit);
+    if (params.search) searchParams.append("search", params.search);
+    if (params.status) searchParams.append("status", params.status);
+
+    const queryString = searchParams.toString();
+    const endpoint = `/general-requests${queryString ? `?${queryString}` : ""}`;
+
+    return apiCall(endpoint);
+  },
+
+  getRequest: async (id) => {
+    return apiCall(`/general-requests/${id}`);
+  },
+
+  createRequest: async (requestData) => {
+    return apiCall("/general-requests", {
+      method: "POST",
+      body: JSON.stringify(requestData),
+    });
+  },
+
+  updateRequest: async (id, requestData) => {
+    return apiCall(`/general-requests/${id}`, {
+      method: "PUT",
+      body: JSON.stringify(requestData),
+    });
+  },
+
+  deleteRequest: async (id) => {
+    return apiCall(`/general-requests/${id}`, {
+      method: "DELETE",
+    });
+  },
+};
+
+// Create General Request Tables API
+export const createGeneralRequestTablesAPI = {
+  createTables: async () => {
+    return apiCall("/create-general-request-tables", {
+      method: "POST",
+    });
+  },
+
+  checkTables: async () => {
+    return apiCall("/create-general-request-tables");
+  },
+};
+
 // Export for easy use
 const apiExports = {
   qaAPI,
@@ -1169,6 +1223,8 @@ const apiExports = {
   createWasteCollectionTablesAPI,
   waterSupportRequestsAPI,
   createWaterSupportTablesAPI,
+  generalRequestsAPI,
+  createGeneralRequestTablesAPI,
   createCRUDAPI,
 };
 
