@@ -242,6 +242,7 @@ export default function Navbar() {
           {/* Top Menu Items - Desktop Only */}
           <div className="hidden md:flex flex-row items-center gap-4 mt-0">
             {/* Language Selector */}
+
             <select className="bg-white px-3 text-[#1E1E1E] text-sm font-medium shadow w-auto h-[30px] rounded-[15px] focus:outline-none">
               {languages.map((lang) => (
                 <option key={lang.value} value={lang.value}>{lang.label}</option>
