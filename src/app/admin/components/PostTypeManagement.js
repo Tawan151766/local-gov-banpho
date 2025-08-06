@@ -24,6 +24,8 @@ import {
   UploadOutlined,
   FileTextOutlined,
   SnippetsOutlined,
+  EyeInvisibleOutlined,
+  UnorderedListOutlined,
 } from "@ant-design/icons";
 
 const { TextArea } = Input;
@@ -121,6 +123,10 @@ export default function PostTypeManagement({ postType }) {
   // Modal states
   const [modalVisible, setModalVisible] = useState(false);
   const [viewModalVisible, setViewModalVisible] = useState(false);
+  const [fileUploadModalVisible, setFileUploadModalVisible] = useState(false);
+  const [imageUploadModalVisible, setImageUploadModalVisible] = useState(false);
+  const [videoUploadModalVisible, setVideoUploadModalVisible] = useState(false);
+  const [fileListModalVisible, setFileListModalVisible] = useState(false);
 
   // Form and editing states
   const [form] = Form.useForm();
@@ -130,6 +136,31 @@ export default function PostTypeManagement({ postType }) {
   // File upload states
   const [uploadedFilePath, setUploadedFilePath] = useState(null);
   const [uploadedFileData, setUploadedFileData] = useState(null);
+  const [currentUploadRecord, setCurrentUploadRecord] = useState(null);
+
+  // Image upload states
+  const [uploadedImagePath, setUploadedImagePath] = useState(null);
+  const [uploadedImageData, setUploadedImageData] = useState(null);
+  const [currentImageUploadRecord, setCurrentImageUploadRecord] =
+    useState(null);
+
+  // Video upload states
+  const [uploadedVideoPath, setUploadedVideoPath] = useState(null);
+  const [uploadedVideoData, setUploadedVideoData] = useState(null);
+  const [currentVideoUploadRecord, setCurrentVideoUploadRecord] =
+    useState(null);
+
+  // UI states
+  const [showUploadButtons, setShowUploadButtons] = useState(false);
+
+  // File list states
+  const [currentFileListRecord, setCurrentFileListRecord] = useState(null);
+  const [fileListData, setFileListData] = useState({
+    pdfs: [],
+    photos: [],
+    videos: [],
+  });
+  const [loadingFiles, setLoadingFiles] = useState(false);
 
   const config = POST_TYPES[postType] || POST_TYPES["general-news"];
 
@@ -232,9 +263,6 @@ export default function PostTypeManagement({ postType }) {
     } catch (error) {
       console.warn("Error resetting form:", error);
     }
-
-    setUploadedFilePath(null);
-    setUploadedFileData(null);
   };
 
   const handleEdit = (record) => {
@@ -249,23 +277,34 @@ export default function PostTypeManagement({ postType }) {
     } catch (error) {
       console.warn("Error setting form values:", error);
     }
-
-    // Load existing file if any
-    if (record.file_path) {
-      setUploadedFilePath(record.file_path);
-      setUploadedFileData({
-        file_path: record.file_path,
-        original_name: record.file_path.split("/").pop(),
-      });
-    } else {
-      setUploadedFilePath(null);
-      setUploadedFileData(null);
-    }
   };
 
-  const handleView = (record) => {
-    setSelectedRecord(record);
-    setViewModalVisible(true);
+  const handleFileUpload = (record) => {
+    setCurrentUploadRecord(record);
+    setUploadedFilePath(record.file_path || null);
+    setUploadedFileData(
+      record.file_path
+        ? {
+            file_path: record.file_path,
+            original_name: record.file_path.split("/").pop(),
+          }
+        : null
+    );
+    setFileUploadModalVisible(true);
+  };
+
+  const handleImageUpload = (record) => {
+    setCurrentImageUploadRecord(record);
+    setUploadedImagePath(null);
+    setUploadedImageData(null);
+    setImageUploadModalVisible(true);
+  };
+
+  const handleVideoUpload = (record) => {
+    setCurrentVideoUploadRecord(record);
+    setUploadedVideoPath(null);
+    setUploadedVideoData(null);
+    setVideoUploadModalVisible(true);
   };
 
   const handleDelete = async (id) => {
@@ -317,14 +356,13 @@ export default function PostTypeManagement({ postType }) {
         return;
       }
 
-      // Add post type and file_path to values
+      // Add post type to values
       const submitData = {
         title_name: values.title_name,
         topic_name: values.topic_name,
         details: values.details,
         date: values.date,
         post_type: config.type,
-        file_path: uploadedFileData?.file_path || null,
       };
 
       const url = editingRecord
@@ -362,9 +400,6 @@ export default function PostTypeManagement({ postType }) {
           console.warn("Error resetting form after submit:", error);
         }
 
-        setUploadedFilePath(null);
-        setUploadedFileData(null);
-
         // Reload current page data
         loadPosts(pagination.current, pagination.pageSize);
       } else {
@@ -380,6 +415,339 @@ export default function PostTypeManagement({ postType }) {
       });
     } finally {
       setLoading(false);
+    }
+  };
+
+  const handleFileUploadSubmit = async () => {
+    if (!currentUploadRecord || !uploadedFileData) {
+      notification.error({
+        message: "เกิดข้อผิดพลาด",
+        description: "กรุณาเลือกไฟล์ก่อนบันทึก",
+      });
+      return;
+    }
+
+    try {
+      setLoading(true);
+
+      // Create new post_pdf record instead of updating post_details
+      // Remove /storage prefix from file path
+      const cleanFilePath = uploadedFileData.file_path.replace("/storage", "");
+
+      const postPdfData = {
+        post_detail_id: currentUploadRecord.id,
+        post_pdf_file: cleanFilePath, // "/uploads/1754499265_tawan.pdf"
+      };
+
+      console.log("Sending post PDF data:", postPdfData);
+
+      const response = await fetch("/api/post-pdfs", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(postPdfData),
+      });
+
+      console.log("Response status:", response.status);
+      console.log("Response headers:", response.headers);
+
+      if (!response.ok) {
+        // Check if response is HTML (404 page) or JSON error
+        const contentType = response.headers.get("content-type");
+        if (contentType && contentType.includes("text/html")) {
+          throw new Error(
+            `API endpoint not found: /api/post-pdfs (${response.status})`
+          );
+        } else {
+          const errorData = await response.json();
+          throw new Error(
+            errorData.error || `HTTP error! status: ${response.status}`
+          );
+        }
+      }
+
+      const data = await response.json();
+
+      if (data.success) {
+        notification.success({
+          message: "สำเร็จ",
+          description: "อัพโหลดไฟล์สำเร็จ",
+        });
+        setFileUploadModalVisible(false);
+        setUploadedFilePath(null);
+        setUploadedFileData(null);
+        setCurrentUploadRecord(null);
+        loadPosts(pagination.current, pagination.pageSize);
+      } else {
+        notification.error({
+          message: "เกิดข้อผิดพลาด",
+          description: data.error || "เกิดข้อผิดพลาดในการบันทึกไฟล์",
+        });
+      }
+    } catch (error) {
+      console.error("File upload error:", error);
+
+      // Special handling for JSON parse errors
+      if (error.message.includes("Unexpected token")) {
+        notification.error({
+          message: "เกิดข้อผิดพลาด",
+          description:
+            "API endpoint /api/post-pdfs ยังไม่ได้สร้าง กรุณาสร้าง API endpoint นี้ก่อน",
+        });
+      } else {
+        notification.error({
+          message: "เกิดข้อผิดพลาด",
+          description: error.message || "เกิดข้อผิดพลาดในการบันทึกไฟล์",
+        });
+      }
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleImageUploadSubmit = async () => {
+    if (!currentImageUploadRecord || !uploadedImageData) {
+      notification.error({
+        message: "เกิดข้อผิดพลาด",
+        description: "กรุณาเลือกไฟล์รูปภาพก่อนบันทึก",
+      });
+      return;
+    }
+
+    try {
+      setLoading(true);
+
+      // Create new post_photo record
+      const cleanFilePath = uploadedImageData.file_path.replace("/storage", "");
+
+      const postPhotoData = {
+        post_detail_id: currentImageUploadRecord.id,
+        post_photo_file: cleanFilePath,
+        post_photo_status: "1", // Active status as string
+      };
+
+      console.log("Sending post photo data:", postPhotoData);
+
+      const response = await fetch("/api/post-photos", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(postPhotoData),
+      });
+
+      if (!response.ok) {
+        const contentType = response.headers.get("content-type");
+        if (contentType && contentType.includes("text/html")) {
+          throw new Error(
+            `API endpoint not found: /api/post-photos (${response.status})`
+          );
+        } else {
+          const errorData = await response.json();
+          throw new Error(
+            errorData.error || `HTTP error! status: ${response.status}`
+          );
+        }
+      }
+
+      const data = await response.json();
+
+      if (data.success) {
+        notification.success({
+          message: "สำเร็จ",
+          description: "อัพโหลดรูปภาพสำเร็จ",
+        });
+        setImageUploadModalVisible(false);
+        setUploadedImagePath(null);
+        setUploadedImageData(null);
+        setCurrentImageUploadRecord(null);
+        loadPosts(pagination.current, pagination.pageSize);
+      } else {
+        notification.error({
+          message: "เกิดข้อผิดพลาด",
+          description: data.error || "เกิดข้อผิดพลาดในการบันทึกรูปภาพ",
+        });
+      }
+    } catch (error) {
+      console.error("Image upload error:", error);
+
+      notification.error({
+        message: "เกิดข้อผิดพลาด",
+        description: error.message || "เกิดข้อผิดพลาดในการบันทึกรูปภาพ",
+      });
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleVideoUploadSubmit = async () => {
+    if (!currentVideoUploadRecord || !uploadedVideoData) {
+      notification.error({
+        message: "เกิดข้อผิดพลาด",
+        description: "กรุณาเลือกไฟล์วิดีโอก่อนบันทึก",
+      });
+      return;
+    }
+
+    try {
+      setLoading(true);
+
+      // Create new post_video record
+      const cleanFilePath = uploadedVideoData.file_path.replace("/storage", "");
+
+      const postVideoData = {
+        post_detail_id: currentVideoUploadRecord.id,
+        post_video_file: cleanFilePath,
+      };
+
+      console.log("Sending post video data:", postVideoData);
+
+      const response = await fetch("/api/post-videos", {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(postVideoData),
+      });
+
+      if (!response.ok) {
+        const contentType = response.headers.get("content-type");
+        if (contentType && contentType.includes("text/html")) {
+          throw new Error(
+            `API endpoint not found: /api/post-videos (${response.status})`
+          );
+        } else {
+          const errorData = await response.json();
+          throw new Error(
+            errorData.error || `HTTP error! status: ${response.status}`
+          );
+        }
+      }
+
+      const data = await response.json();
+
+      if (data.success) {
+        notification.success({
+          message: "สำเร็จ",
+          description: "อัพโหลดวิดีโอสำเร็จ",
+        });
+        setVideoUploadModalVisible(false);
+        setUploadedVideoPath(null);
+        setUploadedVideoData(null);
+        setCurrentVideoUploadRecord(null);
+        loadPosts(pagination.current, pagination.pageSize);
+      } else {
+        notification.error({
+          message: "เกิดข้อผิดพลาด",
+          description: data.error || "เกิดข้อผิดพลาดในการบันทึกวิดีโอ",
+        });
+      }
+    } catch (error) {
+      console.error("Video upload error:", error);
+
+      notification.error({
+        message: "เกิดข้อผิดพลาด",
+        description: error.message || "เกิดข้อผิดพลาดในการบันทึกวิดีโอ",
+      });
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const handleViewFileList = async (record) => {
+    setCurrentFileListRecord(record);
+    setFileListModalVisible(true);
+    await loadFilesList(record.id);
+  };
+
+  const loadFilesList = async (postDetailId) => {
+    try {
+      setLoadingFiles(true);
+
+      // Load PDFs
+      const pdfsResponse = await fetch(
+        `/api/post-pdfs?post_detail_id=${postDetailId}`
+      );
+      const pdfsData = await pdfsResponse.json();
+
+      // Load Photos
+      const photosResponse = await fetch(
+        `/api/post-photos?post_detail_id=${postDetailId}`
+      );
+      const photosData = await photosResponse.json();
+
+      // Load Videos
+      const videosResponse = await fetch(
+        `/api/post-videos?post_detail_id=${postDetailId}`
+      );
+      const videosData = await videosResponse.json();
+
+      setFileListData({
+        pdfs: pdfsData.success ? pdfsData.data : [],
+        photos: photosData.success ? photosData.data : [],
+        videos: videosData.success ? videosData.data : [],
+      });
+    } catch (error) {
+      console.error("Error loading files list:", error);
+      notification.error({
+        message: "เกิดข้อผิดพลาด",
+        description: "เกิดข้อผิดพลาดในการโหลดรายการไฟล์",
+      });
+    } finally {
+      setLoadingFiles(false);
+    }
+  };
+
+  const handleDeleteFile = async (fileId, fileType) => {
+    try {
+      let apiEndpoint = "";
+      switch (fileType) {
+        case "pdf":
+          apiEndpoint = `/api/post-pdfs?id=${fileId}`;
+          break;
+        case "photo":
+          apiEndpoint = `/api/post-photos?id=${fileId}`;
+          break;
+        case "video":
+          apiEndpoint = `/api/post-videos?id=${fileId}`;
+          break;
+        default:
+          return;
+      }
+
+      const response = await fetch(apiEndpoint, {
+        method: "DELETE",
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
+
+      const data = await response.json();
+
+      if (data.success) {
+        notification.success({
+          message: "สำเร็จ",
+          description: "ลบไฟล์สำเร็จ",
+        });
+
+        // Reload files list
+        await loadFilesList(currentFileListRecord.id);
+
+        // Reload posts to update file counts
+        loadPosts(pagination.current, pagination.pageSize);
+      } else {
+        notification.error({
+          message: "เกิดข้อผิดพลาด",
+          description: data.error || "เกิดข้อผิดพลาดในการลบไฟล์",
+        });
+      }
+    } catch (error) {
+      console.error("Delete file error:", error);
+      notification.error({
+        message: "เกิดข้อผิดพลาด",
+        description: "เกิดข้อผิดพลาดในการลบไฟล์",
+      });
     }
   };
 
@@ -488,8 +856,11 @@ export default function PostTypeManagement({ postType }) {
 
           <div>
             <Text type="secondary" style={{ fontSize: "12px" }}>
-              รองรับไฟล์: PDF, DOC, DOCX, XLS, XLSX, PPT, PPTX | ขนาดไฟล์สูงสุด:{" "}
-              {maxSize}MB
+              {accept?.includes(".mp4")
+                ? `รองรับไฟล์: MP4, AVI, MOV, WMV, FLV, WebM, MKV | ขนาดไฟล์สูงสุด: ${maxSize}MB`
+                : accept?.includes(".png")
+                ? `รองรับไฟล์: PNG, JPG, JPEG, GIF, WebP, SVG | ขนาดไฟล์สูงสุด: ${maxSize}MB`
+                : `รองรับไฟล์: PDF, DOC, DOCX, XLS, XLSX, PPT, PPTX | ขนาดไฟล์สูงสุด: ${maxSize}MB`}
             </Text>
           </div>
         </Space>
@@ -524,23 +895,97 @@ export default function PostTypeManagement({ postType }) {
       dataIndex: "date",
       key: "date",
       width: 120,
+      render: (date) => {
+        return new Date(date).toLocaleDateString("th-TH", {
+          year: "numeric",
+          month: "2-digit",
+          day: "2-digit",
+        });
+      },
     },
     {
       title: "ไฟล์แนบ",
       key: "files",
+      width: 200,
       render: (_, record) => {
+        const totalFiles =
+          (record.pdfs_count || 0) +
+          (record.photos_count || 0) +
+          (record.videos_count || 0);
+
         return (
-          <Space>
-            {record.pdfs_count > 0 ? (
-              <Tag icon={<FileTextOutlined />} color="green">
-                {record.pdfs_count} ไฟล์
-              </Tag>
+          <Space direction="vertical" size="small">
+            {totalFiles > 0 ? (
+              <Button
+                size="small"
+                type="link"
+                icon={<UnorderedListOutlined />}
+                onClick={() => handleViewFileList(record)}
+              >
+                ดูรายการไฟล์
+              </Button>
             ) : (
-              <Tag color="default">ไม่มีไฟล์</Tag>
+              <Text type="secondary">ไม่มีไฟล์แนบ</Text>
             )}
           </Space>
         );
       },
+    },
+    {
+      title: "อัพโหลดไฟล์",
+      key: "upload",
+      width: showUploadButtons ? 350 : 120,
+      render: (_, record) => (
+        <Space direction="vertical" size="small">
+          <Button
+            size="small"
+            type="text"
+            icon={
+              showUploadButtons ? <EyeInvisibleOutlined /> : <EyeOutlined />
+            }
+            onClick={() => setShowUploadButtons(!showUploadButtons)}
+            style={{
+              padding: "2px 8px",
+              height: "auto",
+              fontSize: "12px",
+              color: "#666",
+            }}
+          >
+            {showUploadButtons ? "ซ่อน" : "กดเพื่อ Upload"}
+          </Button>
+
+          {showUploadButtons && (
+            <Space>
+              <Button
+                size="small"
+                icon={<UploadOutlined />}
+                onClick={() => handleFileUpload(record)}
+                type="dashed"
+              >
+                PDF
+              </Button>
+              <Button
+                size="small"
+                icon={<UploadOutlined />}
+                onClick={() => handleImageUpload(record)}
+                type="dashed"
+                style={{ color: "#52c41a", borderColor: "#52c41a" }}
+              >
+                รูปภาพ
+              </Button>
+              <Button
+                size="small"
+                icon={<UploadOutlined />}
+                onClick={() => handleVideoUpload(record)}
+                type="dashed"
+                style={{ color: "#722ed1", borderColor: "#722ed1" }}
+              >
+                วิดีโอ
+              </Button>
+            </Space>
+          )}
+        </Space>
+      ),
     },
     {
       title: "การจัดการ",
@@ -548,13 +993,6 @@ export default function PostTypeManagement({ postType }) {
       width: 200,
       render: (_, record) => (
         <Space>
-          <Button
-            size="small"
-            icon={<EyeOutlined />}
-            onClick={() => handleView(record)}
-          >
-            ดู
-          </Button>
           <Button
             type="primary"
             size="small"
@@ -597,9 +1035,6 @@ export default function PostTypeManagement({ postType }) {
               ทั้งหมด {pagination.total} รายการ
             </Text>
           </div>
-          <Button type="primary" icon={<PlusOutlined />} onClick={handleCreate}>
-            เพิ่ม{config.title}
-          </Button>
         </div>
 
         <Table
@@ -641,19 +1076,6 @@ export default function PostTypeManagement({ postType }) {
             <TextArea rows={6} placeholder="กรอกรายละเอียด" />
           </Form.Item>
 
-          <Form.Item label="ไฟล์แนบ">
-            <FileUpload
-              value={uploadedFilePath}
-              onChange={(filePath, fileData) => {
-                setUploadedFilePath(filePath);
-                setUploadedFileData(fileData);
-              }}
-              placeholder={`เลือกไฟล์${config.title}`}
-              accept=".pdf,.doc,.docx,.xls,.xlsx,.ppt,.pptx,.png,.jpg,.jpeg,.gif"
-              maxSize={10}
-            />
-          </Form.Item>
-
           <Form.Item>
             <Space>
               <Button type="primary" htmlType="submit" loading={loading}>
@@ -665,55 +1087,357 @@ export default function PostTypeManagement({ postType }) {
         </Form>
       </Modal>
 
-      {/* View Modal */}
+      {/* File Upload Modal */}
       <Modal
-        title={`ดู${config.title}`}
-        open={viewModalVisible}
-        onCancel={() => setViewModalVisible(false)}
+        title={`อัพโหลดไฟล์ - ${currentUploadRecord?.title_name || ""}`}
+        open={fileUploadModalVisible}
+        onCancel={() => {
+          setFileUploadModalVisible(false);
+          setUploadedFilePath(null);
+          setUploadedFileData(null);
+          setCurrentUploadRecord(null);
+        }}
         footer={[
-          <Button key="close" onClick={() => setViewModalVisible(false)}>
+          <Button
+            key="cancel"
+            onClick={() => {
+              setFileUploadModalVisible(false);
+              setUploadedFilePath(null);
+              setUploadedFileData(null);
+              setCurrentUploadRecord(null);
+            }}
+          >
+            ยกเลิก
+          </Button>,
+          <Button
+            key="submit"
+            type="primary"
+            loading={loading}
+            onClick={handleFileUploadSubmit}
+            disabled={!uploadedFileData}
+          >
+            บันทึกไฟล์
+          </Button>,
+        ]}
+        width={600}
+      >
+        <div style={{ padding: "20px 0" }}>
+          <FileUpload
+            value={uploadedFilePath}
+            onChange={(filePath, fileData) => {
+              setUploadedFilePath(filePath);
+              setUploadedFileData(fileData);
+            }}
+            placeholder={`เลือกไฟล์${config.title}`}
+            accept=".pdf,.doc,.docx,.xls,.xlsx,.ppt,.pptx,.png,.jpg,.jpeg,.gif"
+            maxSize={10}
+          />
+        </div>
+      </Modal>
+
+      {/* Image Upload Modal */}
+      <Modal
+        title={`อัพโหลดรูปภาพ - ${currentImageUploadRecord?.title_name || ""}`}
+        open={imageUploadModalVisible}
+        onCancel={() => {
+          setImageUploadModalVisible(false);
+          setUploadedImagePath(null);
+          setUploadedImageData(null);
+          setCurrentImageUploadRecord(null);
+        }}
+        footer={[
+          <Button
+            key="cancel"
+            onClick={() => {
+              setImageUploadModalVisible(false);
+              setUploadedImagePath(null);
+              setUploadedImageData(null);
+              setCurrentImageUploadRecord(null);
+            }}
+          >
+            ยกเลิก
+          </Button>,
+          <Button
+            key="submit"
+            type="primary"
+            loading={loading}
+            onClick={handleImageUploadSubmit}
+            disabled={!uploadedImageData}
+          >
+            บันทึกรูปภาพ
+          </Button>,
+        ]}
+        width={600}
+      >
+        <div style={{ padding: "20px 0" }}>
+          <FileUpload
+            value={uploadedImagePath}
+            onChange={(filePath, fileData) => {
+              setUploadedImagePath(filePath);
+              setUploadedImageData(fileData);
+            }}
+            placeholder="เลือกไฟล์รูปภาพ"
+            accept=".png,.jpg,.jpeg,.gif,.webp,.svg"
+            maxSize={10}
+          />
+        </div>
+      </Modal>
+
+      {/* Video Upload Modal */}
+      <Modal
+        title={`อัพโหลดวิดีโอ - ${currentVideoUploadRecord?.title_name || ""}`}
+        open={videoUploadModalVisible}
+        onCancel={() => {
+          setVideoUploadModalVisible(false);
+          setUploadedVideoPath(null);
+          setUploadedVideoData(null);
+          setCurrentVideoUploadRecord(null);
+        }}
+        footer={[
+          <Button
+            key="cancel"
+            onClick={() => {
+              setVideoUploadModalVisible(false);
+              setUploadedVideoPath(null);
+              setUploadedVideoData(null);
+              setCurrentVideoUploadRecord(null);
+            }}
+          >
+            ยกเลิก
+          </Button>,
+          <Button
+            key="submit"
+            type="primary"
+            loading={loading}
+            onClick={handleVideoUploadSubmit}
+            disabled={!uploadedVideoData}
+          >
+            บันทึกวิดีโอ
+          </Button>,
+        ]}
+        width={600}
+      >
+        <div style={{ padding: "20px 0" }}>
+          <FileUpload
+            value={uploadedVideoPath}
+            onChange={(filePath, fileData) => {
+              setUploadedVideoPath(filePath);
+              setUploadedVideoData(fileData);
+            }}
+            placeholder="เลือกไฟล์วิดีโอ"
+            accept=".mp4,.avi,.mov,.wmv,.flv,.webm,.mkv"
+            maxSize={50}
+          />
+        </div>
+      </Modal>
+
+      {/* File List Modal */}
+      <Modal
+        title={`รายการไฟล์ - ${currentFileListRecord?.title_name || ""}`}
+        open={fileListModalVisible}
+        onCancel={() => {
+          setFileListModalVisible(false);
+          setCurrentFileListRecord(null);
+          setFileListData({ pdfs: [], photos: [], videos: [] });
+        }}
+        footer={[
+          <Button
+            key="close"
+            onClick={() => {
+              setFileListModalVisible(false);
+              setCurrentFileListRecord(null);
+              setFileListData({ pdfs: [], photos: [], videos: [] });
+            }}
+          >
             ปิด
           </Button>,
         ]}
         width={800}
       >
-        {selectedRecord && (
-          <div>
-            <Title level={5}>{selectedRecord.title_name}</Title>
-            <p>
-              <strong>หัวข้อ:</strong>{" "}
-              {selectedRecord.topic_name || "ไม่มีหัวข้อ"}
-            </p>
-            <p>
-              <strong>วันที่:</strong> {selectedRecord.date}
-            </p>
-            <p>
-              <strong>รายละเอียด:</strong>
-            </p>
-            <div
-              style={{
-                whiteSpace: "pre-wrap",
-                backgroundColor: "#f5f5f5",
-                padding: "12px",
-                borderRadius: "4px",
-              }}
-            >
-              {selectedRecord.details}
+        <div style={{ padding: "20px 0" }}>
+          {loadingFiles ? (
+            <div style={{ textAlign: "center", padding: "20px" }}>
+              <Text>กำลังโหลดรายการไฟล์...</Text>
             </div>
-            {selectedRecord.pdfs_count > 0 && (
-              <p>
-                <strong>ไฟล์แนบ:</strong> {selectedRecord.pdfs_count} ไฟล์
-              </p>
-            )}
-            <p>
-              <strong>แท็ก:</strong> {selectedRecord.tags}
-            </p>
-            <p>
-              <strong>สถานะ:</strong>{" "}
-              {selectedRecord.is_active ? "เปิดใช้งาน" : "ปิดใช้งาน"}
-            </p>
-          </div>
-        )}
+          ) : (
+            <div>
+              {/* PDFs Section */}
+              {fileListData.pdfs.length > 0 && (
+                <div style={{ marginBottom: "24px" }}>
+                  <Title level={5} style={{ color: "#1890ff" }}>
+                    <FileTextOutlined /> ไฟล์ PDF ({fileListData.pdfs.length})
+                  </Title>
+                  <div
+                    style={{
+                      background: "#f5f5f5",
+                      padding: "12px",
+                      borderRadius: "6px",
+                    }}
+                  >
+                    {fileListData.pdfs.map((pdf) => (
+                      <div
+                        key={pdf.id}
+                        style={{
+                          display: "flex",
+                          justifyContent: "space-between",
+                          alignItems: "center",
+                          padding: "8px 0",
+                          borderBottom: "1px solid #e8e8e8",
+                        }}
+                      >
+                        <Space>
+                          <FileTextOutlined style={{ color: "#1890ff" }} />
+                          <Button 
+                            type="link" 
+                            style={{ padding: 0 }}
+                            onClick={() => window.open(`https://banpho.sosmartsolution.com/storage${pdf.post_pdf_file}`, '_blank')}
+                          >
+                            {pdf.post_pdf_file.split("/").pop()}
+                          </Button>
+                        </Space>
+                        <Popconfirm
+                          title="คุณแน่ใจหรือไม่ที่จะลบไฟล์นี้?"
+                          onConfirm={() => handleDeleteFile(pdf.id, "pdf")}
+                          okText="ใช่"
+                          cancelText="ไม่"
+                        >
+                          <Button size="small" danger icon={<DeleteOutlined />}>
+                            ลบ
+                          </Button>
+                        </Popconfirm>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
+
+              {/* Photos Section */}
+              {fileListData.photos.length > 0 && (
+                <div style={{ marginBottom: "24px" }}>
+                  <Title level={5} style={{ color: "#52c41a" }}>
+                    <EyeOutlined /> ไฟล์รูปภาพ ({fileListData.photos.length})
+                  </Title>
+                  <div
+                    style={{
+                      background: "#f6ffed",
+                      padding: "12px",
+                      borderRadius: "6px",
+                    }}
+                  >
+                    {fileListData.photos.map((photo) => (
+                      <div
+                        key={photo.id}
+                        style={{
+                          display: "flex",
+                          justifyContent: "space-between",
+                          alignItems: "center",
+                          padding: "8px 0",
+                          borderBottom: "1px solid #e8e8e8",
+                        }}
+                      >
+                        <Space>
+                          <EyeOutlined style={{ color: "#52c41a" }} />
+                          <Button 
+                            type="link" 
+                            style={{ padding: 0 }}
+                            onClick={() => window.open(`https://banpho.sosmartsolution.com/storage${photo.post_photo_file}`, '_blank')}
+                          >
+                            {photo.post_photo_file.split("/").pop()}
+                          </Button>
+                          <Tag
+                            color={
+                              photo.post_photo_status === "1" ? "green" : "red"
+                            }
+                            size="small"
+                          >
+                            {photo.post_photo_status === "1"
+                              ? "เปิดใช้งาน"
+                              : "ปิดใช้งาน"}
+                          </Tag>
+                        </Space>
+                        <Popconfirm
+                          title="คุณแน่ใจหรือไม่ที่จะลบไฟล์นี้?"
+                          onConfirm={() => handleDeleteFile(photo.id, "photo")}
+                          okText="ใช่"
+                          cancelText="ไม่"
+                        >
+                          <Button size="small" danger icon={<DeleteOutlined />}>
+                            ลบ
+                          </Button>
+                        </Popconfirm>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
+
+              {/* Videos Section */}
+              {fileListData.videos.length > 0 && (
+                <div style={{ marginBottom: "24px" }}>
+                  <Title level={5} style={{ color: "#722ed1" }}>
+                    <UploadOutlined /> ไฟล์วิดีโอ ({fileListData.videos.length})
+                  </Title>
+                  <div
+                    style={{
+                      background: "#f9f0ff",
+                      padding: "12px",
+                      borderRadius: "6px",
+                    }}
+                  >
+                    {fileListData.videos.map((video) => (
+                      <div
+                        key={video.id}
+                        style={{
+                          display: "flex",
+                          justifyContent: "space-between",
+                          alignItems: "center",
+                          padding: "8px 0",
+                          borderBottom: "1px solid #e8e8e8",
+                        }}
+                      >
+                        <Space>
+                          <UploadOutlined style={{ color: "#722ed1" }} />
+                          <Button 
+                            type="link" 
+                            style={{ padding: 0 }}
+                            onClick={() => window.open(`https://banpho.sosmartsolution.com/storage${video.post_video_file}`, '_blank')}
+                          >
+                            {video.post_video_file.split("/").pop()}
+                          </Button>
+                        </Space>
+                        <Popconfirm
+                          title="คุณแน่ใจหรือไม่ที่จะลบไฟล์นี้?"
+                          onConfirm={() => handleDeleteFile(video.id, "video")}
+                          okText="ใช่"
+                          cancelText="ไม่"
+                        >
+                          <Button size="small" danger icon={<DeleteOutlined />}>
+                            ลบ
+                          </Button>
+                        </Popconfirm>
+                      </div>
+                    ))}
+                  </div>
+                </div>
+              )}
+
+              {/* No Files Message */}
+              {fileListData.pdfs.length === 0 &&
+                fileListData.photos.length === 0 &&
+                fileListData.videos.length === 0 && (
+                  <div
+                    style={{
+                      textAlign: "center",
+                      padding: "40px",
+                      color: "#999",
+                    }}
+                  >
+                    <Text>ไม่มีไฟล์แนบ</Text>
+                  </div>
+                )}
+            </div>
+          )}
+        </div>
       </Modal>
     </div>
   );
