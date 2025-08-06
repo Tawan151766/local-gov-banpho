@@ -444,7 +444,7 @@ export default function ManagementSection() {
         </h2>
 
         {/* Management Team 2 - Single Row Layout */}
-        <div className="hidden md:flex gap-50 px-1 py-20 justify-center items-end">
+        <div className="hidden md:flex gap-20 py-20 justify-center items-end ">
           <div className="max-w-[240px] min-h-[340px]">
             <ManagementCard2
               {...managementTeam2.find((m) => m.position === 1)}
