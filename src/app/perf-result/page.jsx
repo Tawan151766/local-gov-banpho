@@ -367,49 +367,6 @@ export default function PerfResultPage() {
             ))}
           </div>
         </div>
-
-        {/* Filter Section */}
-        <div className="bg-white bg-opacity-90 rounded-2xl shadow-md p-4 backdrop-blur-sm">
-          <h3 className="text-lg font-semibold text-gray-800 mb-3">
-            กรองตามประเภทย่อย
-          </h3>
-          <div className="flex flex-wrap gap-2">
-            <button
-              onClick={() => handleTypeFilter("")}
-              className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
-                selectedType === ""
-                  ? "bg-[#01bdcc] text-white"
-                  : "bg-white text-gray-700 border border-gray-300 hover:bg-gray-50"
-              }`}
-            >
-              ทั้งหมด
-            </button>
-            {getFilteredTypes().map((type) => (
-              <button
-                key={type.id}
-                onClick={() => handleTypeFilter(type.id.toString())}
-                className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
-                  selectedType === type.id.toString()
-                    ? "text-white shadow-md"
-                    : "bg-white text-gray-700 border border-gray-300 hover:bg-gray-50"
-                }`}
-                style={{
-                  backgroundColor:
-                    selectedType === type.id.toString()
-                      ? getTypeColor(type.type_name)
-                      : undefined,
-                }}
-              >
-                {type.type_name}
-              </button>
-            ))}
-          </div>
-          {getFilteredTypes().length === 0 && activeTab !== "all" && (
-            <div className="text-gray-500 text-sm mt-2">
-              ไม่มีประเภทย่อยในหมวดหมู่นี้
-            </div>
-          )}
-        </div>
       </div>
 
       {/* Content Section */}

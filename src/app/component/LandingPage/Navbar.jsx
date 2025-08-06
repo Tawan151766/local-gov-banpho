@@ -81,6 +81,15 @@ export default function Navbar() {
     },
   ];
 
+  const localDevPlanMenu = [
+    { href: "/local-development-plan?tab=four-year-plan", label: "แผนพัฒนาสี่ปี" },
+    { href: "/local-development-plan?tab=action-plan", label: "แผนปฏิบัติการ" },
+    { href: "/local-development-plan?tab=community-plan", label: "แผนชุมชน" },
+    { href: "/local-development-plan?tab=strategic-plan", label: "แผนยุทธศาสตร์" },
+    { href: "/local-development-plan?tab=manpower-plan", label: "แผนอัตรากำลัง" },
+    { href: "/local-development-plan?tab=procurement-plan", label: "แผนการจัดหาพัสดุ" },
+  ];
+
   const citizenMenu = [
     { href: "/citizen/complaints", label: "รับเรื่องราวร้องทุกข์" },
     {
@@ -474,13 +483,11 @@ export default function Navbar() {
                   items={performanceMenu}
                   dropdownKey="performance-mobile"
                 />
-                <a
-                  href="/local-development-plan"
-                  className="block text-white text-base font-medium py-4 px-4 rounded-lg hover:bg-white/20 transition-colors border-b border-white/30"
-                  onClick={() => setShowMenu(false)}
-                >
-                  แผนพัฒนาท้องถิ่น
-                </a>
+                <MobileMenuItem
+                  title="แผนพัฒนาท้องถิ่น"
+                  items={localDevPlanMenu}
+                  dropdownKey="local-dev-plan-mobile"
+                />
                 <a
                   href="/laws-regulations"
                   className="block text-white text-base font-medium py-4 px-4 rounded-lg hover:bg-white/20 transition-colors border-b border-white/30"
@@ -518,12 +525,12 @@ export default function Navbar() {
             dropdownKey="performance"
             width="w-80"
           />
-          <a
-            href="/local-development-plan"
-            className="text-white text-base font-medium hover:underline hover:text-[#01385F] hover:text-[20px] hover:text-bold transition-all duration-300"
-          >
-            แผนพัฒนาท้องถิ่น
-          </a>
+          <MenuItem
+            title="แผนพัฒนาท้องถิ่น"
+            items={localDevPlanMenu}
+            dropdownKey="local-dev-plan"
+            width="w-64"
+          />
           <a
             href="/laws-regulations"
             className="text-white text-base font-medium hover:underline hover:text-[#01385F] hover:text-[20px] hover:text-bold transition-all duration-300"
