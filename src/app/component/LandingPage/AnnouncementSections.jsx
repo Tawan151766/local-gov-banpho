@@ -147,9 +147,154 @@ export default function AnnouncementSections() {
 
   if (announcements.length === 0) {
     return (
-      <div className="relative w-screen h-screen flex items-center justify-center bg-gradient-to-b from-[#A8F9FF] to-[#E8DDC4]">
-        <div className="text-[#01385F] text-xl">ไม่มีข่าวประชาสัมพันธ์</div>
-      </div>
+      <>
+        <div
+          className="relative w-screen min-h-screen h-full overflow-hidden bg-cover bg-center"
+          style={{
+            backgroundImage: `
+      linear-gradient(
+        to bottom,
+        rgba(239, 228, 212, 0.6),
+        rgba(1, 189, 204, 0.6),
+        rgba(1, 189, 204, 0.6)
+      ),
+      url("image/vision_bg.png")
+    `,
+          }}
+        >
+          {/* Fallback Gradient Background */}
+          <div className="absolute inset-0 bg-gradient-to-b from-[#A8F9FF] to-[#E8DDC4] -z-10" />
+
+          {/* Header */}
+          <div className="relative w-full flex flex-col items-center">
+            <img
+              src="/image/headerAnnouncement.png"
+              alt="header announcement"
+              className="w-full object-cover"
+              style={{ minHeight: "60px" }}
+            />
+            <div className="absolute top-0 left-1/2 -translate-x-1/2 w-full max-w-3xl flex flex-col items-center pt-2">
+              <h1 className="text-[#01385F] text-lg sm:text-2xl font-bold text-center">
+                ป้ายประกาศ
+              </h1>
+              <p className="text-[#01385F] text-xs sm:text-base text-center">
+                เทศบาลตำบลบ้านโพธิ์
+              </p>
+            </div>
+          </div>
+
+          {/* Content Section */}
+          <div className="relative z-10 w-full max-w-5xl mx-auto flex flex-col items-center px-4 sm:px-8 md:px-12 lg:px-16 mt-8">
+            {/* Top Bar with Title + More Button */}
+            <div className="flex w-full justify-between items-center mb-6">
+              <h2 className="text-[#01385F] text-2xl sm:text-3xl font-bold">
+                ข่าวประชาสัมพันธ์
+              </h2>
+              <button
+                type="button"
+                className="bg-[#01385F] text-white rounded-lg px-5 py-2 text-sm shadow-md hover:bg-[#012F4A] transition-colors duration-200 whitespace-nowrap"
+              >
+                เพิ่มเติม
+              </button>
+            </div>
+
+            {/* Announcement Slider Area */}
+            <div className="flex w-full items-center justify-center gap-4 sm:gap-6">
+              {/* Prev Button */}
+              <button
+                type="button"
+                disabled
+                className="text-[#01385F] opacity-50 cursor-not-allowed p-2 rounded-full shadow hover:shadow-lg"
+                aria-label="Previous announcement"
+              >
+                <svg
+                  width="28"
+                  height="28"
+                  className="sm:w-8 sm:h-8"
+                  fill="none"
+                >
+                  <path
+                    d="M21 8l-8 8 8 8"
+                    stroke="currentColor"
+                    strokeWidth="2"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                  />
+                </svg>
+              </button>
+
+              {/* Announcement Card */}
+              <div className="relative flex-1 aspect-[2.5/1] border-4 border-white rounded-[25px] shadow-lg bg-white flex items-center justify-center overflow-hidden min-h-[240px] cursor-pointer hover:shadow-xl transition-transform duration-300">
+                {/* Placeholder Content */}
+                <div className="w-full h-full bg-gradient-to-br from-[#01385F] to-[#01BDCC] rounded-[25px] flex flex-col items-center justify-center p-6 text-white">
+                  <svg
+                    className="w-16 h-16 mb-3"
+                    fill="currentColor"
+                    viewBox="0 0 20 20"
+                  >
+                    <path
+                      fillRule="evenodd"
+                      d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z"
+                      clipRule="evenodd"
+                    />
+                  </svg>
+                  <div className="text-center text-lg font-semibold">
+                    ไม่มีข่าวประชาสัมพันธ์
+                  </div>
+                  <div className="text-xs mt-1 opacity-80">
+                    คลิกเพื่อดูรายละเอียด
+                  </div>
+                </div>
+              </div>
+
+              {/* Next Button */}
+              <button
+                type="button"
+                disabled
+                className="text-[#01385F] opacity-50 cursor-not-allowed p-2 rounded-full shadow hover:shadow-lg"
+                aria-label="Next announcement"
+              >
+                <svg
+                  width="28"
+                  height="28"
+                  className="sm:w-8 sm:h-8"
+                  fill="none"
+                >
+                  <path
+                    d="M11 8l8 8-8 8"
+                    stroke="currentColor"
+                    strokeWidth="2"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                  />
+                </svg>
+              </button>
+            </div>
+
+            {/* Pagination Dots */}
+            <div className="flex justify-center gap-3 mt-6">
+              <button
+                type="button"
+                disabled
+                className="w-3 h-3 rounded-full bg-[#01385F]/30 cursor-default"
+                aria-label="Announcement 1"
+              />
+              <button
+                type="button"
+                disabled
+                className="w-3 h-3 rounded-full bg-[#01385F]/30 cursor-default"
+                aria-label="Announcement 2"
+              />
+              <button
+                type="button"
+                disabled
+                className="w-3 h-3 rounded-full bg-[#01385F]/30 cursor-default"
+                aria-label="Announcement 3"
+              />
+            </div>
+          </div>
+        </div>
+      </>
     );
   }
   return (
