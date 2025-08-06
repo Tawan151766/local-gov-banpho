@@ -1,9 +1,9 @@
 "use client";
 
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, Suspense } from "react";
 import { useParams, useRouter, useSearchParams } from "next/navigation";
 
-export default function PostDetailPage() {
+function PostDetailContent() {
   const params = useParams();
   const router = useRouter();
   const searchParams = useSearchParams();
@@ -500,5 +500,37 @@ export default function PostDetailPage() {
         </div>
       </div>
     </div>
+  );
+}
+
+// Loading component for Suspense fallback
+function LoadingFallback() {
+  return (
+    <div
+      className="min-h-screen bg-gradient-to-b from-[#A8F9FF] to-[#E8DDC4] py-8"
+    >
+      <div className="max-w-4xl mx-auto px-4">
+        <div className="bg-white rounded-lg shadow-md p-6 animate-pulse">
+          <div className="h-8 bg-gray-300 rounded w-3/4 mb-4"></div>
+          <div className="h-4 bg-gray-300 rounded w-1/2 mb-2"></div>
+          <div className="h-4 bg-gray-300 rounded w-2/3 mb-6"></div>
+          <div className="h-32 bg-gray-300 rounded mb-4"></div>
+          <div className="space-y-2">
+            <div className="h-4 bg-gray-300 rounded"></div>
+            <div className="h-4 bg-gray-300 rounded w-5/6"></div>
+            <div className="h-4 bg-gray-300 rounded w-4/6"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+// Main component with Suspense wrapper
+export default function PostDetailPage() {
+  return (
+    <Suspense fallback={<LoadingFallback />}>
+      <PostDetailContent />
+    </Suspense>
   );
 }

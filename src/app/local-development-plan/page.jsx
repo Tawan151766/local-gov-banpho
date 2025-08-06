@@ -1,8 +1,9 @@
 "use client";
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, Suspense } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 
-export default function LocalDevelopmentPlanPage() {
+// Component that uses useSearchParams wrapped in Suspense
+function LocalDevelopmentPlanContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const [plans, setPlans] = useState([]);
@@ -540,5 +541,48 @@ export default function LocalDevelopmentPlanPage() {
       {/* Pagination */}
       {renderPagination()}
     </div>
+  );
+}
+
+// Loading component for Suspense fallback
+function LoadingFallback() {
+  return (
+    <div
+      className="w-full min-h-screen py-8 px-2 md:px-8 flex flex-col items-center bg-transparent"
+      style={{
+        backgroundImage:
+          'linear-gradient(180deg, rgba(239, 228, 212, 0.6) 0%, rgba(1, 189, 204, 0.6) 100%), url("/image/Boat.jpg")',
+        backgroundSize: "cover",
+        backgroundPosition: "center",
+        backgroundRepeat: "no-repeat",
+        backgroundAttachment: "fixed",
+      }}
+    >
+      <div className="w-full max-w-[1268px] flex flex-col gap-4 mb-8">
+        <div className="bg-white bg-opacity-95 rounded-2xl shadow-lg p-8 backdrop-blur-sm animate-pulse">
+          <div className="flex items-center gap-4 mb-6">
+            <div className="h-8 bg-gray-300 rounded w-32"></div>
+            <div className="h-6 bg-gray-300 rounded w-24"></div>
+          </div>
+          <div className="h-8 bg-gray-300 rounded w-full mb-4"></div>
+          <div className="h-4 bg-gray-300 rounded w-3/4 mb-2"></div>
+          <div className="h-4 bg-gray-300 rounded w-1/2 mb-6"></div>
+          <div className="space-y-4">
+            <div className="h-16 bg-gray-300 rounded"></div>
+            <div className="h-16 bg-gray-300 rounded"></div>
+            <div className="h-16 bg-gray-300 rounded"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+// Main component with Suspense wrapper
+export default function LocalDevelopmentPlanPage() {
+  return (
+    <Suspense fallback={<LoadingFallback />}>
+      <LocalDevelopmentPlanContent />
+    </Suspense>
   );
 }

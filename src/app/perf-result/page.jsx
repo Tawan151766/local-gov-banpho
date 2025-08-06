@@ -1,8 +1,8 @@
 "use client";
-import { useState, useEffect } from "react";
+import { useState, useEffect, Suspense } from "react";
 import { useSearchParams } from "next/navigation";
 
-export default function PerfResultPage() {
+function PerfResultContent() {
   const [sections, setSections] = useState([]);
   const [types, setTypes] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -505,5 +505,45 @@ export default function PerfResultPage() {
       {/* Pagination */}
       {renderPagination()}
     </div>
+  );
+}
+
+// Loading component for Suspense fallback
+function LoadingFallback() {
+  return (
+    <div
+      className="w-full min-h-screen py-8 px-2 md:px-8 flex flex-col items-center bg-transparent"
+      style={{
+        backgroundImage:
+          'linear-gradient(180deg, rgba(239, 228, 212, 0.6) 0%, rgba(1, 189, 204, 0.6) 100%), url("/image/Boat.jpg")',
+        backgroundSize: "cover",
+        backgroundPosition: "center",
+        backgroundRepeat: "no-repeat",
+        backgroundAttachment: "fixed",
+      }}
+    >
+      <div className="w-full max-w-[1268px] flex flex-col gap-4 mb-8">
+        <div className="bg-white bg-opacity-95 rounded-2xl shadow-lg p-8 backdrop-blur-sm animate-pulse">
+          <div className="flex items-center gap-4 mb-6">
+            <div className="h-8 bg-gray-300 rounded w-32"></div>
+          </div>
+          <div className="h-8 bg-gray-300 rounded w-full mb-4"></div>
+          <div className="space-y-4">
+            <div className="h-16 bg-gray-300 rounded"></div>
+            <div className="h-16 bg-gray-300 rounded"></div>
+            <div className="h-16 bg-gray-300 rounded"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+// Main component with Suspense wrapper
+export default function PerfResultPage() {
+  return (
+    <Suspense fallback={<LoadingFallback />}>
+      <PerfResultContent />
+    </Suspense>
   );
 }
