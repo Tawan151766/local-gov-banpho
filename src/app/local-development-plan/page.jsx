@@ -1,9 +1,10 @@
 "use client";
 import React, { useEffect, useState } from "react";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 
 export default function LocalDevelopmentPlanPage() {
   const router = useRouter();
+  const searchParams = useSearchParams();
   const [plans, setPlans] = useState([]);
   const [types, setTypes] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -11,15 +12,49 @@ export default function LocalDevelopmentPlanPage() {
   const [totalPages, setTotalPages] = useState(1);
   const [totalPlans, setTotalPlans] = useState(0);
   const [selectedType, setSelectedType] = useState("");
+  const [activeTab, setActiveTab] = useState("all");
   const plansPerPage = 6;
+
+  // Define tab categories based on submenu
+  const tabCategories = [
+    { key: "all", label: "ทั้งหมด", keywords: [] },
+    {
+      key: "four-year-plan",
+      label: "แผนพัฒนาสี่ปี",
+      keywords: ["แผนพัฒนาสี่ปี"],
+    },
+    { key: "action-plan", label: "แผนปฏิบัติการ", keywords: ["แผนปฏิบัติการ"] },
+    { key: "community-plan", label: "แผนชุมชน", keywords: ["แผนชุมชน"] },
+    {
+      key: "strategic-plan",
+      label: "แผนยุทธศาสตร์",
+      keywords: ["แผนยุทธศาสตร์"],
+    },
+    {
+      key: "manpower-plan",
+      label: "แผนอัตรากำลัง",
+      keywords: ["แผนอัตรากำลัง"],
+    },
+    {
+      key: "procurement-plan",
+      label: "แผนการจัดหาพัสดุ",
+      keywords: ["แผนการจัดหาพัสดุ"],
+    },
+  ];
 
   useEffect(() => {
     fetchTypes();
+
+    // Check URL parameters for tab selection
+    const tabParam = searchParams.get("tab");
+    if (tabParam && tabCategories.find((tab) => tab.key === tabParam)) {
+      setActiveTab(tabParam);
+    }
   }, []);
 
   useEffect(() => {
     fetchPlans();
-  }, [currentPage, selectedType]);
+  }, [currentPage, selectedType, activeTab]);
 
   const fetchTypes = async () => {
     try {
@@ -28,11 +63,12 @@ export default function LocalDevelopmentPlanPage() {
       const result = await response.json();
       if (result.success) {
         // สร้าง unique types จากข้อมูลที่มี
-        const uniqueTypes = [...new Set(result.data.map(plan => plan.type_name))]
-          .map((typeName, index) => ({
-            id: index + 1,
-            type_name: typeName
-          }));
+        const uniqueTypes = [
+          ...new Set(result.data.map((plan) => plan.type_name)),
+        ].map((typeName, index) => ({
+          id: index + 1,
+          type_name: typeName,
+        }));
         setTypes(uniqueTypes);
       }
     } catch (error) {
@@ -43,14 +79,24 @@ export default function LocalDevelopmentPlanPage() {
   const fetchPlans = async () => {
     setLoading(true);
     try {
-      const searchFilter = selectedType ? `&search=${encodeURIComponent(selectedType)}` : '';
-      const response = await fetch(`/api/local-dev-plan?page=${currentPage}&limit=${plansPerPage}${searchFilter}`);
+      const searchFilter = selectedType
+        ? `&search=${encodeURIComponent(selectedType)}`
+        : "";
+      const tabFilter = activeTab !== "all" ? `&tab=${activeTab}` : "";
+      const response = await fetch(
+        `/api/local-dev-plan?page=${currentPage}&limit=${plansPerPage}${searchFilter}${tabFilter}`
+      );
       const result = await response.json();
-      
+
       if (result.success) {
         setPlans(result.data || []);
         setTotalPlans(result.pagination?.total || result.data?.length || 0);
-        setTotalPages(Math.ceil((result.pagination?.total || result.data?.length || 0) / plansPerPage));
+        setTotalPages(
+          Math.ceil(
+            (result.pagination?.total || result.data?.length || 0) /
+              plansPerPage
+          )
+        );
       } else {
         setPlans([]);
       }
@@ -91,7 +137,7 @@ export default function LocalDevelopmentPlanPage() {
   const handlePageChange = (page) => {
     if (page >= 1 && page <= totalPages) {
       setCurrentPage(page);
-      window.scrollTo({ top: 0, behavior: 'smooth' });
+      window.scrollTo({ top: 0, behavior: "smooth" });
     }
   };
 
@@ -100,18 +146,50 @@ export default function LocalDevelopmentPlanPage() {
     setCurrentPage(1);
   };
 
+  const handleTabChange = (tabKey) => {
+    setActiveTab(tabKey);
+    setCurrentPage(1);
+    setSelectedType(""); // Reset type filter when changing tabs
+
+    // Update URL without page reload
+    const url = new URL(window.location);
+    if (tabKey === "all") {
+      url.searchParams.delete("tab");
+    } else {
+      url.searchParams.set("tab", tabKey);
+    }
+    window.history.pushState({}, "", url);
+  };
+
+  const getFilteredTypes = () => {
+    if (activeTab === "all") return types;
+
+    const currentTabCategory = tabCategories.find(
+      (tab) => tab.key === activeTab
+    );
+    if (!currentTabCategory) return types;
+
+    return types.filter((type) =>
+      currentTabCategory.keywords.some((keyword) =>
+        type.type_name.includes(keyword)
+      )
+    );
+  };
+
   const handleShowDetail = (plan) => {
     router.push(`/local-development-plan/detail/${plan.id}`);
   };
 
   const handleFileDownload = (filePath, fileName) => {
-    const baseUrl = 'https://banpho.sosmartsolution.com/storage/';
-    const fileUrl = filePath?.startsWith('http') ? filePath : `${baseUrl}${filePath}`;
-    
-    const link = document.createElement('a');
+    const baseUrl = "https://banpho.sosmartsolution.com/storage/";
+    const fileUrl = filePath?.startsWith("http")
+      ? filePath
+      : `${baseUrl}${filePath}`;
+
+    const link = document.createElement("a");
     link.href = fileUrl;
-    link.download = fileName || filePath.split('/').pop();
-    link.target = '_blank';
+    link.download = fileName || filePath.split("/").pop();
+    link.target = "_blank";
     document.body.appendChild(link);
     link.click();
     document.body.removeChild(link);
@@ -119,24 +197,29 @@ export default function LocalDevelopmentPlanPage() {
 
   const getFileIcon = (fileType) => {
     const type = fileType?.toLowerCase();
-    if (type?.includes('pdf')) return '📄';
-    if (type?.includes('image') || type?.includes('jpg') || type?.includes('png')) return '🖼️';
-    if (type?.includes('video') || type?.includes('mp4')) return '🎥';
-    if (type?.includes('doc') || type?.includes('word')) return '📝';
-    if (type?.includes('excel') || type?.includes('xls')) return '📊';
-    return '📎';
+    if (type?.includes("pdf")) return "📄";
+    if (
+      type?.includes("image") ||
+      type?.includes("jpg") ||
+      type?.includes("png")
+    )
+      return "🖼️";
+    if (type?.includes("video") || type?.includes("mp4")) return "🎥";
+    if (type?.includes("doc") || type?.includes("word")) return "📝";
+    if (type?.includes("excel") || type?.includes("xls")) return "📊";
+    return "📎";
   };
 
   const getPlanColor = (typeName) => {
     if (!typeName) return "#01bdcc";
-    
+
     if (typeName.includes("แผนพัฒนาสี่ปี")) return "#28a745";
     if (typeName.includes("แผนปฏิบัติการ")) return "#dc3545";
     if (typeName.includes("แผนชุมชน")) return "#ffc107";
     if (typeName.includes("แผนยุทธศาสตร์")) return "#6f42c1";
     if (typeName.includes("แผนอัตรากำลัง")) return "#fd7e14";
     if (typeName.includes("แผนการจัดหาพัสดุ")) return "#20c997";
-    
+
     return "#01bdcc";
   };
 
@@ -160,8 +243,8 @@ export default function LocalDevelopmentPlanPage() {
         disabled={currentPage === 1}
         className={`px-3 py-2 mx-1 rounded-lg text-sm font-medium transition-colors ${
           currentPage === 1
-            ? 'bg-gray-200 text-gray-400 cursor-not-allowed'
-            : 'bg-white text-[#01385f] border border-[#01bdcc] hover:bg-[#01bdcc] hover:text-white'
+            ? "bg-gray-200 text-gray-400 cursor-not-allowed"
+            : "bg-white text-[#01385f] border border-[#01bdcc] hover:bg-[#01bdcc] hover:text-white"
         }`}
         title="หน้าก่อนหน้า"
       >
@@ -197,8 +280,8 @@ export default function LocalDevelopmentPlanPage() {
           onClick={() => handlePageChange(i)}
           className={`px-3 py-2 mx-1 rounded-lg text-sm font-medium transition-colors ${
             currentPage === i
-              ? 'bg-[#01bdcc] text-white shadow-md'
-              : 'bg-white text-[#01385f] border border-[#01bdcc] hover:bg-[#01bdcc] hover:text-white'
+              ? "bg-[#01bdcc] text-white shadow-md"
+              : "bg-white text-[#01385f] border border-[#01bdcc] hover:bg-[#01bdcc] hover:text-white"
           }`}
           title={`หน้าที่ ${i}`}
         >
@@ -235,8 +318,8 @@ export default function LocalDevelopmentPlanPage() {
         disabled={currentPage === totalPages}
         className={`px-3 py-2 mx-1 rounded-lg text-sm font-medium transition-colors ${
           currentPage === totalPages
-            ? 'bg-gray-200 text-gray-400 cursor-not-allowed'
-            : 'bg-white text-[#01385f] border border-[#01bdcc] hover:bg-[#01bdcc] hover:text-white'
+            ? "bg-gray-200 text-gray-400 cursor-not-allowed"
+            : "bg-white text-[#01385f] border border-[#01bdcc] hover:bg-[#01bdcc] hover:text-white"
         }`}
         title="หน้าถัดไป"
       >
@@ -250,7 +333,8 @@ export default function LocalDevelopmentPlanPage() {
           {pages}
         </div>
         <div className="text-sm text-white bg-black bg-opacity-20 px-4 py-2 rounded-full backdrop-blur-sm">
-          แสดงหน้า {currentPage} จาก {totalPages} หน้า | ทั้งหมด {totalPlans} แผน
+          แสดงหน้า {currentPage} จาก {totalPages} หน้า | ทั้งหมด {totalPlans}{" "}
+          แผน
         </div>
       </div>
     );
@@ -262,10 +346,10 @@ export default function LocalDevelopmentPlanPage() {
       style={{
         backgroundImage:
           'linear-gradient(180deg, rgba(239, 228, 212, 0.6) 0%, rgba(1, 189, 204, 0.6) 100%), url("/image/Boat.jpg")',
-        backgroundSize: 'cover',
-        backgroundPosition: 'center',
-        backgroundRepeat: 'no-repeat',
-        backgroundAttachment: 'fixed',
+        backgroundSize: "cover",
+        backgroundPosition: "center",
+        backgroundRepeat: "no-repeat",
+        backgroundAttachment: "fixed",
       }}
     >
       {/* Header Section */}
@@ -289,34 +373,27 @@ export default function LocalDevelopmentPlanPage() {
           </div>
         </div>
 
-        {/* Filter Section */}
-        <div className="bg-white bg-opacity-90 rounded-2xl shadow-md p-4 backdrop-blur-sm">
-          <h3 className="text-lg font-semibold text-gray-800 mb-3">กรองตามประเภท</h3>
+        {/* Tab Navigation */}
+        <div className="bg-white bg-opacity-90 rounded-2xl shadow-md p-4 backdrop-blur-sm mb-4">
+          <h3 className="text-lg font-semibold text-gray-800 mb-3">
+            หมวดหมู่แผน
+          </h3>
           <div className="flex flex-wrap gap-2">
-            <button
-              onClick={() => handleTypeFilter("")}
-              className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
-                selectedType === ""
-                  ? 'bg-[#01bdcc] text-white'
-                  : 'bg-white text-gray-700 border border-gray-300 hover:bg-gray-50'
-              }`}
-            >
-              ทั้งหมด
-            </button>
-            {types.map((type) => (
+            {tabCategories.map((tab) => (
               <button
-                key={type.id}
-                onClick={() => handleTypeFilter(type.type_name)}
+                key={tab.key}
+                onClick={() => handleTabChange(tab.key)}
                 className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
-                  selectedType === type.type_name
-                    ? 'text-white shadow-md'
-                    : 'bg-white text-gray-700 border border-gray-300 hover:bg-gray-50'
+                  activeTab === tab.key
+                    ? "text-white shadow-md"
+                    : "bg-white text-gray-700 border border-gray-300 hover:bg-gray-50"
                 }`}
                 style={{
-                  backgroundColor: selectedType === type.type_name ? getPlanColor(type.type_name) : undefined
+                  backgroundColor:
+                    activeTab === tab.key ? getPlanColor(tab.label) : undefined,
                 }}
               >
-                {type.type_name}
+                {tab.label}
               </button>
             ))}
           </div>
@@ -361,7 +438,7 @@ export default function LocalDevelopmentPlanPage() {
 
               {/* Type Badge */}
               <div className="mb-3">
-                <span 
+                <span
                   className="inline-block px-3 py-1 rounded-full text-white text-sm font-medium"
                   style={{ backgroundColor: getPlanColor(plan.type_name) }}
                 >
@@ -383,12 +460,16 @@ export default function LocalDevelopmentPlanPage() {
               <div className="text-sm text-gray-600 space-y-1">
                 <div className="flex items-center gap-2">
                   <span className="text-gray-500">สร้างเมื่อ:</span>
-                  <span className="font-medium">{formatDate(plan.created_at)}</span>
+                  <span className="font-medium">
+                    {formatDate(plan.created_at)}
+                  </span>
                 </div>
                 {plan.updated_at && (
                   <div className="flex items-center gap-2">
                     <span className="text-gray-500">อัพเดท:</span>
-                    <span className="font-medium">{formatDate(plan.updated_at)}</span>
+                    <span className="font-medium">
+                      {formatDate(plan.updated_at)}
+                    </span>
                   </div>
                 )}
               </div>
@@ -399,9 +480,16 @@ export default function LocalDevelopmentPlanPage() {
                   <p className="text-xs text-gray-500 mb-2">ไฟล์ล่าสุด:</p>
                   <div className="space-y-1">
                     {plan.recent_files.slice(0, 2).map((file, idx) => (
-                      <div key={idx} className="text-sm text-gray-700 bg-gray-50 px-2 py-1 rounded truncate flex items-center gap-1">
+                      <div
+                        key={idx}
+                        className="text-sm text-gray-700 bg-gray-50 px-2 py-1 rounded truncate flex items-center gap-1"
+                      >
                         <span>{getFileIcon(file.files_type)}</span>
-                        <span>{file.original_name || file.files_path?.split('/').pop() || `ไฟล์ ${idx + 1}`}</span>
+                        <span>
+                          {file.original_name ||
+                            file.files_path?.split("/").pop() ||
+                            `ไฟล์ ${idx + 1}`}
+                        </span>
                       </div>
                     ))}
                     {plan.files_count > 2 && (
@@ -427,10 +515,14 @@ export default function LocalDevelopmentPlanPage() {
             <div className="bg-white bg-opacity-90 rounded-xl p-8 text-center shadow-lg backdrop-blur-sm">
               <div className="text-gray-400 text-6xl mb-4">📋</div>
               <div className="text-gray-500 text-xl mb-2">
-                {selectedType ? "ไม่พบข้อมูลแผนพัฒนาท้องถิ่นในประเภทที่เลือก" : "ไม่มีข้อมูลแผนพัฒนาท้องถิ่น"}
+                {selectedType
+                  ? "ไม่พบข้อมูลแผนพัฒนาท้องถิ่นในประเภทที่เลือก"
+                  : "ไม่มีข้อมูลแผนพัฒนาท้องถิ่น"}
               </div>
               <div className="text-gray-400 text-sm mb-4">
-                {selectedType ? "ลองเลือกประเภทอื่น หรือดูทั้งหมด" : "กรุณาเพิ่มข้อมูลแผนพัฒนาในระบบจัดการ"}
+                {selectedType
+                  ? "ลองเลือกประเภทอื่น หรือดูทั้งหมด"
+                  : "กรุณาเพิ่มข้อมูลแผนพัฒนาในระบบจัดการ"}
               </div>
               {selectedType && (
                 <button

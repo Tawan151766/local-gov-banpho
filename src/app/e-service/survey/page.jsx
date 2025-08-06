@@ -50,8 +50,18 @@ export default function MunicipalSurveyForm() {
   const [errors, setErrors] = useState({});
 
   const thaiMonths = [
-    "มกราคม", "กุมภาพันธ์", "มีนาคม", "เมษายน", "พฤษภาคม", "มิถุนายน",
-    "กรกฎาคม", "สิงหาคม", "กันยายน", "ตุลาคม", "พฤศจิกายน", "ธันวาคม",
+    "มกราคม",
+    "กุมภาพันธ์",
+    "มีนาคม",
+    "เมษายน",
+    "พฤษภาคม",
+    "มิถุนายน",
+    "กรกฎาคม",
+    "สิงหาคม",
+    "กันยายน",
+    "ตุลาคม",
+    "พฤศจิกายน",
+    "ธันวาคม",
   ];
 
   const serviceTypes = [
@@ -102,8 +112,7 @@ export default function MunicipalSurveyForm() {
     // ข้อมูลผู้ประเมิน
     if (!formData.evaluatorName)
       newErrors.evaluatorName = "กรุณากรอกชื่อ-นามสกุล";
-    if (!formData.evaluatorAge) 
-      newErrors.evaluatorAge = "กรุณากรอกอายุ";
+    if (!formData.evaluatorAge) newErrors.evaluatorAge = "กรุณากรอกอายุ";
     if (!formData.evaluatorPhone)
       newErrors.evaluatorPhone = "กรุณากรอกเบอร์โทรศัพท์";
     if (!formData.evaluatorOccupation)
@@ -112,8 +121,7 @@ export default function MunicipalSurveyForm() {
       newErrors.evaluatorAddress = "กรุณากรอกที่อยู่";
 
     // การประเมินบริการ
-    if (!formData.serviceType)
-      newErrors.serviceType = "กรุณาเลือกประเภทบริการ";
+    if (!formData.serviceType) newErrors.serviceType = "กรุณาเลือกประเภทบริการ";
     if (!formData.serviceQuality)
       newErrors.serviceQuality = "กรุณาประเมินคุณภาพบริการ";
     if (!formData.staffBehavior)
@@ -123,8 +131,7 @@ export default function MunicipalSurveyForm() {
     if (!formData.overallSatisfaction)
       newErrors.overallSatisfaction = "กรุณาประเมินความพึงพอใจโดยรวม";
 
-    if (!formData.captcha) 
-      newErrors.captcha = "กรุณาป้อนรหัสตัวเลข";
+    if (!formData.captcha) newErrors.captcha = "กรุณาป้อนรหัสตัวเลข";
     else if (formData.captcha !== captchaValue)
       newErrors.captcha = "รหัสตัวเลขไม่ถูกต้อง";
 
@@ -143,7 +150,7 @@ export default function MunicipalSurveyForm() {
 
     try {
       // Simulate API call
-      await new Promise(resolve => setTimeout(resolve, 2000));
+      await new Promise((resolve) => setTimeout(resolve, 2000));
 
       const response = await fetch("/api/municipal-survey", {
         method: "POST",
@@ -155,11 +162,12 @@ export default function MunicipalSurveyForm() {
 
       const result = await response.json();
 
-      if (result.success || true) { // Mock success
+      if (result.success || true) {
+        // Mock success
         setSubmitSuccess(true);
         setFormData({
           day: "31",
-          month: "กรกฎาคม", 
+          month: "กรกฎาคม",
           year: "2568",
           evaluatorName: "",
           evaluatorAge: "",
@@ -311,7 +319,9 @@ export default function MunicipalSurveyForm() {
             <h1 className="text-2xl font-bold mb-2">
               แบบประเมินความพึงพอใจการให้บริการ
             </h1>
-            <p className="text-blue-100">กรุณากรอกข้อมูลให้ครบถ้วนและประเมินอย่างตรงไปตรงมา</p>
+            <p className="text-blue-100">
+              กรุณากรอกข้อมูลให้ครบถ้วนและประเมินอย่างตรงไปตรงมา
+            </p>
           </div>
 
           {/* Form */}
@@ -491,7 +501,8 @@ export default function MunicipalSurveyForm() {
               {/* Service Evaluation */}
               <div className="bg-white border-2 border-gray-100 rounded-lg p-4">
                 <h3 className="text-lg font-semibold text-blue-600 mb-4 flex items-center gap-2 text-center w-full justify-center">
-                  <Building className="text-blue-600" size={20} /> การประเมินบริการ
+                  <Building className="text-blue-600" size={20} />{" "}
+                  การประเมินบริการ
                 </h3>
 
                 <div className="space-y-6">
@@ -525,24 +536,51 @@ export default function MunicipalSurveyForm() {
                   </div>
 
                   {renderStarRating("serviceQuality", "คุณภาพการให้บริการ")}
-                  {renderStarRating("staffBehavior", "พฤติกรรมและความสุภาพของเจ้าหน้าที่")}
-                  {renderStarRating("processingTime", "ความรวดเร็วในการให้บริการ")}
-                  {renderStarRating("facilityQuality", "สภาพแวดล้อมและสิ่งอำนวยความสะดวก", false)}
-                  {renderStarRating("informationAccess", "การเข้าถึงข้อมูลข่าวสาร", false)}
+                  {renderStarRating(
+                    "staffBehavior",
+                    "พฤติกรรมและความสุภาพของเจ้าหน้าที่"
+                  )}
+                  {renderStarRating(
+                    "processingTime",
+                    "ความรวดเร็วในการให้บริการ"
+                  )}
+                  {renderStarRating(
+                    "facilityQuality",
+                    "สภาพแวดล้อมและสิ่งอำนวยความสะดวก",
+                    false
+                  )}
+                  {renderStarRating(
+                    "informationAccess",
+                    "การเข้าถึงข้อมูลข่าวสาร",
+                    false
+                  )}
                 </div>
               </div>
 
               {/* Overall Satisfaction */}
               <div className="bg-white border-2 border-gray-100 rounded-lg p-4">
                 <h3 className="text-lg font-semibold text-blue-600 mb-4 flex items-center gap-2 text-center w-full justify-center">
-                  <ThumbsUp className="text-blue-600" size={20} /> การประเมินโดยรวม
+                  <ThumbsUp className="text-blue-600" size={20} />{" "}
+                  การประเมินโดยรวม
                 </h3>
 
                 <div className="space-y-6">
                   {renderStarRating("overallSatisfaction", "ความพึงพอใจโดยรวม")}
-                  {renderStarRating("transparency", "ความโปร่งใสในการทำงาน", false)}
-                  {renderStarRating("publicParticipation", "การส่งเสริมการมีส่วนร่วมของประชาชน", false)}
-                  {renderStarRating("projectEffectiveness", "ประสิทธิผลของโครงการพัฒนาท้องถิ่น", false)}
+                  {renderStarRating(
+                    "transparency",
+                    "ความโปร่งใสในการทำงาน",
+                    false
+                  )}
+                  {renderStarRating(
+                    "publicParticipation",
+                    "การส่งเสริมการมีส่วนร่วมของประชาชน",
+                    false
+                  )}
+                  {renderStarRating(
+                    "projectEffectiveness",
+                    "ประสิทธิผลของโครงการพัฒนาท้องถิ่น",
+                    false
+                  )}
                 </div>
               </div>
 
@@ -560,7 +598,10 @@ export default function MunicipalSurveyForm() {
                     <textarea
                       value={formData.improvementSuggestions}
                       onChange={(e) =>
-                        handleInputChange("improvementSuggestions", e.target.value)
+                        handleInputChange(
+                          "improvementSuggestions",
+                          e.target.value
+                        )
                       }
                       rows={4}
                       className="w-full px-3 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-transparent"
@@ -595,9 +636,15 @@ export default function MunicipalSurveyForm() {
                     <div className="text-sm text-blue-700">
                       <p className="font-medium mb-2">หมายเหตุ:</p>
                       <ul className="list-disc list-inside space-y-1">
-                        <li>กรุณาให้ข้อมูลที่ตรงไปตรงมาเพื่อประโยชน์ในการพัฒนาการบริการ</li>
-                        <li>ข้อมูลของท่านจะถูกเก็บเป็นความลับและใช้เพื่อการพัฒนาเท่านั้น</li>
-                        <li>ผลการประเมินจะนำไปสู่การปรับปรุงคุณภาพการให้บริการของเทศบาล</li>
+                        <li>
+                          กรุณาให้ข้อมูลที่ตรงไปตรงมาเพื่อประโยชน์ในการพัฒนาการบริการ
+                        </li>
+                        <li>
+                          ข้อมูลของท่านจะถูกเก็บเป็นความลับและใช้เพื่อการพัฒนาเท่านั้น
+                        </li>
+                        <li>
+                          ผลการประเมินจะนำไปสู่การปรับปรุงคุณภาพการให้บริการของเทศบาล
+                        </li>
                       </ul>
                     </div>
                   </div>
@@ -674,10 +721,6 @@ export default function MunicipalSurveyForm() {
               เทศบาลตำบลบ้านโพธิ์ มุ่งมั่นพัฒนาการให้บริการเพื่อประชาชน
             </p>
             <div className="flex items-center justify-center gap-4 text-sm text-gray-500 mt-3">
-              <div className="flex items-center gap-1">
-                <Phone size={16} />
-                <span>โทร: 0XX-XXX-XXXX</span>
-              </div>
               <div className="flex items-center gap-1">
                 <Home size={16} />
                 <span>เทศบาลตำบลบ้านโพธิ์</span>

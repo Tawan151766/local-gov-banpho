@@ -1,5 +1,6 @@
 "use client";
 import { useState, useEffect } from "react";
+import { useSearchParams } from "next/navigation";
 
 export default function PerfResultPage() {
   const [sections, setSections] = useState([]);
@@ -9,15 +10,63 @@ export default function PerfResultPage() {
   const [totalPages, setTotalPages] = useState(1);
   const [totalSections, setTotalSections] = useState(0);
   const [selectedType, setSelectedType] = useState("");
+  const [activeTab, setActiveTab] = useState("all");
   const sectionsPerPage = 6;
+  const searchParams = useSearchParams();
+
+  // Define tab categories based on submenu
+  const tabCategories = [
+    { key: "all", label: "ทั้งหมด", keywords: [] },
+    {
+      key: "operation-report",
+      label: "รายงานผลการดำเนินงาน",
+      keywords: ["รายงานผลการดำเนินงาน"],
+    },
+    {
+      key: "procurement",
+      label: "การจัดซื้อจัดจ้าง",
+      keywords: ["การจัดซื้อจัดจ้าง", "การจัดหาพัสดุ"],
+    },
+    {
+      key: "financial-report",
+      label: "รายงานการคลัง",
+      keywords: ["รายงานการคลัง"],
+    },
+    {
+      key: "transparency-measures",
+      label: "มาตรการส่งเสริมความโปร่งใส",
+      keywords: ["มาตรการส่งเสริมความโปร่งใส"],
+    },
+    {
+      key: "hr-management",
+      label: "การบริหารและทรัพยากรบุคคล",
+      keywords: ["การบริหารและทรัพยากรบุคคล"],
+    },
+    {
+      key: "statistics",
+      label: "ข้อมูลเชิงสถิติ",
+      keywords: ["ข้อมูลเชิงสถิติ"],
+    },
+    {
+      key: "participation",
+      label: "การเปิดโอกาสให้เกิดการมีส่วนร่วม",
+      keywords: ["การเปิดโอกาสให้เกิดการมีส่วนร่วม"],
+    },
+  ];
 
   useEffect(() => {
     fetchTypes();
+
+    // Check URL parameters for tab selection
+    const tabParam = searchParams.get("tab");
+    if (tabParam && tabCategories.find((tab) => tab.key === tabParam)) {
+      setActiveTab(tabParam);
+    }
   }, []);
 
   useEffect(() => {
     fetchSections();
-  }, [currentPage, selectedType]);
+  }, [currentPage, selectedType, activeTab]);
 
   const fetchTypes = async () => {
     try {
@@ -34,14 +83,19 @@ export default function PerfResultPage() {
   const fetchSections = async () => {
     setLoading(true);
     try {
-      const typeFilter = selectedType ? `&type_id=${selectedType}` : '';
-      const response = await fetch(`/api/perf-result-sections?page=${currentPage}&limit=${sectionsPerPage}${typeFilter}`);
+      const typeFilter = selectedType ? `&type_id=${selectedType}` : "";
+      const tabFilter = activeTab !== "all" ? `&tab=${activeTab}` : "";
+      const response = await fetch(
+        `/api/perf-result-sections?page=${currentPage}&limit=${sectionsPerPage}${typeFilter}${tabFilter}`
+      );
       const result = await response.json();
 
       if (result.success) {
         setSections(result.data);
         setTotalSections(result.pagination?.total || 0);
-        setTotalPages(Math.ceil((result.pagination?.total || 0) / sectionsPerPage));
+        setTotalPages(
+          Math.ceil((result.pagination?.total || 0) / sectionsPerPage)
+        );
       }
     } catch (error) {
       console.error("Error fetching sections:", error);
@@ -79,7 +133,7 @@ export default function PerfResultPage() {
   const handlePageChange = (page) => {
     if (page >= 1 && page <= totalPages) {
       setCurrentPage(page);
-      window.scrollTo({ top: 0, behavior: 'smooth' });
+      window.scrollTo({ top: 0, behavior: "smooth" });
     }
   };
 
@@ -88,21 +142,55 @@ export default function PerfResultPage() {
     setCurrentPage(1);
   };
 
+  const handleTabChange = (tabKey) => {
+    setActiveTab(tabKey);
+    setCurrentPage(1);
+    setSelectedType(""); // Reset type filter when changing tabs
+
+    // Update URL without page reload
+    const url = new URL(window.location);
+    if (tabKey === "all") {
+      url.searchParams.delete("tab");
+    } else {
+      url.searchParams.set("tab", tabKey);
+    }
+    window.history.pushState({}, "", url);
+  };
+
+  const getFilteredTypes = () => {
+    if (activeTab === "all") return types;
+
+    const currentTabCategory = tabCategories.find(
+      (tab) => tab.key === activeTab
+    );
+    if (!currentTabCategory) return types;
+
+    return types.filter((type) =>
+      currentTabCategory.keywords.some((keyword) =>
+        type.type_name.includes(keyword)
+      )
+    );
+  };
+
   const handleSectionClick = (sectionId) => {
     window.location.href = `/perf-result/detail/${sectionId}`;
   };
 
   const getTypeColor = (typeName) => {
     if (!typeName) return "#01bdcc";
-    
+
     if (typeName.includes("รายงานผลการดำเนินงาน")) return "#28a745";
-    if (typeName.includes("การจัดซื้อจัดจ้าง") || typeName.includes("การจัดหาพัสดุ")) return "#dc3545";
+    if (
+      typeName.includes("การจัดซื้อจัดจ้าง") ||
+      typeName.includes("การจัดหาพัสดุ")
+    )
+      return "#dc3545";
     if (typeName.includes("รายงานการคลัง")) return "#ffc107";
     if (typeName.includes("มาตรการส่งเสริมความโปร่งใส")) return "#6f42c1";
     if (typeName.includes("การบริหารและทรัพยากรบุคคล")) return "#fd7e14";
     if (typeName.includes("ข้อมูลเชิงสถิติ")) return "#20c997";
     if (typeName.includes("การเปิดโอกาสให้เกิดการมีส่วนร่วม")) return "#17a2b8";
-    
+
     return "#01bdcc";
   };
 
@@ -126,8 +214,8 @@ export default function PerfResultPage() {
         disabled={currentPage === 1}
         className={`px-3 py-2 mx-1 rounded-lg text-sm font-medium transition-colors ${
           currentPage === 1
-            ? 'bg-gray-200 text-gray-400 cursor-not-allowed'
-            : 'bg-white text-[#01385f] border border-[#01bdcc] hover:bg-[#01bdcc] hover:text-white'
+            ? "bg-gray-200 text-gray-400 cursor-not-allowed"
+            : "bg-white text-[#01385f] border border-[#01bdcc] hover:bg-[#01bdcc] hover:text-white"
         }`}
         title="หน้าก่อนหน้า"
       >
@@ -163,8 +251,8 @@ export default function PerfResultPage() {
           onClick={() => handlePageChange(i)}
           className={`px-3 py-2 mx-1 rounded-lg text-sm font-medium transition-colors ${
             currentPage === i
-              ? 'bg-[#01bdcc] text-white shadow-md'
-              : 'bg-white text-[#01385f] border border-[#01bdcc] hover:bg-[#01bdcc] hover:text-white'
+              ? "bg-[#01bdcc] text-white shadow-md"
+              : "bg-white text-[#01385f] border border-[#01bdcc] hover:bg-[#01bdcc] hover:text-white"
           }`}
           title={`หน้าที่ ${i}`}
         >
@@ -201,8 +289,8 @@ export default function PerfResultPage() {
         disabled={currentPage === totalPages}
         className={`px-3 py-2 mx-1 rounded-lg text-sm font-medium transition-colors ${
           currentPage === totalPages
-            ? 'bg-gray-200 text-gray-400 cursor-not-allowed'
-            : 'bg-white text-[#01385f] border border-[#01bdcc] hover:bg-[#01bdcc] hover:text-white'
+            ? "bg-gray-200 text-gray-400 cursor-not-allowed"
+            : "bg-white text-[#01385f] border border-[#01bdcc] hover:bg-[#01bdcc] hover:text-white"
         }`}
         title="หน้าถัดไป"
       >
@@ -216,7 +304,8 @@ export default function PerfResultPage() {
           {pages}
         </div>
         <div className="text-sm text-white bg-black bg-opacity-20 px-4 py-2 rounded-full backdrop-blur-sm">
-          แสดงหน้า {currentPage} จาก {totalPages} หน้า | ทั้งหมด {totalSections} หมวด
+          แสดงหน้า {currentPage} จาก {totalPages} หน้า | ทั้งหมด {totalSections}{" "}
+          หมวด
         </div>
       </div>
     );
@@ -228,10 +317,10 @@ export default function PerfResultPage() {
       style={{
         backgroundImage:
           'linear-gradient(180deg, rgba(239, 228, 212, 0.6) 0%, rgba(1, 189, 204, 0.6) 100%), url("/image/Boat.jpg")',
-        backgroundSize: 'cover',
-        backgroundPosition: 'center',
-        backgroundRepeat: 'no-repeat',
-        backgroundAttachment: 'fixed',
+        backgroundSize: "cover",
+        backgroundPosition: "center",
+        backgroundRepeat: "no-repeat",
+        backgroundAttachment: "fixed",
       }}
     >
       {/* Header Section */}
@@ -255,34 +344,25 @@ export default function PerfResultPage() {
           </div>
         </div>
 
-        {/* Filter Section */}
-        <div className="bg-white bg-opacity-90 rounded-2xl shadow-md p-4 backdrop-blur-sm">
-          <h3 className="text-lg font-semibold text-gray-800 mb-3">กรองตามประเภท</h3>
+        {/* Tab Navigation */}
+        <div className="bg-white bg-opacity-90 rounded-2xl shadow-md p-4 backdrop-blur-sm mb-4">
+          <h3 className="text-lg font-semibold text-gray-800 mb-3">หมวดหมู่</h3>
           <div className="flex flex-wrap gap-2">
-            <button
-              onClick={() => handleTypeFilter("")}
-              className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
-                selectedType === ""
-                  ? 'bg-[#01bdcc] text-white'
-                  : 'bg-white text-gray-700 border border-gray-300 hover:bg-gray-50'
-              }`}
-            >
-              ทั้งหมด
-            </button>
-            {types.map((type) => (
+            {tabCategories.map((tab) => (
               <button
-                key={type.id}
-                onClick={() => handleTypeFilter(type.id.toString())}
+                key={tab.key}
+                onClick={() => handleTabChange(tab.key)}
                 className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
-                  selectedType === type.id.toString()
-                    ? 'text-white shadow-md'
-                    : 'bg-white text-gray-700 border border-gray-300 hover:bg-gray-50'
+                  activeTab === tab.key
+                    ? "text-white shadow-md"
+                    : "bg-white text-gray-700 border border-gray-300 hover:bg-gray-50"
                 }`}
                 style={{
-                  backgroundColor: selectedType === type.id.toString() ? getTypeColor(type.type_name) : undefined
+                  backgroundColor:
+                    activeTab === tab.key ? getTypeColor(tab.label) : undefined,
                 }}
               >
-                {type.type_name}
+                {tab.label}
               </button>
             ))}
           </div>
@@ -327,7 +407,7 @@ export default function PerfResultPage() {
 
               {/* Type Badge */}
               <div className="mb-3">
-                <span 
+                <span
                   className="inline-block px-3 py-1 rounded-full text-white text-sm font-medium"
                   style={{ backgroundColor: getTypeColor(section.type_name) }}
                 >
@@ -349,32 +429,42 @@ export default function PerfResultPage() {
               <div className="text-sm text-gray-600 space-y-1">
                 <div className="flex items-center gap-2">
                   <span className="text-gray-500">วันที่:</span>
-                  <span className="font-medium">{formatDate(section.date)}</span>
+                  <span className="font-medium">
+                    {formatDate(section.date)}
+                  </span>
                 </div>
                 <div className="flex items-center gap-2">
                   <span className="text-gray-500">สร้างเมื่อ:</span>
-                  <span className="font-medium">{formatDate(section.created_at)}</span>
+                  <span className="font-medium">
+                    {formatDate(section.created_at)}
+                  </span>
                 </div>
               </div>
 
               {/* Preview of sub topics */}
-              {section.recent_sub_topics && section.recent_sub_topics.length > 0 && (
-                <div className="mt-3 pt-3 border-t border-gray-100">
-                  <p className="text-xs text-gray-500 mb-2">หัวข้อล่าสุด:</p>
-                  <div className="space-y-1">
-                    {section.recent_sub_topics.slice(0, 2).map((subTopic, idx) => (
-                      <div key={idx} className="text-sm text-gray-700 bg-gray-50 px-2 py-1 rounded truncate">
-                        📄 {subTopic.topic_name}
-                      </div>
-                    ))}
-                    {section.sub_topics_count > 2 && (
-                      <div className="text-xs text-gray-400">
-                        และอีก {section.sub_topics_count - 2} หัวข้อ...
-                      </div>
-                    )}
+              {section.recent_sub_topics &&
+                section.recent_sub_topics.length > 0 && (
+                  <div className="mt-3 pt-3 border-t border-gray-100">
+                    <p className="text-xs text-gray-500 mb-2">หัวข้อล่าสุด:</p>
+                    <div className="space-y-1">
+                      {section.recent_sub_topics
+                        .slice(0, 2)
+                        .map((subTopic, idx) => (
+                          <div
+                            key={idx}
+                            className="text-sm text-gray-700 bg-gray-50 px-2 py-1 rounded truncate"
+                          >
+                            📄 {subTopic.topic_name}
+                          </div>
+                        ))}
+                      {section.sub_topics_count > 2 && (
+                        <div className="text-xs text-gray-400">
+                          และอีก {section.sub_topics_count - 2} หัวข้อ...
+                        </div>
+                      )}
+                    </div>
                   </div>
-                </div>
-              )}
+                )}
 
               {/* Action hint */}
               <div className="mt-3 pt-2 border-t border-gray-100 text-center">
@@ -390,10 +480,14 @@ export default function PerfResultPage() {
             <div className="bg-white bg-opacity-90 rounded-xl p-8 text-center shadow-lg backdrop-blur-sm">
               <div className="text-gray-400 text-6xl mb-4">📊</div>
               <div className="text-gray-500 text-xl mb-2">
-                {selectedType ? "ไม่พบข้อมูลหมวดหมู่ในประเภทที่เลือก" : "ไม่มีข้อมูลหมวดหมู่"}
+                {selectedType
+                  ? "ไม่พบข้อมูลหมวดหมู่ในประเภทที่เลือก"
+                  : "ไม่มีข้อมูลหมวดหมู่"}
               </div>
               <div className="text-gray-400 text-sm mb-4">
-                {selectedType ? "ลองเลือกประเภทอื่น หรือดูทั้งหมด" : "กรุณาเพิ่มข้อมูลในระบบจัดการ"}
+                {selectedType
+                  ? "ลองเลือกประเภทอื่น หรือดูทั้งหมด"
+                  : "กรุณาเพิ่มข้อมูลในระบบจัดการ"}
               </div>
               {selectedType && (
                 <button
