@@ -63,7 +63,10 @@ export default function Navbar() {
   ];
 
   const performanceMenu = [
-    { href: "/perf-result?tab=operation-report", label: "รายงานผลการดำเนินงาน" },
+    {
+      href: "/perf-result?tab=operation-report",
+      label: "รายงานผลการดำเนินงาน",
+    },
     {
       href: "/perf-result?tab=procurement",
       label: "การจัดซื้อจัดจ้าง/การจัดหาพัสดุ",
@@ -73,7 +76,10 @@ export default function Navbar() {
       href: "/perf-result?tab=transparency-measures",
       label: "มาตรการส่งเสริมความโปร่งใส",
     },
-    { href: "/perf-result?tab=hr-management", label: "การบริหารและทรัพยากรบุคคล" },
+    {
+      href: "/perf-result?tab=hr-management",
+      label: "การบริหารและทรัพยากรบุคคล",
+    },
     { href: "/perf-result?tab=statistics", label: "ข้อมูลเชิงสถิติ" },
     {
       href: "/perf-result?tab=participation",
@@ -82,12 +88,24 @@ export default function Navbar() {
   ];
 
   const localDevPlanMenu = [
-    { href: "/local-development-plan?tab=four-year-plan", label: "แผนพัฒนาสี่ปี" },
+    {
+      href: "/local-development-plan?tab=four-year-plan",
+      label: "แผนพัฒนาสี่ปี",
+    },
     { href: "/local-development-plan?tab=action-plan", label: "แผนปฏิบัติการ" },
     { href: "/local-development-plan?tab=community-plan", label: "แผนชุมชน" },
-    { href: "/local-development-plan?tab=strategic-plan", label: "แผนยุทธศาสตร์" },
-    { href: "/local-development-plan?tab=manpower-plan", label: "แผนอัตรากำลัง" },
-    { href: "/local-development-plan?tab=procurement-plan", label: "แผนการจัดหาพัสดุ" },
+    {
+      href: "/local-development-plan?tab=strategic-plan",
+      label: "แผนยุทธศาสตร์",
+    },
+    {
+      href: "/local-development-plan?tab=manpower-plan",
+      label: "แผนอัตรากำลัง",
+    },
+    {
+      href: "/local-development-plan?tab=procurement-plan",
+      label: "แผนการจัดหาพัสดุ",
+    },
   ];
 
   const citizenMenu = [
@@ -351,6 +369,12 @@ export default function Navbar() {
               className="bg-white text-[15px] text-[#1cb5e0] px-4 py-1 rounded-md shadow hover:scale-105 transition text-center font-medium"
             >
               สมัครสมาชิก
+            </a>
+<a
+              href="/contact"
+              className="bg-gradient-to-r from-yellow-400 to-orange-500 text-white text-[16px] font-bold px-6 py-2 rounded-full shadow-lg hover:shadow-2xl hover:scale-110 hover:bg-gradient-to-l hover:from-yellow-400 hover:to-orange-500 transition-all duration-300 ease-in-out transform text-center animate-bounce hover:animate-pulse border-2 border-white"
+            >
+              ติดต่อเรา
             </a>
           </div>
 
