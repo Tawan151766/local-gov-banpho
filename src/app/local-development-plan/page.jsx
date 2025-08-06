@@ -5,21 +5,46 @@ import { useRouter } from "next/navigation";
 export default function LocalDevelopmentPlanPage() {
   const router = useRouter();
   const [plans, setPlans] = useState([]);
+  const [types, setTypes] = useState([]);
   const [loading, setLoading] = useState(true);
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
   const [totalPlans, setTotalPlans] = useState(0);
+  const [selectedType, setSelectedType] = useState("");
   const plansPerPage = 6;
 
   useEffect(() => {
+    fetchTypes();
+  }, []);
+
+  useEffect(() => {
     fetchPlans();
-  }, [currentPage]);
+  }, [currentPage, selectedType]);
+
+  const fetchTypes = async () => {
+    try {
+      // สร้าง API endpoint สำหรับ types ถ้ายังไม่มี หรือใช้จาก plans ที่มี
+      const response = await fetch("/api/local-dev-plan");
+      const result = await response.json();
+      if (result.success) {
+        // สร้าง unique types จากข้อมูลที่มี
+        const uniqueTypes = [...new Set(result.data.map(plan => plan.type_name))]
+          .map((typeName, index) => ({
+            id: index + 1,
+            type_name: typeName
+          }));
+        setTypes(uniqueTypes);
+      }
+    } catch (error) {
+      console.error("Error fetching types:", error);
+    }
+  };
 
   const fetchPlans = async () => {
     setLoading(true);
     try {
-      // เพิ่ม pagination parameters
-      const response = await fetch(`/api/local-dev-plan?page=${currentPage}&limit=${plansPerPage}`);
+      const searchFilter = selectedType ? `&search=${encodeURIComponent(selectedType)}` : '';
+      const response = await fetch(`/api/local-dev-plan?page=${currentPage}&limit=${plansPerPage}${searchFilter}`);
       const result = await response.json();
       
       if (result.success) {
@@ -68,6 +93,11 @@ export default function LocalDevelopmentPlanPage() {
       setCurrentPage(page);
       window.scrollTo({ top: 0, behavior: 'smooth' });
     }
+  };
+
+  const handleTypeFilter = (typeName) => {
+    setSelectedType(typeName);
+    setCurrentPage(1);
   };
 
   const handleShowDetail = (plan) => {
@@ -258,6 +288,39 @@ export default function LocalDevelopmentPlanPage() {
             </span>
           </div>
         </div>
+
+        {/* Filter Section */}
+        <div className="bg-white bg-opacity-90 rounded-2xl shadow-md p-4 backdrop-blur-sm">
+          <h3 className="text-lg font-semibold text-gray-800 mb-3">กรองตามประเภท</h3>
+          <div className="flex flex-wrap gap-2">
+            <button
+              onClick={() => handleTypeFilter("")}
+              className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
+                selectedType === ""
+                  ? 'bg-[#01bdcc] text-white'
+                  : 'bg-white text-gray-700 border border-gray-300 hover:bg-gray-50'
+              }`}
+            >
+              ทั้งหมด
+            </button>
+            {types.map((type) => (
+              <button
+                key={type.id}
+                onClick={() => handleTypeFilter(type.type_name)}
+                className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
+                  selectedType === type.type_name
+                    ? 'text-white shadow-md'
+                    : 'bg-white text-gray-700 border border-gray-300 hover:bg-gray-50'
+                }`}
+                style={{
+                  backgroundColor: selectedType === type.type_name ? getPlanColor(type.type_name) : undefined
+                }}
+              >
+                {type.type_name}
+              </button>
+            ))}
+          </div>
+        </div>
       </div>
 
       {/* Content Section */}
@@ -308,7 +371,7 @@ export default function LocalDevelopmentPlanPage() {
 
               {/* Stats */}
               <div className="flex flex-wrap gap-2 mb-4">
-                <span className="bg-green-100 text-green-600 px-3 py-1 rounded-full text-xs font-medium">
+                <span className="bg-blue-100 text-blue-600 px-3 py-1 rounded-full text-xs font-medium">
                   📄 {plan.files_count || 0} ไฟล์
                 </span>
                 <span className="bg-purple-100 text-purple-600 px-3 py-1 rounded-full text-xs font-medium">
@@ -331,14 +394,14 @@ export default function LocalDevelopmentPlanPage() {
               </div>
 
               {/* Preview of recent files */}
-              {plan.files && plan.files.length > 0 && (
+              {plan.recent_files && plan.recent_files.length > 0 && (
                 <div className="mt-3 pt-3 border-t border-gray-100">
                   <p className="text-xs text-gray-500 mb-2">ไฟล์ล่าสุด:</p>
                   <div className="space-y-1">
-                    {plan.files.slice(0, 2).map((file, idx) => (
+                    {plan.recent_files.slice(0, 2).map((file, idx) => (
                       <div key={idx} className="text-sm text-gray-700 bg-gray-50 px-2 py-1 rounded truncate flex items-center gap-1">
                         <span>{getFileIcon(file.files_type)}</span>
-                        <span>{file.files_path?.split('/').pop() || `ไฟล์ ${idx + 1}`}</span>
+                        <span>{file.original_name || file.files_path?.split('/').pop() || `ไฟล์ ${idx + 1}`}</span>
                       </div>
                     ))}
                     {plan.files_count > 2 && (
@@ -364,11 +427,19 @@ export default function LocalDevelopmentPlanPage() {
             <div className="bg-white bg-opacity-90 rounded-xl p-8 text-center shadow-lg backdrop-blur-sm">
               <div className="text-gray-400 text-6xl mb-4">📋</div>
               <div className="text-gray-500 text-xl mb-2">
-                ไม่มีข้อมูลแผนพัฒนาท้องถิ่น
+                {selectedType ? "ไม่พบข้อมูลแผนพัฒนาท้องถิ่นในประเภทที่เลือก" : "ไม่มีข้อมูลแผนพัฒนาท้องถิ่น"}
               </div>
               <div className="text-gray-400 text-sm mb-4">
-                กรุณาเพิ่มข้อมูลแผนพัฒนาในระบบจัดการ
+                {selectedType ? "ลองเลือกประเภทอื่น หรือดูทั้งหมด" : "กรุณาเพิ่มข้อมูลแผนพัฒนาในระบบจัดการ"}
               </div>
+              {selectedType && (
+                <button
+                  onClick={() => handleTypeFilter("")}
+                  className="px-4 py-2 bg-[#01bdcc] text-white rounded-lg hover:bg-[#01a5b3] transition-colors"
+                >
+                  ดูทั้งหมด
+                </button>
+              )}
             </div>
           </div>
         )}
