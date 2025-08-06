@@ -370,9 +370,9 @@ export default function Navbar() {
             >
               สมัครสมาชิก
             </a>
-<a
-              href="/contact"
-              className="bg-gradient-to-r from-yellow-400 to-orange-500 text-white text-[16px] font-bold px-6 py-2 rounded-full shadow-lg hover:shadow-2xl hover:scale-110 hover:bg-gradient-to-l hover:from-yellow-400 hover:to-orange-500 transition-all duration-300 ease-in-out transform text-center animate-bounce hover:animate-pulse border-2 border-white"
+            <a
+              href="#"
+              className="bg-white text-[15px] text-[#1cb5e0] px-4 py-1 rounded-md shadow hover:scale-105 transition text-center font-medium"
             >
               ติดต่อเรา
             </a>
@@ -482,6 +482,13 @@ export default function Navbar() {
                   onClick={() => setShowMenu(false)}
                 >
                   สมัครสมาชิก
+                </a>
+                <a
+                  href="#"
+                  className="block bg-white text-[#1cb5e0] text-center text-base px-4 py-3 rounded-md shadow hover:scale-105 transition font-medium"
+                  onClick={() => setShowMenu(false)}
+                >
+                  ติดต่อเรา
                 </a>
               </div>
             </div>
