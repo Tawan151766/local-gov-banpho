@@ -2,28 +2,29 @@ import React from "react";
 
 export default function MapsSection() {
   return (
-    <div
-      style={{
-        backgroundImage: 'url("/image/map_bg.png")',
-        minHeight: "320px",
-        height: "auto",
-      }}
-      className="w-full flex flex-col items-center justify-center py-8 px-2 md:px-8"
-    >
-      {/* Title */}
-      <h2 className="text-xl md:text-2xl lg:text-3xl font-bold text-[#01385f] mb-4 text-center">
-        MAP บ้านโพธิ์
-      </h2>
-      {/* Map Image Section */}
-      <div className="w-full max-w-[1652px]  flex items-center justify-center bg-cover bg-center mx-auto mb-6">
-        <img
-          src="/image/banpho_map.png"
-          alt="Banpho Map"
-          className="w-full md:w-5/6 h-auto object-contain drop-shadow-xl"
-        />
-      </div>
-      {/* Button Section */}
-      <div className="flex flex-col md:flex-row items-center justify-center gap-4 w-full max-w-3xl mx-auto">
+<div className="relative w-full h-full">
+  {/* Background Video */}
+  <video
+    autoPlay
+    loop
+    muted
+    playsInline
+    className="w-full h-full object-cover"
+  >
+    <source src="/image/map_video.mp4" type="video/mp4" />
+    Your browser does not support the video tag.
+  </video>
+
+  {/* Overlay Text */}
+  <div className="absolute inset-0 flex  justify-center md:top-20 top-5">
+    <h2 className="text-md md:text-2xl font-bold text-[#01385f] text-center drop-shadow-lg ">
+      MAP บ้านโพธิ์
+    </h2>
+  </div>
+
+       {/* Button Section */}
+       <div className="absolute md:bottom-20 bottom-2 left-1/2 transform -translate-x-1/2 flex flex-row md:flex-row items-center justify-center gap-4 w-full max-w-3xl mx-auto">
+
         {[
           {
             label: "ปั๊มน้ำมัน",
@@ -44,7 +45,7 @@ export default function MapsSection() {
           <button
             onClick={() => window.open(btn.url, "_blank")}
             key={index}
-            className="flex items-center justify-center gap-2 w-[244px] h-[71px] flex-shrink-0 rounded-[15px] bg-white shadow transition duration-200 hover:bg-blue-50 hover:shadow-lg hover:scale-[1.02] px-4"
+            className="flex items-center justify-center gap-2 md:w-[244px] w-[125px] md:h-[71px] h-[40px] flex-shrink-0 rounded-[15px] bg-white shadow transition duration-200 hover:bg-blue-50 hover:shadow-lg hover:scale-[1.02] md:px-4 px-2 "
           >
             {/* กลุ่ม icon และข้อความ */}
             <div className="flex items-center gap-2">
@@ -53,13 +54,18 @@ export default function MapsSection() {
                 alt={btn.imgAlt}
                 className="w-6 h-6 object-contain"
               />
-              <span className="text-[#01385f] font-semibold text-base md:text-lg">
+              <span className="text-[#01385f] font-semibold text-[12px] md:text-lg">
                 {btn.label}
               </span>
             </div>
           </button>
         ))}
       </div>
-    </div>
+</div>
+
+
+
+
+
   );
 }
