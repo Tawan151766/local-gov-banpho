@@ -149,6 +149,7 @@ export default function AnnouncementSections() {
     return (
       <div className="relative w-screen h-screen flex items-center justify-center bg-gradient-to-b from-[#A8F9FF] to-[#E8DDC4]">
         <div className="text-[#01385F] text-xl">ไม่มีข่าวประชาสัมพันธ์</div>
+        
       </div>
     );
   }
@@ -223,8 +224,6 @@ export default function AnnouncementSections() {
               />
             </svg>
           </button>
-
-
           <div
             className={`relative flex-1 aspect-[2.2/1] sm:aspect-[2.5/1] border-2 sm:border-4 md:border-6 border-solid border-white rounded-[12px] sm:rounded-[20px] md:rounded-[29px] shadow-[0_2px_4px_rgba(0,0,0,0.18)] sm:shadow-[0_4px_4px_rgba(0,0,0,0.25)] bg-white flex items-center justify-center overflow-hidden min-h-[120px] sm:min-h-[180px] md:min-h-[240px] transition-all duration-300 cursor-pointer hover:shadow-lg ${
               isTransitioning ? "scale-[0.98]" : "scale-100"
@@ -252,16 +251,20 @@ export default function AnnouncementSections() {
                     : "opacity-100 scale-100"
                 }`}
               >
-
-                
-                
+                {/* Icon based on content type */}
                 <div className="text-white/80 mb-2">
                   {announcements[current]?.pdfs?.length > 0 ? (
-                    <img
-                      src="image/annu.jpg"
-                      alt="Announcement PDF"
+                    <svg
                       className="w-12 h-12 sm:w-16 sm:h-16"
-                    />
+                      fill="currentColor"
+                      viewBox="0 0 20 20"
+                    >
+                      <path
+                        fillRule="evenodd"
+                        d="M4 4a2 2 0 012-2h4.586A2 2 0 0112 2.586L15.414 6A2 2 0 0116 7.414V16a2 2 0 01-2 2H6a2 2 0 01-2-2V4zm2 6a1 1 0 011-1h6a1 1 0 110 2H7a1 1 0 01-1-1zm1 3a1 1 0 100 2h6a1 1 0 100-2H7z"
+                        clipRule="evenodd"
+                      />
+                    </svg>
                   ) : announcements[current]?.videos?.length > 0 ? (
                     <svg
                       className="w-12 h-12 sm:w-16 sm:h-16"
@@ -341,7 +344,6 @@ export default function AnnouncementSections() {
                 <div className="w-2 h-2 bg-yellow-400 rounded-full"></div>
               </div>
             )}
-            
           </div>
           {/* Next Button - right side outside image, responsive size */}
           <button
