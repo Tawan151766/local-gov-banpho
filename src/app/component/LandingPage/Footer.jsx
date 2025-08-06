@@ -21,13 +21,13 @@ export default function Footer() {
           <a href="#" className="hover:underline">
             ข้อมูลเว็บไซต์
           </a>
-          <a href="#" className="hover:underline">
+          <a href="/" className="hover:underline">
             หน้าแรก
           </a>
           <a href="#" className="hover:underline">
             กระดานกระทู้
           </a>
-          <a href="#" className="hover:underline">
+          <a href="/contact" className="hover:underline">
             ติดต่อ
           </a>
           <a href="#" className="hover:underline">
