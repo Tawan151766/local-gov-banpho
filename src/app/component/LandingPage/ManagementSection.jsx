@@ -26,7 +26,7 @@ const ManagementCard = ({
       <div
         className={`relative w-full overflow-hidden rounded-lg ${
           isLarge
-            ? "max-w-[220px] h-[260px] sm:max-w-[260px] sm:h-[320px] md:max-w-[300px] md:h-[360px]"
+            ? "max-w-[220px] h-[260px] sm:max-w-[260px] sm:h-[320px] md:max-w-[300px] md:h-[460px]"
             : "max-w-[120px] h-[180px] sm:max-w-[150px] sm:h-[250px] md:max-w-[180px] md:h-[300px] lg:max-w-[215px] lg:h-[360px]"
         }`}
       >
@@ -84,7 +84,9 @@ const ManagementCard = ({
         >
           <span
             className={`text-white font-medium ${
-              isLarge ? "text-base sm:text-lg md:text-xl" : "text-[8px] sm:text-xs md:text-sm"
+              isLarge
+                ? "text-base sm:text-lg md:text-xl"
+                : "text-[8px] sm:text-xs md:text-sm"
             }`}
           >
             {phone}
@@ -95,7 +97,6 @@ const ManagementCard = ({
   );
 };
 
-
 const ManagementCard2 = ({
   position,
   name = "ตำแหน่ง",
@@ -104,47 +105,46 @@ const ManagementCard2 = ({
   imageSrc = "/image/manager.png",
   textColor = "text-white",
 }) => {
- 
   const textSizeClasses = {
-    1: "text-lg sm:text-xl",       
+    1: "text-lg sm:text-xl",
     2: "text-sm sm:text-base",
     3: "text-sm sm:text-base",
-    4: "text-lg sm:text-xl",       
+    4: "text-sm sm:text-base",
     5: "text-sm sm:text-base",
     6: "text-sm sm:text-base",
   };
 
+  const imageSizeClass =
+    position === 1 
+      ? "max-w-[180px] md:max-w-[360px] h-[260px] md:h-[500px]"
+      : "max-w-[180px] md:max-w-[220px] h-[260px] md:h-[340px]";
 
+  const boxSizeClass =
+    position === 1 
+      ? "max-w-[360px] rounded-[12px] sm:rounded-[20px] shadow-[0_6px_6px_0_rgba(0,0,0,0.25)]"
+      : "max-w-[220px] sm:max-w-[210px] md:max-w-[220px] lg:max-w-[240px] rounded-[10px] sm:rounded-[17px] shadow-[0_5px_5px_0_rgba(0,0,0,0.2)]";
 
-const imageSizeClass = position === 1 || position === 4 
-  ? "max-w-[180px] md:max-w-[260px] h-[260px] md:h-[400px]" 
-  : "max-w-[180px] md:max-w-[220px] h-[260px] md:h-[340px]";
+  const boxHeightClass =
+    position === 1 
+      ? "h-[75px] sm:h-[75px] md:h-[85px] lg:h-[90px]"
+      : "h-[75px] sm:h-[75px] md:h-[80px] lg:h-[85px]";
 
+  const phoneHeightClass =
+    position === 1 
+      ? "h-[36px] sm:h-[44px] md:h-[48px] rounded-b-[12px] sm:rounded-b-[20px]"
+      : "h-[36px] sm:h-[40px] md:h-[44px] rounded-b-[10px] sm:rounded-b-[17px]";
 
-const boxSizeClass = position === 1 || position === 4 
-  ? "max-w-[260px] rounded-[12px] sm:rounded-[20px] shadow-[0_6px_6px_0_rgba(0,0,0,0.25)]" 
-  : "max-w-[220px] sm:max-w-[210px] md:max-w-[220px] lg:max-w-[240px] rounded-[10px] sm:rounded-[17px] shadow-[0_5px_5px_0_rgba(0,0,0,0.2)]";
-
-
-const boxHeightClass = position === 1 || position === 4 
-  ? "h-[75px] sm:h-[75px] md:h-[85px] lg:h-[90px]"
-  : "h-[75px] sm:h-[75px] md:h-[80px] lg:h-[85px]";
-
-
-const phoneHeightClass = position === 1 || position === 4 
-  ? "h-[36px] sm:h-[44px] md:h-[48px] rounded-b-[12px] sm:rounded-b-[20px]"
-  : "h-[36px] sm:h-[40px] md:h-[44px] rounded-b-[10px] sm:rounded-b-[17px]";
-
-
-const phoneTextSizeClass = position === 1 || position === 4
-  ? "text-sm sm:text-base md:text-lg"
-  : "text-sm sm:text-base md:text-lg";
-
+  const phoneTextSizeClass =
+    position === 1 
+      ? "text-sm sm:text-base md:text-lg"
+      : "text-sm sm:text-base md:text-lg";
 
   return (
     <div className="flex flex-col items-center space-y-4">
       {/* ภาพ */}
-      <div className={`relative w-full overflow-hidden rounded-lg ${imageSizeClass}`}>
+      <div
+        className={`relative w-full overflow-hidden rounded-lg ${imageSizeClass}`}
+      >
         <img
           src={imageSrc}
           alt={`${name} ${title}`}
@@ -164,7 +164,9 @@ const phoneTextSizeClass = position === 1 || position === 4
       {/* ข้อมูล */}
       <div className={`w-full ${boxSizeClass} overflow-hidden bg-white`}>
         {/* ส่วนชื่อและตำแหน่ง */}
-        <div className={`flex flex-col justify-center items-center px-3 text-center ${boxHeightClass}`}>
+        <div
+          className={`flex flex-col justify-center items-center px-3 text-center ${boxHeightClass}`}
+        >
           <div
             className={`font-bold ${textColor} ${textSizeClasses[position]} leading-tight`}
           >
@@ -178,7 +180,9 @@ const phoneTextSizeClass = position === 1 || position === 4
         </div>
 
         {/* แถบฟ้า ใส่เบอร์โทรตรงนี้ */}
-        <div className={`bg-[#01BDCC] flex items-center justify-center px-4 ${phoneHeightClass}`}>
+        <div
+          className={`bg-[#01BDCC] flex items-center justify-center px-4 ${phoneHeightClass}`}
+        >
           <span className={`text-white font-medium ${phoneTextSizeClass}`}>
             {phone}
           </span>
@@ -187,7 +191,6 @@ const phoneTextSizeClass = position === 1 || position === 4
     </div>
   );
 };
-
 
 const ServiceItem = ({ icon, title, path }) => {
   return (
@@ -427,69 +430,97 @@ export default function ManagementSection() {
           ผู้บริหารส่วนราชการ
         </h2>
 
-        {/* Management Team 2 - Responsive Grid with better mobile layout */}
-        <div className="hidden md:grid grid-cols-3 gap-3 px-1 flex items-end px-100 py-20">
-  {/* Desktop Layout */}
-  {/* แถว 1 */}
-  <div className="max-w-[240px] min-h-[340px] mx-auto">
-    <ManagementCard2 {...managementTeam2.find(m => m.position === 3)} textColor="text-[#01385F]" />
-  </div>
+        {/* Management Team 2 - Single Row Layout */}
+        <div className="hidden md:flex gap-50 px-1 py-20 justify-center items-end">
+          <div className="max-w-[240px] min-h-[340px]">
+            <ManagementCard2
+              {...managementTeam2.find((m) => m.position === 1)}
+              textColor="text-[#01385F]"
+            />
+          </div>
 
-  <div className="max-w-[260px] min-h-[360px] mx-auto col-start-2">
-    <ManagementCard2 {...managementTeam2.find(m => m.position === 1)} textColor="text-[#01385F]" />
-  </div>
+          <div className="max-w-[260px] min-h-[360px]">
+            <ManagementCard2
+              {...managementTeam2.find((m) => m.position === 2)}
+              textColor="text-[#01385F]"
+            />
+          </div>
 
-  <div className="max-w-[240px] min-h-[340px] mx-auto">
-    <ManagementCard2 {...managementTeam2.find(m => m.position === 2)} textColor="text-[#01385F]" />
-  </div>
+          <div className="max-w-[240px] min-h-[340px]">
+            <ManagementCard2
+              {...managementTeam2.find((m) => m.position === 3)}
+              textColor="text-[#01385F]"
+            />
+          </div>
 
-  {/* แถว 2 */}
-  <div className="max-w-[240px] min-h-[340px] mx-auto">
-    <ManagementCard2 {...managementTeam2.find(m => m.position === 5)} textColor="text-[#01385F]" />
-  </div>
+          <div className="max-w-[240px] min-h-[340px]">
+            <ManagementCard2
+              {...managementTeam2.find((m) => m.position === 4)}
+              textColor="text-[#01385F]"
+            />
+          </div>
 
-  <div className="max-w-[260px] min-h-[360px] mx-auto col-start-2">
-    <ManagementCard2 {...managementTeam2.find(m => m.position === 4)} textColor="text-[#01385F]" />
-  </div>
+          <div className="max-w-[260px] min-h-[360px]">
+            <ManagementCard2
+              {...managementTeam2.find((m) => m.position === 5)}
+              textColor="text-[#01385F]"
+            />
+          </div>
 
-  <div className="max-w-[240px] min-h-[340px] mx-auto">
-    <ManagementCard2 {...managementTeam2.find(m => m.position === 6)} textColor="text-[#01385F]" />
-  </div>
+          <div className="max-w-[240px] min-h-[340px]">
+            <ManagementCard2
+              {...managementTeam2.find((m) => m.position === 6)}
+              textColor="text-[#01385F]"
+            />
+          </div>
+        </div>
 
+        {/* Mobile Layout */}
+        <div className="grid grid-cols-2 gap-2 md:hidden justify-items-center">
+          {/* กลางบน: ปลัดเทศบาล (position 1) */}
+          <div className="col-span-2 flex justify-center max-w-[260px] min-h-[360px] mx-auto mb-1">
+            <ManagementCard2
+              {...managementTeam2.find((p) => p.position === 1)}
+              textColor="text-[#01385F]"
+            />
+          </div>
 
+          {/* แถว 2: ซ้าย (position 5), ขวา (position 3) */}
+          <div className="max-w-[240px] min-h-[340px] mx-auto">
+            <ManagementCard2
+              {...managementTeam2.find((p) => p.position === 3)}
+              textColor="text-[#01385F]"
+            />
+          </div>
+          <div className="max-w-[240px] min-h-[340px] mx-auto">
+            <ManagementCard2
+              {...managementTeam2.find((p) => p.position === 2)}
+              textColor="text-[#01385F]"
+            />
+          </div>
 
+          {/* กลางล่าง: ผอ.กองคลัง (position 4) */}
+          <div className="col-span-2 flex justify-center max-w-[260px] min-h-[360px] mx-auto my-1">
+            <ManagementCard2
+              {...managementTeam2.find((p) => p.position === 4)}
+              textColor="text-[#01385F]"
+            />
+          </div>
 
-</div>
-
-  {/* Mobile Layout */}
-  <div className="grid grid-cols-2 gap-2 md:hidden justify-items-center">
-  {/* กลางบน: ปลัดเทศบาล (position 1) */}
-  <div className="col-span-2 flex justify-center max-w-[260px] min-h-[360px] mx-auto mb-1">
-    <ManagementCard2 {...managementTeam2.find(p => p.position === 1)} textColor="text-[#01385F]" />
-  </div>
-
-  {/* แถว 2: ซ้าย (position 5), ขวา (position 3) */}
-  <div className="max-w-[240px] min-h-[340px] mx-auto">
-    <ManagementCard2 {...managementTeam2.find(p => p.position === 3)} textColor="text-[#01385F]" />
-  </div>
-  <div className="max-w-[240px] min-h-[340px] mx-auto">
-    <ManagementCard2 {...managementTeam2.find(p => p.position === 2)} textColor="text-[#01385F]" />
-  </div>
-
-  {/* กลางล่าง: ผอ.กองคลัง (position 4) */}
-  <div className="col-span-2 flex justify-center max-w-[260px] min-h-[360px] mx-auto my-1">
-    <ManagementCard2 {...managementTeam2.find(p => p.position === 4)} textColor="text-[#01385F]" />
-  </div>
-
-  {/* แถวล่าง: ซ้าย (position 2), ขวา (position 6) */}
-  <div className="max-w-[240px] min-h-[340px] mx-auto">
-    <ManagementCard2 {...managementTeam2.find(p => p.position === 5)} textColor="text-[#01385F]" />
-  </div>
-  <div className="max-w-[240px] min-h-[340px] mx-auto">
-    <ManagementCard2 {...managementTeam2.find(p => p.position === 6)} textColor="text-[#01385F]" />
-  </div>
-</div>
-
+          {/* แถวล่าง: ซ้าย (position 2), ขวา (position 6) */}
+          <div className="max-w-[240px] min-h-[340px] mx-auto">
+            <ManagementCard2
+              {...managementTeam2.find((p) => p.position === 5)}
+              textColor="text-[#01385F]"
+            />
+          </div>
+          <div className="max-w-[240px] min-h-[340px] mx-auto">
+            <ManagementCard2
+              {...managementTeam2.find((p) => p.position === 6)}
+              textColor="text-[#01385F]"
+            />
+          </div>
+        </div>
       </div>
     </section>
   );

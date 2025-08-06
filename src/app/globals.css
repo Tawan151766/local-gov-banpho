@@ -36,3 +36,7 @@ body {
   max-width: 100%;
   overflow-x: hidden;
 }
+
+/* body, html, #__next {
+  cursor: url('/cursor.png'), auto;
+} */

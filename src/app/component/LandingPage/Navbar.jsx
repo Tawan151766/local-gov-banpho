@@ -60,7 +60,7 @@ export default function Navbar() {
 
   const citizenMenu = [
     { href: "/citizen/complaints", label: "รับเรื่องราวร้องทุกข์" },
-    { href: "/citizen/complaints-quality", label: "รับแจ้งเรื่องราวร้องเรียนการทุจริตและประพฤติมิชอบ" },
+    { href: "/e-service/corruption-complaint", label: "รับแจ้งเรื่องราวร้องเรียนการทุจริตและประพฤติมิชอบ" },
     { href: "/citizen/work-manual", label: "คู่มือปฏิบัติงาน" },
     { href: "/citizen/service-standards", label: "คู่มือหรือมาตรฐานการให้บริการประชาชน" },
     { href: "/citizen/citizen-manual", label: "คู่มือประชาชน" },
