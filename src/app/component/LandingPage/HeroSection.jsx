@@ -88,7 +88,7 @@ export default function HeroSection({ ui }) {
       <div className="relative w-screen h-auto">
   <video
     className="w-full h-auto object-cover"
-    src="/image/background_video.mp4"
+    src="/image/boat_video.mp4"
     autoPlay
     loop
     muted
