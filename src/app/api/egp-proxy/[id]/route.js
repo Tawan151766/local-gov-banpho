@@ -10,16 +10,29 @@ const dbConfig = {
   database: "gmsky_egp",
 };
 
-export async function GET() {
+export async function GET(request, { params }) {
   let connection;
 
   try {
-    console.log("Starting EGP API request...");
+    const { id } = params;
+    console.log(`Starting EGP API request with ID: ${id}`);
+
+    // Validate ID parameter
+    if (!id) {
+      return NextResponse.json(
+        {
+          success: false,
+          error: "ID parameter is required",
+          data: []
+        },
+        { status: 400 }
+      );
+    }
 
     // Create database connection
     connection = await mysql.createConnection(dbConfig);
 
-    // Get announcements data from egp_announcements table
+    // Get announcements data from egp_announcements table with specific deptsub_id
     const [announcements] = await connection.execute(
       `SELECT 
         id,
@@ -31,24 +44,30 @@ export async function GET() {
         pub_date,
         created_at
       FROM egp_announcements 
-      WHERE deptsub_id = '1509900857'
+      WHERE deptsub_id = ?
       ORDER BY pub_date DESC, created_at DESC`,
-      []
+      [id]
     );
 
     console.log(
-      `Successfully fetched ${announcements.length} EGP announcements`
+      `Successfully fetched ${announcements.length} EGP announcements for ID: ${id}`
     );
 
     // Transform data to match expected format
     const transformedData = announcements.map((record) => ({
+      id: record.id,
       deptsub_id: record.deptsub_id,
       announce_type: record.announce_type,
       link: record.link,
       title: record.title,
+      description: record.description,
       pub_date: record.pub_date
         ? new Date(record.pub_date).toISOString().split("T")[0]
         : null,
+      created_at: record.created_at
+        ? new Date(record.created_at).toISOString()
+        : null,
+      type_name: "ประกาศ EGP", // Add type_name for consistency
     }));
 
     // Return data in the expected format
@@ -56,6 +75,8 @@ export async function GET() {
       {
         success: true,
         data: transformedData,
+        count: transformedData.length,
+        message: `Found ${transformedData.length} EGP announcements for ID: ${id}`
       },
       {
         headers: {
@@ -66,59 +87,47 @@ export async function GET() {
       }
     );
   } catch (error) {
-    console.error("EGP API proxy error:", error.message);
+    console.error(`EGP API proxy error for ID ${params?.id}:`, error.message);
 
     // Return fallback data when database connection fails
     const fallbackData = {
       success: true,
       data: [
         {
-          deptsub_id: "1509900857",
+          id: 1,
+          deptsub_id: params?.id || "1509900857",
           announce_type: "15",
           title: "ประกวดราคาจ้างก่อสร้างโครงการก่อสร้างอาคารสำนักงานเทศบาลตำบลบ้านโพธิ์ ด้วยวิธีประกวดราคาอิเล็กทรอนิกส์ (e-bidding)",
           link: "https://process5.gprocurement.go.th/egp-upload-service/v1/downloadFileTest?fileId=85ee437146634121aa32686ccf7df250",
           pub_date: "2025-08-04",
+          type_name: "ประกาศ EGP",
         },
         {
-          deptsub_id: "1509900857",
+          id: 2,
+          deptsub_id: params?.id || "1509900857",
           announce_type: "D0",
           title: "ผลประกาศจ้างก่อสร้างโครงการก่อสร้างอาคารสำนักงานเทศบาลตำบลบ้านโพธิ์",
           link: "https://process5.gprocurement.go.th/egp-template-service/dwnt/view-pdf-file?templateId=db7c27d6-0e09-4bad-8406-e6261687771b",
           pub_date: "2025-08-04",
+          type_name: "ประกาศ EGP",
         },
         {
-          deptsub_id: "1509900857",
+          id: 3,
+          deptsub_id: params?.id || "1509900857",
           announce_type: "W1",
           title: "จ้างเหมารถยนต์โดยสารปรับอากาศแบบมาตรฐาน ม๔(ข) ขนาดไม่น้อยกว่า ๔๔ ที่นั่ง จำนวน ๑ คัน โดยวิธีเฉพาะเจาะจง",
           link: "http://process.gprocurement.go.th/egp2procmainWeb/jsp/procsearch.sch?servlet=gojsp&proc_id=ShowHTMLFile&processFlows=Procure&projectId=68079475717&templateType=W2&temp_Announ=D&temp_itemNo=1&seqNo=2",
           pub_date: "2025-07-31",
-        },
-        {
-          deptsub_id: "1509900857",
-          announce_type: "W0",
-          title: "ซื้อวัสดุยานพาหนะและขนส่ง จำนวน ๒ รายการ โดยวิธีเฉพาะเจาะจง",
-          link: "http://process.gprocurement.go.th/egp2procmainWeb/jsp/procsearch.sch?servlet=gojsp&proc_id=ShowHTMLFile&processFlows=Procure&projectId=68079483156&templateType=W2&temp_Announ=A&temp_itemNo=0&seqNo=1",
-          pub_date: "2025-07-30",
-        },
-        {
-          deptsub_id: "1509900857",
-          announce_type: "B0",
-          title: "ประกาศผู้ชนะการประกวดราคาจ้างก่อสร้างโครงการก่อสร้างอาคารสำนักงานเทศบาลตำบลบ้านโพธิ์",
-          link: "https://process5.gprocurement.go.th/egp-upload-service/v1/downloadFileTest?fileId=00eb0ed957094c72819988f36fbc9ce4",
-          pub_date: "2025-07-25",
-        },
-        {
-          deptsub_id: "1509900857",
-          announce_type: "P0",
-          title: "จัดซื้ออาหารเสริม (นม) เดือนมิถุนายน - ตุลาคม ๒๕๖๘",
-          link: "http://process.gprocurement.go.th/egp2procmainWeb/jsp/procsearch.sch?servlet=gojsp&proc_id=ShowHTMLFile&processFlows=Procure&projectId=M68060007097&templateType=P0&temp_Announ=P&temp_itemNo=&seqNo=",
-          pub_date: "2025-06-11",
+          type_name: "ประกาศ EGP",
         }
-      ]
+      ],
+      count: 3,
+      message: `Fallback data for ID: ${params?.id || "1509900857"} (Database connection failed)`
     };
 
-    console.log("Database connection failed, returning fallback data");
+    console.log(`Database connection failed, returning fallback data for ID: ${params?.id}`);
     return NextResponse.json(fallbackData, {
+      status: 200,
       headers: {
         "Access-Control-Allow-Origin": "*",
         "Access-Control-Allow-Methods": "GET, POST, PUT, DELETE, OPTIONS",
