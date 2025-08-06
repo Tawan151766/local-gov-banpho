@@ -8,10 +8,11 @@ export default function FinanceSection() {
   const [filteredPosts, setFilteredPosts] = useState([]);
   const [error, setError] = useState(null);
   const [retryCount, setRetryCount] = useState(0);
+  const [egpId, setEgpId] = useState("1509900857"); // Default EGP ID
 
   useEffect(() => {
     fetchPosts();
-  }, [activeCategory]); // เปลี่ยนให้ fetch ใหม่เมื่อ category เปลี่ยน
+  }, [activeCategory, egpId]); // เปลี่ยนให้ fetch ใหม่เมื่อ category หรือ egpId เปลี่ยน
 
   useEffect(() => {
     filterPostsByCategory();
@@ -36,8 +37,8 @@ export default function FinanceSection() {
           apiUrl = "/api/posts?type=รายงานผลการจัดซื้อจัดจ้าง";
           break;
         case "egp":
-          // ถ้ามี EGP API แยก หรือใช้ข้อมูลจาก external API
-          apiUrl = "/api/egp-proxy"; // หรือ API ที่เหมาะสม
+          // ใช้ EGP API แยก พร้อม ID parameter
+          apiUrl = `/api/egp-proxy/${egpId}`;
           break;
         default:
           apiUrl = "/api/posts?type=ประกาศจัดซื้อจัดจ้าง";
@@ -187,7 +188,12 @@ export default function FinanceSection() {
 
   const handleCategoryClick = (category) => {
     setActiveCategory(category);
-    // fetchPosts จะถูกเรียกอัตโนมัติผ่าน useEffect
+    // fetchPosts จะถูกเรียกอัตโนมัติผ่าง useEffect
+  };
+
+  const handleEgpIdChange = (newId) => {
+    setEgpId(newId);
+    // ถ้าอยู่ในหมวด EGP อยู่แล้ว จะมีการ fetch ใหม่อัตโนมัติผ่าน useEffect
   };
 
   const handlePostClick = (post) => {
@@ -281,6 +287,33 @@ export default function FinanceSection() {
             )}
           </div>
         </div>
+
+        {/* EGP ID Input - แสดงเฉพาะเมื่ออยู่ในหมวด EGP */}
+        {activeCategory === "egp" && (
+          <div className="bg-white rounded-xl shadow-md p-4 flex flex-col sm:flex-row items-center gap-4">
+            <label className="text-[#01385f] font-semibold text-sm sm:text-base whitespace-nowrap">
+              EGP ID:
+            </label>
+            <div className="flex-1 flex flex-col sm:flex-row gap-2">
+              <input
+                type="text"
+                value={egpId}
+                onChange={(e) => handleEgpIdChange(e.target.value)}
+                className="flex-1 px-3 py-2 border-2 border-[#01bdcc] rounded-lg focus:outline-none focus:ring-2 focus:ring-[#01bdcc]/50 text-sm"
+                placeholder="ใส่ EGP ID (เช่น 1509900857)"
+              />
+              <button
+                onClick={() => fetchPosts()}
+                className="bg-[#01bdcc] text-white px-4 py-2 rounded-lg hover:bg-[#01a5b0] transition-colors duration-200 text-sm font-semibold"
+              >
+                ค้นหา
+              </button>
+            </div>
+            <div className="text-xs text-gray-500">
+              Current ID: {egpId}
+            </div>
+          </div>
+        )}
       </div>
 
       <div className="w-full max-w-[1268px] grid grid-cols-1 md:grid-cols-2 lg:grid-cols-2 gap-8">
@@ -375,6 +408,7 @@ export default function FinanceSection() {
           <div className="col-span-full flex flex-col items-center justify-center py-12">
             <div className="text-gray-500 text-lg mb-2">
               ไม่มีข้อมูล{getCategoryTypeName(activeCategory)}
+              {activeCategory === "egp" && ` สำหรับ ID: ${egpId}`}
             </div>
             <div className="text-gray-400 text-sm">
               ไม่พบข้อมูลในหมวดหมู่นี้
