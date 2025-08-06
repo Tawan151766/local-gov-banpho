@@ -1,11 +1,7 @@
 "use client";
 import Link from "next/link";
-import {
-  RestOutlined,
-  DeleteOutlined,
-  EditOutlined,
-} from "@ant-design/icons";
-import { GlassWater } from "lucide-react";
+import { RestOutlined, DeleteOutlined, EditOutlined } from "@ant-design/icons";
+import { GlassWater, Search } from "lucide-react";
 
 export default function EServicePage() {
   const services = [
@@ -41,6 +37,14 @@ export default function EServicePage() {
       color: "from-orange-500 to-orange-600",
       link: "/e-service/waste-collection",
     },
+    {
+      id: 5,
+      title: "ติดตามคำร้องขอรับบริการ",
+      description: "ติดตามสถาระการยื่นคำร้องขอรับบริการ",
+      icon: <Search style={{ fontSize: 40 }} />,
+      color: "from-blue-500 to-blue-600",
+      link: "/e-service/tracking",
+    },
   ];
 
   return (
@@ -71,6 +75,12 @@ export default function EServicePage() {
               Electronic Service
             </span>
           </div>
+          <Link
+            href="/admin/dashboard"
+            className="absolute right-6 top-1/2 transform -translate-y-1/2 bg-white bg-opacity-20 hover:bg-opacity-30 text-white px-3 py-2 rounded-lg text-sm font-medium transition-all duration-200 backdrop-blur-sm"
+          >
+            Admin
+          </Link>
         </div>
       </div>
 

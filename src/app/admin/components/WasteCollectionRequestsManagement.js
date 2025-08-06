@@ -75,7 +75,8 @@ export default function WasteCollectionRequestsManagement() {
 
   useEffect(() => {
     fetchRequests();
-  }, [fetchRequests, pagination.pageSize, searchText, statusFilter]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [pagination.current, pagination.pageSize, searchText, statusFilter]);
 
   const handleView = (record) => {
     setSelectedRequest(record);

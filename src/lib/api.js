@@ -29,51 +29,6 @@ async function apiCall(endpoint, options = {}) {
   }
 }
 
-// User API functions
-export const userAPI = {
-  // Get all users with pagination and search
-  getUsers: async (params = {}) => {
-    const searchParams = new URLSearchParams();
-
-    if (params.page) searchParams.append("page", params.page);
-    if (params.limit) searchParams.append("limit", params.limit);
-    if (params.search) searchParams.append("search", params.search);
-
-    const queryString = searchParams.toString();
-    const endpoint = `/users${queryString ? `?${queryString}` : ""}`;
-
-    return apiCall(endpoint);
-  },
-
-  // Get single user by ID
-  getUser: async (id) => {
-    return apiCall(`/users/${id}`);
-  },
-
-  // Create new user
-  createUser: async (userData) => {
-    return apiCall("/users", {
-      method: "POST",
-      body: JSON.stringify(userData),
-    });
-  },
-
-  // Update user
-  updateUser: async (id, userData) => {
-    return apiCall(`/users/${id}`, {
-      method: "PUT",
-      body: JSON.stringify(userData),
-    });
-  },
-
-  // Delete user
-  deleteUser: async (id) => {
-    return apiCall(`/users/${id}`, {
-      method: "DELETE",
-    });
-  },
-};
-
 // Generic CRUD operations for future modules
 export const createCRUDAPI = (resource) => ({
   getAll: (params = {}) => {
@@ -341,14 +296,14 @@ export const perfResultsFilesAPI = {
   },
 
   updateFile: async (id, fileData) => {
-    return apiCall(`/perf-results-files/${id}`, {
+    return apiCall(`/perf-results-files?id=${id}`, {
       method: "PUT",
       body: JSON.stringify(fileData),
     });
   },
 
   deleteFile: async (id) => {
-    return apiCall(`/perf-results-files/${id}`, {
+    return apiCall(`/perf-results-files?id=${id}`, {
       method: "DELETE",
     });
   },
@@ -562,7 +517,9 @@ export const procurementPlanTypesAPI = {
     if (params.withFiles) searchParams.append("withFiles", params.withFiles);
 
     const queryString = searchParams.toString();
-    const endpoint = `/procurement-plan-types${queryString ? `?${queryString}` : ""}`;
+    const endpoint = `/procurement-plan-types${
+      queryString ? `?${queryString}` : ""
+    }`;
 
     return apiCall(endpoint);
   },
@@ -605,7 +562,9 @@ export const procurementPlanFilesAPI = {
     if (params.filesType) searchParams.append("filesType", params.filesType);
 
     const queryString = searchParams.toString();
-    const endpoint = `/procurement-plan-files${queryString ? `?${queryString}` : ""}`;
+    const endpoint = `/procurement-plan-files${
+      queryString ? `?${queryString}` : ""
+    }`;
 
     return apiCall(endpoint);
   },
@@ -622,14 +581,14 @@ export const procurementPlanFilesAPI = {
   },
 
   updateFile: async (id, fileData) => {
-    return apiCall(`/procurement-plan-files/${id}`, {
+    return apiCall(`/procurement-plan-files?id=${id}`, {
       method: "PUT",
       body: JSON.stringify(fileData),
     });
   },
 
   deleteFile: async (id) => {
-    return apiCall(`/procurement-plan-files/${id}`, {
+    return apiCall(`/procurement-plan-files?id=${id}`, {
       method: "DELETE",
     });
   },
@@ -656,7 +615,8 @@ export const lawsRegsTypesAPI = {
     if (params.page) searchParams.append("page", params.page);
     if (params.limit) searchParams.append("limit", params.limit);
     if (params.search) searchParams.append("search", params.search);
-    if (params.withSections) searchParams.append("withSections", params.withSections);
+    if (params.withSections)
+      searchParams.append("withSections", params.withSections);
 
     const queryString = searchParams.toString();
     const endpoint = `/laws-regs-types${queryString ? `?${queryString}` : ""}`;
@@ -702,7 +662,9 @@ export const lawsRegsSectionsAPI = {
     if (params.withFiles) searchParams.append("withFiles", params.withFiles);
 
     const queryString = searchParams.toString();
-    const endpoint = `/laws-regs-sections${queryString ? `?${queryString}` : ""}`;
+    const endpoint = `/laws-regs-sections${
+      queryString ? `?${queryString}` : ""
+    }`;
 
     return apiCall(endpoint);
   },
@@ -762,14 +724,14 @@ export const lawsRegsFilesAPI = {
   },
 
   updateFile: async (id, fileData) => {
-    return apiCall(`/laws-regs-files/${id}`, {
+    return apiCall(`/laws-regs-files?id=${id}`, {
       method: "PUT",
       body: JSON.stringify(fileData),
     });
   },
 
   deleteFile: async (id) => {
-    return apiCall(`/laws-regs-files/${id}`, {
+    return apiCall(`/laws-regs-files?id=${id}`, {
       method: "DELETE",
     });
   },
@@ -788,9 +750,455 @@ export const createLawsRegsTablesAPI = {
   },
 };
 
+// Q&A API functions
+export const qaAPI = {
+  // Categories
+  getCategories: async (params = {}) => {
+    const searchParams = new URLSearchParams();
+
+    if (params.page) searchParams.append("page", params.page);
+    if (params.limit) searchParams.append("limit", params.limit);
+    if (params.search) searchParams.append("search", params.search);
+    if (params.withItems) searchParams.append("withItems", params.withItems);
+    if (params.activeOnly !== undefined)
+      searchParams.append("activeOnly", params.activeOnly);
+
+    const queryString = searchParams.toString();
+    const endpoint = `/qa-categories${queryString ? `?${queryString}` : ""}`;
+
+    return apiCall(endpoint);
+  },
+
+  createCategory: async (categoryData) => {
+    return apiCall("/qa-categories", {
+      method: "POST",
+      body: JSON.stringify(categoryData),
+    });
+  },
+
+  // Q&A Items
+  getItems: async (params = {}) => {
+    const searchParams = new URLSearchParams();
+
+    if (params.page) searchParams.append("page", params.page);
+    if (params.limit) searchParams.append("limit", params.limit);
+    if (params.search) searchParams.append("search", params.search);
+    if (params.categoryId) searchParams.append("categoryId", params.categoryId);
+    if (params.featuredOnly)
+      searchParams.append("featuredOnly", params.featuredOnly);
+    if (params.activeOnly !== undefined)
+      searchParams.append("activeOnly", params.activeOnly);
+
+    const queryString = searchParams.toString();
+    const endpoint = `/qa-items${queryString ? `?${queryString}` : ""}`;
+
+    return apiCall(endpoint);
+  },
+
+  createItem: async (itemData) => {
+    return apiCall("/qa-items", {
+      method: "POST",
+      body: JSON.stringify(itemData),
+    });
+  },
+
+  incrementView: async (id) => {
+    return apiCall(`/qa-items/${id}/view`, {
+      method: "POST",
+    });
+  },
+
+  // Search
+  search: async (query, limit = 10) => {
+    const searchParams = new URLSearchParams();
+    searchParams.append("q", query);
+    searchParams.append("limit", limit);
+
+    return apiCall(`/qa-search?${searchParams.toString()}`);
+  },
+
+  // Submit new question from citizens
+  submitQuestion: async (questionData) => {
+    return apiCall("/qa-submit", {
+      method: "POST",
+      body: JSON.stringify(questionData),
+    });
+  },
+
+  // Admin functions
+  getPendingItems: async (params = {}) => {
+    const searchParams = new URLSearchParams();
+
+    if (params.page) searchParams.append("page", params.page);
+    if (params.limit) searchParams.append("limit", params.limit);
+    if (params.search) searchParams.append("search", params.search);
+
+    const queryString = searchParams.toString();
+    const endpoint = `/qa-pending${queryString ? `?${queryString}` : ""}`;
+
+    return apiCall(endpoint);
+  },
+
+  getItem: async (id) => {
+    return apiCall(`/qa-items/${id}`);
+  },
+
+  updateItem: async (id, itemData) => {
+    return apiCall(`/qa-items/${id}`, {
+      method: "PUT",
+      body: JSON.stringify(itemData),
+    });
+  },
+
+  deleteItem: async (id) => {
+    return apiCall(`/qa-items/${id}`, {
+      method: "DELETE",
+    });
+  },
+
+  // Comments functions
+  getComments: async (qaItemId, params = {}) => {
+    const searchParams = new URLSearchParams();
+    searchParams.append("qa_item_id", qaItemId);
+
+    if (params.page) searchParams.append("page", params.page);
+    if (params.limit) searchParams.append("limit", params.limit);
+
+    return apiCall(`/qa-comments?${searchParams.toString()}`);
+  },
+
+  submitComment: async (commentData) => {
+    return apiCall("/qa-comments", {
+      method: "POST",
+      body: JSON.stringify(commentData),
+    });
+  },
+};
+
+// Manual API functions
+export const manualAPI = {
+  // Categories
+  getCategories: async (params = {}) => {
+    const searchParams = new URLSearchParams();
+
+    if (params.activeOnly !== undefined)
+      searchParams.append("activeOnly", params.activeOnly);
+    if (params.withItems) searchParams.append("withItems", params.withItems);
+
+    const queryString = searchParams.toString();
+    const endpoint = `/manual-categories${
+      queryString ? `?${queryString}` : ""
+    }`;
+
+    return apiCall(endpoint);
+  },
+
+  createCategory: async (categoryData) => {
+    return apiCall("/manual-categories", {
+      method: "POST",
+      body: JSON.stringify(categoryData),
+    });
+  },
+
+  // Manual Items
+  getItems: async (params = {}) => {
+    const searchParams = new URLSearchParams();
+
+    if (params.page) searchParams.append("page", params.page);
+    if (params.limit) searchParams.append("limit", params.limit);
+    if (params.search) searchParams.append("search", params.search);
+    if (params.categoryId) searchParams.append("categoryId", params.categoryId);
+    if (params.featuredOnly)
+      searchParams.append("featuredOnly", params.featuredOnly);
+    if (params.activeOnly !== undefined)
+      searchParams.append("activeOnly", params.activeOnly);
+
+    const queryString = searchParams.toString();
+    const endpoint = `/manual-items${queryString ? `?${queryString}` : ""}`;
+
+    return apiCall(endpoint);
+  },
+
+  createItem: async (itemData) => {
+    return apiCall("/manual-items", {
+      method: "POST",
+      body: JSON.stringify(itemData),
+    });
+  },
+
+  // Files
+  getFiles: async (params = {}) => {
+    const searchParams = new URLSearchParams();
+
+    if (params.page) searchParams.append("page", params.page);
+    if (params.limit) searchParams.append("limit", params.limit);
+    if (params.search) searchParams.append("search", params.search);
+    if (params.manualId) searchParams.append("manualId", params.manualId);
+    if (params.filesType) searchParams.append("filesType", params.filesType);
+    if (params.activeOnly !== undefined)
+      searchParams.append("activeOnly", params.activeOnly);
+
+    const queryString = searchParams.toString();
+    const endpoint = `/manual-files${queryString ? `?${queryString}` : ""}`;
+
+    return apiCall(endpoint);
+  },
+
+  addFile: async (fileData) => {
+    return apiCall("/manual-files", {
+      method: "POST",
+      body: JSON.stringify(fileData),
+    });
+  },
+
+  // Search
+  search: async (query, params = {}) => {
+    const searchParams = new URLSearchParams();
+    searchParams.append("q", query);
+
+    if (params.limit) searchParams.append("limit", params.limit);
+    if (params.categoryId) searchParams.append("categoryId", params.categoryId);
+
+    return apiCall(`/manual-search?${searchParams.toString()}`);
+  },
+
+  // Upload file
+  uploadFile: async (file) => {
+    const formData = new FormData();
+    formData.append("file", file);
+
+    return fetch("/api/upload/image", {
+      method: "POST",
+      body: formData,
+    }).then((response) => response.json());
+  },
+};
+
+// Export apiCall function
+export { apiCall };
+
+// Wastebin Requests API functions
+export const wastebinRequestsAPI = {
+  getRequests: async (params = {}) => {
+    const searchParams = new URLSearchParams();
+
+    if (params.page) searchParams.append("page", params.page);
+    if (params.limit) searchParams.append("limit", params.limit);
+    if (params.search) searchParams.append("search", params.search);
+    if (params.status) searchParams.append("status", params.status);
+
+    const queryString = searchParams.toString();
+    const endpoint = `/wastebin-requests${
+      queryString ? `?${queryString}` : ""
+    }`;
+
+    return apiCall(endpoint);
+  },
+
+  getRequest: async (id) => {
+    return apiCall(`/wastebin-requests/${id}`);
+  },
+
+  createRequest: async (requestData) => {
+    return apiCall("/wastebin-requests", {
+      method: "POST",
+      body: JSON.stringify(requestData),
+    });
+  },
+
+  updateRequest: async (id, requestData) => {
+    return apiCall(`/wastebin-requests/${id}`, {
+      method: "PUT",
+      body: JSON.stringify(requestData),
+    });
+  },
+
+  deleteRequest: async (id) => {
+    return apiCall(`/wastebin-requests/${id}`, {
+      method: "DELETE",
+    });
+  },
+};
+
+// Create Wastebin Tables API
+export const createWastebinTablesAPI = {
+  createTables: async () => {
+    return apiCall("/create-wastebin-tables", {
+      method: "POST",
+    });
+  },
+
+  checkTables: async () => {
+    return apiCall("/create-wastebin-tables");
+  },
+};
+
+// Waste Collection Requests API functions
+export const wasteCollectionRequestsAPI = {
+  getRequests: async (params = {}) => {
+    const searchParams = new URLSearchParams();
+
+    if (params.page) searchParams.append("page", params.page);
+    if (params.limit) searchParams.append("limit", params.limit);
+    if (params.search) searchParams.append("search", params.search);
+    if (params.status) searchParams.append("status", params.status);
+
+    const queryString = searchParams.toString();
+    const endpoint = `/waste-collection-requests${queryString ? `?${queryString}` : ""}`;
+
+    return apiCall(endpoint);
+  },
+
+  getRequest: async (id) => {
+    return apiCall(`/waste-collection-requests/${id}`);
+  },
+
+  createRequest: async (requestData) => {
+    return apiCall("/waste-collection-requests", {
+      method: "POST",
+      body: JSON.stringify(requestData),
+    });
+  },
+
+  updateRequest: async (id, requestData) => {
+    return apiCall(`/waste-collection-requests/${id}`, {
+      method: "PUT",
+      body: JSON.stringify(requestData),
+    });
+  },
+
+  deleteRequest: async (id) => {
+    return apiCall(`/waste-collection-requests/${id}`, {
+      method: "DELETE",
+    });
+  },
+};
+
+// Create Waste Collection Tables API
+export const createWasteCollectionTablesAPI = {
+  createTables: async () => {
+    return apiCall("/create-waste-collection-tables", {
+      method: "POST",
+    });
+  },
+
+  checkTables: async () => {
+    return apiCall("/create-waste-collection-tables");
+  },
+};
+
+// Water Support Requests API functions
+export const waterSupportRequestsAPI = {
+  getRequests: async (params = {}) => {
+    const searchParams = new URLSearchParams();
+
+    if (params.page) searchParams.append("page", params.page);
+    if (params.limit) searchParams.append("limit", params.limit);
+    if (params.search) searchParams.append("search", params.search);
+    if (params.status) searchParams.append("status", params.status);
+
+    const queryString = searchParams.toString();
+    const endpoint = `/water-support-requests${queryString ? `?${queryString}` : ""}`;
+
+    return apiCall(endpoint);
+  },
+
+  getRequest: async (id) => {
+    return apiCall(`/water-support-requests/${id}`);
+  },
+
+  createRequest: async (requestData) => {
+    return apiCall("/water-support-requests", {
+      method: "POST",
+      body: JSON.stringify(requestData),
+    });
+  },
+
+  updateRequest: async (id, requestData) => {
+    return apiCall(`/water-support-requests/${id}`, {
+      method: "PUT",
+      body: JSON.stringify(requestData),
+    });
+  },
+
+  deleteRequest: async (id) => {
+    return apiCall(`/water-support-requests/${id}`, {
+      method: "DELETE",
+    });
+  },
+};
+
+// Create Water Support Tables API
+export const createWaterSupportTablesAPI = {
+  createTables: async () => {
+    return apiCall("/create-water-support-tables", {
+      method: "POST",
+    });
+  },
+
+  checkTables: async () => {
+    return apiCall("/create-water-support-tables");
+  },
+};
+
+// General Requests API functions
+export const generalRequestsAPI = {
+  getRequests: async (params = {}) => {
+    const searchParams = new URLSearchParams();
+
+    if (params.page) searchParams.append("page", params.page);
+    if (params.limit) searchParams.append("limit", params.limit);
+    if (params.search) searchParams.append("search", params.search);
+    if (params.status) searchParams.append("status", params.status);
+
+    const queryString = searchParams.toString();
+    const endpoint = `/general-requests${queryString ? `?${queryString}` : ""}`;
+
+    return apiCall(endpoint);
+  },
+
+  getRequest: async (id) => {
+    return apiCall(`/general-requests/${id}`);
+  },
+
+  createRequest: async (requestData) => {
+    return apiCall("/general-requests", {
+      method: "POST",
+      body: JSON.stringify(requestData),
+    });
+  },
+
+  updateRequest: async (id, requestData) => {
+    return apiCall(`/general-requests/${id}`, {
+      method: "PUT",
+      body: JSON.stringify(requestData),
+    });
+  },
+
+  deleteRequest: async (id) => {
+    return apiCall(`/general-requests/${id}`, {
+      method: "DELETE",
+    });
+  },
+};
+
+// Create General Request Tables API
+export const createGeneralRequestTablesAPI = {
+  createTables: async () => {
+    return apiCall("/create-general-request-tables", {
+      method: "POST",
+    });
+  },
+
+  checkTables: async () => {
+    return apiCall("/create-general-request-tables");
+  },
+};
+
 // Export for easy use
 const apiExports = {
-  userAPI,
+  qaAPI,
+  manualAPI,
   staffAPI,
   perfResultsTypesAPI,
   perfResultsSectionsAPI,
@@ -809,6 +1217,14 @@ const apiExports = {
   lawsRegsSectionsAPI,
   lawsRegsFilesAPI,
   createLawsRegsTablesAPI,
+  wastebinRequestsAPI,
+  createWastebinTablesAPI,
+  wasteCollectionRequestsAPI,
+  createWasteCollectionTablesAPI,
+  waterSupportRequestsAPI,
+  createWaterSupportTablesAPI,
+  generalRequestsAPI,
+  createGeneralRequestTablesAPI,
   createCRUDAPI,
 };
 

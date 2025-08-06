@@ -11,14 +11,17 @@ import {
   BookOutlined,
   SafetyOutlined,
   CustomerServiceOutlined,
+  ReadOutlined,
+  MenuUnfoldOutlined,
+  MenuFoldOutlined,
+  SnippetsOutlined,
+  AccountBookOutlined,
 } from "@ant-design/icons";
 
-import UserManagement from "./components/UserManagement";
 import StaffManagement from "./components/StaffManagement";
 import PerformanceResultsManagement from "./components/PerformanceResultsManagement";
 import ItaManagement from "./components/ItaManagement";
-import PostManagement from "./components/PostManagement";
-import ProcurementPlanManagement from "./components/ProcurementPlanManagement";
+import PostTypeManagement from "./components/PostTypeManagement";
 import LawsRegsManagement from "./components/LawsRegsManagement";
 import dynamic from "next/dynamic";
 
@@ -46,16 +49,26 @@ const WasteCollectionRequestsManagement = dynamic(
   () => import("./components/WasteCollectionRequestsManagement"),
   { ssr: false }
 );
+
+const ManualManagement = dynamic(
+  () => import("./components/ManualManagement"),
+  { ssr: false }
+);
 import styles from "./admin.module.css";
 import { useState, useEffect } from "react";
 import { useSession, signOut } from "next-auth/react";
 import { useRouter } from "next/navigation";
+import LocalDevPlanManagement from "./components/LocalDevPlanManagement";
+import PublishDocManagement from "./components/PublishDocManagement";
+import ChildDevelopmentCenterManagement from "./components/ChildDevelopmentCenterManagement";
+import ExternalWorkManagement from "./components/ExternalWorkManagement";
 
 const { Title, Text } = Typography;
 const { Sider, Content } = Layout;
 
 export default function AdminPage() {
   const [selectedKey, setSelectedKey] = useState("dashboard");
+  const [collapsed, setCollapsed] = useState(false);
   const { data: session, status } = useSession();
   const router = useRouter();
 
@@ -109,20 +122,12 @@ export default function AdminPage() {
     },
   ];
 
-
-
   const menuItems = [
     {
       key: "basic-management",
       label: "การจัดการพื้นฐาน",
       type: "group",
-      children: [
-        {
-          key: "user-management",
-          icon: <UserOutlined />,
-          label: "จัดการผู้ใช้งาน",
-        },
-      ],
+      children: [],
     },
     {
       key: "performance-management",
@@ -140,14 +145,38 @@ export default function AdminPage() {
           label: "ข้อมูล ITA",
         },
         {
-          key: "procurement-plan",
-          icon: <ShoppingCartOutlined />,
-          label: "แผนจัดซื้อจัดจ้าง",
-        },
-        {
           key: "laws-regulations",
           icon: <BookOutlined />,
           label: "กฎหมายและระเบียบ",
+        },
+        {
+          key: "local-dev-plan",
+          icon: <FileTextOutlined />,
+          label: "แผนพัฒนาท้องถิ่น",
+        },
+      ],
+    },
+    {
+      key: "link-management",
+      label: "เนื้อหาและลิงก์",
+      type: "group",
+      children: [
+        {
+          key: "publish-docs",
+          icon: <FileTextOutlined />,
+          label: "เอกสารเผยแพร่",
+        },
+        {
+          key: "child-development-center",
+          icon: <UserOutlined />,
+          label: "ศูนย์พัฒนาเด็กเล็ก",
+          link: "/admin/child-development-center",
+        },
+        {
+          key: "external-works",
+          icon: <FileTextOutlined />,
+          label: "งานภายนอก",
+          link: "/admin/external-works",
         },
       ],
     },
@@ -157,9 +186,59 @@ export default function AdminPage() {
       type: "group",
       children: [
         {
-          key: "post-management",
+          key: "manual-management",
+          icon: <ReadOutlined />,
+          label: "คู่มือ",
+        },
+        {
+          key: "general-news",
           icon: <FileTextOutlined />,
-          label: "จัดการโพสต์",
+          label: "ข่าวสารทั่วไป",
+        },
+        {
+          key: "community-activities",
+          icon: <UserOutlined />,
+          label: "กิจกรรมชุมชน",
+        },
+        {
+          key: "development-projects",
+          icon: <BarChartOutlined />,
+          label: "โครงการพัฒนา",
+        },
+        {
+          key: "important-announcements",
+          icon: <SafetyOutlined />,
+          label: "ประกาศสำคัญ",
+        },
+        {
+          key: "procurement-announcements",
+          icon: <ShoppingCartOutlined />,
+          label: "ประกาศจัดซื้อจัดจ้าง",
+        },
+        {
+          key: "procurement-announcements-results",
+          icon: <FileTextOutlined />,
+          label: "ผลประกาศจัดซื้อจัดจ้าง",
+        },
+        {
+          key: "procurement-announcements-reports",
+          icon: <AccountBookOutlined />,
+          label: "รายงานผลการจัดซื้อจัดจ้าง",
+        },
+        {
+          key: "announcement",
+          icon: <SnippetsOutlined />,
+          label: "ป้ายประกาศ",
+        },
+        {
+          key: "public-relations",
+          icon: <CustomerServiceOutlined />,
+          label: "ข่าวประชาสัมพันธ์",
+        },
+        {
+          key: "activities",
+          icon: <BookOutlined />,
+          label: "กิจกรรม",
         },
       ],
     },
@@ -199,20 +278,48 @@ export default function AdminPage() {
 
   const renderContent = () => {
     switch (selectedKey) {
-      case "user-management":
-        return <UserManagement />;
       case "staff-management":
         return <StaffManagement />;
       case "performance-results":
         return <PerformanceResultsManagement />;
       case "ita-management":
         return <ItaManagement />;
-      case "post-management":
-        return <PostManagement />;
-      case "procurement-plan":
-        return <ProcurementPlanManagement />;
+      case "manual-management":
+        return <ManualManagement />;
+      case "general-news":
+        return <PostTypeManagement postType="general-news" />;
+      case "community-activities":
+        return <PostTypeManagement postType="community-activities" />;
+      case "development-projects":
+        return <PostTypeManagement postType="development-projects" />;
+      case "important-announcements":
+        return <PostTypeManagement postType="important-announcements" />;
+      case "procurement-announcements":
+        return <PostTypeManagement postType="procurement-announcements" />;
+      case "procurement-announcements-results":
+        return (
+          <PostTypeManagement postType="procurement-announcements-results" />
+        );
+      case "procurement-announcements-reports":
+        return (
+          <PostTypeManagement postType="procurement-announcements-reports" />
+        );
+      case "child-development-center":
+        return <ChildDevelopmentCenterManagement />;
+      case "external-works":
+        return <ExternalWorkManagement />;
+      case "announcement":
+        return <PostTypeManagement postType="announcement" />;
+      case "public-relations":
+        return <PostTypeManagement postType="public-relations" />;
+      case "activities":
+        return <PostTypeManagement postType="activities" />;
+      case "publish-docs":
+        return <PublishDocManagement />;
       case "laws-regulations":
         return <LawsRegsManagement />;
+      case "local-dev-plan":
+        return <LocalDevPlanManagement />;
       case "corruption-complaints":
         return <CorruptionComplaintsManagement />;
       case "general-requests":
@@ -237,17 +344,43 @@ export default function AdminPage() {
 
   return (
     <Layout style={{ minHeight: "100vh" }}>
-      <Sider width={250} className={styles.adminSidebar}>
+      <Sider
+        width={250}
+        className={styles.adminSidebar}
+        collapsible
+        collapsed={collapsed}
+        onCollapse={setCollapsed}
+        trigger={null}
+        style={{
+          background: "#fff",
+          height: "100vh",
+          overflow: "auto",
+        }}
+      >
         <div style={{ padding: "16px", borderBottom: "1px solid #f0f0f0" }}>
-          <Title level={4} style={{ margin: 0, textAlign: "center" }}>
-            Admin Panel
-          </Title>
-          <Text
-            type="secondary"
-            style={{ display: "block", textAlign: "center", fontSize: "12px" }}
-          >
-            อบต.บ้านโพธิ์
-          </Text>
+          {!collapsed ? (
+            <>
+              <Title level={4} style={{ margin: 0, textAlign: "center" }}>
+                Admin Panel
+              </Title>
+              <Text
+                type="secondary"
+                style={{
+                  display: "block",
+                  textAlign: "center",
+                  fontSize: "12px",
+                }}
+              >
+                อบต.บ้านโพธิ์
+              </Text>
+            </>
+          ) : (
+            <div style={{ textAlign: "center" }}>
+              <Title level={4} style={{ margin: 0, fontSize: "16px" }}>
+                AP
+              </Title>
+            </div>
+          )}
         </div>
 
         <div style={{ padding: "16px", borderBottom: "1px solid #f0f0f0" }}>
@@ -260,12 +393,14 @@ export default function AdminPage() {
               <Avatar
                 size="small"
                 icon={<UserOutlined />}
-                style={{ marginRight: "8px" }}
+                style={{ marginRight: collapsed ? "0" : "8px" }}
               />
-              <div className={styles.userInfo}>
-                <div className={styles.userName}>{session?.user?.name}</div>
-                <div className={styles.userEmail}>{session?.user?.email}</div>
-              </div>
+              {!collapsed && (
+                <div className={styles.userInfo}>
+                  <div className={styles.userName}>{session?.user?.name}</div>
+                  <div className={styles.userEmail}>{session?.user?.email}</div>
+                </div>
+              )}
             </div>
           </Dropdown>
         </div>
@@ -281,7 +416,44 @@ export default function AdminPage() {
         />
       </Sider>
 
-      <Layout>
+      <Layout
+        style={{
+          marginLeft: collapsed ? 80 : 250,
+          transition: "margin-left 0.2s",
+        }}
+      >
+        <div
+          style={{
+            padding: "0 24px",
+            backgroundColor: "#fff",
+            borderBottom: "1px solid #f0f0f0",
+            display: "flex",
+            alignItems: "center",
+            height: "64px",
+          }}
+        >
+          <button
+            onClick={() => setCollapsed(!collapsed)}
+            style={{
+              border: "none",
+              background: "none",
+              cursor: "pointer",
+              fontSize: "16px",
+              padding: "8px",
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "center",
+              borderRadius: "4px",
+              transition: "background-color 0.3s",
+            }}
+            onMouseEnter={(e) => (e.target.style.backgroundColor = "#f0f0f0")}
+            onMouseLeave={(e) =>
+              (e.target.style.backgroundColor = "transparent")
+            }
+          >
+            {collapsed ? <MenuUnfoldOutlined /> : <MenuFoldOutlined />}
+          </button>
+        </div>
         <Content style={{ padding: "24px", backgroundColor: "#f5f5f5" }}>
           {renderContent()}
         </Content>

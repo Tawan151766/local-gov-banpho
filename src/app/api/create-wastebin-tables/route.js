@@ -1,21 +1,21 @@
-import { NextResponse } from 'next/server';
-import mysql from 'mysql2/promise';
+import { NextResponse } from "next/server";
+import mysql from "mysql2/promise";
 
 // Database connection
 const dbConfig = {
-  host: '103.80.48.25',
-  port: 3306,
-  user: 'gmsky_banphokorat',
-  password: 'banphokorat56789',
-  database: 'gmsky_banphokorat'
+  host: process.env.DB_HOST,
+  port: process.env.DB_PORT ? parseInt(process.env.DB_PORT) : 3306,
+  user: process.env.DB_USER,
+  password: process.env.DB_PASSWORD,
+  database: process.env.DB_NAME,
 };
 
 export async function POST() {
   let connection;
-  
+
   try {
     connection = await mysql.createConnection(dbConfig);
-    
+
     // Create wastebin_requests table
     const createWastebinRequestsTable = `
       CREATE TABLE IF NOT EXISTS wastebin_requests (
@@ -25,6 +25,7 @@ export async function POST() {
         -- ข้อมูลผู้ยื่นคำร้อง (Requester Information)
         requester_title VARCHAR(20) NOT NULL,
         requester_name VARCHAR(255) NOT NULL,
+        requester_id_card VARCHAR(20),
         requester_age INT NOT NULL,
         requester_house_number VARCHAR(50) NOT NULL,
         requester_street VARCHAR(100),
@@ -39,8 +40,8 @@ export async function POST() {
         delivery_village VARCHAR(100) NOT NULL,
         
         -- เอกสารประกอบ (Documents)
-        house_registration_doc VARCHAR(255),
-        id_card_doc VARCHAR(255),
+        house_registration VARCHAR(255),
+        id_card VARCHAR(255),
         document_1 VARCHAR(255),
         document_2 VARCHAR(255),
         document_3 VARCHAR(255),
@@ -70,17 +71,16 @@ export async function POST() {
 
     return NextResponse.json({
       success: true,
-      message: 'Wastebin request tables created successfully',
-      tables: ['wastebin_requests']
+      message: "Wastebin request tables created successfully",
+      tables: ["wastebin_requests"],
     });
-
   } catch (error) {
-    console.error('Error creating wastebin request tables:', error);
+    console.error("Error creating wastebin request tables:", error);
     return NextResponse.json(
-      { 
-        success: false, 
-        error: 'Failed to create wastebin request tables', 
-        details: error.message 
+      {
+        success: false,
+        error: "Failed to create wastebin request tables",
+        details: error.message,
       },
       { status: 500 }
     );

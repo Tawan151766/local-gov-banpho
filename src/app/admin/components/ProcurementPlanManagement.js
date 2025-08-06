@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import {
   Table,
   Button,
@@ -19,8 +19,9 @@ import {
   Breadcrumb,
   List,
   Drawer,
+  Upload,
+  Progress,
 } from "antd";
-import FileUpload from './FileUpload';
 import {
   PlusOutlined,
   EditOutlined,
@@ -34,6 +35,9 @@ import {
   FileWordOutlined,
   FileOutlined,
   LinkOutlined,
+  UploadOutlined,
+  FileImageOutlined,
+  DownloadOutlined,
 } from "@ant-design/icons";
 import {
   procurementPlanTypesAPI,
@@ -44,6 +48,201 @@ import {
 const { Title, Text } = Typography;
 const { Search } = Input;
 const { Option } = Select;
+const { TextArea } = Input;
+
+// File Upload Component for Procurement Plans
+const ProcurementFileUpload = ({
+  value,
+  onChange,
+  typeId,
+  accept = ".pdf,.doc,.docx,.xls,.xlsx,.txt,.jpg,.jpeg,.png,.gif,.webp",
+  maxSize = 10,
+  placeholder = "เลือกไฟล์เอกสารแผนจัดซื้อจัดจ้าง",
+  description,
+  disabled = false,
+}) => {
+  const [uploading, setUploading] = useState(false);
+  const [uploadProgress, setUploadProgress] = useState(0);
+
+  const getFileIcon = (fileName) => {
+    const extension = fileName.split(".").pop().toLowerCase();
+    switch (extension) {
+      case "pdf":
+        return <FilePdfOutlined style={{ color: "#ff4d4f", fontSize: 16 }} />;
+      case "doc":
+      case "docx":
+        return <FileWordOutlined style={{ color: "#1890ff", fontSize: 16 }} />;
+      case "xls":
+      case "xlsx":
+        return <FileExcelOutlined style={{ color: "#52c41a", fontSize: 16 }} />;
+      case "jpg":
+      case "jpeg":
+      case "png":
+      case "gif":
+      case "webp":
+        return <FileImageOutlined style={{ color: "#fa8c16", fontSize: 16 }} />;
+      default:
+        return <FileOutlined style={{ color: "#8c8c8c", fontSize: 16 }} />;
+    }
+  };
+
+  const customUpload = async ({ file, onProgress, onSuccess, onError }) => {
+    if (!typeId) {
+      console.error("กรุณาเลือกประเภทแผนก่อน");
+      onError(new Error("Type ID is required"));
+      return;
+    }
+
+    // ป้องกันการ upload ซ้ำ - ถ้ากำลัง upload อยู่แล้วให้หยุด
+    if (uploading) {
+      console.log('Upload already in progress, skipping...');
+      onError(new Error('Upload already in progress'));
+      return;
+    }
+
+    const formData = new FormData();
+    formData.append("file", file);
+    formData.append("type_id", typeId);
+    if (description) {
+      formData.append("description", description);
+    }
+
+    try {
+      setUploading(true);
+      setUploadProgress(0);
+
+      const progressInterval = setInterval(() => {
+        setUploadProgress((prev) => {
+          if (prev >= 90) {
+            clearInterval(progressInterval);
+            return prev;
+          }
+          return prev + 10;
+        });
+      }, 200);
+
+      const response = await fetch("/api/procurement-plan/upload-laravel", {
+        method: "POST",
+        body: formData,
+      });
+
+      clearInterval(progressInterval);
+      setUploadProgress(100);
+
+      const result = await response.json();
+
+      if (!response.ok) {
+        throw new Error(result.error || "Upload failed");
+      }
+
+      if (result.success) {
+        if (onChange) {
+          onChange(result.data.file_path, result.data);
+        }
+        onSuccess(result.data, file);
+      } else {
+        throw new Error(result.error || "Upload failed");
+      }
+    } catch (error) {
+      console.error("Upload error:", error);
+      onError(error);
+    } finally {
+      setUploading(false);
+      setUploadProgress(0);
+    }
+  };
+
+  const handleRemove = () => {
+    if (onChange) {
+      onChange(null, null);
+    }
+  };
+
+  const uploadProps = {
+    name: "file",
+    customRequest: customUpload,
+    showUploadList: false,
+    accept: accept,
+    disabled: disabled || uploading,
+  };
+
+  return (
+    <div style={{ width: "100%" }}>
+      <Space direction="vertical" style={{ width: "100%" }}>
+        {!value ? (
+          <Upload {...uploadProps}>
+            <Button
+              icon={<UploadOutlined />}
+              loading={uploading}
+              disabled={disabled}
+              style={{ width: "100%" }}
+            >
+              {uploading ? "กำลังอัปโหลด..." : placeholder}
+            </Button>
+          </Upload>
+        ) : (
+          <div
+            style={{
+              border: "1px solid #d9d9d9",
+              borderRadius: "6px",
+              padding: "8px 12px",
+              backgroundColor: "#fafafa",
+              display: "flex",
+              alignItems: "center",
+              justifyContent: "space-between",
+            }}
+          >
+            <Space>
+              {getFileIcon(value)}
+              <div>
+                <Text strong style={{ fontSize: "14px" }}>
+                  {typeof value === "string" ? value.split("/").pop() : value}
+                </Text>
+                <div>
+                  <Text type="secondary" style={{ fontSize: "12px" }}>
+                    Path: {value}
+                  </Text>
+                </div>
+              </div>
+            </Space>
+
+            <Space>
+              <Upload {...uploadProps}>
+                <Button size="small" type="link">
+                  เปลี่ยน
+                </Button>
+              </Upload>
+              <Button
+                size="small"
+                type="link"
+                danger
+                onClick={handleRemove}
+                disabled={disabled}
+              >
+                ลบ
+              </Button>
+            </Space>
+          </div>
+        )}
+
+        {uploading && uploadProgress > 0 && (
+          <Progress
+            percent={uploadProgress}
+            size="small"
+            status={uploadProgress === 100 ? "success" : "active"}
+          />
+        )}
+
+        <div>
+          <Text type="secondary" style={{ fontSize: "12px" }}>
+            รองรับไฟล์: PDF, Word, Excel, Text, และรูปภาพ | ขนาดไฟล์สูงสุด:{" "}
+            {maxSize}MB
+          </Text>
+        </div>
+      </Space>
+    </div>
+  );
+};
 
 export default function ProcurementPlanManagement() {
   // Data states
@@ -188,6 +387,11 @@ export default function ProcurementPlanManagement() {
   // Handle pagination change
   const handleTableChange = (paginationInfo) => {
     if (currentLevel === "types") {
+      setPagination((prev) => ({
+        ...prev,
+        current: paginationInfo.current,
+        pageSize: paginationInfo.pageSize,
+      }));
       loadTypes(paginationInfo.current, searchText);
     }
   };
@@ -289,8 +493,51 @@ export default function ProcurementPlanManagement() {
   // Handle file form submit
   const handleFileSubmit = async (values) => {
     try {
+      // ตรวจสอบนาสกุลไฟล์อัตโนมัติจาก files_path
+      let autoDetectedFileType = "other";
+      if (values.files_path) {
+        const extension = values.files_path.split(".").pop().toLowerCase();
+        switch (extension) {
+          case "pdf":
+            autoDetectedFileType = "pdf";
+            break;
+          case "doc":
+            autoDetectedFileType = "doc";
+            break;
+          case "docx":
+            autoDetectedFileType = "docx";
+            break;
+          case "xls":
+            autoDetectedFileType = "xls";
+            break;
+          case "xlsx":
+            autoDetectedFileType = "xlsx";
+            break;
+          case "txt":
+            autoDetectedFileType = "txt";
+            break;
+          case "jpg":
+          case "jpeg":
+            autoDetectedFileType = "jpg";
+            break;
+          case "png":
+            autoDetectedFileType = "png";
+            break;
+          case "gif":
+            autoDetectedFileType = "gif";
+            break;
+          case "webp":
+            autoDetectedFileType = "webp";
+            break;
+          case "mp4":
+            autoDetectedFileType = "mp4";
+            break;
+        }
+      }
+
       const fileData = {
         ...values,
+        files_type: autoDetectedFileType, // ใช้ประเภทไฟล์ที่ตรวจสอบอัตโนมัติ
         type_id: selectedType.id,
       };
 
@@ -305,6 +552,15 @@ export default function ProcurementPlanManagement() {
           closeFileModal();
         }
       } else {
+        // ตรวจสอบว่าไฟล์ถูก upload ผ่าน customUpload แล้วหรือไม่
+        if (values.files_path && values.files_path.includes('/storage/uploads/')) {
+          console.log('🚫 File already uploaded via customUpload, skipping API call');
+          message.success("เพิ่มไฟล์ใหม่สำเร็จ");
+          loadFiles(selectedType.id);
+          closeFileModal();
+          return;
+        }
+        
         const response = await procurementPlanFilesAPI.createFile(fileData);
         if (response.success) {
           message.success("เพิ่มไฟล์ใหม่สำเร็จ");
@@ -328,6 +584,27 @@ export default function ProcurementPlanManagement() {
     } catch (error) {
       message.error(error.message || "ไม่สามารถลบไฟล์ได้");
     }
+  };
+
+  // Handle download file
+  const handleDownloadFile = (file) => {
+    // file.files_path เก็บเป็น /storage/uploads/filename
+    let fullUrl = "";
+    if (file.files_path.startsWith("/storage/")) {
+      // Laravel storage URL format
+      fullUrl = file.files_path.replace(
+        "/storage/",
+        "https://banpho.sosmartsolution.com/storage/"
+      );
+    } else if (file.files_path.startsWith("http")) {
+      // Already full URL
+      fullUrl = file.files_path;
+    } else {
+      // Fallback
+      fullUrl = `https://banpho.sosmartsolution.com${file.files_path}`;
+    }
+
+    window.open(fullUrl, "_blank");
   };
 
   // Get file icon based on file type
@@ -566,6 +843,14 @@ export default function ProcurementPlanManagement() {
               <List.Item
                 actions={[
                   <Button
+                    key="download"
+                    type="link"
+                    icon={<DownloadOutlined />}
+                    onClick={() => handleDownloadFile(file)}
+                  >
+                    ดาวน์โหลด
+                  </Button>,
+                  <Button
                     key="edit"
                     type="link"
                     icon={<EditOutlined />}
@@ -589,16 +874,16 @@ export default function ProcurementPlanManagement() {
               >
                 <List.Item.Meta
                   avatar={getFileIcon(file.files_type)}
-                  title={
-                    <Space>
-                      <LinkOutlined />
-                      <Text strong>{file.files_path.split("/").pop()}</Text>
-                      <Tag color="blue">{file.files_type?.toUpperCase()}</Tag>
-                    </Space>
-                  }
+                  title={file.original_name || file.files_path.split("/").pop()}
                   description={
                     <Space direction="vertical" size="small">
-                      <Text type="secondary">Path: {file.files_path}</Text>
+                      <Tag color="blue">{file.files_type?.toUpperCase()}</Tag>
+                      <Text type="secondary" style={{ fontSize: "12px" }}>
+                        Path: {file.files_path}
+                      </Text>
+                      {file.description && (
+                        <Text type="secondary">{file.description}</Text>
+                      )}
                       <Text type="secondary">
                         สร้างเมื่อ:{" "}
                         {new Date(file.created_at).toLocaleDateString("th-TH")}
@@ -609,7 +894,7 @@ export default function ProcurementPlanManagement() {
               </List.Item>
             )}
             locale={{
-              emptyText: "ยังไม่มีไฟล์",
+              emptyText: "ยังไม่มีไฟล์เอกสาร",
             }}
           />
         </Drawer>
@@ -620,7 +905,7 @@ export default function ProcurementPlanManagement() {
           open={fileModalVisible}
           onCancel={closeFileModal}
           footer={null}
-          width={600}
+          width={500}
         >
           <Form form={fileForm} layout="vertical" onFinish={handleFileSubmit}>
             <Form.Item
@@ -628,27 +913,79 @@ export default function ProcurementPlanManagement() {
               label="ไฟล์เอกสาร"
               rules={[{ required: true, message: "กรุณาอัปโหลดไฟล์" }]}
             >
-              <FileUpload 
-                accept=".pdf,.doc,.docx,.xls,.xlsx"
+              <ProcurementFileUpload
+                typeId={selectedType?.id}
+                accept=".pdf,.doc,.docx,.xls,.xlsx,.txt,.jpg,.jpeg,.png,.gif,.webp"
                 placeholder="เลือกไฟล์เอกสารแผนจัดซื้อจัดจ้าง"
+                maxSize={10}
               />
             </Form.Item>
 
-            <Form.Item
-              name="files_type"
-              label="ประเภทไฟล์"
-              rules={[{ required: true, message: "กรุณาเลือกประเภทไฟล์" }]}
-            >
-              <Select placeholder="เลือกประเภทไฟล์">
-                <Option value="pdf">PDF</Option>
-                <Option value="xlsx">Excel (XLSX)</Option>
-                <Option value="xls">Excel (XLS)</Option>
-                <Option value="docx">Word (DOCX)</Option>
-                <Option value="doc">Word (DOC)</Option>
-                <Option value="txt">Text File</Option>
-                <Option value="other">อื่นๆ</Option>
-              </Select>
+            <Form.Item name="description" label="คำอธิบาย (ไม่บังคับ)">
+              <TextArea
+                rows={3}
+                placeholder="กรอกคำอธิบายไฟล์..."
+                maxLength={500}
+                showCount
+              />
             </Form.Item>
+
+            {/* แสดงประเภทไฟล์ที่ตรวจสอบได้ (แบบ read-only) */}
+            {fileForm.getFieldValue("files_path") && (
+              <Form.Item label="ประเภทไฟล์ที่ตรวจสอบได้">
+                <div
+                  style={{
+                    padding: "8px 12px",
+                    backgroundColor: "#f5f5f5",
+                    borderRadius: "6px",
+                    border: "1px solid #d9d9d9",
+                  }}
+                >
+                  <Space>
+                    {getFileIcon(
+                      (() => {
+                        const path = fileForm.getFieldValue("files_path");
+                        return path ? path.split(".").pop().toLowerCase() : "";
+                      })()
+                    )}
+                    <Text>
+                      {(() => {
+                        const path = fileForm.getFieldValue("files_path");
+                        if (!path) return "ยังไม่ได้เลือกไฟล์";
+                        const extension = path.split(".").pop().toLowerCase();
+                        switch (extension) {
+                          case "pdf":
+                            return "PDF Document";
+                          case "doc":
+                            return "Word Document";
+                          case "docx":
+                            return "Word Document (DOCX)";
+                          case "xls":
+                            return "Excel Spreadsheet";
+                          case "xlsx":
+                            return "Excel Spreadsheet (XLSX)";
+                          case "txt":
+                            return "Text File";
+                          case "jpg":
+                          case "jpeg":
+                            return "JPEG Image";
+                          case "png":
+                            return "PNG Image";
+                          case "gif":
+                            return "GIF Image";
+                          case "webp":
+                            return "WebP Image";
+                          case "mp4":
+                            return "MP4 Video";
+                          default:
+                            return "ไฟล์อื่นๆ";
+                        }
+                      })()}
+                    </Text>
+                  </Space>
+                </div>
+              </Form.Item>
+            )}
 
             <div style={{ textAlign: "right", marginTop: 24 }}>
               <Space>

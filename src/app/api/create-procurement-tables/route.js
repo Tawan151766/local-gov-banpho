@@ -3,11 +3,11 @@ import mysql from "mysql2/promise";
 
 // Database connection
 const dbConfig = {
-  host: "103.80.48.25",
-  port: 3306,
-  user: "gmsky_banphokorat",
-  password: "banphokorat56789",
-  database: "gmsky_banphokorat",
+  host: process.env.DB_HOST,
+  port: process.env.DB_PORT ? parseInt(process.env.DB_PORT) : 3306,
+  user: process.env.DB_USER,
+  password: process.env.DB_PASSWORD,
+  database: process.env.DB_NAME
 };
 
 // POST /api/create-procurement-tables - สร้างตาราง Procurement Plan Management
@@ -39,6 +39,9 @@ export async function POST(request) {
           type_id INT NOT NULL,
           files_path VARCHAR(500) NOT NULL,
           files_type VARCHAR(50) NOT NULL,
+          original_name VARCHAR(255) NULL,
+          file_size BIGINT NULL,
+          description TEXT NULL,
           created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
           updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
           FOREIGN KEY (type_id) REFERENCES procurement_plan_types(id) ON DELETE CASCADE,
@@ -46,6 +49,37 @@ export async function POST(request) {
           INDEX idx_files_type (files_type)
         ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_unicode_ci
       `);
+
+      // Add new columns to existing table if they don't exist
+      try {
+        // Check if columns exist first
+        const [columns] = await connection.execute(`
+          SELECT COLUMN_NAME 
+          FROM INFORMATION_SCHEMA.COLUMNS 
+          WHERE TABLE_SCHEMA = ? AND TABLE_NAME = 'procurement_plan_files'
+        `, [process.env.DB_NAME || 'gmsky_banphokorat']);
+
+        const existingColumns = columns.map(col => col.COLUMN_NAME);
+        const columnsToAdd = [];
+
+        if (!existingColumns.includes('original_name')) {
+          columnsToAdd.push('ADD COLUMN original_name VARCHAR(255) NULL');
+        }
+        if (!existingColumns.includes('file_size')) {
+          columnsToAdd.push('ADD COLUMN file_size BIGINT NULL');
+        }
+        if (!existingColumns.includes('description')) {
+          columnsToAdd.push('ADD COLUMN description TEXT NULL');
+        }
+
+        if (columnsToAdd.length > 0) {
+          const alterQuery = `ALTER TABLE procurement_plan_files ${columnsToAdd.join(', ')}`;
+          await connection.execute(alterQuery);
+          console.log('Added columns:', columnsToAdd);
+        }
+      } catch (alterError) {
+        console.log('Error adding columns:', alterError.message);
+      }
 
       // Insert sample data for procurement_plan_types
       await connection.execute(`

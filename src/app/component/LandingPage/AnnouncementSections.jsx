@@ -69,15 +69,15 @@ export default function AnnouncementSections() {
     try {
       setLoading(true);
 
-      // First, get the post type ID for "ข่าวประชาสัมพันธ์"
+      // First, get the post type ID for "ป้ายประกาศ"
       const postTypesResponse = await postTypesAPI.getPostTypes({
         limit: 100,
-        search: "ข่าวประชาสัมพันธ์",
+        search: "ป้ายประกาศ",
       });
 
       if (postTypesResponse.success && postTypesResponse.data.length > 0) {
         const announcementTypeId = postTypesResponse.data.find(
-          (type) => type.type_name === "ข่าวประชาสัมพันธ์"
+          (type) => type.type_name === "ป้ายประกาศ"
         )?.id;
 
         if (announcementTypeId) {
@@ -147,14 +147,159 @@ export default function AnnouncementSections() {
 
   if (announcements.length === 0) {
     return (
-      <div className="relative w-screen h-screen flex items-center justify-center bg-gradient-to-b from-[#A8F9FF] to-[#E8DDC4]">
-        <div className="text-[#01385F] text-xl">ไม่มีข่าวประชาสัมพันธ์</div>
-      </div>
+      <>
+        <div
+          className="relative w-screen min-h-screen h-full overflow-hidden bg-cover bg-center"
+          style={{
+            backgroundImage: `
+      linear-gradient(
+        to bottom,
+        rgba(239, 228, 212, 0.6),
+        rgba(1, 189, 204, 0.6),
+        rgba(1, 189, 204, 0.6)
+      ),
+      url("image/vision_bg.png")
+    `,
+          }}
+        >
+          {/* Fallback Gradient Background */}
+          <div className="absolute inset-0 bg-gradient-to-b from-[#A8F9FF] to-[#E8DDC4] -z-10" />
+
+          {/* Header */}
+          <div className="relative w-full flex flex-col items-center">
+            <img
+              src="/image/headerAnnouncement.png"
+              alt="header announcement"
+              className="w-full object-cover"
+              style={{ minHeight: "60px" }}
+            />
+            <div className="absolute top-0 left-1/2 -translate-x-1/2 w-full max-w-3xl flex flex-col items-center pt-2">
+              <h1 className="text-[#01385F] text-lg sm:text-2xl font-bold text-center">
+                ป้ายประกาศ
+              </h1>
+              <p className="text-[#01385F] text-xs sm:text-base text-center">
+                เทศบาลตำบลบ้านโพธิ์
+              </p>
+            </div>
+          </div>
+
+          {/* Content Section */}
+          <div className="relative z-10 w-full max-w-5xl mx-auto flex flex-col items-center px-4 sm:px-8 md:px-12 lg:px-16 mt-8">
+            {/* Top Bar with Title + More Button */}
+            <div className="flex w-full justify-between items-center mb-6">
+              <h2 className="text-[#01385F] text-2xl sm:text-3xl font-bold">
+                ข่าวประชาสัมพันธ์
+              </h2>
+              <button
+                type="button"
+                className="bg-[#01385F] text-white rounded-lg px-5 py-2 text-sm shadow-md hover:bg-[#012F4A] transition-colors duration-200 whitespace-nowrap"
+              >
+                เพิ่มเติม
+              </button>
+            </div>
+
+            {/* Announcement Slider Area */}
+            <div className="flex w-full items-center justify-center gap-4 sm:gap-6">
+              {/* Prev Button */}
+              <button
+                type="button"
+                disabled
+                className="text-[#01385F] opacity-50 cursor-not-allowed p-2 rounded-full shadow hover:shadow-lg"
+                aria-label="Previous announcement"
+              >
+                <svg
+                  width="28"
+                  height="28"
+                  className="sm:w-8 sm:h-8"
+                  fill="none"
+                >
+                  <path
+                    d="M21 8l-8 8 8 8"
+                    stroke="currentColor"
+                    strokeWidth="2"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                  />
+                </svg>
+              </button>
+
+              {/* Announcement Card */}
+              <div className="relative flex-1 aspect-[2.5/1] border-4 border-white rounded-[25px] shadow-lg bg-white flex items-center justify-center overflow-hidden min-h-[240px] cursor-pointer hover:shadow-xl transition-transform duration-300">
+                {/* Placeholder Content */}
+                <div className="w-full h-full bg-gradient-to-br from-[#01385F] to-[#01BDCC] rounded-[25px] flex flex-col items-center justify-center p-6 text-white">
+                  <svg
+                    className="w-16 h-16 mb-3"
+                    fill="currentColor"
+                    viewBox="0 0 20 20"
+                  >
+                    <path
+                      fillRule="evenodd"
+                      d="M18 10a8 8 0 11-16 0 8 8 0 0116 0zm-7-4a1 1 0 11-2 0 1 1 0 012 0zM9 9a1 1 0 000 2v3a1 1 0 001 1h1a1 1 0 100-2v-3a1 1 0 00-1-1H9z"
+                      clipRule="evenodd"
+                    />
+                  </svg>
+                  <div className="text-center text-lg font-semibold">
+                    ไม่มีข่าวประชาสัมพันธ์
+                  </div>
+                  <div className="text-xs mt-1 opacity-80">
+                    คลิกเพื่อดูรายละเอียด
+                  </div>
+                </div>
+              </div>
+
+              {/* Next Button */}
+              <button
+                type="button"
+                disabled
+                className="text-[#01385F] opacity-50 cursor-not-allowed p-2 rounded-full shadow hover:shadow-lg"
+                aria-label="Next announcement"
+              >
+                <svg
+                  width="28"
+                  height="28"
+                  className="sm:w-8 sm:h-8"
+                  fill="none"
+                >
+                  <path
+                    d="M11 8l8 8-8 8"
+                    stroke="currentColor"
+                    strokeWidth="2"
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                  />
+                </svg>
+              </button>
+            </div>
+
+            {/* Pagination Dots */}
+            <div className="flex justify-center gap-3 mt-6">
+              <button
+                type="button"
+                disabled
+                className="w-3 h-3 rounded-full bg-[#01385F]/30 cursor-default"
+                aria-label="Announcement 1"
+              />
+              <button
+                type="button"
+                disabled
+                className="w-3 h-3 rounded-full bg-[#01385F]/30 cursor-default"
+                aria-label="Announcement 2"
+              />
+              <button
+                type="button"
+                disabled
+                className="w-3 h-3 rounded-full bg-[#01385F]/30 cursor-default"
+                aria-label="Announcement 3"
+              />
+            </div>
+          </div>
+        </div>
+      </>
     );
   }
   return (
     <div
-      className="relative w-screen h-screen shadow-[0_18.4px_18.4px_rgba(0,0,0,0.49)] overflow-hidden"
+      className="mb-15 relative w-screen h-screen shadow-[0_18.4px_18.4px_rgba(0,0,0,0.49)] overflow-hidden"
       style={{
         backgroundImage: `linear-gradient(180deg, rgba(239, 228, 212, 0.6) 0%, rgba(1, 189, 204, 0.6) 100%),
         url("image/vision_bg.png")`,
@@ -188,9 +333,7 @@ export default function AnnouncementSections() {
       <div className="relative z-10 w-full max-w-4xl mx-auto flex flex-col items-center px-2 sm:px-4 md:px-6 lg:px-8">
         {/* Header Section */}
         <div className="flex w-full max-w-2xl justify-between items-center mb-6 mt-8">
-          <div className="text-[#01385F] text-xl sm:text-2xl lg:text-3xl font-bold w-full text-left">
-            ข่าวประชาสัมพันธ์
-          </div>
+          <div className="text-[#01385F] text-xl sm:text-2xl lg:text-3xl font-bold w-full text-left"></div>
           <Link href="/posts">
             <button className="bg-[#01385f] text-white rounded-[12.5px] px-4 py-2 text-sm shadow-md hover:bg-[#01385f]/90 transition-colors duration-200 whitespace-nowrap ml-4">
               เพิ่มเติม
@@ -255,17 +398,11 @@ export default function AnnouncementSections() {
                 {/* Icon based on content type */}
                 <div className="text-white/80 mb-2">
                   {announcements[current]?.pdfs?.length > 0 ? (
-                    <svg
-                      className="w-12 h-12 sm:w-16 sm:h-16"
-                      fill="currentColor"
-                      viewBox="0 0 20 20"
-                    >
-                      <path
-                        fillRule="evenodd"
-                        d="M4 4a2 2 0 012-2h4.586A2 2 0 0112 2.586L15.414 6A2 2 0 0116 7.414V16a2 2 0 01-2 2H6a2 2 0 01-2-2V4zm2 6a1 1 0 011-1h6a1 1 0 110 2H7a1 1 0 01-1-1zm1 3a1 1 0 100 2h6a1 1 0 100-2H7z"
-                        clipRule="evenodd"
-                      />
-                    </svg>
+                    <img
+                      src="image/annu.jpg"
+                      alt="Announcement PDF"
+                      className="w-full h-auto max-h-[380px] object-cover rounded-lg"
+                    />
                   ) : announcements[current]?.videos?.length > 0 ? (
                     <svg
                       className="w-12 h-12 sm:w-16 sm:h-16"
@@ -392,59 +529,6 @@ export default function AnnouncementSections() {
             <div className="text-[#01385F]/60 text-xs">
               {current + 1} / {announcements.length}
             </div>
-          </div>
-        )}
-
-        {/* Post Details for non-image posts */}
-        {announcements[current] && !announcements[current]?.photos?.[0] && (
-          <div className="w-full max-w-2xl mt-4 p-4 bg-white/90 rounded-lg shadow-md">
-            <h3 className="text-[#01385F] text-sm sm:text-base font-bold mb-2 line-clamp-2">
-              {announcements[current].title_name}
-            </h3>
-            {announcements[current].topic_name && (
-              <p className="text-[#01385F]/80 text-xs sm:text-sm mb-2 line-clamp-1">
-                {announcements[current].topic_name}
-              </p>
-            )}
-            {announcements[current].details && (
-              <div
-                className="text-[#01385F]/70 text-xs sm:text-sm line-clamp-3"
-                dangerouslySetInnerHTML={{
-                  __html: announcements[current].details.replace(
-                    /<[^>]*>/g,
-                    ""
-                  ),
-                }}
-              />
-            )}
-            <div className="flex justify-between items-center mt-3">
-              <div className="text-[#01385F]/60 text-xs">
-                {announcements[current].date &&
-                  new Date(announcements[current].date).toLocaleDateString(
-                    "th-TH"
-                  )}
-              </div>
-              <div className="flex gap-2">
-                {announcements[current].pdfs?.length > 0 && (
-                  <span className="text-xs bg-orange-100 text-orange-600 px-2 py-1 rounded">
-                    PDF {announcements[current].pdfs.length}
-                  </span>
-                )}
-                {announcements[current].videos?.length > 0 && (
-                  <span className="text-xs bg-red-100 text-red-600 px-2 py-1 rounded">
-                    วิดีโอ {announcements[current].videos.length}
-                  </span>
-                )}
-              </div>
-            </div>
-          </div>
-        )}
-
-        {/* Controls Info */}
-        {announcements.length > 1 && (
-          <div className="text-center mt-2 text-[#01385F]/60 text-xs">
-            <p>ใช้ลูกศรซ้าย/ขวา, spacebar, หรือ Enter เพื่อควบคุม</p>
-            <p>วางเมาส์เพื่อหยุดชั่วคราว • คลิกหรือ Enter เพื่อดูรายละเอียด</p>
           </div>
         )}
       </div>

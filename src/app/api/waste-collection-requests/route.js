@@ -3,11 +3,11 @@ import mysql from 'mysql2/promise';
 
 // Database connection
 const dbConfig = {
-  host: '103.80.48.25',
-  port: 3306,
-  user: 'gmsky_banphokorat',
-  password: 'banphokorat56789',
-  database: 'gmsky_banphokorat'
+  host: process.env.DB_HOST,
+  port: process.env.DB_PORT ? parseInt(process.env.DB_PORT) : 3306,
+  user: process.env.DB_USER,
+  password: process.env.DB_PASSWORD,
+  database: process.env.DB_NAME
 };
 
 // GET /api/waste-collection-requests - ดึงรายการคำร้องขอรับบริการจัดเก็บขยะ
@@ -30,8 +30,8 @@ export async function GET(request) {
     const params = [];
 
     if (search) {
-      whereClause += ' AND (requester_name LIKE ? OR collection_details LIKE ?)';
-      params.push(`%${search}%`, `%${search}%`);
+      whereClause += ' AND (requester_name LIKE ? OR collection_details LIKE ? OR requester_id_card = ?)';
+      params.push(`%${search}%`, `%${search}%`, search);
     }
 
     if (status) {
@@ -87,6 +87,7 @@ export async function POST(request) {
       request_date,
       requester_title,
       requester_name,
+      requester_id_card,
       requester_age,
       requester_house_number,
       requester_village,
@@ -127,17 +128,18 @@ export async function POST(request) {
     // Insert waste collection request
     const [result] = await connection.execute(
       `INSERT INTO waste_collection_requests (
-        request_date, requester_title, requester_name, requester_age,
+        request_date, requester_title, requester_name, requester_id_card, requester_age,
         requester_house_number, requester_village, requester_subdistrict,
         requester_district, requester_province, requester_phone,
         waste_type_household, waste_type_rental, waste_type_shop, waste_type_factory,
         other_waste_type, collection_details, reason_for_request,
         captcha_answer, ip_address, user_agent, created_at, updated_at
-      ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, NOW(), NOW())`,
+      ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, NOW(), NOW())`,
       [
         request_date || new Date().toISOString().split('T')[0],
         requester_title,
         requester_name,
+        requester_id_card,
         requester_age,
         requester_house_number,
         requester_village,
@@ -174,6 +176,73 @@ export async function POST(request) {
     console.error('Error creating waste collection request:', error);
     return NextResponse.json(
       { success: false, error: 'Failed to create waste collection request', details: error.message },
+      { status: 500 }
+    );
+  } finally {
+    if (connection) {
+      await connection.end();
+    }
+  }
+}
+
+// PATCH /api/waste-collection-requests - อัปเดตสถานะคำร้องขอรับบริการจัดเก็บขยะ
+export async function PATCH(request) {
+  let connection;
+
+  try {
+    const body = await request.json();
+    const { id, status } = body;
+
+    if (!id || !status) {
+      return NextResponse.json(
+        { success: false, error: "ID and status are required" },
+        { status: 400 }
+      );
+    }
+
+    // Validate status
+    const validStatuses = ["pending", "processing", "completed", "rejected"];
+    if (!validStatuses.includes(status)) {
+      return NextResponse.json(
+        { success: false, error: "Invalid status" },
+        { status: 400 }
+      );
+    }
+
+    connection = await mysql.createConnection(dbConfig);
+
+    // Update request status
+    const [result] = await connection.execute(
+      "UPDATE waste_collection_requests SET status = ?, updated_at = NOW() WHERE id = ?",
+      [status, id]
+    );
+
+    if (result.affectedRows === 0) {
+      return NextResponse.json(
+        { success: false, error: "Request not found" },
+        { status: 404 }
+      );
+    }
+
+    // Get updated request
+    const [updatedRequest] = await connection.execute(
+      "SELECT * FROM waste_collection_requests WHERE id = ?",
+      [id]
+    );
+
+    return NextResponse.json({
+      success: true,
+      data: updatedRequest[0],
+      message: "Request status updated successfully",
+    });
+  } catch (error) {
+    console.error("Error updating waste collection request status:", error);
+    return NextResponse.json(
+      {
+        success: false,
+        error: "Failed to update request status",
+        details: error.message,
+      },
       { status: 500 }
     );
   } finally {

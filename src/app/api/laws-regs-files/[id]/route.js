@@ -1,19 +1,19 @@
-import { NextResponse } from 'next/server';
-import mysql from 'mysql2/promise';
+import { NextResponse } from "next/server";
+import mysql from "mysql2/promise";
 
 // Database connection
 const dbConfig = {
-  host: '103.80.48.25',
-  port: 3306,
-  user: 'gmsky_banphokorat',
-  password: 'banphokorat56789',
-  database: 'gmsky_banphokorat'
+  host: process.env.DB_HOST,
+  port: process.env.DB_PORT ? parseInt(process.env.DB_PORT) : 3306,
+  user: process.env.DB_USER,
+  password: process.env.DB_PASSWORD,
+  database: process.env.DB_NAME,
 };
 
 // GET /api/laws-regs-files/[id] - ดึงข้อมูล laws regs file เดียว
 export async function GET(request, { params }) {
   let connection;
-  
+
   try {
     const { id } = params;
 
@@ -31,20 +31,23 @@ export async function GET(request, { params }) {
 
     if (files.length === 0) {
       return NextResponse.json(
-        { success: false, error: 'Laws regs file not found' },
+        { success: false, error: "Laws regs file not found" },
         { status: 404 }
       );
     }
 
     return NextResponse.json({
       success: true,
-      data: files[0]
+      data: files[0],
     });
-
   } catch (error) {
-    console.error('Error fetching laws regs file:', error);
+    console.error("Error fetching laws regs file:", error);
     return NextResponse.json(
-      { success: false, error: 'Failed to fetch laws regs file', details: error.message },
+      {
+        success: false,
+        error: "Failed to fetch laws regs file",
+        details: error.message,
+      },
       { status: 500 }
     );
   } finally {
@@ -57,7 +60,7 @@ export async function GET(request, { params }) {
 // PUT /api/laws-regs-files/[id] - อัปเดต laws regs file
 export async function PUT(request, { params }) {
   let connection;
-  
+
   try {
     const { id } = params;
     const body = await request.json();
@@ -66,7 +69,7 @@ export async function PUT(request, { params }) {
     // Validation
     if (!files_path || !files_type) {
       return NextResponse.json(
-        { success: false, error: 'File path and file type are required' },
+        { success: false, error: "File path and file type are required" },
         { status: 400 }
       );
     }
@@ -75,13 +78,13 @@ export async function PUT(request, { params }) {
 
     // Update laws regs file
     const [result] = await connection.execute(
-      'UPDATE laws_regs_files SET files_path = ?, files_type = ?, updated_at = NOW() WHERE id = ?',
+      "UPDATE laws_regs_files SET files_path = ?, files_type = ?, updated_at = NOW() WHERE id = ?",
       [files_path, files_type, parseInt(id)]
     );
 
     if (result.affectedRows === 0) {
       return NextResponse.json(
-        { success: false, error: 'Laws regs file not found' },
+        { success: false, error: "Laws regs file not found" },
         { status: 404 }
       );
     }
@@ -99,13 +102,16 @@ export async function PUT(request, { params }) {
     return NextResponse.json({
       success: true,
       data: updatedFile[0],
-      message: 'Laws regs file updated successfully'
+      message: "Laws regs file updated successfully",
     });
-
   } catch (error) {
-    console.error('Error updating laws regs file:', error);
+    console.error("Error updating laws regs file:", error);
     return NextResponse.json(
-      { success: false, error: 'Failed to update laws regs file', details: error.message },
+      {
+        success: false,
+        error: "Failed to update laws regs file",
+        details: error.message,
+      },
       { status: 500 }
     );
   } finally {
@@ -118,7 +124,7 @@ export async function PUT(request, { params }) {
 // DELETE /api/laws-regs-files/[id] - ลบ laws regs file
 export async function DELETE(request, { params }) {
   let connection;
-  
+
   try {
     const { id } = params;
 
@@ -126,26 +132,29 @@ export async function DELETE(request, { params }) {
 
     // Delete laws regs file
     const [result] = await connection.execute(
-      'DELETE FROM laws_regs_files WHERE id = ?',
+      "DELETE FROM laws_regs_files WHERE id = ?",
       [parseInt(id)]
     );
 
     if (result.affectedRows === 0) {
       return NextResponse.json(
-        { success: false, error: 'Laws regs file not found' },
+        { success: false, error: "Laws regs file not found" },
         { status: 404 }
       );
     }
 
     return NextResponse.json({
       success: true,
-      message: 'Laws regs file deleted successfully'
+      message: "Laws regs file deleted successfully",
     });
-
   } catch (error) {
-    console.error('Error deleting laws regs file:', error);
+    console.error("Error deleting laws regs file:", error);
     return NextResponse.json(
-      { success: false, error: 'Failed to delete laws regs file', details: error.message },
+      {
+        success: false,
+        error: "Failed to delete laws regs file",
+        details: error.message,
+      },
       { status: 500 }
     );
   } finally {

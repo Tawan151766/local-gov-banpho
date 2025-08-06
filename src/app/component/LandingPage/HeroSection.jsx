@@ -5,40 +5,40 @@ import { useState } from "react";
 export default function HeroSection({ ui }) {
   const [activeSlide, setActiveSlide] = useState(0);
   const [showBanner, setShowBanner] = useState(true);
-  const slides = ["/image/yak.jpg", "/image/yak.jpg", "/image/yak.jpg"];
+  const slides = ["/image/บ้านโพ2.png", "/image/yak3.png", "/image/บ้านโพ2.png"];
 
   const handleDotClick = (index) => {
     setActiveSlide(index);
     if (ui?.setSlide) ui.setSlide(index);
   };
 
-
-
   return (
     <>
-      <section className="relative w-full pb-[682px] flex items-end justify-center">
+      <section className="relative w-full h-[20vh] md:h-[40vh] flex items-end justify-center">
         {/* Background Image Slides */}
         <div className="absolute inset-0 z-0 overflow-hidden cursor-grab active:cursor-grabbing">
-  {slides.map((slide, idx) => (
-    <div
-      key={idx}
-      className={`absolute top-0 left-0 w-full h-full bg-cover bg-top bg-no-repeat transition-opacity duration-700 ${
-        activeSlide === idx ? "opacity-100" : "opacity-0"
-      }`}
-      style={{ backgroundImage: `url('${slide}')` }}
-    />
-  ))}
-</div>
-
-
-
+    {slides.map((slide, idx) => (
+      <div
+        key={idx}
+        className={`absolute transition-opacity duration-700 md:w-[100vw] w-[100vw] md:h-[40vh] h-[20vh] ${
+          activeSlide === idx ? "opacity-100" : "opacity-0"
+        }`}
+        style={{
+          backgroundImage: `url('${slide}')`,
+          backgroundSize: "100% 100%",
+          backgroundRepeat: "no-repeat",
+          backgroundPosition: "center top", 
+        }}
+      />
+    ))}
+  </div>
 
 
         {/* Overlay */}
         <div className="absolute inset-0 z-10 "></div>
 
         {/* Dots */}
-        <div className="absolute bottom-[90px] left-1/2 -translate-x-1/2 flex gap-[10px] z-20">
+        <div className="absolute bottom-[9px] left-1/2 -translate-x-1/2 flex gap-[10px] z-20">
           {slides.map((_, idx) => (
             <span
               key={idx}
@@ -54,10 +54,10 @@ export default function HeroSection({ ui }) {
 
         {/* ✅ Banner แสดงตาม state */}
         {showBanner && (
-          <div className="fixed top-[360px] left-0 w-[275px] h-[349px] bg-white/95 rounded-[33px] shadow-[0_4px_20px_rgba(0,0,0,0.2)] z-[9999] flex flex-col overflow-hidden cursor-default transition-all duration-300 translate-y-[210px] ml-[25px] hover:shadow-[0_8px_30px_rgba(0,0,0,0.3)] hover:scale-[1.01]">
+          <div className="fixed md:top-[320px] top-[160px] left-0 w-[275px] h-[349px] bg-white/95 rounded-[33px] shadow-[0_4px_20px_rgba(0,0,0,0.2)] z-[9999] flex flex-col overflow-hidden cursor-default transition-all duration-300 translate-y-[210px] ml-[25px] hover:shadow-[0_8px_30px_rgba(0,0,0,0.3)] hover:scale-[1.01]">
             {/* ปุ่มปิด */}
             <button
-              onClick={() => setShowBanner(false)} // ✅ ปิด banner เมื่อคลิก
+              onClick={() => setShowBanner(false)} 
               className="absolute top-[15px] right-[15px] w-[30px] h-[30px] rounded-full bg-[rgba(206,222,240,0.8)] text-[18px] font-bold flex items-center justify-center z-20 cursor-pointer transition-all duration-300 hover:bg-[#4A90E2] hover:scale-110"
             >
               ×
@@ -76,7 +76,7 @@ export default function HeroSection({ ui }) {
 
         {/* Hero Text Box */}
         <div className="absolute bottom-0 left-1/2 -translate-x-1/2 w-full text-center px-4 py-5 bg-[#0000006B] shadow-[0_4px_15px_rgba(0,0,0,0.1)] z-10">
-          <p className="text-[18px] text-[#ffffff] leading-[1.6] m-0">
+          <p className="md:text-[18px] text-[10px] text-[#ffffff] leading-[1.6] m-0">
             เทศบาลตำบลบ้านโพธิ์ จัดให้มีบริการรับเเจ้งเรื่องราวร้องเรียน
             ร้องทุกข์ รับความคิดเห็นของประชาชน ผ่านทางตู้ไปรษณีย์ ปณ.9
           </p>
@@ -85,20 +85,17 @@ export default function HeroSection({ ui }) {
 
       {/* Video Section */}
 
-      <div className="relative w-full h-[814px] overflow-hidden">
-        <video
-          className="absolute inset-0 w-full h-auto object-cover object-bottom"
-          src="/image/mp_4_bg.mp4"
-          autoPlay
-          loop
-          muted
-          playsInline
-          style={{
-            transform: "translateY(-20%)", // ปรับค่านี้เพื่อแสดงส่วนล่างมากขึ้น
-            height: "120%", // ขยายความสูงเพื่อให้มีพื้นที่ในการครอบตัด
-          }}
-        />
-      </div>
+      <div className="relative w-screen h-auto">
+  <video
+    className="w-full h-auto object-cover"
+    src="/image/boat_video.mp4"
+    autoPlay
+    loop
+    muted
+    playsInline
+  />
+</div>
+
     </>
   );
 }

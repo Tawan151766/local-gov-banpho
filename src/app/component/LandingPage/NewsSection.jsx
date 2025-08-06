@@ -14,7 +14,7 @@ export default function NewsSection() {
     try {
       setLoading(true);
       const response = await fetch(
-        "/api/post-details?page=1&limit=4&postTypeId=1&withMedia=true"
+        "/api/post-details?page=1&limit=10&postTypeId=1&withMedia=true"
       );
 
       if (!response.ok) {
@@ -64,6 +64,128 @@ export default function NewsSection() {
     if (imagePath.startsWith("http")) return imagePath;
     return imagePath.startsWith("/") ? imagePath : `/${imagePath}`;
   };
+  const [goldData, setGoldData] = useState(null);
+  const [lastUpdate, setLastUpdate] = useState(null);
+
+  const fetchGoldPrice = async () => {
+    try {
+      setLoading(true);
+      setError(null);
+
+      // Using a CORS proxy to fetch the data
+      const proxyUrl = "https://api.allorigins.win/raw?url=";
+      const targetUrl = "http://www.thaigold.info/RealTimeDataV2/gtdata_.txt";
+
+      const response = await fetch(proxyUrl + encodeURIComponent(targetUrl), {
+        method: "GET",
+        headers: {
+          Accept: "text/plain",
+        },
+        // Add timeout
+        signal: AbortSignal.timeout(10000), // 10 seconds timeout
+      });
+
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+
+      const textData = await response.text();
+      const jsonData = JSON.parse(textData);
+
+      // Find the relevant gold data
+      const goldSpot = jsonData.find((item) => item.name === "สมาคมฯ");
+      const update = jsonData.find((item) => item.name === "Update");
+
+      if (goldSpot) {
+        setGoldData({
+          bid: goldSpot.bid,
+          ask: goldSpot.ask,
+          diff: goldSpot.diff,
+          updateTime: update ? update.bid : null,
+        });
+        setLastUpdate(new Date().toLocaleTimeString("th-TH"));
+      } else {
+        throw new Error("ไม่พบข้อมูลราคาทอง");
+      }
+    } catch (err) {
+      console.warn(
+        "Gold price API unavailable, using fallback data:",
+        err.message
+      );
+      setError(null); // Don't show error to user
+      // Set mock data as fallback
+      setGoldData({
+        bid: "51400",
+        ask: "51500",
+        diff: "+250",
+        updateTime: "ข้อมูลสำรอง",
+      });
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  useEffect(() => {
+    // Wrap in try-catch to prevent unhandled promise rejection
+    const loadGoldPrice = async () => {
+      try {
+        await fetchGoldPrice();
+      } catch (error) {
+        console.warn("Failed to load gold price:", error);
+        // Set fallback data
+        setGoldData({
+          bid: "51400",
+          ask: "51500",
+          diff: "+250",
+          updateTime: "ข้อมูลสำรอง",
+        });
+        setLoading(false);
+      }
+    };
+
+    loadGoldPrice();
+
+    // Set up auto-refresh every 5 minutes
+    const interval = setInterval(fetchGoldPrice, 5 * 60 * 1000);
+
+    return () => clearInterval(interval);
+  }, []);
+
+  const formatPrice = (price) => {
+    if (!price) return "0";
+    return parseInt(price).toLocaleString("th-TH");
+  };
+
+  const formatDiff = (diff) => {
+    if (!diff || diff === "") return "";
+    const numDiff = parseFloat(diff.replace(/[+,]/g, ""));
+    if (numDiff > 0) return `+${formatPrice(Math.abs(numDiff))}`;
+    if (numDiff < 0) return `-${formatPrice(Math.abs(numDiff))}`;
+    return "0";
+  };
+
+  const getDiffColor = (diff) => {
+    if (!diff || diff === "") return "#5c3b0c";
+    const numDiff = parseFloat(diff.replace(/[+,]/g, ""));
+    if (numDiff > 0) return "#16a34a"; // green
+    if (numDiff < 0) return "#dc2626"; // red
+    return "#5c3b0c"; // default
+  };
+
+  const formatUpdateTime = (timestamp) => {
+    if (!timestamp) return "";
+    try {
+      // The timestamp seems to be in a specific format, let's handle it
+      const date = new Date();
+      return date.toLocaleTimeString("th-TH", {
+        hour: "2-digit",
+        minute: "2-digit",
+        second: "2-digit",
+      });
+    } catch (error) {
+      return "";
+    }
+  };
 
   return (
     <section
@@ -87,7 +209,7 @@ export default function NewsSection() {
             />
           </div>
 
-          <div className="left-content max-h-[500px] sm:max-h-[700px] lg:h-[calc(100%-200px)] overflow-y-auto px-2 sm:px-4 md:px-8">
+          <div className="left-content h-full lg:h-[calc(100%-200px)] overflow-y-auto px-2 sm:px-4 md:px-8">
             {loading ? (
               // Loading State
               <div className="space-y-4">
@@ -153,9 +275,7 @@ export default function NewsSection() {
                       {item.title_name || "ไม่มีหัวข้อ"}
                     </h3>
                     <p className="text-gray-700 text-xs sm:text-sm md:text-base leading-relaxed mt-1 sm:mt-2 font-medium flex-1">
-                      {truncateText(
-                        item.details || "ไม่มีรายละเอียดเพิ่มเติม",
-                      )}
+                      {truncateText(item.details || "ไม่มีรายละเอียดเพิ่มเติม")}
                     </p>
                     <p className="text-gray-500 text-xs mt-auto pt-2">
                       {formatDate(item.created_at || item.date)}
@@ -164,6 +284,14 @@ export default function NewsSection() {
                 </a>
               ))
             )}
+            <button
+              onClick={() => {
+                window.location.href = "/news";
+              }}
+              className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors absolute bottom-5"
+            >
+              ดูเพิ่มเติม
+            </button>
           </div>
         </div>
 
@@ -185,7 +313,7 @@ export default function NewsSection() {
                   </span>
                 </div>
                 <div className="text-xl sm:text-[34px] font-extrabold text-[#5c3b0c] tracking-wide -translate-x-4 sm:-translate-x-12 mr-4 sm:mr-12">
-                  42,000
+                  {formatPrice(goldData?.bid)}
                 </div>
               </div>
               <div className="border-t border-dashed border-[#5c3b0c] my-1 sm:my-2"></div>
@@ -199,7 +327,7 @@ export default function NewsSection() {
                   </span>
                 </div>
                 <div className="text-xl sm:text-[34px] font-extrabold text-[#5c3b0c] tracking-wide -translate-x-4 sm:-translate-x-12 mr-4 sm:mr-12">
-                  43,000
+                  {formatPrice(goldData?.ask)}
                 </div>
               </div>
             </div>
@@ -230,9 +358,13 @@ export default function NewsSection() {
               className="w-[60px] sm:w-[101px] h-[60px] sm:h-[101px] object-cover"
             />
             <div className="flex flex-col justify-center items-start gap-1 sm:gap-1.5">
-              <span className="oil-title font-semibold text-lg sm:text-[32px] leading-none">
+              <a
+                target="_blank"
+                href="https://gasprice.kapook.com/gasprice.php"
+                className="oil-title font-semibold text-lg sm:text-[32px] leading-none"
+              >
                 ราคาน้ำมัน
-              </span>
+              </a>
             </div>
           </div>
 
@@ -246,15 +378,46 @@ export default function NewsSection() {
                 กับเราที่นี่
               </div>
               <div className="sub-text text-base sm:text-[20px] font-medium mb-6 sm:mb-[75px]">
-                Line@
+                Line@banphocity
               </div>
             </div>
 
             {/* กล่อง QR */}
             <div className="qr-box absolute bottom-3 sm:bottom-5 right-3 sm:right-5 w-[90px] sm:w-[180px] h-[90px] sm:h-[173px] rounded-xl sm:rounded-[23px] bg-white shadow-[0_2px_4px_rgba(0,0,0,0.18)] sm:shadow-[0_4px_4px_rgba(0,0,0,0.25)]">
-            <img src="image/QR_Line.png" alt="QR Line" className="w-full h-full object-cover" />
+              <img
+                src="image/QR_Line.png"
+                alt="QR Line"
+                className="w-full h-full object-cover"
+              />
             </div>
           </div>
+          {/* ปฏิทินกิจกรรม */}
+          <a
+            href="/calendar" // เปลี่ยน path ได้ตามจริง
+            className="service-button line-friend relative h-[160px] sm:h-[240px] rounded-xl sm:rounded-[35px] bg-gradient-to-b from-[#B7D3FF] to-[#5A89D0] shadow-[0_2px_4px_rgba(0,0,0,0.18)] sm:shadow-[0_4px_4px_rgba(0,0,0,0.25)] flex flex-col justify-center items-center p-3 sm:p-5 font-prompt text-[#1E1E1E] w-full cursor-pointer transition-all duration-300 hover:scale-[1.05] hover:shadow-lg focus:outline-none focus:ring-4 focus:ring-green-300"
+          >
+            <div className="flex flex-col items-center">
+              <div className="text-white bg-[#1E1E1E] p-4 rounded-full shadow-md mb-4">
+                <svg
+                  xmlns="http://www.w3.org/2000/svg"
+                  className="w-9 h-9 sm:w-10 sm:h-10 text-white"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke="currentColor"
+                  strokeWidth="2"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    d="M8 7V3m8 4V3M5 11h14M5 19h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"
+                  />
+                </svg>
+              </div>
+              <div className="main-text text-lg sm:text-[32px] font-semibold whitespace-nowrap leading-[1.2] text-center">
+                ปฏิทินกิจกรรม
+              </div>
+            </div>
+          </a>
         </div>
       </div>
     </section>

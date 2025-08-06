@@ -1,46 +1,38 @@
 export default function PeopleSupport() {
-  // Card data (icon src, link only)
   const cards = [
     {
       icon: "/image/people_gui1.png",
-      link: "/manual",
+      link: "/citizen/citizen-manual",
     },
     {
       icon: "/image/people_gui2.png",
-      link: "/download-form",
+      link: "/citizen/documents",
     },
     {
       icon: "/image/people_gui3.png",
-      link: "/survey",
+      link: "/e-service/survey",
     },
     {
       icon: "/image/people_gui4.png",
-      link: "/elderly-allowance",
+      link: "/citizen/elderly-allowance",
     },
     {
       icon: "/image/people_gui5.png",
-      link: "/disabled-allowance",
+      link: "https://govwelfare.dep.go.th/",
     },
     {
       icon: "/image/people_gui6.png",
-      link: "/work-manual",
+      link: "/citizen/work-manual",
     },
     {
       icon: "/image/people_gui7.png",
-      link: "/qa",
+      link: "/citizen/qa",
     },
     {
       icon: "/image/people_gui8.png",
-      link: "/qa",
+      link: "/citizen/qa",
     },
   ];
-
-  // Separate card for "ช่องทางรับฟังความคิดเห็น" based on the second image's layout
-  const feedbackCard = {
-    icon: "/image/manual-1-2.png", // This seems to be the icon from the first image for this specific item
-    label: "ช่องทางรับฟัง\nความคิดเห็น",
-    link: "/feedback",
-  };
 
   return (
     <section
@@ -55,19 +47,19 @@ export default function PeopleSupport() {
       <img
         src="/image/people_support.png"
         alt="งานบริการประชาชน"
-        className="w-[140px] sm:w-[180px] md:w-[200px] object-contain mb-4"
+        className="w-[240px] sm:w-[180px] md:w-[400px] object-contain mb-4"
       />
-      <div className="w-full max-w-5xl mx-auto grid grid-cols-3 lg:grid-cols-4 gap-x-2 sm:gap-x-8 gap-y-4 sm:gap-y-12 px-2 sm:px-8 justify-items-center">
+      <div className="w-full max-w-[1500px] mx-auto grid grid-cols-2 md:grid-cols-4 md:gap-x-20 gap-x-6 gap-y-1 px-4  justify-items-center ">
         {cards.map((card, idx) => (
           <a
             key={idx}
             href={card.link}
-            className="w-full min-w-[140px] max-w-[220px] h-[90px] xs:h-[100px] sm:h-[120px] aspect-[180/100] text-center group relative"
+            className="w-full min-w-[350px]    max-w-[500px] h-[80px] xs:h-[220px] md:w-[220px]  md:h-[160px]  text-center group relative"
           >
             <img
               src={card.icon}
               alt="service icon"
-              className="w-[90px] xs:w-[120px] sm:w-[160px] md:w-[200px] object-contain transition-transform duration-300 group-hover:scale-105 mx-auto"
+              className="w-[200px]  md:w-[250px] h-[80px] md:h-[160px] object-cover transition-transform duration-300 group-hover:scale-105 mx-auto"
             />
           </a>
         ))}

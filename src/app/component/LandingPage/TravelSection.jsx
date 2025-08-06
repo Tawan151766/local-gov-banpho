@@ -11,7 +11,7 @@ const places = [
   },
   {
     name: "วัดสนามจันทร์",
-    img: "/image/market.jpg",
+    img: "/image/DSC09066_KdtWtDy_20180724.jpg",
   },
   {
     name: "วัดสนามจันทร์",
@@ -19,7 +19,7 @@ const places = [
   },
   {
     name: "วัดสนามจันทร์",
-    img: "/image/whitecastle.jpg",
+    img: "/image/01_tMFoY8I_20180724.jpg",
   },
   {
     name: "วัดสนามจันทร์",
