@@ -68,12 +68,6 @@ export default function ActivitySection() {
     return plainText.substring(0, maxLength) + "...";
   };
 
-  const getImageUrl = (imagePath) => {
-    if (!imagePath) return "/image/Boat.jpg"; // Default image
-    if (imagePath.startsWith("http")) return imagePath;
-    return imagePath.startsWith("/") ? imagePath : `/${imagePath}`;
-  };
-
   if (loading) {
     return (
       <section
@@ -194,8 +188,14 @@ export default function ActivitySection() {
               >
                 <div className="w-full h-[180px] sm:h-[220px] md:h-[240px] lg:h-[260px]">
                   <img
-                    src={getImageUrl(activity.image || activity.featured_image)}
-                    alt={activity.title || "กิจกรรม"}
+                    src={
+                      activity.photos &&
+                      activity.photos.length > 0 &&
+                      activity.photos[0].post_photo_file
+                        ? `https://banpho.sosmartsolution.com/storage/${activity.photos[0].post_photo_file}`
+                        : "/image/Boat.jpg"
+                    }
+                    alt={activity.title_name || "กิจกรรม"}
                     className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
                     onError={(e) => {
                       e.target.src = "/image/Boat.jpg";
@@ -206,10 +206,14 @@ export default function ActivitySection() {
                   <div>
                     <div className="flex justify-between items-start mb-1 sm:mb-2">
                       <h4 className="text-base sm:text-lg md:text-xl lg:text-[20px] font-semibold text-[#1E1E1E] line-clamp-1">
-                        {activity.topic_name || "ไม่มีหัวข้อ"}
+                        {activity.title_name || "ไม่มีหัวข้อ"}
                       </h4>
                       <p className="text-sm sm:text-base md:text-lg lg:text-[16px] text-gray-500 ml-2 sm:ml-4 whitespace-nowrap">
-                        {formatDate(activity.created_at || "ไม่ระบุวันที่")}
+                        {formatDate(
+                          activity.date ||
+                            activity.created_at ||
+                            "ไม่ระบุวันที่"
+                        )}
                       </p>
                     </div>
                     <p className="text-sm sm:text-base md:text-lg lg:text-[18px] text-gray-600 mb-2 sm:mb-3 line-clamp-2">
@@ -217,6 +221,9 @@ export default function ActivitySection() {
                         activity.details || "ไม่มีรายละเอียดเพิ่มเติม"
                       )}
                     </p>
+                    <div className="text-xs text-gray-400 mb-1">
+                      {activity.type_name}
+                    </div>
                   </div>
                   <span className="text-base sm:text-lg md:text-xl lg:text-[20px] text-[#1E1E1E] hover:text-blue-800 transition-colors duration-200">
                     อ่านต่อ

@@ -334,7 +334,7 @@ export default function AnnouncementSections() {
         {/* Header Section */}
         <div className="flex w-full max-w-2xl justify-between items-center mb-6 mt-8">
           <div className="text-[#01385F] text-xl sm:text-2xl lg:text-3xl font-bold w-full text-left"></div>
-          <Link href="/posts">
+          <Link href="/announcement">
             <button className="bg-[#01385f] text-white rounded-[12.5px] px-4 py-2 text-sm shadow-md hover:bg-[#01385f]/90 transition-colors duration-200 whitespace-nowrap ml-4">
               เพิ่มเติม
             </button>
@@ -369,9 +369,14 @@ export default function AnnouncementSections() {
             </svg>
           </button>
           <div
-            className={`relative flex-1 aspect-[2.2/1] sm:aspect-[2.5/1] border-2 sm:border-4 md:border-6 border-solid border-white rounded-[12px] sm:rounded-[20px] md:rounded-[29px] shadow-[0_2px_4px_rgba(0,0,0,0.18)] sm:shadow-[0_4px_4px_rgba(0,0,0,0.25)] bg-white flex items-center justify-center overflow-hidden min-h-[120px] sm:min-h-[180px] md:min-h-[240px] transition-all duration-300 cursor-pointer hover:shadow-lg ${
+            className={`relative flex-1 max-w-[1140px] mx-auto border-2 sm:border-4 md:border-6 border-solid border-white rounded-[12px] sm:rounded-[20px] md:rounded-[29px] shadow-[0_2px_4px_rgba(0,0,0,0.18)] sm:shadow-[0_4px_4px_rgba(0,0,0,0.25)] bg-white flex items-center justify-center overflow-hidden transition-all duration-300 cursor-pointer hover:shadow-lg ${
               isTransitioning ? "scale-[0.98]" : "scale-100"
             }`}
+            style={{
+              aspectRatio: '1140/380',
+              minHeight: '120px',
+              height: 'clamp(120px, 33.33vw, 380px)'
+            }}
             onClick={handleShowDetail}
           >
             {announcements[current]?.photos?.[0] ? (
@@ -385,7 +390,10 @@ export default function AnnouncementSections() {
                     ? "opacity-80 scale-105"
                     : "opacity-100 scale-100"
                 }`}
-                style={{ minHeight: "100px", maxHeight: "400px" }}
+                style={{ 
+                  objectFit: 'cover',
+                  objectPosition: 'center'
+                }}
               />
             ) : (
               <div
@@ -401,7 +409,11 @@ export default function AnnouncementSections() {
                     <img
                       src="image/annu.jpg"
                       alt="Announcement PDF"
-                      className="w-full h-auto max-h-[380px] object-cover rounded-lg"
+                      className="w-full h-full object-cover rounded-lg"
+                      style={{ 
+                        objectFit: 'cover',
+                        objectPosition: 'center'
+                      }}
                     />
                   ) : announcements[current]?.videos?.length > 0 ? (
                     <svg

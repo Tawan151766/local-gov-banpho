@@ -1,6 +1,4 @@
 "use client";
-// import "../../styles.css";
-import * as ui from "../../ui-logic";
 import HeroSection from "./HeroSection";
 import ManagementSection from "./ManagementSection";
 import ContentSections from "./ContentSections";
@@ -19,11 +17,28 @@ import { Modal } from "antd";
 export default function LandingPage() {
   const [open, setOpen] = useState(false);
 
+  // Hide body scroll when modal is open
+  useEffect(() => {
+    if (open) {
+      document.body.style.overflow = "hidden";
+      document.documentElement.style.overflow = "hidden";
+    } else {
+      document.body.style.overflow = "unset";
+      document.documentElement.style.overflow = "unset";
+    }
+
+    // Cleanup on unmount
+    return () => {
+      document.body.style.overflow = "unset";
+      document.documentElement.style.overflow = "unset";
+    };
+  }, [open]);
+
   // Single announcement data - replace with actual API call
   const announcement = {
     id: 1,
     title: "เชิญชวนลงนามถวายพระพร พระบาทสมเด็จพระเจ้าอยู่หัว",
-    image: "https://www.sut.ac.th/images/upload/news/1496/1496/news.jpg", // Replace with actual image path
+    image: "/image/momday.jpg", // Replace with actual image path
     isActive: true,
   };
 
@@ -44,87 +59,129 @@ export default function LandingPage() {
     setOpen(false);
     localStorage.setItem("royalAnnouncementSeen", "true");
   };
-  const getAnnouncementIcon = (type) => {
-    switch (type) {
-      case "important":
-        return "🚨";
-      case "notice":
-        return "📢";
-      case "news":
-        return "📰";
-      default:
-        return "📋";
-    }
-  };
-
-  const getAnnouncementColor = (type) => {
-    switch (type) {
-      case "important":
-        return "border-red-500 bg-red-50";
-      case "notice":
-        return "border-yellow-500 bg-yellow-50";
-      case "news":
-        return "border-blue-500 bg-blue-50";
-      default:
-        return "border-gray-500 bg-gray-50";
-    }
-  };
 
   return (
     <>
+      <style jsx global>{`
+        .royal-announcement-modal-fullscreen .ant-modal {
+          max-width: 100vw !important;
+          width: 100vw !important;
+          height: 100vh !important;
+          margin: 0 !important;
+          padding: 0 !important;
+          top: 0 !important;
+          left: 0 !important;
+          right: 0 !important;
+          bottom: 0 !important;
+        }
+
+        .royal-announcement-modal-fullscreen .ant-modal-content {
+          width: 100vw !important;
+          height: 100vh !important;
+          border-radius: 0 !important;
+          padding: 0 !important;
+          margin: 0 !important;
+          box-shadow: none !important;
+          border: none !important;
+        }
+
+        .royal-announcement-modal-fullscreen .ant-modal-body {
+          padding: 0 !important;
+          margin: 0 !important;
+          width: 100vw !important;
+          height: 100vh !important;
+          overflow: hidden !important;
+        }
+
+        .royal-announcement-modal-fullscreen .ant-modal-mask {
+          background-color: rgba(0, 0, 0, 1) !important;
+        }
+
+        .royal-announcement-modal-fullscreen img {
+          width: 100vw !important;
+          height: 100vh !important;
+          object-fit: contain !important;
+          object-position: center !important;
+        }
+      `}</style>
+
       <Modal
         open={open}
-        onCancel={!open}
+        onCancel={handleClose}
         footer={null}
-        centered
-        width={600}
-        className="royal-announcement-modal"
+        centered={false}
+        width="100vw"
+        className="royal-announcement-modal-fullscreen"
         maskClosable={true}
-        closable={true}
+        closable={false}
+        style={{
+          top: 0,
+          paddingBottom: 0,
+          maxWidth: "100vw",
+        }}
+        styles={{
+          body: {
+            padding: 0,
+            height: "100vh",
+            overflow: "hidden",
+          },
+          content: {
+            height: "100vh",
+            borderRadius: 0,
+            padding: 0,
+          },
+          mask: {
+            backgroundColor: "rgba(0, 0, 0, 0.9)",
+          },
+        }}
+        zIndex={9999}
       >
-        <div className="royal-announcement-content">
-          {/* Royal Announcement Image */}
-          <div className="text-center">
-            <img
-              src={announcement.image}
-              alt={announcement.title}
-              className="w-full h-auto rounded-lg shadow-lg"
-              onError={(e) => {
-                // Fallback if image doesn't load
-                e.target.style.display = "none";
-                document.querySelector(".fallback-content").style.display =
-                  "block";
-              }}
-            />
-
-            {/* Fallback content if image fails to load */}
-            <div className="fallback-content" style={{ display: "none" }}>
-              <div className="bg-gradient-to-b from-yellow-50 to-yellow-100 p-8 rounded-lg border-2 border-yellow-300">
-                <div className="text-6xl mb-4">👑</div>
-                <h2 className="text-2xl font-bold text-yellow-800 mb-4">
-                  {announcement.title}
-                </h2>
-                <p className="text-yellow-700">
-                  เทศบาลตำบลบ้านโพธิ์ ขอเชิญชวนประชาชนร่วมลงนามถวายพระพร
-                </p>
-              </div>
-            </div>
-          </div>
-
-          {/* Close Button */}
-          <div className="mt-4 text-center">
+        <div className="royal-announcement-content relative w-screen h-screen overflow-hidden">
+          {/* Close Button - Bottom Center */}
+          <div className="absolute bottom-8 left-1/2 transform -translate-x-1/2 z-50 flex gap-4">
             <button
               onClick={handleClose}
-              className="px-6 py-2 bg-yellow-600 hover:bg-yellow-700 text-white rounded-lg transition-colors font-medium"
+              className="px-6 py-3 bg-yellow-600 hover:bg-yellow-700 text-white rounded-lg transition-colors font-medium shadow-lg"
             >
               ปิด
             </button>
             <button
               onClick={handleAlwayClose}
-              className="ml-4 px-6 py-2 bg-gray-300 hover:bg-gray-400 text-gray-800 rounded-lg transition-colors font-medium"
+              className="px-6 py-3 bg-gray-600 hover:bg-gray-700 text-white rounded-lg transition-colors font-medium shadow-lg"
             >
-              ไม่แสดงอีก สำหรับวันนี้
+              ไม่แสดงอีก
             </button>
+          </div>
+
+          {/* Royal Announcement Image - Full Screen */}
+          <div className="absolute inset-0 bg-black">
+            <img
+              src={announcement.image}
+              alt={announcement.title}
+              className="w-full h-full object-contain"
+              onError={(e) => {
+                // Fallback if image doesn't load
+                e.target.style.display = "none";
+                document.querySelector(".fallback-content").style.display =
+                  "flex";
+              }}
+            />
+
+            {/* Fallback content if image fails to load */}
+            <div
+              className="fallback-content absolute inset-0 items-center justify-center bg-gradient-to-b from-yellow-50 to-yellow-100"
+              style={{ display: "none" }}
+            >
+              <div className="text-center p-8">
+                <div className="text-8xl mb-6">👑</div>
+                <h2 className="text-4xl font-bold text-yellow-800 mb-6">
+                  {announcement.title}
+                </h2>
+                <p className="text-xl text-yellow-700">
+                  เทศบาลตำบลบ้านโพธิ์ ขอเชิญชวนประชาชนร่วมลงนามถวายพระพร
+                </p>
+              </div>
+            </div>
           </div>
         </div>
       </Modal>

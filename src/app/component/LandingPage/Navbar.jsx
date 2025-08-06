@@ -1,12 +1,11 @@
 "use client";
 import React, { useState, useEffect, useRef } from "react";
-import Translator from './Translator.jsx'
+import Translator from "./Translator.jsx";
 
 export default function Navbar() {
   const [showMenu, setShowMenu] = useState(false);
   const [activeDropdown, setActiveDropdown] = useState(null);
   const navRef = useRef(null);
-
 
   useEffect(() => {
     const handleClickOutside = (event) => {
@@ -25,7 +24,6 @@ export default function Navbar() {
 
   const closeDropdown = () => setActiveDropdown(null);
 
-
   const basicInfoMenu = [
     { href: "/", label: "หน้าหลัก" },
     { href: "/history", label: "ประวัติความเป็นมา" },
@@ -35,10 +33,16 @@ export default function Navbar() {
       isHeader: true,
       submenu: [
         { href: "/simple-infomation/general-overview", label: "สภาพทั่วไป" },
-        { href: "/simple-infomation/economic-status", label: "สภาพทางเศรษฐกิจ" },
+        {
+          href: "/simple-infomation/economic-status",
+          label: "สภาพทางเศรษฐกิจ",
+        },
         { href: "/simple-infomation/demographics", label: "สภาพทางสังคม" },
-        { href: "/simple-infomation/infrastructure", label: "การบริการพื้นฐาน" },
-      ]
+        {
+          href: "/simple-infomation/infrastructure",
+          label: "การบริการพื้นฐาน",
+        },
+      ],
     },
     { href: "/authority", label: "อำนาจหน้าที่" },
     { href: "/policy", label: "นโยบายการบริหาร" },
@@ -58,11 +62,63 @@ export default function Navbar() {
     { href: "/personnel?section=audit", label: "หน่วยตรวจสอบภายใน" },
   ];
 
+  const performanceMenu = [
+    {
+      href: "/perf-result?tab=operation-report",
+      label: "รายงานผลการดำเนินงาน",
+    },
+    {
+      href: "/perf-result?tab=procurement",
+      label: "การจัดซื้อจัดจ้าง/การจัดหาพัสดุ",
+    },
+    { href: "/perf-result?tab=financial-report", label: "รายงานการคลัง" },
+    {
+      href: "/perf-result?tab=transparency-measures",
+      label: "มาตรการส่งเสริมความโปร่งใส",
+    },
+    {
+      href: "/perf-result?tab=hr-management",
+      label: "การบริหารและทรัพยากรบุคคล",
+    },
+    { href: "/perf-result?tab=statistics", label: "ข้อมูลเชิงสถิติ" },
+    {
+      href: "/perf-result?tab=participation",
+      label: "การเปิดโอกาสให้เกิดการมีส่วนร่วม",
+    },
+  ];
+
+  const localDevPlanMenu = [
+    {
+      href: "/local-development-plan?tab=four-year-plan",
+      label: "แผนพัฒนาสี่ปี",
+    },
+    { href: "/local-development-plan?tab=action-plan", label: "แผนปฏิบัติการ" },
+    { href: "/local-development-plan?tab=community-plan", label: "แผนชุมชน" },
+    {
+      href: "/local-development-plan?tab=strategic-plan",
+      label: "แผนยุทธศาสตร์",
+    },
+    {
+      href: "/local-development-plan?tab=manpower-plan",
+      label: "แผนอัตรากำลัง",
+    },
+    {
+      href: "/local-development-plan?tab=procurement-plan",
+      label: "แผนการจัดหาพัสดุ",
+    },
+  ];
+
   const citizenMenu = [
     { href: "/citizen/complaints", label: "รับเรื่องราวร้องทุกข์" },
-    { href: "/e-service/corruption-complaint", label: "รับแจ้งเรื่องราวร้องเรียนการทุจริตและประพฤติมิชอบ" },
+    {
+      href: "/e-service/corruption-complaint",
+      label: "รับแจ้งเรื่องราวร้องเรียนการทุจริตและประพฤติมิชอบ",
+    },
     { href: "/citizen/work-manual", label: "คู่มือปฏิบัติงาน" },
-    { href: "/citizen/service-standards", label: "คู่มือหรือมาตรฐานการให้บริการประชาชน" },
+    {
+      href: "/citizen/service-standards",
+      label: "คู่มือหรือมาตรฐานการให้บริการประชาชน",
+    },
     { href: "/citizen/citizen-manual", label: "คู่มือประชาชน" },
     { href: "/citizen/documents", label: "เอกสารดาวน์โหลด/แบบฟอร์มต่างๆ" },
     { href: "/citizen/work-process", label: "ลดขั้นตอนการปฏิบัติงาน" },
@@ -77,19 +133,23 @@ export default function Navbar() {
     { value: "la", label: "🇱🇦 ລາວ" },
   ];
 
-  
-
   // Component สำหรับ Dropdown
   const DropdownMenu = ({ items, isActive, width = "w-80" }) => (
-    <div className={`absolute top-full left-0 mt-2 ${width} ${
-      isActive ? "opacity-100 visible" : "opacity-0 invisible group-hover:opacity-100 group-hover:visible"
-    } transition-all duration-200 bg-white rounded-md shadow-lg z-50`}>
+    <div
+      className={`absolute top-full left-0 mt-2 ${width} ${
+        isActive
+          ? "opacity-100 visible"
+          : "opacity-0 invisible group-hover:opacity-100 group-hover:visible"
+      } transition-all duration-200 bg-white rounded-md shadow-lg z-50`}
+    >
       <div className="py-2">
         {items.map((item, index) => (
           <div key={index}>
             {item.isHeader ? (
               <>
-                <div className="px-4 py-2 text-sm text-gray-700 font-bold">{item.label}</div>
+                <div className="px-4 py-2 text-sm text-gray-700 font-bold">
+                  {item.label}
+                </div>
                 {item.submenu?.map((subitem, subindex) => (
                   <a
                     key={subindex}
@@ -132,17 +192,26 @@ export default function Navbar() {
           stroke="currentColor"
           viewBox="0 0 24 24"
         >
-          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+          <path
+            strokeLinecap="round"
+            strokeLinejoin="round"
+            strokeWidth={2}
+            d="M19 9l-7 7-7-7"
+          />
         </svg>
       </div>
-      <DropdownMenu items={items} isActive={activeDropdown === dropdownKey} width={width} />
+      <DropdownMenu
+        items={items}
+        isActive={activeDropdown === dropdownKey}
+        width={width}
+      />
     </div>
   );
 
   // Component  Mobile Menu Item
   const MobileMenuItem = ({ title, items, dropdownKey }) => {
     const isActive = activeDropdown === dropdownKey;
-    
+
     return (
       <div className="border-b border-white/30 last:border-b-0">
         <button
@@ -151,25 +220,35 @@ export default function Navbar() {
         >
           <span className="text-left">{title}</span>
           <svg
-            className={`w-6 h-6 transition-transform duration-300 flex-shrink-0 ml-2 ${isActive ? "rotate-180" : ""}`}
+            className={`w-6 h-6 transition-transform duration-300 flex-shrink-0 ml-2 ${
+              isActive ? "rotate-180" : ""
+            }`}
             fill="none"
             stroke="currentColor"
             viewBox="0 0 24 24"
             strokeWidth={2}
           >
-            <path strokeLinecap="round" strokeLinejoin="round" d="M19 9l-7 7-7-7" />
+            <path
+              strokeLinecap="round"
+              strokeLinejoin="round"
+              d="M19 9l-7 7-7-7"
+            />
           </svg>
         </button>
-        
-        <div className={`overflow-hidden transition-all duration-300 ease-in-out ${
-          isActive ? "max-h-[500px] opacity-100" : "max-h-0 opacity-0"
-        }`}>
+
+        <div
+          className={`overflow-hidden transition-all duration-300 ease-in-out ${
+            isActive ? "max-h-[500px] opacity-100" : "max-h-0 opacity-0"
+          }`}
+        >
           <div className="pl-4 pr-2 pb-3 space-y-1 bg-white/5 rounded-b-lg">
             {items.map((item, index) => (
               <div key={index}>
                 {item.isHeader ? (
                   <>
-                    <div className="text-white/90 text-sm font-semibold py-3 px-3 border-b border-white/20">{item.label}</div>
+                    <div className="text-white/90 text-sm font-semibold py-3 px-3 border-b border-white/20">
+                      {item.label}
+                    </div>
                     {item.submenu?.map((subitem, subindex) => (
                       <a
                         key={subindex}
@@ -205,7 +284,10 @@ export default function Navbar() {
   };
 
   return (
-    <header ref={navRef} className="w-full bg-[linear-gradient(180deg,_#0383AA_0%,_#05C5FF_100%)] relative z-[100]">
+    <header
+      ref={navRef}
+      className="w-full bg-[linear-gradient(180deg,_#0383AA_0%,_#05C5FF_100%)] relative z-[100]"
+    >
       {/* Background images */}
       <img
         src="/image/white_tree.png"
@@ -217,11 +299,14 @@ export default function Navbar() {
         alt="white tree"
         className="absolute top-0 left-0 w-full h-full object-cover pointer-events-none z-[-1] scale-x-[-1]"
       />
-      
+
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pb-8">
         <div className="flex flex-row md:flex-row items-center justify-between py-4">
           {/* Logo and Title */}
-          <a href="/" className="pointer flex items-center gap-4 w-full md:w-auto">
+          <a
+            href="/"
+            className="pointer flex items-center gap-4 w-full md:w-auto"
+          >
             <img
               src="/image/logobanpho.png"
               alt="โลโก้เทศบาล"
@@ -237,25 +322,27 @@ export default function Navbar() {
             </div>
           </a>
 
-          
-
           {/* Top Menu Items - Desktop Only */}
           <div className="hidden md:flex flex-row items-center gap-4 mt-0">
             {/* Language Selector */}
 
             <select className="bg-white px-3 text-[#1E1E1E] text-sm font-medium shadow w-auto h-[30px] rounded-[15px] focus:outline-none">
               {languages.map((lang) => (
-                <option key={lang.value} value={lang.value}>{lang.label}</option>
+                <option key={lang.value} value={lang.value}>
+                  {lang.label}
+                </option>
               ))}
             </select>
 
             {/* <Translator /> */}
 
-
-
             {/* Blind Icon */}
             <div className="bg-white rounded-sm p-2 cursor-pointer shadow hover:shadow-md transition-shadow">
-              <img src="/image/blind.png" alt="blind" className="w-5 h-5 cursor-pointer" />
+              <img
+                src="/image/blind.png"
+                alt="blind"
+                className="w-5 h-5 cursor-pointer"
+              />
             </div>
 
             {/* Search Box */}
@@ -265,7 +352,9 @@ export default function Navbar() {
                 className="bg-transparent outline-none text-sm px-2 w-32 placeholder:text-[#00000080]"
                 placeholder="ค้นหา"
               />
-              <button className="text-[#1cb5e0] text-lg px-2 hover:scale-110 transition-transform">🔍</button>
+              <button className="text-[#1cb5e0] text-lg px-2 hover:scale-110 transition-transform">
+                🔍
+              </button>
             </div>
 
             {/* Auth Buttons */}
@@ -281,6 +370,12 @@ export default function Navbar() {
             >
               สมัครสมาชิก
             </a>
+            <a
+              href="#"
+              className="bg-white text-[15px] text-[#1cb5e0] px-4 py-1 rounded-md shadow hover:scale-105 transition text-center font-medium"
+            >
+              ติดต่อเรา
+            </a>
           </div>
 
           {/* Hamburger Menu - Mobile Only */}
@@ -290,12 +385,34 @@ export default function Navbar() {
               onClick={() => setShowMenu(!showMenu)}
             >
               {showMenu ? (
-                <svg width="28" height="28" fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={3}>
-                  <path strokeLinecap="round" strokeLinejoin="round" d="M6 18L18 6M6 6l12 12" />
+                <svg
+                  width="28"
+                  height="28"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke="currentColor"
+                  strokeWidth={3}
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    d="M6 18L18 6M6 6l12 12"
+                  />
                 </svg>
               ) : (
-                <svg width="28" height="28" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M4 6h16M4 12h16M4 18h16" />
+                <svg
+                  width="28"
+                  height="28"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke="currentColor"
+                >
+                  <path
+                    strokeLinecap="round"
+                    strokeLinejoin="round"
+                    strokeWidth={2}
+                    d="M4 6h16M4 12h16M4 18h16"
+                  />
                 </svg>
               )}
             </button>
@@ -304,36 +421,49 @@ export default function Navbar() {
 
         {/* Mobile Menu Overlay */}
         {showMenu && (
-          <div className="md:hidden fixed inset-0 bg-black/50 z-[9998]" onClick={() => setShowMenu(false)} />
+          <div
+            className="md:hidden fixed inset-0 bg-black/50 z-[9998]"
+            onClick={() => setShowMenu(false)}
+          />
         )}
 
         {/* Mobile Menu */}
-        <div className={`md:hidden fixed top-0 right-0 h-full w-80 max-w-[85vw] bg-gradient-to-b from-[#1cb5e0]/95 to-[#000046]/95 backdrop-blur-sm transform transition-transform duration-300 ease-in-out z-[9999] ${
-          showMenu ? "translate-x-0" : "translate-x-full"
-        }`}>
+        <div
+          className={`md:hidden fixed top-0 right-0 h-full w-80 max-w-[85vw] bg-gradient-to-b from-[#1cb5e0]/95 to-[#000046]/95 backdrop-blur-sm transform transition-transform duration-300 ease-in-out z-[9999] ${
+            showMenu ? "translate-x-0" : "translate-x-full"
+          }`}
+        >
           <div className="p-6 h-full overflow-y-auto ">
             {/* Mobile Top Section */}
             <div className="mb-6 space-y-4">
               {/* Language Selector - แก้ไขให้มีขนาดที่เหมาะสม */}
               <select className="bg-white px-3 text-[#1E1E1E] text-sm font-medium shadow w-40 h-[40px] rounded-[15px] focus:outline-none">
                 {languages.map((lang) => (
-                  <option key={lang.value} value={lang.value}>{lang.label}</option>
+                  <option key={lang.value} value={lang.value}>
+                    {lang.label}
+                  </option>
                 ))}
               </select>
 
               {/* Utility Row - จัดเรียงใหม่ให้เหมาะสม */}
               <div className="flex items-center gap-3">
                 <div className="bg-white rounded-sm p-2 cursor-pointer shadow hover:shadow-md transition-shadow flex-shrink-0">
-                  <img src="/image/blind.png" alt="blind" className="w-5 h-5 cursor-pointer" />
+                  <img
+                    src="/image/blind.png"
+                    alt="blind"
+                    className="w-5 h-5 cursor-pointer"
+                  />
                 </div>
-                
+
                 <div className="flex items-center bg-white px-3 shadow h-[40px] rounded-[15px] flex-1 min-w-0">
                   <input
                     type="text"
                     className="bg-transparent outline-none text-sm px-2 flex-1 min-w-0 placeholder:text-[#00000080]"
                     placeholder="ค้นหา"
                   />
-                  <button className="text-[#1cb5e0] text-lg px-2 hover:scale-110 transition-transform flex-shrink-0">🔍</button>
+                  <button className="text-[#1cb5e0] text-lg px-2 hover:scale-110 transition-transform flex-shrink-0">
+                    🔍
+                  </button>
                 </div>
               </div>
 
@@ -353,30 +483,42 @@ export default function Navbar() {
                 >
                   สมัครสมาชิก
                 </a>
+                <a
+                  href="#"
+                  className="block bg-white text-[#1cb5e0] text-center text-base px-4 py-3 rounded-md shadow hover:scale-105 transition font-medium"
+                  onClick={() => setShowMenu(false)}
+                >
+                  ติดต่อเรา
+                </a>
               </div>
             </div>
 
             {/* Mobile Navigation Menu */}
             <div className="border-t-2 border-white/40 pt-4">
-              <h3 className="text-white font-bold text-lg mb-4 text-center">เมนูหลัก</h3>
+              <h3 className="text-white font-bold text-lg mb-4 text-center">
+                เมนูหลัก
+              </h3>
               <div className="space-y-1">
-                <MobileMenuItem title="ข้อมูลพื้นฐาน" items={basicInfoMenu} dropdownKey="basic-mobile" />
-                <MobileMenuItem title="บุคลากร" items={personnelMenu} dropdownKey="personnel-mobile" />
-                
-                <a
-                  href="/perf-result"
-                  className="block text-white text-base font-medium py-4 px-4 rounded-lg hover:bg-white/20 transition-colors border-b border-white/30"
-                  onClick={() => setShowMenu(false)}
-                >
-                  ผลการดำเนินงาน
-                </a>
-                <a
-                  href="/local-development-plan"
-                  className="block text-white text-base font-medium py-4 px-4 rounded-lg hover:bg-white/20 transition-colors border-b border-white/30"
-                  onClick={() => setShowMenu(false)}
-                >
-                  แผนพัฒนาท้องถิ่น
-                </a>
+                <MobileMenuItem
+                  title="ข้อมูลพื้นฐาน"
+                  items={basicInfoMenu}
+                  dropdownKey="basic-mobile"
+                />
+                <MobileMenuItem
+                  title="บุคลากร"
+                  items={personnelMenu}
+                  dropdownKey="personnel-mobile"
+                />
+                <MobileMenuItem
+                  title="ผลการดำเนินงาน"
+                  items={performanceMenu}
+                  dropdownKey="performance-mobile"
+                />
+                <MobileMenuItem
+                  title="แผนพัฒนาท้องถิ่น"
+                  items={localDevPlanMenu}
+                  dropdownKey="local-dev-plan-mobile"
+                />
                 <a
                   href="/laws-regulations"
                   className="block text-white text-base font-medium py-4 px-4 rounded-lg hover:bg-white/20 transition-colors border-b border-white/30"
@@ -384,8 +526,12 @@ export default function Navbar() {
                 >
                   กฎหมายและระเบียบ
                 </a>
-                
-                <MobileMenuItem title="เมนูสำหรับประชาชน" items={citizenMenu} dropdownKey="citizen-mobile" />
+
+                <MobileMenuItem
+                  title="เมนูสำหรับประชาชน"
+                  items={citizenMenu}
+                  dropdownKey="citizen-mobile"
+                />
               </div>
             </div>
           </div>
@@ -393,29 +539,41 @@ export default function Navbar() {
 
         {/* Main Navigation Menu - Desktop */}
         <nav className="hidden md:flex flex-wrap items-center justify-center gap-6 mt-2">
-          <MenuItem title="ข้อมูลพื้นฐาน" items={basicInfoMenu} dropdownKey="basic" />
-          <MenuItem title="บุคลากร" items={personnelMenu} dropdownKey="personnel" width="w-64" />
-          
-          <a
-            href="/perf-result"
-            className="text-white text-base font-medium hover:underline hover:text-[#01385F] hover:text-[20px] hover:text-bold transition-all duration-300"
-          >
-            ผลการดำเนินงาน
-          </a>
-          <a
-            href="/local-development-plan"
-            className="text-white text-base font-medium hover:underline hover:text-[#01385F] hover:text-[20px] hover:text-bold transition-all duration-300"
-          >
-            แผนพัฒนาท้องถิ่น
-          </a>
+          <MenuItem
+            title="ข้อมูลพื้นฐาน"
+            items={basicInfoMenu}
+            dropdownKey="basic"
+          />
+          <MenuItem
+            title="บุคลากร"
+            items={personnelMenu}
+            dropdownKey="personnel"
+            width="w-64"
+          />
+          <MenuItem
+            title="ผลการดำเนินงาน"
+            items={performanceMenu}
+            dropdownKey="performance"
+            width="w-80"
+          />
+          <MenuItem
+            title="แผนพัฒนาท้องถิ่น"
+            items={localDevPlanMenu}
+            dropdownKey="local-dev-plan"
+            width="w-64"
+          />
           <a
             href="/laws-regulations"
             className="text-white text-base font-medium hover:underline hover:text-[#01385F] hover:text-[20px] hover:text-bold transition-all duration-300"
           >
             กฎหมายและระเบียบ
           </a>
-          
-          <MenuItem title="เมนูสำหรับประชาชน" items={citizenMenu} dropdownKey="citizen" />
+
+          <MenuItem
+            title="เมนูสำหรับประชาชน"
+            items={citizenMenu}
+            dropdownKey="citizen"
+          />
         </nav>
       </div>
     </header>
