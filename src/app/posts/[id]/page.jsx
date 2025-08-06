@@ -1,12 +1,15 @@
 "use client";
 
 import React, { useState, useEffect } from "react";
-import { useParams, useRouter } from "next/navigation";
+import { useParams, useRouter, useSearchParams } from "next/navigation";
 
 export default function PostDetailPage() {
   const params = useParams();
   const router = useRouter();
+  const searchParams = useSearchParams();
   const postId = params.id;
+  const egpId = searchParams.get("egp_id");
+  const postType = searchParams.get("type");
 
   const [post, setPost] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -24,25 +27,65 @@ export default function PostDetailPage() {
       setLoading(true);
       setError(null);
 
-      // Try to fetch from the posts API first
-      const response = await fetch(`/api/posts/${postId}`, {
-        method: "GET",
-        headers: {
-          Accept: "application/json",
-          "Content-Type": "application/json",
-        },
-        cache: "no-cache",
-      });
+      let apiUrl = "";
+      let postData = null;
 
-      if (!response.ok) {
-        throw new Error(`API error! status: ${response.status}`);
+      // Check if this is an EGP post
+      if (postType === "egp" && egpId) {
+        // Fetch from EGP API
+        const response = await fetch(`/api/egp-proxy/${egpId}`, {
+          method: "GET",
+          headers: {
+            Accept: "application/json",
+            "Content-Type": "application/json",
+          },
+          cache: "no-cache",
+        });
+
+        if (!response.ok) {
+          throw new Error(`EGP API error! status: ${response.status}`);
+        }
+
+        const result = await response.json();
+
+        if (result.success && result.data && Array.isArray(result.data)) {
+          // Find the specific post by ID
+          postData = result.data.find(item => 
+            item.id?.toString() === postId || 
+            item.deptsub_id?.toString() === postId
+          );
+
+          if (!postData) {
+            throw new Error("EGP post not found");
+          }
+        } else {
+          throw new Error("Invalid EGP API response");
+        }
+      } else {
+        // Try to fetch from the regular posts API
+        const response = await fetch(`/api/posts/${postId}`, {
+          method: "GET",
+          headers: {
+            Accept: "application/json",
+            "Content-Type": "application/json",
+          },
+          cache: "no-cache",
+        });
+
+        if (!response.ok) {
+          throw new Error(`Posts API error! status: ${response.status}`);
+        }
+
+        const result = await response.json();
+
+        if (result.success && result.data) {
+          postData = result.data;
+        } else {
+          throw new Error("Post not found");
+        }
       }
 
-      const result = await response.json();
-
-      if (result.success && result.data) {
-        const postData = result.data;
-        
+      if (postData) {
         // Transform the data to match expected format
         const transformedPost = {
           deptsub_id: (postData.id || postData.deptsub_id || postId).toString(),
@@ -55,13 +98,14 @@ export default function PostDetailPage() {
           topic_name: postData.topic_name,
           photos: postData.photos || [],
           videos: postData.videos || [],
-          pdfs: postData.pdfs || []
+          pdfs: postData.pdfs || [],
+          isEgpPost: postType === "egp" // Flag to identify EGP posts
         };
 
         setPost(transformedPost);
         setRetryCount(0);
       } else {
-        throw new Error("Post not found");
+        throw new Error("Post data not found");
       }
     } catch (error) {
       console.error("Error fetching post detail:", error);
@@ -138,7 +182,12 @@ export default function PostDetailPage() {
   };
 
   const handleGoBack = () => {
-    router.back();
+    // If this is an EGP post, go back to EGP posts page
+    if (postType === "egp") {
+      router.push("/posts?type=ประกาศ EGP");
+    } else {
+      router.back();
+    }
   };
 
   const handleExternalLink = () => {
@@ -259,10 +308,11 @@ export default function PostDetailPage() {
         <div className="bg-white rounded-[29px] border-4 border-[#01bdcc] shadow-lg p-8">
           {/* Header */}
           <div className="flex flex-col md:flex-row md:items-center md:justify-between mb-6 gap-4">
-            <div className="flex items-center gap-4">
+            <div className="flex flex-col gap-2">
               <span className="text-[#01385f] font-semibold text-lg">
                 {formatDate(post.pub_date)}
               </span>
+             
             </div>
             <span
               className="rounded-full px-6 py-2 text-white text-base font-medium shadow-sm self-start md:self-center"
@@ -439,9 +489,6 @@ export default function PostDetailPage() {
             <div className="flex flex-wrap gap-2 text-sm text-gray-500">
               <span className="bg-gray-100 px-3 py-1 rounded-full">
                 รหัส: {post.announce_type}
-              </span>
-              <span className="bg-gray-100 px-3 py-1 rounded-full">
-                ID: {post.deptsub_id}
               </span>
               {post.original_type && (
                 <span className="bg-gray-100 px-3 py-1 rounded-full">

@@ -14,6 +14,7 @@ function PostsPageContent() {
   const [searchText, setSearchText] = useState("");
   const [currentPage, setCurrentPage] = useState(1);
   const [postsPerPage] = useState(12);
+  const [egpId, setEgpId] = useState("1509900857"); // Default EGP ID
 
   // Determine category from URL parameter
   const [activeCategory, setActiveCategory] = useState(() => {
@@ -29,7 +30,7 @@ function PostsPageContent() {
 
   useEffect(() => {
     fetchPosts();
-  }, [activeCategory]);
+  }, [activeCategory, egpId]); // เพิ่ม egpId ใน dependency array
 
   const fetchPosts = async (retry = false) => {
     try {
@@ -49,7 +50,7 @@ function PostsPageContent() {
           apiUrl = "/api/posts?type=รายงานผลการจัดซื้อจัดจ้าง";
           break;
         case "egp":
-          apiUrl = "/api/egp-proxy";
+          apiUrl = `/api/egp-proxy/${egpId}`;
           break;
         default:
           apiUrl = "/api/posts?type=ประกาศจัดซื้อจัดจ้าง";
@@ -206,9 +207,24 @@ function PostsPageContent() {
     window.history.pushState({}, "", newUrl);
   };
 
+  const handleEgpIdChange = (newId) => {
+    setEgpId(newId);
+    setCurrentPage(1);
+    // Reset to first page when changing EGP ID
+  };
+
   const handlePostClick = (post) => {
-    if (post.link) {
+    // For EGP posts, navigate to detail page with EGP ID context
+    if (activeCategory === "egp" && post.deptsub_id) {
+      window.location.href = `/posts/${post.deptsub_id}?egp_id=${egpId}&type=egp`;
+      return;
+    }
+
+    // For other posts, use the existing link or create detail URL
+    if (post.link && !post.link.startsWith("/posts/")) {
       window.open(post.link, "_blank");
+    } else {
+      window.location.href = `/posts/${post.deptsub_id}`;
     }
   };
 
@@ -509,6 +525,7 @@ function PostsPageContent() {
             <div className="bg-white rounded-lg shadow-md p-8 text-center">
               <div className="text-gray-500 text-lg mb-2">
                 ไม่มีข้อมูล{getCategoryTypeName(activeCategory)}
+                {activeCategory === "egp" && ` สำหรับ ID: ${egpId}`}
               </div>
               <div className="text-gray-400 text-sm">
                 {searchText

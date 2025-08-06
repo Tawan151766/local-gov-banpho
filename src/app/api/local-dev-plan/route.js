@@ -29,12 +29,19 @@ export async function GET(request) {
       params.push(`%${search}%`);
     }
 
-    // Get types only
+    // Get types with file details
     const [rows] = await connection.execute(
-      `SELECT id, type_name, created_at, updated_at
-       FROM local_dev_plan_types
+      `SELECT 
+        t.id, 
+        t.type_name, 
+        t.created_at, 
+        t.updated_at,
+        COUNT(DISTINCT f.id) as files_count
+       FROM local_dev_plan_types t
+       LEFT JOIN local_dev_plan_files f ON f.type_id = t.id
        ${whereClause}
-       ORDER BY id ASC
+       GROUP BY t.id, t.type_name, t.created_at, t.updated_at
+       ORDER BY t.id DESC
        LIMIT ? OFFSET ?`,
       [...params, limit, offset]
     );
@@ -46,23 +53,35 @@ export async function GET(request) {
     );
     const total = countResult[0]?.total || 0;
 
-    // Add file count to each type
-    const typesWithFileCount = await Promise.all(
+    // Add recent files preview to each type
+    const typesWithDetails = await Promise.all(
       rows.map(async (type) => {
-        const [countFiles] = await connection.execute(
-          `SELECT COUNT(*) as files_count FROM local_dev_plan_files WHERE type_id = ?`,
+        const [recentFiles] = await connection.execute(
+          `SELECT 
+            id,
+            files_path,
+            files_type,
+            original_name,
+            file_size,
+            created_at
+           FROM local_dev_plan_files 
+           WHERE type_id = ? 
+           ORDER BY created_at DESC 
+           LIMIT 3`,
           [type.id]
         );
+
         return {
           ...type,
-          files_count: countFiles[0]?.files_count || 0
+          files_count: parseInt(type.files_count) || 0,
+          recent_files: recentFiles
         };
       })
     );
 
     return NextResponse.json({
       success: true,
-      data: typesWithFileCount,
+      data: typesWithDetails,
       pagination: {
         page,
         limit,
