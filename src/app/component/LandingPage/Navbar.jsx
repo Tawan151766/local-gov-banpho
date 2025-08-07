@@ -317,7 +317,7 @@ export default function Navbar() {
                 เทศบาลตำบลบ้านโพธิ์
               </span>
               <span className="text-white text-xs md:text-sm opacity-80">
-                Ban Pho Subdistrict Municipality
+                Ban Pho Subdistrict Chachoengsao
               </span>
             </div>
           </a>
