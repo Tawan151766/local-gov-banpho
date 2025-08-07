@@ -299,39 +299,43 @@ export default function AnnouncementSections() {
   }
   return (
     <div
-      className="mb-15 relative w-screen h-screen shadow-[0_18.4px_18.4px_rgba(0,0,0,0.49)] overflow-hidden"
-      style={{
-        backgroundImage: `linear-gradient(180deg, rgba(239, 228, 212, 0.6) 0%, rgba(1, 189, 204, 0.6) 100%),
-        url("image/vision_bg.png")`,
-        backgroundSize: "cover",
-        backgroundPosition: "center",
-        backgroundRepeat: "no-repeat",
-      }}
-    >
-      {/* Fallback Background - เผื่อภาพไม่โหลด */}
-      <div className="absolute top-0 left-0 w-full h-full bg-gradient-to-b from-[#A8F9FF] to-[#E8DDC4] -z-10" />
+    className="relative w-screen min-h-screen h-full overflow-hidden bg-cover bg-center"
+    style={{
+      backgroundImage: `
+linear-gradient(
+  to bottom,
+  rgba(239, 228, 212, 0.6),
+  rgba(1, 189, 204, 0.6),
+  rgba(1, 189, 204, 0.6)
+),
+url("image/vision_bg.png")
+`,
+    }}
+  >
+    {/* Fallback Gradient Background */}
+    <div className="absolute inset-0 bg-gradient-to-b from-[#A8F9FF] to-[#E8DDC4] -z-10" />
 
-      {/* Decorative Header */}
-      <div className="relative w-full flex flex-col items-center">
+      {/* Decorative Header ### NEW */}
+      <div className="relative w-full">
+        {/* ภาพเป็น background */}
         <img
           src="/image/headerAnnouncement.png"
           alt="header announcement"
-          className="w-full  object-cover"
-          style={{ minHeight: "60px" }}
+          className="w-full object-cover min-h-[150px]" // ปรับความสูงตามต้องการ
         />
-        <div className="absolute top-0 left-1/2 -translate-x-1/2 w-full max-w-3xl flex flex-col items-center pt-2">
-          <div className="text-[#01385F] text-lg sm:text-2xl font-bold text-center">
-            ป้ายประกาศ
-          </div>
-          <div className="text-[#01385F] text-xs sm:text-base text-center">
+
+        {/* ตัวหนังสือทับบนภาพ อยู่กลางทั้งแนวตั้งและนอน */}
+        <div className="absolute inset-0 flex flex-col justify-center items-center text-center">
+          <h1 className="text-[#01385F] text-2xl font-bold">ป้ายประกาศ</h1>
+          <p className="text-[#01385F] text-xs sm:text-base">
             เทศบาลตำบลบ้านโพธิ์
-          </div>
+          </p>
         </div>
       </div>
 
       {/* Content */}
       <div className="relative z-10 w-full max-w-4xl mx-auto flex flex-col items-center px-2 sm:px-4 md:px-6 lg:px-8">
-      {/* ##################fix_part#################### ย้ายปุ่มเพิ่มเติม */}
+        {/* ##################fix_part#################### ย้ายปุ่มเพิ่มเติม */}
 
         {/* Image Slider with prev/next buttons outside */}
         <div
@@ -533,17 +537,16 @@ export default function AnnouncementSections() {
             <div className="text-[#01385F]/60 text-xs">
               {current + 1} / {announcements.length}
             </div>
-
-            {/* #######################################################  ปุ่มเพิ่มเติม  ใหม่ ###########################################################*/}
-            <div className="flex w-full max-w-2xl justify-center mb-6 mt-8">
-              <Link href="/posts">
-                <button className="bg-[#01385f] text-white rounded-[12.5px] px-4 py-2 text-sm shadow-md hover:bg-[#01385f]/90 transition-colors duration-200 whitespace-nowrap">
-                  เพิ่มเติม
-                </button>
-              </Link>
-            </div>
           </div>
         )}
+        {/* #######################################################  ปุ่มเพิ่มเติม  ใหม่ ###########################################################*/}
+        <div className="flex w-full max-w-2xl justify-center mb-6 mt-8">
+          <Link href="/posts">
+            <button className="bg-[#01385f] text-white rounded-[12.5px] px-4 py-2 text-sm shadow-md hover:bg-[#01385f]/90 transition-colors duration-200 whitespace-nowrap">
+              เพิ่มเติม
+            </button>
+          </Link>
+        </div>
       </div>
 
       {/* Detail Modal */}
