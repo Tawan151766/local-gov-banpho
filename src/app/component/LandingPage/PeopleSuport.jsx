@@ -49,12 +49,12 @@ export default function PeopleSupport() {
     alt="งานบริการประชาชน"
     className="w-[240px] sm:w-[180px] md:w-[400px] object-contain mb-4"
   />
-  <div className="w-full max-w-[1500px] mx-auto grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 md:gap-x-20 gap-x-6 gap-y-3 px-4 justify-items-center overflow-hidden">
+  <div className="w-full max-w-[1500px] mx-auto grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 md:gap-x-10 gap-x-6 gap-y-3 px-4 justify-items-center overflow-hidden">
     {cards.map((card, idx) => (
       <a
         key={idx}
         href={card.link}
-        className="w-full min-w-0 md:min-w-[220px] max-w-[500px] h-[80px] xs:h-[220px] md:w-[220px] md:h-[160px] text-center group relative"
+        className="w-full min-w-0 md:min-w-[250px] max-w-[500px] h-[80px] xs:h-[220px] md:w-[220px] md:h-[160px] text-center group relative"
       >
         <img
           src={card.icon}
