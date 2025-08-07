@@ -443,51 +443,47 @@ export default function ManagementSection() {
           ผู้บริหารส่วนราชการ
         </h2>
 
-        {/* Management Team 2 - Single Row Layout */}
-        <div className="hidden md:flex gap-50 px-1 py-20 justify-center items-end">
-          <div className="max-w-[240px] min-h-[340px]">
-            <ManagementCard2
-              {...managementTeam2.find((m) => m.position === 1)}
-              textColor="text-[#01385F]"
-            />
-          </div>
-
-          <div className="max-w-[260px] min-h-[360px]">
-            <ManagementCard2
-              {...managementTeam2.find((m) => m.position === 2)}
-              textColor="text-[#01385F]"
-            />
-          </div>
-
-          <div className="max-w-[240px] min-h-[340px]">
-            <ManagementCard2
-              {...managementTeam2.find((m) => m.position === 3)}
-              textColor="text-[#01385F]"
-            />
-          </div>
-
-          <div className="max-w-[240px] min-h-[340px]">
-            <ManagementCard2
-              {...managementTeam2.find((m) => m.position === 4)}
-              textColor="text-[#01385F]"
-            />
-          </div>
-
-          <div className="max-w-[260px] min-h-[360px]">
-            <ManagementCard2
-              {...managementTeam2.find((m) => m.position === 5)}
-              textColor="text-[#01385F]"
-            />
-          </div>
-
-          <div className="max-w-[240px] min-h-[340px]">
-            <ManagementCard2
-              {...managementTeam2.find((m) => m.position === 6)}
-              textColor="text-[#01385F]"
-            />
-          </div>
-        </div>
-
+{/* Management Team 2 - Fluid Responsive Layout */}
+<div className="hidden md:block px-4 py-20">
+  <div className="grid grid-cols-3 xl:grid-cols-6 gap-4 lg:gap-6 xl:gap-8 2xl:gap-12 3xl:gap-16 justify-items-center items-end max-w-7xl 2xl:max-w-none mx-auto">
+    <div className="w-full max-w-[200px] lg:max-w-[220px] xl:max-w-[240px] 2xl:max-w-[260px] 3xl:max-w-[280px] min-h-[300px] lg:min-h-[320px] xl:min-h-[340px] 2xl:min-h-[360px]">
+      <ManagementCard2
+        {...managementTeam2.find((m) => m.position === 1)}
+        textColor="text-[#01385F]"
+      />
+    </div>
+    <div className="w-full max-w-[220px] lg:max-w-[240px] xl:max-w-[260px] 2xl:max-w-[280px] 3xl:max-w-[300px] min-h-[320px] lg:min-h-[340px] xl:min-h-[360px] 2xl:min-h-[380px]">
+      <ManagementCard2
+        {...managementTeam2.find((m) => m.position === 2)}
+        textColor="text-[#01385F]"
+      />
+    </div>
+    <div className="w-full max-w-[200px] lg:max-w-[220px] xl:max-w-[240px] 2xl:max-w-[260px] 3xl:max-w-[280px] min-h-[300px] lg:min-h-[320px] xl:min-h-[340px] 2xl:min-h-[360px]">
+      <ManagementCard2
+        {...managementTeam2.find((m) => m.position === 3)}
+        textColor="text-[#01385F]"
+      />
+    </div>
+    <div className="w-full max-w-[200px] lg:max-w-[220px] xl:max-w-[240px] 2xl:max-w-[260px] 3xl:max-w-[280px] min-h-[300px] lg:min-h-[320px] xl:min-h-[340px] 2xl:min-h-[360px]">
+      <ManagementCard2
+        {...managementTeam2.find((m) => m.position === 4)}
+        textColor="text-[#01385F]"
+      />
+    </div>
+    <div className="w-full max-w-[220px] lg:max-w-[240px] xl:max-w-[260px] 2xl:max-w-[280px] 3xl:max-w-[300px] min-h-[320px] lg:min-h-[340px] xl:min-h-[360px] 2xl:min-h-[380px]">
+      <ManagementCard2
+        {...managementTeam2.find((m) => m.position === 5)}
+        textColor="text-[#01385F]"
+      />
+    </div>
+    <div className="w-full max-w-[200px] lg:max-w-[220px] xl:max-w-[240px] 2xl:max-w-[260px] 3xl:max-w-[280px] min-h-[300px] lg:min-h-[320px] xl:min-h-[340px] 2xl:min-h-[360px]">
+      <ManagementCard2
+        {...managementTeam2.find((m) => m.position === 6)}
+        textColor="text-[#01385F]"
+      />
+    </div>
+  </div>
+</div>
         {/* Mobile Layout */}
         <div className="grid grid-cols-2 gap-2 md:hidden justify-items-center">
           {/* กลางบน: ปลัดเทศบาล (position 1) */}
