@@ -190,12 +190,6 @@ export default function AnnouncementSections() {
               <h2 className="text-[#01385F] text-2xl sm:text-3xl font-bold">
                 ข่าวประชาสัมพันธ์
               </h2>
-              <button
-                type="button"
-                className="bg-[#01385F] text-white rounded-lg px-5 py-2 text-sm shadow-md hover:bg-[#012F4A] transition-colors duration-200 whitespace-nowrap"
-              >
-                เพิ่มเติม
-              </button>
             </div>
 
             {/* Announcement Slider Area */}
@@ -272,7 +266,7 @@ export default function AnnouncementSections() {
             </div>
 
             {/* Pagination Dots */}
-            <div className="flex justify-center gap-3 mt-6">
+            <div className="flex justify-center gap-3 mt-6 mb-6">
               <button
                 type="button"
                 disabled
@@ -292,7 +286,14 @@ export default function AnnouncementSections() {
                 aria-label="Announcement 3"
               />
             </div>
+            <button
+            type="button"
+            className=" bg-[#01385F] text-white rounded-lg px-5 py-2 text-sm shadow-md hover:bg-[#012F4A] transition-colors duration-200 whitespace-nowrap"
+          >
+            เพิ่มเติม
+          </button>
           </div>
+
         </div>
       </>
     );
@@ -331,15 +332,7 @@ export default function AnnouncementSections() {
 
       {/* Content */}
       <div className="relative z-10 w-full max-w-4xl mx-auto flex flex-col items-center px-2 sm:px-4 md:px-6 lg:px-8">
-        {/* Header Section */}
-        <div className="flex w-full max-w-2xl justify-between items-center mb-6 mt-8">
-          <div className="text-[#01385F] text-xl sm:text-2xl lg:text-3xl font-bold w-full text-left"></div>
-          <Link href="/announcement">
-            <button className="bg-[#01385f] text-white rounded-[12.5px] px-4 py-2 text-sm shadow-md hover:bg-[#01385f]/90 transition-colors duration-200 whitespace-nowrap ml-4">
-              เพิ่มเติม
-            </button>
-          </Link>
-        </div>
+
 
         {/* Image Slider with prev/next buttons outside */}
         <div
