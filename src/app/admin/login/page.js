@@ -13,7 +13,12 @@ import {
   Space,
   Divider,
 } from "antd";
-import { UserOutlined, LockOutlined, LoginOutlined } from "@ant-design/icons";
+import {
+  UserOutlined,
+  LockOutlined,
+  LoginOutlined,
+  GoogleCircleFilled,
+} from "@ant-design/icons";
 
 const { Title, Text } = Typography;
 
@@ -25,24 +30,33 @@ export default function AdminLogin() {
 
   const handleSubmit = async (values) => {
     setLoading(true);
-
     try {
       const result = await signIn("credentials", {
         email: values.email,
         password: values.password,
         redirect: false,
       });
-
       if (result?.error) {
         message.error("อีเมลหรือรหัสผ่านไม่ถูกต้อง");
       } else {
         message.success("เข้าสู่ระบบสำเร็จ");
-        // ดึง session เพื่อเช็ค users.level
         const session = await getSession();
-        if (session?.user?.level === 0 || session?.user?.level === "0") {
+        console.log("session :>> ", session);
+        console.log("session.user.level :>> ", session?.user?.level, typeof session?.user?.level);
+        const userLevel = session?.user?.level;
+        console.log("userLevel (raw): ", userLevel, typeof userLevel);
+        
+        // Handle both string and number levels
+        const levelStr = userLevel?.toString();
+        
+        if (levelStr === "1") {
+          router.push("/admin");
+        } else if (levelStr === "0") {
           router.push("/e-service/tracking");
         } else {
-          router.push("/admin");
+          // fallback: ไม่อนุญาต
+          message.error("บัญชีนี้ไม่มีสิทธิ์เข้าถึง");
+          router.push("/e-service/tracking");
         }
       }
     } catch (error) {
@@ -130,6 +144,33 @@ export default function AdminLogin() {
             </Form.Item>
           </Form>
 
+          <Divider plain>หรือ</Divider>
+          <Button
+            type="default"
+            block
+            size="large"
+            icon={<GoogleCircleFilled />}
+            onClick={async () => {
+              const result = await signIn("google", { redirect: false });
+              if (result?.ok) {
+                const session = await getSession();
+                const userLevel = session?.user?.level?.toString();
+                
+                if (userLevel === "1") {
+                  router.push("/admin");
+                } else if (userLevel === "0") {
+                  router.push("/e-service/tracking");
+                } else {
+                  message.error("บัญชีนี้ไม่มีสิทธิ์เข้าถึง");
+                  router.push("/e-service/tracking");
+                }
+              }
+            }}
+            style={{ fontWeight: 500 }}
+          >
+            Sign in with Google
+          </Button>
+
           <div style={{ textAlign: "center" }}>
             <Text type="secondary" style={{ fontSize: "12px" }}>
               สำหรับเจ้าหน้าที่เท่านั้น
@@ -139,4 +180,5 @@ export default function AdminLogin() {
       </Card>
     </div>
   );
+  // ...existing code...
 }
