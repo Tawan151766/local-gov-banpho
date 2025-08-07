@@ -37,14 +37,6 @@ export default function EServicePage() {
       color: "from-orange-500 to-orange-600",
       link: "/e-service/waste-collection",
     },
-    {
-      id: 5,
-      title: "ติดตามคำร้องขอรับบริการ",
-      description: "ติดตามสถาระการยื่นคำร้องขอรับบริการ",
-      icon: <Search style={{ fontSize: 40 }} />,
-      color: "from-blue-500 to-blue-600",
-      link: "/e-service/tracking",
-    },
   ];
 
   return (
@@ -90,7 +82,29 @@ export default function EServicePage() {
           <h2 className="text-2xl font-bold text-[#01385f] text-center mb-8">
             เลือกบริการที่ต้องการ
           </h2>
-
+          <div className="grid grid-cols-1 mb-6 gap-6">
+            <Link
+              href="/e-service/tracking"
+              className={`block p-6 rounded-xl shadow-md cursor-pointer transform hover:scale-105 transition-all duration-200 bg-gradient-to-br from-yellow-400 to-yellow-500 text-white`}
+            >
+              <div className="text-center">
+                <div className="mb-4 flex justify-center">
+                  <Search style={{ fontSize: 48 }} />
+                </div>
+                <h3 className="text-lg font-semibold mb-3">
+                  ติดตามคำร้องขอรับบริการ
+                </h3>
+                <p className="text-sm opacity-90 leading-relaxed">
+                  ติดตามสถานะการยื่นคำร้องขอรับบริการ
+                </p>
+                <div className="mt-4">
+                  <span className="inline-block bg-white bg-opacity-20 px-4 py-2 rounded-full text-sm font-medium">
+                    คลิกเพื่อยื่นคำร้อง →
+                  </span>
+                </div>
+              </div>
+            </Link>
+          </div>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
             {services.map((service) => (
               <Link

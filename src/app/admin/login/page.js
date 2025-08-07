@@ -42,13 +42,17 @@ export default function AdminLogin() {
         message.success("เข้าสู่ระบบสำเร็จ");
         const session = await getSession();
         console.log("session :>> ", session);
-        console.log("session.user.level :>> ", session?.user?.level, typeof session?.user?.level);
+        console.log(
+          "session.user.level :>> ",
+          session?.user?.level,
+          typeof session?.user?.level
+        );
         const userLevel = session?.user?.level;
         console.log("userLevel (raw): ", userLevel, typeof userLevel);
-        
+
         // Handle both string and number levels
         const levelStr = userLevel?.toString();
-        
+
         if (levelStr === "1") {
           router.push("/admin");
         } else if (levelStr === "0") {
@@ -89,7 +93,7 @@ export default function AdminLogin() {
           <div style={{ textAlign: "center" }}>
             <Title level={2} style={{ color: "#1890ff", marginBottom: "8px" }}>
               <LoginOutlined style={{ marginRight: "8px" }} />
-              Admin Panel
+              เข้าสู่ระบบ
             </Title>
             <Text type="secondary">องค์การบริหารส่วนตำบลบ้านโพธิ์</Text>
           </div>
@@ -155,7 +159,7 @@ export default function AdminLogin() {
               if (result?.ok) {
                 const session = await getSession();
                 const userLevel = session?.user?.level?.toString();
-                
+
                 if (userLevel === "1") {
                   router.push("/admin");
                 } else if (userLevel === "0") {
@@ -173,7 +177,7 @@ export default function AdminLogin() {
 
           <div style={{ textAlign: "center" }}>
             <Text type="secondary" style={{ fontSize: "12px" }}>
-              สำหรับเจ้าหน้าที่เท่านั้น
+              * หากคุณยังไม่มีบัญชีผู้ใช้ กรุณา เข้าสู่ระบบด้วย Google
             </Text>
           </div>
         </Space>
