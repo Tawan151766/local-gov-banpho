@@ -299,17 +299,21 @@ export default function AnnouncementSections() {
   }
   return (
     <div
-      className="mb-15 relative w-screen h-screen shadow-[0_18.4px_18.4px_rgba(0,0,0,0.49)] overflow-hidden"
-      style={{
-        backgroundImage: `linear-gradient(180deg, rgba(239, 228, 212, 0.6) 0%, rgba(1, 189, 204, 0.6) 100%),
-        url("image/vision_bg.png")`,
-        backgroundSize: "cover",
-        backgroundPosition: "center",
-        backgroundRepeat: "no-repeat",
-      }}
-    >
-      {/* Fallback Background - เผื่อภาพไม่โหลด */}
-      <div className="absolute top-0 left-0 w-full h-full bg-gradient-to-b from-[#A8F9FF] to-[#E8DDC4] -z-10" />
+    className="relative w-screen min-h-screen h-full overflow-hidden bg-cover bg-center"
+    style={{
+      backgroundImage: `
+linear-gradient(
+  to bottom,
+  rgba(239, 228, 212, 0.6),
+  rgba(1, 189, 204, 0.6),
+  rgba(1, 189, 204, 0.6)
+),
+url("image/vision_bg.png")
+`,
+    }}
+  >
+    {/* Fallback Gradient Background */}
+    <div className="absolute inset-0 bg-gradient-to-b from-[#A8F9FF] to-[#E8DDC4] -z-10" />
 
       {/* Decorative Header ### NEW */}
       <div className="relative w-full">
