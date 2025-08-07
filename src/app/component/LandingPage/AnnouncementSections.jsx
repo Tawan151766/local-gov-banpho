@@ -312,26 +312,26 @@ export default function AnnouncementSections() {
       <div className="absolute top-0 left-0 w-full h-full bg-gradient-to-b from-[#A8F9FF] to-[#E8DDC4] -z-10" />
 
       {/* Decorative Header ### NEW */}
-          <div className="relative w-full">
-            {/* ภาพเป็น background */}
-            <img
-              src="/image/headerAnnouncement.png"
-              alt="header announcement"
-              className="w-full object-cover min-h-[150px]" // ปรับความสูงตามต้องการ
-            />
+      <div className="relative w-full">
+        {/* ภาพเป็น background */}
+        <img
+          src="/image/headerAnnouncement.png"
+          alt="header announcement"
+          className="w-full object-cover min-h-[150px]" // ปรับความสูงตามต้องการ
+        />
 
-            {/* ตัวหนังสือทับบนภาพ อยู่กลางทั้งแนวตั้งและนอน */}
-            <div className="absolute inset-0 flex flex-col justify-center items-center text-center">
-              <h1 className="text-[#01385F] text-2xl font-bold">ป้ายประกาศ</h1>
-              <p className="text-[#01385F] text-xs sm:text-base">
-                เทศบาลตำบลบ้านโพธิ์
-              </p>
-            </div>
-          </div>
+        {/* ตัวหนังสือทับบนภาพ อยู่กลางทั้งแนวตั้งและนอน */}
+        <div className="absolute inset-0 flex flex-col justify-center items-center text-center">
+          <h1 className="text-[#01385F] text-2xl font-bold">ป้ายประกาศ</h1>
+          <p className="text-[#01385F] text-xs sm:text-base">
+            เทศบาลตำบลบ้านโพธิ์
+          </p>
+        </div>
+      </div>
 
       {/* Content */}
       <div className="relative z-10 w-full max-w-4xl mx-auto flex flex-col items-center px-2 sm:px-4 md:px-6 lg:px-8">
-      {/* ##################fix_part#################### ย้ายปุ่มเพิ่มเติม */}
+        {/* ##################fix_part#################### ย้ายปุ่มเพิ่มเติม */}
 
         {/* Image Slider with prev/next buttons outside */}
         <div
@@ -533,17 +533,16 @@ export default function AnnouncementSections() {
             <div className="text-[#01385F]/60 text-xs">
               {current + 1} / {announcements.length}
             </div>
-
-            {/* #######################################################  ปุ่มเพิ่มเติม  ใหม่ ###########################################################*/}
-            <div className="flex w-full max-w-2xl justify-center mb-6 mt-8">
-              <Link href="/posts">
-                <button className="bg-[#01385f] text-white rounded-[12.5px] px-4 py-2 text-sm shadow-md hover:bg-[#01385f]/90 transition-colors duration-200 whitespace-nowrap">
-                  เพิ่มเติม
-                </button>
-              </Link>
-            </div>
           </div>
         )}
+        {/* #######################################################  ปุ่มเพิ่มเติม  ใหม่ ###########################################################*/}
+        <div className="flex w-full max-w-2xl justify-center mb-6 mt-8">
+          <Link href="/posts">
+            <button className="bg-[#01385f] text-white rounded-[12.5px] px-4 py-2 text-sm shadow-md hover:bg-[#01385f]/90 transition-colors duration-200 whitespace-nowrap">
+              เพิ่มเติม
+            </button>
+          </Link>
+        </div>
       </div>
 
       {/* Detail Modal */}
