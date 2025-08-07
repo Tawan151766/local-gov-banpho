@@ -257,7 +257,7 @@ export default function InsideBander() {
                   แสดงความคิดเห็น
                 </div>
                 <div className="text-[#394D1C] text-[20px] mb-6">
-                  อยากให้อบต.บ้านโพธิ์เร่งแก้ปัญหาเรื่องใด
+                  อยากให้ทต.บ้านโพธิ์เร่งแก้ปัญหาเรื่องใด
                 </div>
               </div>
 
