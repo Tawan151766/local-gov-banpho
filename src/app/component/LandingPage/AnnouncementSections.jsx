@@ -166,22 +166,21 @@ export default function AnnouncementSections() {
           <div className="absolute inset-0 bg-gradient-to-b from-[#A8F9FF] to-[#E8DDC4] -z-10" />
 
           {/* Header */}
-          <div className="relative w-full flex flex-col items-center">
-            <img
-              src="/image/headerAnnouncement.png"
-              alt="header announcement"
-              className="w-full object-cover"
-              style={{ minHeight: "60px" }}
-            />
-            <div className="absolute top-0 left-1/2 -translate-x-1/2 w-full max-w-3xl flex flex-col items-center pt-2">
-              <h1 className="text-[#01385F] text-lg sm:text-2xl font-bold text-center">
-                ป้ายประกาศ
-              </h1>
-              <p className="text-[#01385F] text-xs sm:text-base text-center">
-                เทศบาลตำบลบ้านโพธิ์
-              </p>
-            </div>
-          </div>
+          <div className="relative w-full">
+  {/* ภาพเป็น background */}
+  <img
+    src="/image/headerAnnouncement.png"
+    alt="header announcement"
+    className="w-full object-cover min-h-[150px]" // ปรับความสูงตามต้องการ
+  />
+
+  {/* ตัวหนังสือทับบนภาพ อยู่กลางทั้งแนวตั้งและนอน */}
+  <div className="absolute inset-0 flex flex-col justify-center items-center text-center">
+    <h1 className="text-[#013 85F] text-2xl font-bold">ป้ายประกาศ</h1>
+    <p className="text-[#01385F] text-xs sm:text-base">เทศบาลตำบลบ้านโพธิ์</p>
+  </div>
+</div>
+
 
           {/* Content Section */}
           <div className="relative z-10 w-full max-w-5xl mx-auto flex flex-col items-center px-4 sm:px-8 md:px-12 lg:px-16 mt-8">
