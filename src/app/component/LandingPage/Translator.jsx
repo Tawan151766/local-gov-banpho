@@ -20,7 +20,7 @@ export default function Translator() {
     function initGoogleTranslate() {
       new window.google.translate.TranslateElement({
         pageLanguage: 'th',
-        includedLanguages: 'th,en,zh-CN',
+        includedLanguages: 'th,en,zh-CN,km,vi,lo',
         layout: window.google.translate.TranslateElement.InlineLayout.SIMPLE,
         autoDisplay: false,
       }, 'google_translate_element')
@@ -62,11 +62,11 @@ export default function Translator() {
     }
   }, [])
 
+  // ซ่อน widget จริง (ใช้ควบคุมผ่าน select Navbar เท่านั้น)
   return (
     <div
       id="google_translate_element"
-      className="w-40 h-10"
-      style={{ visibility: "visible" }}
+      style={{ display: "none" }}
     />
   )
 }
