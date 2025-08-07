@@ -166,22 +166,21 @@ export default function AnnouncementSections() {
           <div className="absolute inset-0 bg-gradient-to-b from-[#A8F9FF] to-[#E8DDC4] -z-10" />
 
           {/* Header */}
-          <div className="relative w-full flex flex-col items-center">
-            <img
-              src="/image/headerAnnouncement.png"
-              alt="header announcement"
-              className="w-full object-cover"
-              style={{ minHeight: "60px" }}
-            />
-            <div className="absolute top-0 left-1/2 -translate-x-1/2 w-full max-w-3xl flex flex-col items-center pt-2">
-              <h1 className="text-[#01385F] text-lg sm:text-2xl font-bold text-center">
-                ป้ายประกาศ
-              </h1>
-              <p className="text-[#01385F] text-xs sm:text-base text-center">
-                เทศบาลตำบลบ้านโพธิ์
-              </p>
-            </div>
-          </div>
+          <div className="relative w-full">
+  {/* ภาพเป็น background */}
+  <img
+    src="/image/headerAnnouncement.png"
+    alt="header announcement"
+    className="w-full object-cover min-h-[150px]" // ปรับความสูงตามต้องการ
+  />
+
+  {/* ตัวหนังสือทับบนภาพ อยู่กลางทั้งแนวตั้งและนอน */}
+  <div className="absolute inset-0 flex flex-col justify-center items-center text-center">
+    <h1 className="text-[#013 85F] text-2xl font-bold">ป้ายประกาศ</h1>
+    <p className="text-[#01385F] text-xs sm:text-base">เทศบาลตำบลบ้านโพธิ์</p>
+  </div>
+</div>
+
 
           {/* Content Section */}
           <div className="relative z-10 w-full max-w-5xl mx-auto flex flex-col items-center px-4 sm:px-8 md:px-12 lg:px-16 mt-8">
@@ -190,6 +189,12 @@ export default function AnnouncementSections() {
               <h2 className="text-[#01385F] text-2xl sm:text-3xl font-bold">
                 ข่าวประชาสัมพันธ์
               </h2>
+              <button
+                type="button"
+                className="bg-[#01385F] text-white rounded-lg px-5 py-2 text-sm shadow-md hover:bg-[#012F4A] transition-colors duration-200 whitespace-nowrap"
+              >
+                เพิ่มเติม
+              </button>
             </div>
 
             {/* Announcement Slider Area */}
@@ -266,7 +271,7 @@ export default function AnnouncementSections() {
             </div>
 
             {/* Pagination Dots */}
-            <div className="flex justify-center gap-3 mt-6 mb-6">
+            <div className="flex justify-center gap-3 mt-6">
               <button
                 type="button"
                 disabled
@@ -286,14 +291,7 @@ export default function AnnouncementSections() {
                 aria-label="Announcement 3"
               />
             </div>
-            <button
-            type="button"
-            className=" bg-[#01385F] text-white rounded-lg px-5 py-2 text-sm shadow-md hover:bg-[#012F4A] transition-colors duration-200 whitespace-nowrap"
-          >
-            เพิ่มเติม
-          </button>
           </div>
-
         </div>
       </>
     );
@@ -332,7 +330,15 @@ export default function AnnouncementSections() {
 
       {/* Content */}
       <div className="relative z-10 w-full max-w-4xl mx-auto flex flex-col items-center px-2 sm:px-4 md:px-6 lg:px-8">
-
+        {/* Header Section */}
+        <div className="flex w-full max-w-2xl justify-between items-center mb-6 mt-8">
+          <div className="text-[#01385F] text-xl sm:text-2xl lg:text-3xl font-bold w-full text-left"></div>
+          <Link href="/announcement">
+            <button className="bg-[#01385f] text-white rounded-[12.5px] px-4 py-2 text-sm shadow-md hover:bg-[#01385f]/90 transition-colors duration-200 whitespace-nowrap ml-4">
+              เพิ่มเติม
+            </button>
+          </Link>
+        </div>
 
         {/* Image Slider with prev/next buttons outside */}
         <div
