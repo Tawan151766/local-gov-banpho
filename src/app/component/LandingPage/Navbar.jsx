@@ -606,12 +606,12 @@ export default function Navbar() {
             dropdownKey="local-dev-plan"
             width="w-64"
           />
-          <a
-            href="/laws-regulations"
-            className="text-white text-base font-medium hover:underline hover:text-[#01385F] hover:text-[20px] hover:text-bold transition-all duration-300"
-          >
-            กฎหมายและระเบียบ
-          </a>
+          <MenuItem
+            title="กฎหมายและระเบียบ"
+            items={[{ href: "/laws-regulations", label: "กฎหมายและระเบียบ" }]}
+            dropdownKey="laws-regulations"
+            width="w-64"
+          />
 
           <MenuItem
             title="เมนูสำหรับประชาชน"
