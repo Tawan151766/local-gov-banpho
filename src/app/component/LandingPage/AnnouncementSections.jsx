@@ -541,7 +541,7 @@ url("image/vision_bg.png")
         )}
         {/* #######################################################  ปุ่มเพิ่มเติม  ใหม่ ###########################################################*/}
         <div className="flex w-full max-w-2xl justify-center mb-6 mt-8">
-          <Link href="/posts">
+          <Link href="/announcement">
             <button className="bg-[#01385f] text-white rounded-[12.5px] px-4 py-2 text-sm shadow-md hover:bg-[#01385f]/90 transition-colors duration-200 whitespace-nowrap">
               เพิ่มเติม
             </button>
