@@ -201,32 +201,32 @@ export default function Navbar() {
       // ปรับแต่ง UI Google Translate
       setTimeout(() => {
         // ซ่อนโลโก้ Google
-        const logo = document.querySelector('.goog-logo-link');
-        if (logo) logo.style.display = 'none';
-        const powered = document.querySelector('.goog-te-gadget span');
-        if (powered) powered.style.display = 'none';
+        const logo = document.querySelector(".goog-logo-link");
+        if (logo) logo.style.display = "none";
+        const powered = document.querySelector(".goog-te-gadget span");
+        if (powered) powered.style.display = "none";
         // ปรับ dropdown
-        const combo = document.querySelector('.goog-te-combo');
+        const combo = document.querySelector(".goog-te-combo");
         if (combo) {
-          combo.style.background = '#fff';
-          combo.style.color = '#1E1E1E';
-          combo.style.fontWeight = '500';
-          combo.style.fontSize = '14px';
-          combo.style.border = '1px solid #e0e0e0';
-          combo.style.borderRadius = '15px';
-          combo.style.padding = '4px 16px';
-          combo.style.height = '30px';
-          combo.style.boxShadow = '0 1px 4px 0 #0001';
-          combo.style.margin = '0';
-          combo.style.minWidth = '120px';
+          combo.style.background = "#fff";
+          combo.style.color = "#1E1E1E";
+          combo.style.fontWeight = "500";
+          combo.style.fontSize = "14px";
+          combo.style.border = "1px solid #e0e0e0";
+          combo.style.borderRadius = "15px";
+          combo.style.padding = "4px 16px";
+          combo.style.height = "30px";
+          combo.style.boxShadow = "0 1px 4px 0 #0001";
+          combo.style.margin = "0";
+          combo.style.minWidth = "120px";
         }
         // ปรับ container
-        const gadget = document.querySelector('#google_translate_element');
+        const gadget = document.querySelector("#google_translate_element");
         if (gadget) {
-          gadget.style.display = 'flex';
-          gadget.style.alignItems = 'center';
-          gadget.style.background = 'transparent';
-          gadget.style.padding = '0';
+          gadget.style.display = "flex";
+          gadget.style.alignItems = "center";
+          gadget.style.background = "transparent";
+          gadget.style.padding = "0";
         }
       }, 500);
     };
@@ -409,13 +409,13 @@ export default function Navbar() {
               เข้าสู่ระบบ
             </a>
             <a
-              href="#"
+              href="/admin"
               className="bg-white text-[15px] text-[#1cb5e0] px-4 py-1 rounded-md shadow hover:scale-105 transition text-center font-medium"
             >
               สมัครสมาชิก
             </a>
             <a
-              href="#"
+              href="/contact"
               className="bg-white text-[15px] text-[#1cb5e0] px-4 py-1 rounded-md shadow hover:scale-105 transition text-center font-medium"
             >
               ติดต่อเรา
@@ -521,14 +521,14 @@ export default function Navbar() {
                   เข้าสู่ระบบ
                 </a>
                 <a
-                  href="#"
+                  href="/admin"
                   className="block bg-white text-[#1cb5e0] text-center text-base px-4 py-3 rounded-md shadow hover:scale-105 transition font-medium"
                   onClick={() => setShowMenu(false)}
                 >
                   สมัครสมาชิก
                 </a>
                 <a
-                  href="#"
+                  href="/contact"
                   className="block bg-white text-[#1cb5e0] text-center text-base px-4 py-3 rounded-md shadow hover:scale-105 transition font-medium"
                   onClick={() => setShowMenu(false)}
                 >
