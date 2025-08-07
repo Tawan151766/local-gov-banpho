@@ -1,5 +1,7 @@
 "use client";
-import { useState } from "react";
+import { useState, useEffect } from "react";
+import { useSession } from "next-auth/react";
+import { useRouter } from "next/navigation";
 import Link from "next/link";
 import {
   SearchOutlined,
@@ -21,6 +23,19 @@ export default function TrackingPage() {
   const [errors, setErrors] = useState({});
   const [selectedRequest, setSelectedRequest] = useState(null);
   const [showDetailModal, setShowDetailModal] = useState(false);
+  const { data: session, status } = useSession();
+  const router = useRouter();
+
+  useEffect(() => {
+    if (status === "loading") return;
+    if (!session) {
+      router.push("/admin/login");
+    }
+  }, [session, status, router]);
+
+  if (status === "loading" || !session) {
+    return null;
+  }
 
   // Function to search requests by ID card
   const searchByIdCard = async () => {
@@ -294,7 +309,7 @@ export default function TrackingPage() {
                 <input
                   type="text"
                   placeholder="กรอกเลขบัตรประชาชน 13 หลัก"
-                  className={`w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-[#01bdcc] focus:border-transparent outline-none ${
+                  className={`text-gray-700 w-full px-4 py-3 border rounded-lg focus:ring-2 focus:ring-[#01bdcc] focus:border-transparent outline-none ${
                     errors.idCard ? "border-red-500" : "border-gray-300"
                   }`}
                   value={idCardSearch}
