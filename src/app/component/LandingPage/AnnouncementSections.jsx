@@ -311,23 +311,23 @@ export default function AnnouncementSections() {
       {/* Fallback Background - เผื่อภาพไม่โหลด */}
       <div className="absolute top-0 left-0 w-full h-full bg-gradient-to-b from-[#A8F9FF] to-[#E8DDC4] -z-10" />
 
-      {/* Decorative Header */}
-      <div className="relative w-full flex flex-col items-center">
-        <img
-          src="/image/headerAnnouncement.png"
-          alt="header announcement"
-          className="w-full  object-cover"
-          style={{ minHeight: "60px" }}
-        />
-        <div className="absolute top-0 left-1/2 -translate-x-1/2 w-full max-w-3xl flex flex-col items-center pt-2">
-          <div className="text-[#01385F] text-lg sm:text-2xl font-bold text-center">
-            ป้ายประกาศ
+      {/* Decorative Header ### NEW */}
+          <div className="relative w-full">
+            {/* ภาพเป็น background */}
+            <img
+              src="/image/headerAnnouncement.png"
+              alt="header announcement"
+              className="w-full object-cover min-h-[150px]" // ปรับความสูงตามต้องการ
+            />
+
+            {/* ตัวหนังสือทับบนภาพ อยู่กลางทั้งแนวตั้งและนอน */}
+            <div className="absolute inset-0 flex flex-col justify-center items-center text-center">
+              <h1 className="text-[#01385F] text-2xl font-bold">ป้ายประกาศ</h1>
+              <p className="text-[#01385F] text-xs sm:text-base">
+                เทศบาลตำบลบ้านโพธิ์
+              </p>
+            </div>
           </div>
-          <div className="text-[#01385F] text-xs sm:text-base text-center">
-            เทศบาลตำบลบ้านโพธิ์
-          </div>
-        </div>
-      </div>
 
       {/* Content */}
       <div className="relative z-10 w-full max-w-4xl mx-auto flex flex-col items-center px-2 sm:px-4 md:px-6 lg:px-8">
