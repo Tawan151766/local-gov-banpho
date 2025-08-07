@@ -127,10 +127,14 @@ export default function Navbar() {
   const languages = [
     { value: "th", label: "🇹🇭 ไทย" },
     { value: "en", label: "🇬🇧 English" },
-    { value: "kh", label: "🇰🇭 ខ្មែរ" },
-    { value: "vn", label: "🇻🇳 Tiếng Việt" },
-    { value: "cn", label: "🇨🇳 中文" },
-    { value: "la", label: "🇱🇦 ລາວ" },
+    { value: "vi", label: "�� Tiếng Việt" },
+    { value: "ms", label: "🇲🇾 Malay" },
+    { value: "id", label: "🇮🇩 Indonesia" },
+    { value: "my", label: "🇲� မြန်မာ" },
+    { value: "lo", label: "🇱🇦 ລາວ" },
+    { value: "tl", label: "🇵� Filipino" },
+    { value: "zh-CN", label: "🇨🇳 中文" },
+    { value: "ja", label: "�� 日本語" },
   ];
 
   // Component สำหรับ Dropdown
@@ -175,7 +179,58 @@ export default function Navbar() {
       </div>
     </div>
   );
-
+  // Google Translate Loader
+  useEffect(() => {
+    if (typeof window === "undefined") return;
+    if (document.getElementById("google-translate-script")) return;
+    const script = document.createElement("script");
+    script.id = "google-translate-script";
+    script.src =
+      "//translate.google.com/translate_a/element.js?cb=googleTranslateElementInit";
+    document.body.appendChild(script);
+    window.googleTranslateElementInit = function () {
+      new window.google.translate.TranslateElement(
+        {
+          pageLanguage: "th",
+          includedLanguages: "th,en,vi,ms,id,my,lo,tl,zh-CN,ja",
+          layout: window.google.translate.TranslateElement.InlineLayout.SIMPLE,
+          autoDisplay: false,
+        },
+        "google_translate_element"
+      );
+      // ปรับแต่ง UI Google Translate
+      setTimeout(() => {
+        // ซ่อนโลโก้ Google
+        const logo = document.querySelector('.goog-logo-link');
+        if (logo) logo.style.display = 'none';
+        const powered = document.querySelector('.goog-te-gadget span');
+        if (powered) powered.style.display = 'none';
+        // ปรับ dropdown
+        const combo = document.querySelector('.goog-te-combo');
+        if (combo) {
+          combo.style.background = '#fff';
+          combo.style.color = '#1E1E1E';
+          combo.style.fontWeight = '500';
+          combo.style.fontSize = '14px';
+          combo.style.border = '1px solid #e0e0e0';
+          combo.style.borderRadius = '15px';
+          combo.style.padding = '4px 16px';
+          combo.style.height = '30px';
+          combo.style.boxShadow = '0 1px 4px 0 #0001';
+          combo.style.margin = '0';
+          combo.style.minWidth = '120px';
+        }
+        // ปรับ container
+        const gadget = document.querySelector('#google_translate_element');
+        if (gadget) {
+          gadget.style.display = 'flex';
+          gadget.style.alignItems = 'center';
+          gadget.style.background = 'transparent';
+          gadget.style.padding = '0';
+        }
+      }, 500);
+    };
+  }, []);
   // Component  Desktop Menu Item
   const MenuItem = ({ title, items, dropdownKey, width = "w-80" }) => (
     <div className="group relative">
@@ -317,7 +372,7 @@ export default function Navbar() {
                 เทศบาลตำบลบ้านโพธิ์
               </span>
               <span className="text-white text-xs md:text-sm opacity-80">
-                Ban Pho Subdistrict Chachoengsao
+                Ban Pho Subdistrict Municipality
               </span>
             </div>
           </a>
@@ -326,24 +381,13 @@ export default function Navbar() {
           <div className="hidden md:flex flex-row items-center gap-4 mt-0">
             {/* Language Selector */}
 
-            <select className="bg-white px-3 text-[#1E1E1E] text-sm font-medium shadow w-auto h-[30px] rounded-[15px] focus:outline-none">
-              {languages.map((lang) => (
-                <option key={lang.value} value={lang.value}>
-                  {lang.label}
-                </option>
-              ))}
-            </select>
+            {/* Google Translate UI (ใช้ของ Google แทน select เดิม) */}
+            <div
+              id="google_translate_element"
+              className="bg-white px-3 text-[#1E1E1E] text-sm font-medium shadow w-auto h-[30px] rounded-[15px] focus:outline-none w-[120px]"
+            ></div>
 
             {/* <Translator /> */}
-
-            {/* Blind Icon */}
-            <div className="bg-white rounded-sm p-2 cursor-pointer shadow hover:shadow-md transition-shadow">
-              <img
-                src="/image/blind.png"
-                alt="blind"
-                className="w-5 h-5 cursor-pointer"
-              />
-            </div>
 
             {/* Search Box */}
             <div className="flex items-center bg-white px-3 shadow w-auto h-[30px] rounded-[15px]">

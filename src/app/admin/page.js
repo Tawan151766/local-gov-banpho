@@ -77,6 +77,12 @@ export default function AdminPage() {
     if (status === "loading") return; // Still loading
     if (!session) {
       router.push("/admin/login");
+      return;
+    }
+    // Block access if not user.level === "1"
+    if (!session.user?.level || session.user.level !== "1") {
+      // Logout and redirect to tracking
+      signOut({ callbackUrl: "/e-service/tracking" });
     }
   }, [session, status, router]);
 
