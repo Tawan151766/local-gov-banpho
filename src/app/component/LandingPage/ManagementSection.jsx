@@ -37,11 +37,13 @@ const ManagementCard = ({
           style={{ transform: "scaleX(-1)" }}
         />
         <div
-          className="absolute left-0 right-0 bottom-0 pointer-events-none"
+          className="absolute left-2 right-2 bottom-[-10px] pointer-events-none "
           style={{
             height: "40%",
             background:
-              "linear-gradient(180deg, rgba(222, 230, 226, 0) 0%, #DEE6E2 90.34%)",
+              "linear-gradient(180deg, transparent 0%, rgba(222, 230, 226, 0.9) 100%)",
+            borderRadius: "20px 20px 0 0",
+            filter: "blur(10px)",
           }}
         />
       </div>
@@ -108,49 +110,46 @@ const ManagementCard2 = ({
   const textSizeClasses = {
     1: "text-lg sm:text-xl",
     2: "text-medium sm:text-medium",
-    3: "text-sm sm:text-base", 
+    3: "text-sm sm:text-base",
     4: "text-sm sm:text-base",
     5: "text-sm sm:text-base",
     6: "text-sm sm:text-base",
   };
 
-  const imageSizeClass = 
-  position === 1 
-    ? "max-w-[180px] md:max-w-[360px] h-[260px] md:h-[500px]"
-  : position === 2
-    ? "max-w-[180px] md:max-w-[280px] h-[260px] md:h-[400px]"
-  : "max-w-[180px] md:max-w-[220px] h-[260px] md:h-[340px]";
+  const imageSizeClass =
+    position === 1
+      ? "max-w-[180px] md:max-w-[360px] h-[260px] md:h-[500px]"
+      : position === 2
+      ? "max-w-[180px] md:max-w-[280px] h-[260px] md:h-[400px]"
+      : "max-w-[180px] md:max-w-[220px] h-[260px] md:h-[340px]";
 
-const boxSizeClass =
-  position === 1
-    ? "max-w-[360px] rounded-[12px] sm:rounded-[20px] shadow-[0_6px_6px_0_rgba(0,0,0,0.25)]"
-  : position === 2
-    ? "max-w-[280px] sm:max-w-[260px] md:max-w-[280px] rounded-[11px] sm:rounded-[18px] shadow-[0_5px_5px_0_rgba(0,0,0,0.22)]"
-  : "max-w-[220px] sm:max-w-[210px] md:max-w-[220px] lg:max-w-[240px] rounded-[10px] sm:rounded-[17px] shadow-[0_5px_5px_0_rgba(0,0,0,0.2)]";
+  const boxSizeClass =
+    position === 1
+      ? "max-w-[360px] rounded-[12px] sm:rounded-[20px] shadow-[0_6px_6px_0_rgba(0,0,0,0.25)]"
+      : position === 2
+      ? "max-w-[280px] sm:max-w-[260px] md:max-w-[280px] rounded-[11px] sm:rounded-[18px] shadow-[0_5px_5px_0_rgba(0,0,0,0.22)]"
+      : "max-w-[220px] sm:max-w-[210px] md:max-w-[220px] lg:max-w-[240px] rounded-[10px] sm:rounded-[17px] shadow-[0_5px_5px_0_rgba(0,0,0,0.2)]";
 
-const boxHeightClass =
-  position === 1
-    ? "h-[75px] sm:h-[75px] md:h-[85px] lg:h-[90px]"
-  : position === 2
-    ? "h-[75px] sm:h-[75px] md:h-[82px] lg:h-[87px]"
-  : "h-[75px] sm:h-[75px] md:h-[80px] lg:h-[85px]";
+  const boxHeightClass =
+    position === 1
+      ? "h-[75px] sm:h-[75px] md:h-[85px] lg:h-[90px]"
+      : position === 2
+      ? "h-[75px] sm:h-[75px] md:h-[82px] lg:h-[87px]"
+      : "h-[75px] sm:h-[75px] md:h-[80px] lg:h-[85px]";
 
-const phoneHeightClass =
-  position === 1
-    ? "h-[36px] sm:h-[44px] md:h-[48px] rounded-b-[12px] sm:rounded-b-[20px]"
-  : position === 2
-    ? "h-[36px] sm:h-[42px] md:h-[46px] rounded-b-[11px] sm:rounded-b-[18px]"
-  : "h-[36px] sm:h-[40px] md:h-[44px] rounded-b-[10px] sm:rounded-b-[17px]";
+  const phoneHeightClass =
+    position === 1
+      ? "h-[36px] sm:h-[44px] md:h-[48px] rounded-b-[12px] sm:rounded-b-[20px]"
+      : position === 2
+      ? "h-[36px] sm:h-[42px] md:h-[46px] rounded-b-[11px] sm:rounded-b-[18px]"
+      : "h-[36px] sm:h-[40px] md:h-[44px] rounded-b-[10px] sm:rounded-b-[17px]";
 
-const phoneTextSizeClass =
-  position === 1
-    ? "text-sm sm:text-base md:text-lg"
-  : position === 2
-    ? "text-sm sm:text-base md:text-base"
-  : "text-sm sm:text-base md:text-lg";
-
-      
-
+  const phoneTextSizeClass =
+    position === 1
+      ? "text-sm sm:text-base md:text-lg"
+      : position === 2
+      ? "text-sm sm:text-base md:text-base"
+      : "text-sm sm:text-base md:text-lg";
 
   return (
     <div className="flex flex-col items-center space-y-4">
@@ -165,11 +164,13 @@ const phoneTextSizeClass =
           style={{ transform: "scaleX(-1)" }}
         />
         <div
-          className="absolute left-0 right-0 bottom-0 pointer-events-none"
+          className="absolute left-2 right-2 bottom-[-5px] pointer-events-none"
           style={{
             height: "40%",
             background:
-              "linear-gradient(180deg, rgba(222, 230, 226, 0) 0%, #DEE6E2 90.34%)",
+              "linear-gradient(180deg, transparent 0%, rgba(222, 230, 226, 0.9) 100%)",
+            borderRadius: "20px 20px 0 0",
+            filter: "blur(3px)",
           }}
         />
       </div>
@@ -443,47 +444,47 @@ export default function ManagementSection() {
           ผู้บริหารส่วนราชการ
         </h2>
 
-{/* Management Team 2 - Fluid Responsive Layout */}
-<div className="hidden md:block px-4 py-20">
-  <div className="grid grid-cols-3 xl:grid-cols-6 gap-4 lg:gap-6 xl:gap-8 2xl:gap-12 3xl:gap-16 justify-items-center items-end max-w-7xl 2xl:max-w-none mx-auto">
-    <div className="w-full max-w-[200px] lg:max-w-[220px] xl:max-w-[240px] 2xl:max-w-[260px] 3xl:max-w-[280px] min-h-[300px] lg:min-h-[320px] xl:min-h-[340px] 2xl:min-h-[360px]">
-      <ManagementCard2
-        {...managementTeam2.find((m) => m.position === 1)}
-        textColor="text-[#01385F]"
-      />
-    </div>
-    <div className="w-full max-w-[220px] lg:max-w-[240px] xl:max-w-[260px] 2xl:max-w-[280px] 3xl:max-w-[300px] min-h-[320px] lg:min-h-[340px] xl:min-h-[360px] 2xl:min-h-[380px]">
-      <ManagementCard2
-        {...managementTeam2.find((m) => m.position === 2)}
-        textColor="text-[#01385F]"
-      />
-    </div>
-    <div className="w-full max-w-[200px] lg:max-w-[220px] xl:max-w-[240px] 2xl:max-w-[260px] 3xl:max-w-[280px] min-h-[300px] lg:min-h-[320px] xl:min-h-[340px] 2xl:min-h-[360px]">
-      <ManagementCard2
-        {...managementTeam2.find((m) => m.position === 3)}
-        textColor="text-[#01385F]"
-      />
-    </div>
-    <div className="w-full max-w-[200px] lg:max-w-[220px] xl:max-w-[240px] 2xl:max-w-[260px] 3xl:max-w-[280px] min-h-[300px] lg:min-h-[320px] xl:min-h-[340px] 2xl:min-h-[360px]">
-      <ManagementCard2
-        {...managementTeam2.find((m) => m.position === 4)}
-        textColor="text-[#01385F]"
-      />
-    </div>
-    <div className="w-full max-w-[220px] lg:max-w-[240px] xl:max-w-[260px] 2xl:max-w-[280px] 3xl:max-w-[300px] min-h-[320px] lg:min-h-[340px] xl:min-h-[360px] 2xl:min-h-[380px]">
-      <ManagementCard2
-        {...managementTeam2.find((m) => m.position === 5)}
-        textColor="text-[#01385F]"
-      />
-    </div>
-    <div className="w-full max-w-[200px] lg:max-w-[220px] xl:max-w-[240px] 2xl:max-w-[260px] 3xl:max-w-[280px] min-h-[300px] lg:min-h-[320px] xl:min-h-[340px] 2xl:min-h-[360px]">
-      <ManagementCard2
-        {...managementTeam2.find((m) => m.position === 6)}
-        textColor="text-[#01385F]"
-      />
-    </div>
-  </div>
-</div>
+        {/* Management Team 2 - Fluid Responsive Layout */}
+        <div className="hidden md:block px-4 py-20">
+          <div className="grid grid-cols-3 xl:grid-cols-6 gap-4 lg:gap-6 xl:gap-8 2xl:gap-12 3xl:gap-16 justify-items-center items-end max-w-7xl 2xl:max-w-none mx-auto">
+            <div className="w-full max-w-[200px] lg:max-w-[220px] xl:max-w-[240px] 2xl:max-w-[260px] 3xl:max-w-[280px] min-h-[300px] lg:min-h-[320px] xl:min-h-[340px] 2xl:min-h-[360px]">
+              <ManagementCard2
+                {...managementTeam2.find((m) => m.position === 1)}
+                textColor="text-[#01385F]"
+              />
+            </div>
+            <div className="w-full max-w-[220px] lg:max-w-[240px] xl:max-w-[260px] 2xl:max-w-[280px] 3xl:max-w-[300px] min-h-[320px] lg:min-h-[340px] xl:min-h-[360px] 2xl:min-h-[380px]">
+              <ManagementCard2
+                {...managementTeam2.find((m) => m.position === 2)}
+                textColor="text-[#01385F]"
+              />
+            </div>
+            <div className="w-full max-w-[200px] lg:max-w-[220px] xl:max-w-[240px] 2xl:max-w-[260px] 3xl:max-w-[280px] min-h-[300px] lg:min-h-[320px] xl:min-h-[340px] 2xl:min-h-[360px]">
+              <ManagementCard2
+                {...managementTeam2.find((m) => m.position === 3)}
+                textColor="text-[#01385F]"
+              />
+            </div>
+            <div className="w-full max-w-[200px] lg:max-w-[220px] xl:max-w-[240px] 2xl:max-w-[260px] 3xl:max-w-[280px] min-h-[300px] lg:min-h-[320px] xl:min-h-[340px] 2xl:min-h-[360px]">
+              <ManagementCard2
+                {...managementTeam2.find((m) => m.position === 4)}
+                textColor="text-[#01385F]"
+              />
+            </div>
+            <div className="w-full max-w-[220px] lg:max-w-[240px] xl:max-w-[260px] 2xl:max-w-[280px] 3xl:max-w-[300px] min-h-[320px] lg:min-h-[340px] xl:min-h-[360px] 2xl:min-h-[380px]">
+              <ManagementCard2
+                {...managementTeam2.find((m) => m.position === 5)}
+                textColor="text-[#01385F]"
+              />
+            </div>
+            <div className="w-full max-w-[200px] lg:max-w-[220px] xl:max-w-[240px] 2xl:max-w-[260px] 3xl:max-w-[280px] min-h-[300px] lg:min-h-[320px] xl:min-h-[340px] 2xl:min-h-[360px]">
+              <ManagementCard2
+                {...managementTeam2.find((m) => m.position === 6)}
+                textColor="text-[#01385F]"
+              />
+            </div>
+          </div>
+        </div>
         {/* Mobile Layout */}
         <div className="grid grid-cols-2 gap-2 md:hidden justify-items-center">
           {/* กลางบน: ปลัดเทศบาล (position 1) */}
