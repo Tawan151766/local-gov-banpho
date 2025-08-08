@@ -24,7 +24,7 @@ export default function Footer() {
           <a href="/" className="hover:underline">
             หน้าแรก
           </a>
-          <a href="#" className="hover:underline">
+          <a href="/citizen/qa" className="hover:underline">
             กระดานกระทู้
           </a>
           <a href="/contact" className="hover:underline">
@@ -120,7 +120,7 @@ export default function Footer() {
             <div className="flex flex-col gap-3 text-white">
               <h3 className="text-[16px] font-semibold mb-2 text-center lg:text-left">เมนูด่วน</h3>
               <div className="flex flex-col gap-3">
-                <a href="#" className="flex items-center justify-center lg:justify-start gap-2 hover:underline">
+                <a href="http://webmail.banphocity.go.th/" className="flex items-center justify-center lg:justify-start gap-2 hover:underline">
                   <svg
                     width="23"
                     height="23"
@@ -139,7 +139,7 @@ export default function Footer() {
                   </svg>
                   <span className="text-[13px] lg:text-[14px]">ตรวจสอบ Email</span>
                 </a>
-                <a href="#" className="flex items-center justify-center lg:justify-start gap-2 hover:underline">
+                <a href="http://webmail.banphocity.go.th/" className="flex items-center justify-center lg:justify-start gap-2 hover:underline">
                   <svg
                     width="24"
                     height="24"
@@ -154,7 +154,7 @@ export default function Footer() {
                   </svg>
                   <span className="text-[13px] lg:text-[14px]">เว็บเพื่อนบ้าน</span>
                 </a>
-                <a href="#" className="flex items-center justify-center lg:justify-start gap-2 hover:underline">
+                <a href="http://webmail.banphocity.go.th/" className="flex items-center justify-center lg:justify-start gap-2 hover:underline">
                   <svg
                     width="24"
                     height="24"
@@ -169,7 +169,7 @@ export default function Footer() {
                   </svg>
                   <span className="text-[13px] lg:text-[14px]">เว็บมาสเตอร์</span>
                 </a>
-                <a href="#" className="flex items-center justify-center lg:justify-start gap-2 hover:underline">
+                <a href="http://webmail.banphocity.go.th/" className="flex items-center justify-center lg:justify-start gap-2 hover:underline">
                   <svg
                     width="24"
                     height="24"
