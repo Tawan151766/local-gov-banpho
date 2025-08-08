@@ -6,9 +6,40 @@ const PersonnelOrgChart = () => {
   const searchParams = useSearchParams();
   const [activeSection, setActiveSection] = useState("all");
   const [highlightedDepartment, setHighlightedDepartment] = useState(null);
+  const [personnelData, setPersonnelData] = useState(null);
+  const [loading, setLoading] = useState(true);
 
-  // ข้อมูลบุคลากรตัวอย่าง
-  const personnelData = {
+  // Load personnel data from API
+  useEffect(() => {
+    const fetchPersonnelData = async () => {
+      try {
+        setLoading(true);
+        const response = await fetch(
+          "/api/people-management?includeEmpty=true"
+        );
+        const result = await response.json();
+
+        if (result.success) {
+          setPersonnelData(result.data);
+        } else {
+          console.error("Failed to fetch personnel data:", result.error);
+          // Fallback to static data if API fails
+          setPersonnelData(staticPersonnelData);
+        }
+      } catch (error) {
+        console.error("Error fetching personnel data:", error);
+        // Fallback to static data if API fails
+        setPersonnelData(staticPersonnelData);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchPersonnelData();
+  }, []);
+
+  // Static fallback data (keeping the original structure)
+  const staticPersonnelData = {
     executives: [
       {
         name: "นายรุ่งโรจน์ กิติพิศาลกุล",
@@ -448,8 +479,13 @@ const PersonnelOrgChart = () => {
   };
 
   const PersonCard = ({ person, isHead = false, isExecutive = false }) => {
+    // Add null check for person
+    if (!person) {
+      return null;
+    }
+
     const getCardStyle = () => {
-      if (person.isEmpty) {
+      if (person.is_empty) {
         return "bg-gradient-to-br from-gray-50 to-gray-100 border-2 border-gray-300 border-dashed shadow-md";
       }
       if (isExecutive) {
@@ -474,8 +510,8 @@ const PersonnelOrgChart = () => {
         <div className="relative mb-4">
           <div className="w-24 h-24 mx-auto rounded-full overflow-hidden bg-gradient-to-br from-gray-100 to-gray-200 ring-4 ring-white shadow-lg">
             <img
-              src={person.image}
-              alt={person.name}
+              src={person.img}
+              alt={person.full_name}
               className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-110"
               onError={(e) => {
                 e.target.src =
@@ -494,7 +530,7 @@ const PersonnelOrgChart = () => {
             person.isEmpty ? "text-gray-400" : ""
           }`}
         >
-          {person.name}
+          {person.full_name}
         </h3>
         <p
           className={`text-sm leading-relaxed mb-1 ${
@@ -508,7 +544,7 @@ const PersonnelOrgChart = () => {
             {person.district}
           </p>
         )}
-        {person.phone && !person.isEmpty && (
+        {person.phone && !person.is_empty && (
           <p className="text-xs text-blue-600 font-medium">
             โทร: {person.phone}
           </p>
@@ -590,6 +626,29 @@ const PersonnelOrgChart = () => {
     };
     return deptMap[deptKey] || { name: "ไม่ระบุ" };
   };
+
+  // Loading state
+  if (loading) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50 flex items-center justify-center">
+        <div className="text-center">
+          <div className="animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600 mx-auto mb-4"></div>
+          <p className="text-gray-600">กำลังโหลดข้อมูลบุคลากร...</p>
+        </div>
+      </div>
+    );
+  }
+
+  // No data state
+  if (!personnelData) {
+    return (
+      <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50 flex items-center justify-center">
+        <div className="text-center">
+          <p className="text-gray-600">ไม่สามารถโหลดข้อมูลบุคลากรได้</p>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <div className="min-h-screen bg-gradient-to-br from-slate-50 via-blue-50 to-indigo-50">
@@ -757,14 +816,20 @@ const PersonnelOrgChart = () => {
             </div>
             {/* นายกเทศมนตรี */}
             <div className="flex justify-center mb-8">
-              <PersonCard
-                person={personnelData.executives.find(
-                  (p) =>
-                    p.position.includes("นายกเทศมนตรี") &&
-                    !p.position.includes("รอง")
-                )}
-                isExecutive={true}
-              />
+              {personnelData.executives?.find(
+                (p) =>
+                  p.position.includes("นายกเทศมนตรี") &&
+                  !p.position.includes("รอง")
+              ) && (
+                <PersonCard
+                  person={personnelData.executives.find(
+                    (p) =>
+                      p.position.includes("นายกเทศมนตรี") &&
+                      !p.position.includes("รอง")
+                  )}
+                  isExecutive={true}
+                />
+              )}
             </div>
 
             {/* เส้นเชื่อม */}
@@ -779,8 +844,8 @@ const PersonnelOrgChart = () => {
             {/* รองนายกเทศมนตรี */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6 max-w-4xl mx-auto mb-8">
               {personnelData.executives
-                .filter((p) => p.position.includes("รองนายกเทศมนตรี"))
-                .map((person, index) => (
+                ?.filter((p) => p.position.includes("รองนายกเทศมนตรี"))
+                ?.map((person, index) => (
                   <PersonCard key={index} person={person} isExecutive={true} />
                 ))}
             </div>
@@ -797,12 +862,12 @@ const PersonnelOrgChart = () => {
             {/* เลขานุการ และ ที่ปรึกษา */}
             <div className="grid grid-cols-1 md:grid-cols-2 gap-6 max-w-3xl mx-auto">
               {personnelData.executives
-                .filter(
+                ?.filter(
                   (p) =>
                     p.position.includes("เลขานุการ") ||
                     p.position.includes("ที่ปรึกษา")
                 )
-                .map((person, index) => (
+                ?.map((person, index) => (
                   <PersonCard key={index} person={person} isExecutive={true} />
                 ))}
             </div>
@@ -833,10 +898,12 @@ const PersonnelOrgChart = () => {
                 ผู้นำสภาเทศบาล
               </h3>
               <div className="flex justify-center mb-6">
-                <PersonCard
-                  person={personnelData.council.leadership[0]}
-                  isHead={true}
-                />
+                {personnelData.council.leadership[0] && (
+                  <PersonCard
+                    person={personnelData.council.leadership[0]}
+                    isHead={true}
+                  />
+                )}
               </div>
 
               {/* เส้นเชื่อม */}
@@ -849,7 +916,9 @@ const PersonnelOrgChart = () => {
               </div>
 
               <div className="flex justify-center">
-                <PersonCard person={personnelData.council.leadership[1]} />
+                {personnelData.council.leadership[1] && (
+                  <PersonCard person={personnelData.council.leadership[1]} />
+                )}
               </div>
             </div>
 
@@ -866,7 +935,7 @@ const PersonnelOrgChart = () => {
                   </div>
                 </div>
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                  {personnelData.council.district1.map((person, index) => (
+                  {personnelData.council.district1?.map((person, index) => (
                     <PersonCard key={index} person={person} />
                   ))}
                 </div>
@@ -883,7 +952,7 @@ const PersonnelOrgChart = () => {
                   </div>
                 </div>
                 <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                  {personnelData.council.district2.map((person, index) => (
+                  {personnelData.council.district2?.map((person, index) => (
                     <PersonCard key={index} person={person} />
                   ))}
                 </div>
@@ -1154,8 +1223,8 @@ const PersonnelOrgChart = () => {
                     </h4>
                     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                       {personnelData.departments.clerk.staff
-                        .slice(2, 8)
-                        .map((person, index) => (
+                        ?.slice(2, 8)
+                        ?.map((person, index) => (
                           <PersonCard key={index} person={person} />
                         ))}
                     </div>
@@ -1168,8 +1237,8 @@ const PersonnelOrgChart = () => {
                     </h4>
                     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
                       {personnelData.departments.clerk.staff
-                        .slice(8, 12)
-                        .map((person, index) => (
+                        ?.slice(8, 12)
+                        ?.map((person, index) => (
                           <PersonCard key={index} person={person} />
                         ))}
                     </div>
@@ -1182,8 +1251,8 @@ const PersonnelOrgChart = () => {
                     </h4> */}
                     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
                       {personnelData.departments.clerk.staff
-                        .slice(12, 16)
-                        .map((person, index) => (
+                        ?.slice(12, 16)
+                        ?.map((person, index) => (
                           <PersonCard key={index} person={person} />
                         ))}
                     </div>
@@ -1196,8 +1265,8 @@ const PersonnelOrgChart = () => {
                     </h4> */}
                     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4">
                       {personnelData.departments.clerk.staff
-                        .slice(16)
-                        .map((person, index) => (
+                        ?.slice(16)
+                        ?.map((person, index) => (
                           <PersonCard key={index} person={person} />
                         ))}
                     </div>
@@ -1594,7 +1663,9 @@ const PersonnelOrgChart = () => {
                       {/* หัวหน้าส่วน */}
                       <div className="mb-8">
                         <div className="flex justify-center">
-                          <PersonCard person={dept.head} isHead={true} />
+                          {dept.head && (
+                            <PersonCard person={dept.head} isHead={true} />
+                          )}
                         </div>
                       </div>
 
@@ -1609,7 +1680,7 @@ const PersonnelOrgChart = () => {
 
                       {/* พนักงาน */}
                       <div className="grid grid-cols-1 gap-6">
-                        {dept.staff.map((person, index) => (
+                        {dept.staff?.map((person, index) => (
                           <PersonCard key={index} person={person} />
                         ))}
                       </div>
@@ -1651,7 +1722,9 @@ const PersonnelOrgChart = () => {
                       นักวิชาการตรวจสอบภายใน
                     </h4>
                     <div className="flex justify-center">
-                      <PersonCard person={personnelData.audit[0]} />
+                      {personnelData.audit[0] && (
+                        <PersonCard person={personnelData.audit[0]} />
+                      )}
                     </div>
                   </div>
                 </div>

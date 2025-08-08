@@ -124,6 +124,52 @@ export const staffAPI = {
   },
 };
 
+// People Management API functions
+export const peopleManagementAPI = {
+  // Get all people with optional department filter
+  getPeople: async (params = {}) => {
+    const searchParams = new URLSearchParams();
+
+    if (params.department) searchParams.append("department", params.department);
+    if (params.includeEmpty) searchParams.append("includeEmpty", params.includeEmpty);
+
+    const queryString = searchParams.toString();
+    const endpoint = `/people-management${queryString ? `?${queryString}` : ""}`;
+
+    return apiCall(endpoint);
+  },
+
+  // Create new person
+  createPerson: async (personData) => {
+    return apiCall("/people-management", {
+      method: "POST",
+      body: JSON.stringify(personData),
+    });
+  },
+
+  // Update person
+  updatePerson: async (id, personData) => {
+    return apiCall(`/people-management?id=${id}`, {
+      method: "PUT",
+      body: JSON.stringify(personData),
+    });
+  },
+
+  // Delete person
+  deletePerson: async (id) => {
+    return apiCall(`/people-management?id=${id}`, {
+      method: "DELETE",
+    });
+  },
+
+  // Seed data
+  seedData: async () => {
+    return apiCall("/seed-people-management", {
+      method: "POST",
+    });
+  },
+};
+
 // Performance Results Types API functions
 export const perfResultsTypesAPI = {
   // Get all performance results types with pagination and search
@@ -1200,6 +1246,7 @@ const apiExports = {
   qaAPI,
   manualAPI,
   staffAPI,
+  peopleManagementAPI,
   perfResultsTypesAPI,
   perfResultsSectionsAPI,
   perfResultsSubTopicsAPI,
