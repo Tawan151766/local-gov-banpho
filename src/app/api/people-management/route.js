@@ -131,6 +131,16 @@ export async function GET(request) {
             (p) => p.department === "education" && p.role_type !== "head"
           ),
         },
+        councilOfficer: {
+          title: "ปลัด/รองปลัดเทศบาล",
+          color: "from-indigo-500 to-purple-600",
+          head: serializedPeople.find(
+            (p) => p.department === "councilOfficer" && p.role_type === "head"
+          ),
+          staff: serializedPeople.filter(
+            (p) => p.department === "councilOfficer" && p.role_type !== "head"
+          ),
+        },
       },
       audit: serializedPeople.filter((p) => p.department === "audit"),
     };

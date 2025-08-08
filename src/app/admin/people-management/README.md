@@ -5,6 +5,7 @@
 ## คุณสมบัติ
 
 ### การจัดการข้อมูลบุคลากร
+
 - ✅ เพิ่มข้อมูลบุคลากรใหม่
 - ✅ แก้ไขข้อมูลบุคลากร
 - ✅ ลบข้อมูลบุคลากร
@@ -14,6 +15,7 @@
 - ✅ แสดงตัวอย่างรูปภาพในฟอร์มและตาราง
 
 ### ข้อมูลที่จัดการได้
+
 - ชื่อ-นามสกุล
 - ตำแหน่ง
 - หน่วยงาน (คณะผู้บริหาร, สภาเทศบาล, สำนักปลัดเทศบาล, กองคลัง, กองช่าง, กองการศึกษา, หน่วยตรวจสอบภายใน)
@@ -29,6 +31,7 @@
 - สถานะการใช้งาน
 
 ### การกรองข้อมูล
+
 - กรองตามหน่วยงาน
 - กรองตามประเภทตำแหน่ง
 - แสดงสถานะต่างๆ ด้วยสีและไอคอน
@@ -36,6 +39,7 @@
 ## การใช้งาน
 
 ### เข้าถึงหน้าจัดการ
+
 ```
 /admin/people-management
 ```
@@ -43,6 +47,7 @@
 ### API Endpoints ที่ใช้
 
 #### GET /api/people-management
+
 - `admin=true` - เปิดใช้งาน admin mode
 - `page=1` - หน้าที่ต้องการ
 - `limit=10` - จำนวนรายการต่อหน้า
@@ -50,12 +55,15 @@
 - `role_type=head` - กรองตามประเภทตำแหน่ง
 
 #### POST /api/people-management
+
 สร้างข้อมูลบุคลากรใหม่
 
 #### PUT /api/people-management?id={id}
+
 แก้ไขข้อมูลบุคลากร
 
 #### DELETE /api/people-management?id={id}
+
 ลบข้อมูลบุคลากร
 
 ## โครงสร้างข้อมูล
@@ -72,7 +80,7 @@
   level: 1, // ระดับตำแหน่ง
   sort_order: 1, // ลำดับการแสดง
   district: "เขต", // สำหรับสภาเทศบาล
-  img: "/image/placeholder-person.jpg", // รูปภาพ
+  img: "/image/placeholder-person.svg", // รูปภาพ
   is_empty: false, // ตำแหน่งว่าง
   is_active: true // สถานะการใช้งาน
 }
@@ -81,26 +89,30 @@
 ## การแสดงผลในหน้าเว็บ
 
 ข้อมูลที่จัดการในหน้านี้จะถูกแสดงในหน้า Personnel Organization Chart ที่:
+
 - `/personnel` - แสดงโครงสร้างองค์กร
 - API endpoint: `/api/people-management` (โหมดปกติ)
 
 ## การอัพโหลดรูปภาพ
 
 ### คุณสมบัติการอัพโหลด
+
 - รองรับไฟล์: PNG, JPG, JPEG, GIF, WebP, SVG
 - ขนาดไฟล์สูงสุด: 5MB
 - แสดงตัวอย่างรูปภาพแบบ real-time
 - รูปภาพจะถูกแสดงในรูปแบบวงกลมทั้งในฟอร์มและตาราง
 
 ### API Endpoint สำหรับอัพโหลด
+
 ```
 POST /api/manual/upload-laravel
 ```
 
 ### การแสดงรูปภาพ
+
 - รูปภาพจะถูกเก็บใน Laravel storage
 - URL รูปภาพ: `https://banpho.sosmartsolution.com/storage{image_path}`
-- หากไม่มีรูปภาพจะใช้ placeholder: `/image/placeholder-person.jpg`
+- หากไม่มีรูปภาพจะใช้ placeholder: `/image/placeholder-person.svg`
 
 ## หมายเหตุ
 
