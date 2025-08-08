@@ -118,3 +118,165 @@ export async function GET(request) {
     );
   }
 }
+
+export async function POST(request) {
+  try {
+    const body = await request.json();
+    const { section_name, type_id } = body;
+
+    // Validation
+    if (!section_name || !type_id) {
+      return NextResponse.json(
+        { success: false, error: "Section name and type ID are required" },
+        { status: 400 }
+      );
+    }
+
+    // Create new section
+    const section = await prisma.laws_regs_sections.create({
+      data: {
+        section_name,
+        type_id: BigInt(type_id),
+        created_at: new Date(),
+        updated_at: new Date(),
+      },
+      include: {
+        laws_regs_types: true,
+      },
+    });
+
+    // Transform data
+    const transformedSection = {
+      id: Number(section.id),
+      section_name: section.section_name,
+      type_id: Number(section.type_id),
+      type_name: section.laws_regs_types?.type_name || "ไม่ระบุประเภท",
+      created_at: section.created_at,
+      updated_at: section.updated_at,
+    };
+
+    return NextResponse.json({
+      success: true,
+      data: transformedSection,
+      message: "Section created successfully",
+    });
+  } catch (error) {
+    console.error("Error creating section:", error);
+    return NextResponse.json(
+      {
+        success: false,
+        error: "Failed to create section",
+        details: error.message,
+      },
+      { status: 500 }
+    );
+  }
+}
+
+export async function PUT(request) {
+  try {
+    const { searchParams } = new URL(request.url);
+    const id = searchParams.get("id");
+    const body = await request.json();
+    const { section_name, type_id } = body;
+
+    if (!id) {
+      return NextResponse.json(
+        { success: false, error: "Section ID is required" },
+        { status: 400 }
+      );
+    }
+
+    // Validation
+    if (!section_name) {
+      return NextResponse.json(
+        { success: false, error: "Section name is required" },
+        { status: 400 }
+      );
+    }
+
+    // Update section
+    const section = await prisma.laws_regs_sections.update({
+      where: {
+        id: BigInt(id),
+      },
+      data: {
+        section_name,
+        ...(type_id && { type_id: BigInt(type_id) }),
+        updated_at: new Date(),
+      },
+      include: {
+        laws_regs_types: true,
+      },
+    });
+
+    // Transform data
+    const transformedSection = {
+      id: Number(section.id),
+      section_name: section.section_name,
+      type_id: Number(section.type_id),
+      type_name: section.laws_regs_types?.type_name || "ไม่ระบุประเภท",
+      created_at: section.created_at,
+      updated_at: section.updated_at,
+    };
+
+    return NextResponse.json({
+      success: true,
+      data: transformedSection,
+      message: "Section updated successfully",
+    });
+  } catch (error) {
+    console.error("Error updating section:", error);
+    return NextResponse.json(
+      {
+        success: false,
+        error: "Failed to update section",
+        details: error.message,
+      },
+      { status: 500 }
+    );
+  }
+}
+
+export async function DELETE(request) {
+  try {
+    const { searchParams } = new URL(request.url);
+    const id = searchParams.get("id");
+
+    if (!id) {
+      return NextResponse.json(
+        { success: false, error: "Section ID is required" },
+        { status: 400 }
+      );
+    }
+
+    // Delete related files first
+    await prisma.laws_regs_files.deleteMany({
+      where: {
+        section_id: BigInt(id),
+      },
+    });
+
+    // Delete section
+    await prisma.laws_regs_sections.delete({
+      where: {
+        id: BigInt(id),
+      },
+    });
+
+    return NextResponse.json({
+      success: true,
+      message: "Section deleted successfully",
+    });
+  } catch (error) {
+    console.error("Error deleting section:", error);
+    return NextResponse.json(
+      {
+        success: false,
+        error: "Failed to delete section",
+        details: error.message,
+      },
+      { status: 500 }
+    );
+  }
+}

@@ -20,7 +20,7 @@ export default function LawsRegulationsDetailPage() {
     try {
       const response = await fetch(`/api/laws-regs-sections/${params.id}`);
       const result = await response.json();
-      
+
       if (result.success) {
         setSection(result.data);
       } else {
@@ -35,7 +35,7 @@ export default function LawsRegulationsDetailPage() {
   };
 
   const handleFileDownload = (filePath, fileName) => {
-    const baseUrl = "https://banpho.sosmartsolution.com/storage/";
+    const baseUrl = "https://banpho.sosmartsolution.com/";
     const fileUrl = filePath?.startsWith("http")
       ? filePath
       : `${baseUrl}${filePath}`;
@@ -92,16 +92,25 @@ export default function LawsRegulationsDetailPage() {
 
   const getLawRegColor = (typeName) => {
     if (!typeName) return "#01bdcc";
-    
+
     // กฎหมาย ระเบียบ และประกาศกระทรวง
-    if (typeName.includes("กฎหมาย") || typeName.includes("ระเบียบ") || typeName.includes("ประกาศกระทรวง")) return "#dc3545";
-    
+    if (
+      typeName.includes("กฎหมาย") ||
+      typeName.includes("ระเบียบ") ||
+      typeName.includes("ประกาศกระทรวง")
+    )
+      return "#dc3545";
+
     // พระราชบัญญัติ และพระราชกฤษฎีกา
-    if (typeName.includes("พระราชบัญญัติ") || typeName.includes("พระราชกฤษฎีกา")) return "#28a745";
-    
+    if (
+      typeName.includes("พระราชบัญญัติ") ||
+      typeName.includes("พระราชกฤษฎีกา")
+    )
+      return "#28a745";
+
     // ข้อบัญญัติ
     if (typeName.includes("ข้อบัญญัติ")) return "#ffc107";
-    
+
     return "#01bdcc";
   };
 
@@ -218,12 +227,16 @@ export default function LawsRegulationsDetailPage() {
           <div className="grid grid-cols-1 md:grid-cols-2 gap-4 text-sm text-gray-600">
             <div className="flex items-center gap-2">
               <span className="text-gray-500">สร้างเมื่อ:</span>
-              <span className="font-medium">{formatDate(section?.created_at)}</span>
+              <span className="font-medium">
+                {formatDate(section?.created_at)}
+              </span>
             </div>
             {section?.updated_at && (
               <div className="flex items-center gap-2">
                 <span className="text-gray-500">อัพเดทล่าสุด:</span>
-                <span className="font-medium">{formatDate(section?.updated_at)}</span>
+                <span className="font-medium">
+                  {formatDate(section?.updated_at)}
+                </span>
               </div>
             )}
           </div>
@@ -240,7 +253,9 @@ export default function LawsRegulationsDetailPage() {
                 <div
                   key={index}
                   className="bg-gray-50 rounded-lg p-4 hover:bg-gray-100 transition-colors cursor-pointer border border-gray-200"
-                  onClick={() => handleFileDownload(file.files_path, file.original_name)}
+                  onClick={() =>
+                    handleFileDownload(file.files_path, file.original_name)
+                  }
                 >
                   <div className="flex items-start gap-3">
                     <div className="text-2xl flex-shrink-0">
@@ -248,7 +263,9 @@ export default function LawsRegulationsDetailPage() {
                     </div>
                     <div className="flex-1 min-w-0">
                       <div className="font-medium text-gray-900 truncate">
-                        {file.original_name || file.files_path?.split("/").pop() || `ไฟล์ ${index + 1}`}
+                        {file.original_name ||
+                          file.files_path?.split("/").pop() ||
+                          `ไฟล์ ${index + 1}`}
                       </div>
                       <div className="text-sm text-gray-500 mt-1">
                         {file.files_type || "ไม่ระบุประเภท"}

@@ -682,14 +682,14 @@ export const lawsRegsSectionsAPI = {
   },
 
   updateSection: async (id, sectionData) => {
-    return apiCall(`/laws-regs-sections/${id}`, {
+    return apiCall(`/laws-regs-sections?id=${id}`, {
       method: "PUT",
       body: JSON.stringify(sectionData),
     });
   },
 
   deleteSection: async (id) => {
-    return apiCall(`/laws-regs-sections/${id}`, {
+    return apiCall(`/laws-regs-sections?id=${id}`, {
       method: "DELETE",
     });
   },
