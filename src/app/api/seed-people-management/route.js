@@ -17,7 +17,7 @@ export async function POST() {
         role_type: "head",
         level: 1,
         sort_order: 1,
-        img: "/image/placeholder-person.jpg",
+        img: "/image/placeholder-person.svg",
       },
       {
         full_name: "นายจำเนียร จันทร์สร้อย",
@@ -27,7 +27,7 @@ export async function POST() {
         role_type: "deputy",
         level: 2,
         sort_order: 1,
-        img: "/image/placeholder-person.jpg",
+        img: "/image/placeholder-person.svg",
       },
       {
         full_name: "นายไชยวัฒน์ ศรีวิไลสกุลวงศ์",
@@ -37,7 +37,7 @@ export async function POST() {
         role_type: "deputy",
         level: 2,
         sort_order: 2,
-        img: "/image/placeholder-person.jpg",
+        img: "/image/placeholder-person.svg",
       },
       {
         full_name: "ว่าง",
@@ -46,7 +46,7 @@ export async function POST() {
         role_type: "staff",
         level: 3,
         sort_order: 1,
-        img: "/image/placeholder-person.jpg",
+        img: "/image/placeholder-person.svg",
         is_empty: true,
       },
       {
@@ -57,7 +57,7 @@ export async function POST() {
         role_type: "staff",
         level: 3,
         sort_order: 2,
-        img: "/image/placeholder-person.jpg",
+        img: "/image/placeholder-person.svg",
       },
 
       // สภาเทศบาล - ผู้นำ (council leadership)
@@ -68,7 +68,7 @@ export async function POST() {
         role_type: "head",
         level: 1,
         sort_order: 1,
-        img: "/image/placeholder-person.jpg",
+        img: "/image/placeholder-person.svg",
       },
       {
         full_name: "นายประยูร เมธีกุล",
@@ -77,7 +77,7 @@ export async function POST() {
         role_type: "deputy",
         level: 2,
         sort_order: 1,
-        img: "/image/placeholder-person.jpg",
+        img: "/image/placeholder-person.svg",
       },
 
       // สภาเทศบาล - เขต 1
@@ -89,7 +89,7 @@ export async function POST() {
         role_type: "staff",
         level: 3,
         sort_order: 1,
-        img: "/image/placeholder-person.jpg",
+        img: "/image/placeholder-person.svg",
       },
       {
         full_name: "นายอนันต์ วัฒนพานิช",
@@ -99,7 +99,7 @@ export async function POST() {
         role_type: "staff",
         level: 3,
         sort_order: 2,
-        img: "/image/placeholder-person.jpg",
+        img: "/image/placeholder-person.svg",
       },
       {
         full_name: "นายวรวิทย์ รุ่งเรืองกิจพัฒนา",
@@ -109,7 +109,7 @@ export async function POST() {
         role_type: "staff",
         level: 3,
         sort_order: 3,
-        img: "/image/placeholder-person.jpg",
+        img: "/image/placeholder-person.svg",
       },
       {
         full_name: "นายอัฏธพล กิจไพบูลย์วัฒนา",
@@ -119,7 +119,7 @@ export async function POST() {
         role_type: "staff",
         level: 3,
         sort_order: 4,
-        img: "/image/placeholder-person.jpg",
+        img: "/image/placeholder-person.svg",
       },
       {
         full_name: "นางมาลี สนรักษา",
@@ -129,7 +129,7 @@ export async function POST() {
         role_type: "staff",
         level: 3,
         sort_order: 5,
-        img: "/image/placeholder-person.jpg",
+        img: "/image/placeholder-person.svg",
       },
 
       // สภาเทศบาล - เขต 2
@@ -141,7 +141,7 @@ export async function POST() {
         role_type: "staff",
         level: 3,
         sort_order: 1,
-        img: "/image/placeholder-person.jpg",
+        img: "/image/placeholder-person.svg",
       },
       {
         full_name: "นายชัชชาย แจ้งประจักษ์",
@@ -151,7 +151,7 @@ export async function POST() {
         role_type: "staff",
         level: 3,
         sort_order: 2,
-        img: "/image/placeholder-person.jpg",
+        img: "/image/placeholder-person.svg",
       },
       {
         full_name: "นายชาญวิทย์ พ่วงศรีนวล",
@@ -161,7 +161,7 @@ export async function POST() {
         role_type: "staff",
         level: 3,
         sort_order: 3,
-        img: "/image/placeholder-person.jpg",
+        img: "/image/placeholder-person.svg",
       },
       {
         full_name: "นายบรรพต พัดทอง",
@@ -171,7 +171,7 @@ export async function POST() {
         role_type: "staff",
         level: 3,
         sort_order: 4,
-        img: "/image/placeholder-person.jpg",
+        img: "/image/placeholder-person.svg",
       },
       {
         full_name: "รอการเลือกตั้ง",
@@ -181,7 +181,7 @@ export async function POST() {
         role_type: "staff",
         level: 3,
         sort_order: 5,
-        img: "/image/placeholder-person.jpg",
+        img: "/image/placeholder-person.svg",
         is_empty: true,
       },
 
@@ -194,7 +194,7 @@ export async function POST() {
         role_type: "head",
         level: 1,
         sort_order: 1,
-        img: "/image/placeholder-person.jpg",
+        img: "/image/placeholder-person.svg",
       },
       {
         full_name: "นางสาวบุษบา เชิดชู",
@@ -204,7 +204,7 @@ export async function POST() {
         role_type: "deputy",
         level: 2,
         sort_order: 1,
-        img: "/image/placeholder-person.jpg",
+        img: "/image/placeholder-person.svg",
       },
       {
         full_name: "นางอัจฉรา หร่ายเจริญ",
@@ -214,7 +214,7 @@ export async function POST() {
         role_type: "deputy",
         level: 2,
         sort_order: 2,
-        img: "/image/placeholder-person.jpg",
+        img: "/image/placeholder-person.svg",
       },
       {
         full_name: "นางสาวรุจิยา ลิ้มเจริญผล",
@@ -223,7 +223,7 @@ export async function POST() {
         role_type: "staff",
         level: 3,
         sort_order: 1,
-        img: "/image/placeholder-person.jpg",
+        img: "/image/placeholder-person.svg",
       },
       {
         full_name: "นางสาวโชติมาส ไทยเจริญ",
@@ -232,7 +232,7 @@ export async function POST() {
         role_type: "staff",
         level: 3,
         sort_order: 2,
-        img: "/image/placeholder-person.jpg",
+        img: "/image/placeholder-person.svg",
       },
       {
         full_name: "ว่าง",
@@ -241,7 +241,7 @@ export async function POST() {
         role_type: "staff",
         level: 3,
         sort_order: 3,
-        img: "/image/placeholder-person.jpg",
+        img: "/image/placeholder-person.svg",
         is_empty: true,
       },
       {
@@ -251,7 +251,7 @@ export async function POST() {
         role_type: "staff",
         level: 3,
         sort_order: 4,
-        img: "/image/placeholder-person.jpg",
+        img: "/image/placeholder-person.svg",
       },
       {
         full_name: "นางสาวนพวรรณ โภคทรัพย์",
@@ -260,7 +260,7 @@ export async function POST() {
         role_type: "staff",
         level: 3,
         sort_order: 5,
-        img: "/image/placeholder-person.jpg",
+        img: "/image/placeholder-person.svg",
       },
       {
         full_name: "นางขนิษฐา ศรีแก้ว",
@@ -269,7 +269,7 @@ export async function POST() {
         role_type: "staff",
         level: 4,
         sort_order: 1,
-        img: "/image/placeholder-person.jpg",
+        img: "/image/placeholder-person.svg",
       },
       {
         full_name: "นางสาวปิยะพัชร์ ช่อผกา",
@@ -278,7 +278,7 @@ export async function POST() {
         role_type: "staff",
         level: 4,
         sort_order: 2,
-        img: "/image/placeholder-person.jpg",
+        img: "/image/placeholder-person.svg",
       },
       {
         full_name: "นายปฐม เซ็ทเจริญ",
@@ -287,7 +287,7 @@ export async function POST() {
         role_type: "worker",
         level: 5,
         sort_order: 1,
-        img: "/image/placeholder-person.jpg",
+        img: "/image/placeholder-person.svg",
       },
       {
         full_name: "นางสาวณัฏฐนันท์ น่วมรัสมี",
@@ -296,7 +296,7 @@ export async function POST() {
         role_type: "staff",
         level: 4,
         sort_order: 3,
-        img: "/image/placeholder-person.jpg",
+        img: "/image/placeholder-person.svg",
       },
       {
         full_name: "นางสาวธัญญสรัณ อำสันเทียะ",
@@ -305,7 +305,7 @@ export async function POST() {
         role_type: "staff",
         level: 4,
         sort_order: 4,
-        img: "/image/placeholder-person.jpg",
+        img: "/image/placeholder-person.svg",
       },
       {
         full_name: "นายประยูร วิญญูวิญ",
@@ -314,7 +314,7 @@ export async function POST() {
         role_type: "worker",
         level: 5,
         sort_order: 2,
-        img: "/image/placeholder-person.jpg",
+        img: "/image/placeholder-person.svg",
       },
       {
         full_name: "นายประเสริฐ เคลือบสำราญ",
@@ -323,7 +323,7 @@ export async function POST() {
         role_type: "worker",
         level: 5,
         sort_order: 3,
-        img: "/image/placeholder-person.jpg",
+        img: "/image/placeholder-person.svg",
       },
       {
         full_name: "นายวิโรจน์ สินกังวาน",
@@ -332,7 +332,7 @@ export async function POST() {
         role_type: "staff",
         level: 4,
         sort_order: 5,
-        img: "/image/placeholder-person.jpg",
+        img: "/image/placeholder-person.svg",
       },
       {
         full_name: "นายประชา ประเสริฐศิลป์",
@@ -341,7 +341,7 @@ export async function POST() {
         role_type: "worker",
         level: 6,
         sort_order: 1,
-        img: "/image/placeholder-person.jpg",
+        img: "/image/placeholder-person.svg",
       },
       {
         full_name: "นายเกียรติ หลายทอง",
@@ -350,7 +350,7 @@ export async function POST() {
         role_type: "worker",
         level: 6,
         sort_order: 2,
-        img: "/image/placeholder-person.jpg",
+        img: "/image/placeholder-person.svg",
       },
       {
         full_name: "นายพิษณุ สุขประเสริฐ",
@@ -359,7 +359,7 @@ export async function POST() {
         role_type: "worker",
         level: 5,
         sort_order: 4,
-        img: "/image/placeholder-person.jpg",
+        img: "/image/placeholder-person.svg",
       },
       {
         full_name: "นายภานุวัฒน์ คงยิ้ม",
@@ -368,7 +368,7 @@ export async function POST() {
         role_type: "worker",
         level: 6,
         sort_order: 3,
-        img: "/image/placeholder-person.jpg",
+        img: "/image/placeholder-person.svg",
       },
       {
         full_name: "นายพรพิรุณ นุชน้อย",
@@ -377,7 +377,7 @@ export async function POST() {
         role_type: "worker",
         level: 6,
         sort_order: 4,
-        img: "/image/placeholder-person.jpg",
+        img: "/image/placeholder-person.svg",
       },
       {
         full_name: "นายอนันต์ กลัดสุขใส",
@@ -386,7 +386,7 @@ export async function POST() {
         role_type: "worker",
         level: 6,
         sort_order: 5,
-        img: "/image/placeholder-person.jpg",
+        img: "/image/placeholder-person.svg",
       },
 
       // กองคลัง (finance)
@@ -398,7 +398,7 @@ export async function POST() {
         role_type: "head",
         level: 1,
         sort_order: 1,
-        img: "/image/placeholder-person.jpg",
+        img: "/image/placeholder-person.svg",
       },
       {
         full_name: "ว่าง",
@@ -408,7 +408,7 @@ export async function POST() {
         role_type: "deputy",
         level: 2,
         sort_order: 1,
-        img: "/image/placeholder-person.jpg",
+        img: "/image/placeholder-person.svg",
         is_empty: true,
       },
       {
@@ -419,7 +419,7 @@ export async function POST() {
         role_type: "deputy",
         level: 2,
         sort_order: 2,
-        img: "/image/placeholder-person.jpg",
+        img: "/image/placeholder-person.svg",
         is_empty: true,
       },
       {
@@ -429,7 +429,7 @@ export async function POST() {
         role_type: "staff",
         level: 3,
         sort_order: 1,
-        img: "/image/placeholder-person.jpg",
+        img: "/image/placeholder-person.svg",
         is_empty: true,
       },
       {
@@ -439,7 +439,7 @@ export async function POST() {
         role_type: "staff",
         level: 3,
         sort_order: 2,
-        img: "/image/placeholder-person.jpg",
+        img: "/image/placeholder-person.svg",
       },
       {
         full_name: "ว่าง",
@@ -448,7 +448,7 @@ export async function POST() {
         role_type: "staff",
         level: 3,
         sort_order: 3,
-        img: "/image/placeholder-person.jpg",
+        img: "/image/placeholder-person.svg",
         is_empty: true,
       },
       {
@@ -458,7 +458,7 @@ export async function POST() {
         role_type: "staff",
         level: 3,
         sort_order: 4,
-        img: "/image/placeholder-person.jpg",
+        img: "/image/placeholder-person.svg",
       },
       {
         full_name: "นางสาววรณัน บุษบงก์",
@@ -467,7 +467,7 @@ export async function POST() {
         role_type: "staff",
         level: 3,
         sort_order: 5,
-        img: "/image/placeholder-person.jpg",
+        img: "/image/placeholder-person.svg",
       },
       {
         full_name: "นางสาวเบญจวรรณ วงษ์สำเริงชัย",
@@ -476,7 +476,7 @@ export async function POST() {
         role_type: "staff",
         level: 4,
         sort_order: 1,
-        img: "/image/placeholder-person.jpg",
+        img: "/image/placeholder-person.svg",
       },
 
       // กองช่าง (engineering)
@@ -488,7 +488,7 @@ export async function POST() {
         role_type: "head",
         level: 1,
         sort_order: 1,
-        img: "/image/placeholder-person.jpg",
+        img: "/image/placeholder-person.svg",
       },
       {
         full_name: "ว่าง",
@@ -498,7 +498,7 @@ export async function POST() {
         role_type: "deputy",
         level: 2,
         sort_order: 1,
-        img: "/image/placeholder-person.jpg",
+        img: "/image/placeholder-person.svg",
         is_empty: true,
       },
       {
@@ -508,7 +508,7 @@ export async function POST() {
         role_type: "staff",
         level: 3,
         sort_order: 1,
-        img: "/image/placeholder-person.jpg",
+        img: "/image/placeholder-person.svg",
         is_empty: true,
       },
       {
@@ -518,7 +518,7 @@ export async function POST() {
         role_type: "staff",
         level: 4,
         sort_order: 1,
-        img: "/image/placeholder-person.jpg",
+        img: "/image/placeholder-person.svg",
       },
       {
         full_name: "นางสาวรุ่งนภา พุ่มประเสริฐ",
@@ -527,7 +527,7 @@ export async function POST() {
         role_type: "worker",
         level: 6,
         sort_order: 1,
-        img: "/image/placeholder-person.jpg",
+        img: "/image/placeholder-person.svg",
       },
       {
         full_name: "ว่าง",
@@ -536,7 +536,7 @@ export async function POST() {
         role_type: "worker",
         level: 5,
         sort_order: 1,
-        img: "/image/placeholder-person.jpg",
+        img: "/image/placeholder-person.svg",
         is_empty: true,
       },
       {
@@ -546,7 +546,7 @@ export async function POST() {
         role_type: "worker",
         level: 6,
         sort_order: 2,
-        img: "/image/placeholder-person.jpg",
+        img: "/image/placeholder-person.svg",
       },
       {
         full_name: "ว่าง",
@@ -555,7 +555,7 @@ export async function POST() {
         role_type: "worker",
         level: 6,
         sort_order: 3,
-        img: "/image/placeholder-person.jpg",
+        img: "/image/placeholder-person.svg",
         is_empty: true,
       },
       {
@@ -565,7 +565,7 @@ export async function POST() {
         role_type: "worker",
         level: 6,
         sort_order: 4,
-        img: "/image/placeholder-person.jpg",
+        img: "/image/placeholder-person.svg",
       },
       {
         full_name: "นายกิติศักดิ์ มูลสิติ",
@@ -574,7 +574,7 @@ export async function POST() {
         role_type: "worker",
         level: 6,
         sort_order: 5,
-        img: "/image/placeholder-person.jpg",
+        img: "/image/placeholder-person.svg",
       },
       {
         full_name: "นายไพโรจน์ กำแพงทอง",
@@ -583,7 +583,7 @@ export async function POST() {
         role_type: "worker",
         level: 6,
         sort_order: 6,
-        img: "/image/placeholder-person.jpg",
+        img: "/image/placeholder-person.svg",
       },
       {
         full_name: "นายอนณ เตียวหยิน",
@@ -592,7 +592,7 @@ export async function POST() {
         role_type: "worker",
         level: 5,
         sort_order: 2,
-        img: "/image/placeholder-person.jpg",
+        img: "/image/placeholder-person.svg",
       },
       {
         full_name: "นายพิมล แช่มเจริญ",
@@ -601,7 +601,7 @@ export async function POST() {
         role_type: "worker",
         level: 6,
         sort_order: 7,
-        img: "/image/placeholder-person.jpg",
+        img: "/image/placeholder-person.svg",
       },
 
       // กองการศึกษาฯ (education)
@@ -612,7 +612,7 @@ export async function POST() {
         role_type: "head",
         level: 1,
         sort_order: 1,
-        img: "/image/placeholder-person.jpg",
+        img: "/image/placeholder-person.svg",
         is_empty: true,
       },
       {
@@ -623,7 +623,7 @@ export async function POST() {
         role_type: "deputy",
         level: 2,
         sort_order: 1,
-        img: "/image/placeholder-person.jpg",
+        img: "/image/placeholder-person.svg",
         is_empty: true,
       },
       {
@@ -633,7 +633,7 @@ export async function POST() {
         role_type: "staff",
         level: 3,
         sort_order: 1,
-        img: "/image/placeholder-person.jpg",
+        img: "/image/placeholder-person.svg",
       },
       {
         full_name: "นางสาววิลาวัลย์ กิตติรัตนโรจน์",
@@ -642,7 +642,7 @@ export async function POST() {
         role_type: "staff",
         level: 4,
         sort_order: 1,
-        img: "/image/placeholder-person.jpg",
+        img: "/image/placeholder-person.svg",
       },
       {
         full_name: "นางจรินทร์พร วิไลพันธุ์",
@@ -651,7 +651,7 @@ export async function POST() {
         role_type: "staff",
         level: 3,
         sort_order: 2,
-        img: "/image/placeholder-person.jpg",
+        img: "/image/placeholder-person.svg",
       },
       {
         full_name: "นางสาวสาลักษณ์ เพียรอริยพร",
@@ -660,7 +660,7 @@ export async function POST() {
         role_type: "worker",
         level: 6,
         sort_order: 1,
-        img: "/image/placeholder-person.jpg",
+        img: "/image/placeholder-person.svg",
       },
       {
         full_name: "นางสาวกนิษฐา อุทัยสา",
@@ -669,7 +669,7 @@ export async function POST() {
         role_type: "worker",
         level: 6,
         sort_order: 2,
-        img: "/image/placeholder-person.jpg",
+        img: "/image/placeholder-person.svg",
       },
 
       // หน่วยตรวจสอบภายใน (audit)
@@ -680,7 +680,7 @@ export async function POST() {
         role_type: "head",
         level: 1,
         sort_order: 1,
-        img: "/image/placeholder-person.jpg",
+        img: "/image/placeholder-person.svg",
         is_empty: true,
       },
     ];

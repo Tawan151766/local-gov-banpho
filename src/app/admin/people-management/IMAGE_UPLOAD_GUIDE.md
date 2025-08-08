@@ -13,19 +13,19 @@
 #### ในตาราง (Table)
 ```javascript
 // Logic การสร้าง URL รูปภาพ
-const imageUrl = img && img !== "/image/placeholder-person.jpg" && img.startsWith("/")
+const imageUrl = img && img !== "/image/placeholder-person.svg" && img.startsWith("/")
   ? `https://banpho.sosmartsolution.com/storage${img}`
-  : img || "/image/placeholder-person.jpg";
+  : img || "/image/placeholder-person.svg";
 ```
 
 #### ในฟอร์ม (Form Preview)
 ```javascript
 // Logic การแสดงตัวอย่าง
 const previewUrl = uploadedImagePath && 
-  uploadedImagePath !== "/image/placeholder-person.jpg" && 
+  uploadedImagePath !== "/image/placeholder-person.svg" && 
   uploadedImagePath.startsWith("/")
     ? `https://banpho.sosmartsolution.com/storage${uploadedImagePath}`
-    : uploadedImagePath || "/image/placeholder-person.jpg";
+    : uploadedImagePath || "/image/placeholder-person.svg";
 ```
 
 ### 3. รูปแบบ URL ที่ใช้งาน
@@ -35,11 +35,11 @@ const previewUrl = uploadedImagePath &&
 - **Display URL**: `https://banpho.sosmartsolution.com/storage/uploads/1754630299_filename.png`
 
 #### รูปภาพ Placeholder
-- **Database Path**: `/image/placeholder-person.jpg`
-- **Display URL**: `/image/placeholder-person.jpg` (ไม่เพิ่ม storage prefix)
+- **Database Path**: `/image/placeholder-person.svg`
+- **Display URL**: `/image/placeholder-person.svg` (ไม่เพิ่ม storage prefix)
 
 ### 4. การจัดการ Error
-- หากรูปภาพโหลดไม่ได้ จะ fallback ไปใช้ `/image/placeholder-person.jpg`
+- หากรูปภาพโหลดไม่ได้ จะ fallback ไปใช้ `/image/placeholder-person.svg`
 - มี console.log เพื่อ debug การโหลดรูปภาพที่ผิดพลาด
 
 ### 5. การแสดงผลในหน้าต่างๆ
