@@ -50,6 +50,11 @@ const DEPARTMENTS = {
     icon: <TeamOutlined />,
     color: "blue",
   },
+  councilOfficer: {
+    title: "ปลัด/รองปลัดเทศบาล",
+    icon: <UserOutlined />,
+    color: "purple",
+  },
   clerk: {
     title: "สำนักปลัดเทศบาล",
     icon: <BankOutlined />,
@@ -79,7 +84,7 @@ const DEPARTMENTS = {
 
 // Role type configurations
 const ROLE_TYPES = {
-  head: { title: "หัวหน้า", color: "red" },
+  head: { title: "หัวหน้า/ปลัด", color: "red" },
   deputy: { title: "รอง/ผู้ช่วย", color: "orange" },
   staff: { title: "เจ้าหน้าที่", color: "blue" },
   worker: { title: "พนักงาน", color: "green" },
@@ -194,14 +199,7 @@ export default function PeopleManagement() {
 
   useEffect(() => {
     loadPeople(1, 10);
-
-    // Cleanup function to prevent memory leaks
-    return () => {
-      if (form) {
-        form.resetFields();
-      }
-    };
-  }, [loadPeople, form]);
+  }, [loadPeople]);
 
   // Handle table pagination change
   const handleTableChange = (paginationConfig) => {
@@ -235,7 +233,7 @@ export default function PeopleManagement() {
           is_active: true,
           level: 1,
           sort_order: 1,
-          img: "/image/placeholder-person.jpg",
+          img: "/image/placeholder-person.svg",
         });
       }
     } catch (error) {
@@ -248,7 +246,7 @@ export default function PeopleManagement() {
     setModalVisible(true);
     setUploadedImagePath(record.img || null);
     setUploadedImageData(
-      record.img && record.img !== "/image/placeholder-person.jpg"
+      record.img && record.img !== "/image/placeholder-person.svg"
         ? {
             file_path: record.img,
             original_name: record.img.split("/").pop(),
@@ -340,7 +338,7 @@ export default function PeopleManagement() {
       }
 
       // Use uploaded image if available, otherwise use form value or default
-      let imageUrl = "/image/placeholder-person.jpg";
+      let imageUrl = "/image/placeholder-person.svg";
       if (uploadedImageData && uploadedImageData.file_path) {
         // Remove /storage prefix if present
         imageUrl = uploadedImageData.file_path.replace("/storage", "");
@@ -555,9 +553,9 @@ export default function PeopleManagement() {
       width: 80,
       render: (img) => {
         const imageUrl =
-          img && img !== "/image/placeholder-person.jpg" && img.startsWith("/")
+          img && img !== "/image/placeholder-person.svg" && img.startsWith("/")
             ? `https://banpho.sosmartsolution.com/storage${img}`
-            : img || "/image/placeholder-person.jpg";
+            : img || "/image/placeholder-person.svg";
 
         return (
           <div
@@ -579,7 +577,7 @@ export default function PeopleManagement() {
               }}
               onError={(e) => {
                 console.log("Image load error for:", imageUrl);
-                e.target.src = "/image/placeholder-person.jpg";
+                e.target.src = "/image/placeholder-person.svg";
               }}
             />
           </div>
@@ -917,10 +915,10 @@ export default function PeopleManagement() {
                     <img
                       src={
                         uploadedImagePath &&
-                        uploadedImagePath !== "/image/placeholder-person.jpg" &&
+                        uploadedImagePath !== "/image/placeholder-person.svg" &&
                         uploadedImagePath.startsWith("/")
                           ? `https://banpho.sosmartsolution.com/storage${uploadedImagePath}`
-                          : uploadedImagePath || "/image/placeholder-person.jpg"
+                          : uploadedImagePath || "/image/placeholder-person.svg"
                       }
                       alt="Preview"
                       style={{
@@ -929,7 +927,7 @@ export default function PeopleManagement() {
                         objectFit: "cover",
                       }}
                       onError={(e) => {
-                        e.target.src = "/image/placeholder-person.jpg";
+                        e.target.src = "/image/placeholder-person.svg";
                       }}
                     />
                   </div>
