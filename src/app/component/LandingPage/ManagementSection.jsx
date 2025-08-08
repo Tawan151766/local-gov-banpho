@@ -84,15 +84,29 @@ const ManagementCard = ({
               : "h-[24px] sm:h-[32px] md:h-[36px] rounded-b-[10px] sm:rounded-b-[17px]"
           }`}
         >
-          <span
-            className={`text-white font-medium ${
-              isLarge
-                ? "text-base sm:text-lg md:text-xl"
-                : "text-[8px] sm:text-xs md:text-sm"
-            }`}
-          >
-            {phone}
-          </span>
+          {phone && phone !== "-" ? (
+            <a
+              href={`tel:${phone.replace(/[^0-9+]/g, "")}`}
+              className={`cursor-pointer text-white font-medium  hover:decoration-solid focus:outline-none ${
+                isLarge
+                  ? "text-base sm:text-lg md:text-xl"
+                  : "text-[8px] sm:text-xs md:text-sm"
+              }`}
+              tabIndex={0}
+            >
+              {phone}
+            </a>
+          ) : (
+            <span
+              className={`text-white font-medium ${
+                isLarge
+                  ? "text-base sm:text-lg md:text-xl"
+                  : "text-[8px] sm:text-xs md:text-sm"
+              }`}
+            >
+              {phone}
+            </span>
+          )}
         </div>
       </div>
     </div>
@@ -193,13 +207,22 @@ const ManagementCard2 = ({
           </div>
         </div>
 
-        {/* แถบฟ้า ใส่เบอร์โทรตรงนี้ */}
         <div
           className={`bg-[#01BDCC] flex items-center justify-center px-4 ${phoneHeightClass}`}
         >
-          <span className={`text-white font-medium ${phoneTextSizeClass}`}>
-            {phone}
-          </span>
+          {phone && phone !== "-" ? (
+            <a
+              href={`tel:${phone.replace(/[^0-9+]/g, "")}`}
+              className={`text-white font-medium ${phoneTextSizeClass} cursor-pointer hover:underline focus:outline-none`}
+              tabIndex={0}
+            >
+              {phone}
+            </a>
+          ) : (
+            <span className={`text-white font-medium ${phoneTextSizeClass}`}>
+              {phone}
+            </span>
+          )}
         </div>
       </div>
     </div>

@@ -84,9 +84,9 @@ export async function POST(request) {
 
     if (laravelResult.url) {
       laravelUrl = laravelResult.url;
-      // Extract path from URL
+      // Extract path from URL and remove /storage
       const urlObj = new URL(laravelResult.url);
-      filePath = urlObj.pathname;
+  filePath = decodeURIComponent(urlObj.pathname.replace('/storage', ''));
       console.log("Laravel URL:", laravelUrl);
       console.log("Extracted file path:", filePath);
     } else {

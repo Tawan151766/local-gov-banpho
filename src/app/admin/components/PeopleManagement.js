@@ -50,6 +50,11 @@ const DEPARTMENTS = {
     icon: <TeamOutlined />,
     color: "blue",
   },
+  councilOfficer: {
+    title: "ปลัด/รองปลัดเทศบาล",
+    icon: <UserOutlined />,
+    color: "purple",
+  },
   clerk: {
     title: "สำนักปลัดเทศบาล",
     icon: <BankOutlined />,
@@ -79,7 +84,7 @@ const DEPARTMENTS = {
 
 // Role type configurations
 const ROLE_TYPES = {
-  head: { title: "หัวหน้า", color: "red" },
+  head: { title: "หัวหน้า/ปลัด", color: "red" },
   deputy: { title: "รอง/ผู้ช่วย", color: "orange" },
   staff: { title: "เจ้าหน้าที่", color: "blue" },
   worker: { title: "พนักงาน", color: "green" },
@@ -194,14 +199,7 @@ export default function PeopleManagement() {
 
   useEffect(() => {
     loadPeople(1, 10);
-
-    // Cleanup function to prevent memory leaks
-    return () => {
-      if (form) {
-        form.resetFields();
-      }
-    };
-  }, [loadPeople, form]);
+  }, [loadPeople]);
 
   // Handle table pagination change
   const handleTableChange = (paginationConfig) => {
@@ -235,7 +233,7 @@ export default function PeopleManagement() {
           is_active: true,
           level: 1,
           sort_order: 1,
-          img: "/image/placeholder-person.jpg",
+          img: "/image/placeholder-person.svg",
         });
       }
     } catch (error) {
@@ -248,9 +246,11 @@ export default function PeopleManagement() {
     setModalVisible(true);
     setUploadedImagePath(record.img || null);
     setUploadedImageData(
-      record.img && record.img !== "/image/placeholder-person.jpg"
+      record.img &&
+        record.img !== "/image/placeholder-person.svg" &&
+        record.img.startsWith("/uploads/")
         ? {
-            file_path: record.img,
+            file_path: `/storage${record.img}`, // Convert back to /storage format for consistency
             original_name: record.img.split("/").pop(),
           }
         : null
@@ -340,9 +340,9 @@ export default function PeopleManagement() {
       }
 
       // Use uploaded image if available, otherwise use form value or default
-      let imageUrl = "/image/placeholder-person.jpg";
+      let imageUrl = "/image/placeholder-person.svg";
       if (uploadedImageData && uploadedImageData.file_path) {
-        // Remove /storage prefix if present
+        // Convert from /storage/uploads/filename to /uploads/filename
         imageUrl = uploadedImageData.file_path.replace("/storage", "");
       } else if (values.img?.trim()) {
         imageUrl = values.img.trim();
@@ -453,7 +453,10 @@ export default function PeopleManagement() {
 
         if (result.success) {
           setUploadProgress(100);
-          onChange(result.data.file_path, result.data);
+          // Convert file_path from /storage/uploads/filename to /uploads/filename
+          const cleanUrl = result.data.file_path.replace("/storage", "");
+          const modifiedData = { ...result.data, file_path: cleanUrl };
+          onChange(cleanUrl, modifiedData);
           notification.success({
             message: "สำเร็จ",
             description: "อัพโหลดรูปภาพสำเร็จ",
@@ -554,10 +557,26 @@ export default function PeopleManagement() {
       key: "img",
       width: 80,
       render: (img) => {
-        const imageUrl =
-          img && img !== "/image/placeholder-person.jpg" && img.startsWith("/")
-            ? `https://banpho.sosmartsolution.com/storage${img}`
-            : img || "/image/placeholder-person.jpg";
+        let imageUrl = "/image/placeholder-person.svg";
+
+        if (img && img !== "/image/placeholder-person.svg") {
+          if (img.startsWith("/uploads/")) {
+            // New format: /uploads/filename -> https://domain/storage/uploads/filename
+            imageUrl = `https://banpho.sosmartsolution.com/storage${encodeURI(img)}`;
+          } else if (img.startsWith("/storage/")) {
+            // Old format: /storage/uploads/filename -> https://domain/storage/uploads/filename
+            imageUrl = `https://banpho.sosmartsolution.com${encodeURI(img)}`;
+          } else if (img.startsWith("http")) {
+            // Full URL
+            imageUrl = encodeURI(img);
+          } else if (img.startsWith("/")) {
+            // Other absolute paths
+            imageUrl = encodeURI(img);
+          } else {
+            // Relative paths or other formats
+            imageUrl = encodeURI(img);
+          }
+        }
 
         return (
           <div
@@ -579,7 +598,7 @@ export default function PeopleManagement() {
               }}
               onError={(e) => {
                 console.log("Image load error for:", imageUrl);
-                e.target.src = "/image/placeholder-person.jpg";
+                e.target.src = "/image/placeholder-person.svg";
               }}
             />
           </div>
@@ -915,13 +934,21 @@ export default function PeopleManagement() {
                     }}
                   >
                     <img
-                      src={
-                        uploadedImagePath &&
-                        uploadedImagePath !== "/image/placeholder-person.jpg" &&
-                        uploadedImagePath.startsWith("/")
-                          ? `https://banpho.sosmartsolution.com/storage${uploadedImagePath}`
-                          : uploadedImagePath || "/image/placeholder-person.jpg"
-                      }
+                      src={(() => {
+                        if (
+                          !uploadedImagePath ||
+                          uploadedImagePath === "/image/placeholder-person.svg"
+                        ) {
+                          return "/image/placeholder-person.svg";
+                        }
+                        if (uploadedImagePath.startsWith("/uploads/")) {
+                          return `https://banpho.sosmartsolution.com/storage${encodeURI(uploadedImagePath)}`;
+                        }
+                        if (uploadedImagePath.startsWith("/storage/")) {
+                          return `https://banpho.sosmartsolution.com${encodeURI(uploadedImagePath)}`;
+                        }
+                        return encodeURI(uploadedImagePath);
+                      })()}
                       alt="Preview"
                       style={{
                         width: "100%",
@@ -929,7 +956,7 @@ export default function PeopleManagement() {
                         objectFit: "cover",
                       }}
                       onError={(e) => {
-                        e.target.src = "/image/placeholder-person.jpg";
+                        e.target.src = "/image/placeholder-person.svg";
                       }}
                     />
                   </div>
