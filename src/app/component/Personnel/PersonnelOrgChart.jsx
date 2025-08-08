@@ -550,7 +550,7 @@ const PersonnelOrgChart = () => {
         <div className="relative mb-4">
           <div className="w-24 h-24 mx-auto rounded-full overflow-hidden bg-gradient-to-br from-gray-100 to-gray-200 ring-4 ring-white shadow-lg">
             <img
-              src={person.img}
+              src={`https://banpho.sosmartsolution.com/storage${person.img}`}
               alt={person.full_name}
               className="w-full h-full object-cover transition-transform duration-300 group-hover:scale-110"
               onError={(e) => {
