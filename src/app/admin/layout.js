@@ -2,8 +2,8 @@ import { ConfigProvider, App } from 'antd';
 import thTH from 'antd/locale/th_TH';
 
 export const metadata = {
-  title: 'Admin Panel - องค์การบริหารส่วนตำบลบ้านโพธิ์',
-  description: 'ระบบจัดการสำหรับเว็บไซต์องค์การบริหารส่วนตำบลบ้านโพธิ์',
+  title: 'Admin Panel - องค์การบริหารเทศบาลบ้านโพธิ์',
+  description: 'ระบบจัดการสำหรับเว็บไซต์องค์การบริหารเทศบาลบ้านโพธิ์',
 };
 
 export default function AdminLayout({ children }) {
