@@ -737,9 +737,9 @@ const PersonnelOrgChart = () => {
 
                   {/* เจ้าหน้าที่และนักวิชาการ */}
                   <div className="mb-8">
-                    <h4 className="text-lg font-semibold text-center mb-6 text-blue-700">
+                    {/* <h4 className="text-lg font-semibold text-center mb-6 text-blue-700">
                       เจ้าหน้าที่และนักวิชาการ
-                    </h4>
+                    </h4> */}
                     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                       {personnelData.departments.clerk.staff
                         ?.slice(2, 8)
@@ -751,9 +751,9 @@ const PersonnelOrgChart = () => {
 
                   {/* ผู้ช่วยเจ้าหน้าที่ */}
                   <div className="mb-8">
-                    <h4 className="text-lg font-semibold text-center mb-6 text-blue-700">
+                    {/* <h4 className="text-lg font-semibold text-center mb-6 text-blue-700">
                       ผู้ช่วยเจ้าหน้าที่
-                    </h4>
+                    </h4> */}
                     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
                       {personnelData.departments.clerk.staff
                         ?.slice(8, 12)
@@ -868,9 +868,9 @@ const PersonnelOrgChart = () => {
 
                   {/* นักวิชาการและเจ้าหน้าที่ชำนาญการ */}
                   <div className="mb-8">
-                    <h4 className="text-lg font-semibold text-center mb-6 text-green-700">
+                    {/* <h4 className="text-lg font-semibold text-center mb-6 text-green-700">
                       นักวิชาการและเจ้าหน้าที่ชำนาญการ
-                    </h4>
+                    </h4> */}
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                       <PersonCard
                         person={personnelData.departments.finance.staff[2]}
@@ -883,9 +883,9 @@ const PersonnelOrgChart = () => {
 
                   {/* นักวิชาการและเจ้าพนักงาน */}
                   <div className="mb-8">
-                    <h4 className="text-lg font-semibold text-center mb-6 text-green-700">
+                    {/* <h4 className="text-lg font-semibold text-center mb-6 text-green-700">
                       นักวิชาการและเจ้าพนักงาน
-                    </h4>
+                    </h4> */}
                     <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                       <PersonCard
                         person={personnelData.departments.finance.staff[4]}
@@ -962,9 +962,9 @@ const PersonnelOrgChart = () => {
 
                   {/* หัวหน้าฝ่ายและวิศวกร */}
                   <div className="mb-8">
-                    <h4 className="text-lg font-semibold text-center mb-6 text-orange-700">
+                    {/* <h4 className="text-lg font-semibold text-center mb-6 text-orange-700">
                       หัวหน้าฝ่ายและวิศวกร
-                    </h4>
+                    </h4> */}
                     <div className="grid grid-cols-1 md:grid-cols-2 gap-6 max-w-4xl mx-auto">
                       <PersonCard
                         person={personnelData.departments.engineering.staff[0]}
@@ -987,9 +987,9 @@ const PersonnelOrgChart = () => {
 
                   {/* ผู้ช่วยเจ้าพนักงานและพนักงานพิเศษ */}
                   <div className="mb-8">
-                    <h4 className="text-lg font-semibold text-center mb-6 text-orange-700">
+                    {/* <h4 className="text-lg font-semibold text-center mb-6 text-orange-700">
                       ผู้ช่วยเจ้าพนักงานและพนักงานพิเศษ
-                    </h4>
+                    </h4> */}
                     <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                       <PersonCard
                         person={personnelData.departments.engineering.staff[2]}
@@ -1005,9 +1005,9 @@ const PersonnelOrgChart = () => {
 
                   {/* คนงานทั่วไป */}
                   <div className="mb-8">
-                    <h4 className="text-lg font-semibold text-center mb-6 text-orange-700">
+                    {/* <h4 className="text-lg font-semibold text-center mb-6 text-orange-700">
                       คนงานทั่วไป
-                    </h4>
+                    </h4> */}
                     <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
                       <PersonCard
                         person={personnelData.departments.engineering.staff[3]}
@@ -1093,9 +1093,9 @@ const PersonnelOrgChart = () => {
 
                   {/* หัวหน้าฝ่าย */}
                   <div className="mb-8">
-                    <h4 className="text-lg font-semibold text-center mb-6 text-purple-700">
+                    {/* <h4 className="text-lg font-semibold text-center mb-6 text-purple-700">
                       หัวหน้าฝ่าย
-                    </h4>
+                    </h4> */}
                     <div className="flex justify-center">
                       <PersonCard
                         person={personnelData.departments.education.staff[0]}
