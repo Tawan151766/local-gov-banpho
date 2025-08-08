@@ -6,19 +6,63 @@ export async function GET(request) {
     const { searchParams } = new URL(request.url);
     const department = searchParams.get("department");
     const includeEmpty = searchParams.get("includeEmpty") === "true";
+    const roleType = searchParams.get("role_type");
+    const page = parseInt(searchParams.get("page")) || 1;
+    const limit = parseInt(searchParams.get("limit")) || 10;
+    const adminMode = searchParams.get("admin") === "true";
 
-    let whereCondition = {
-      is_active: true,
-    };
+    let whereCondition = {};
+
+    // For admin mode, show all records including inactive ones
+    if (!adminMode) {
+      whereCondition.is_active = true;
+    }
 
     if (department) {
       whereCondition.department = department;
     }
 
-    if (!includeEmpty) {
+    if (roleType) {
+      whereCondition.role_type = roleType;
+    }
+
+    if (!includeEmpty && !adminMode) {
       whereCondition.is_empty = false;
     }
 
+    // For admin mode, return flat list with pagination
+    if (adminMode) {
+      const skip = (page - 1) * limit;
+      
+      const [people, total] = await Promise.all([
+        prisma.peopleManagement.findMany({
+          where: whereCondition,
+          orderBy: [{ level: "asc" }, { sort_order: "asc" }, { id: "asc" }],
+          skip,
+          take: limit,
+        }),
+        prisma.peopleManagement.count({ where: whereCondition }),
+      ]);
+
+      // Convert BigInt to string for JSON serialization
+      const serializedPeople = people.map((person) => ({
+        ...person,
+        id: person.id.toString(),
+      }));
+
+      return NextResponse.json({
+        success: true,
+        data: serializedPeople,
+        pagination: {
+          page,
+          limit,
+          total,
+          totalPages: Math.ceil(total / limit),
+        },
+      });
+    }
+
+    // Original structured response for frontend
     const people = await prisma.peopleManagement.findMany({
       where: whereCondition,
       orderBy: [{ level: "asc" }, { sort_order: "asc" }, { id: "asc" }],

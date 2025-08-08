@@ -19,6 +19,7 @@ import {
 } from "@ant-design/icons";
 
 import StaffManagement from "./components/StaffManagement";
+import PeopleManagement from "./components/PeopleManagement";
 import PerformanceResultsManagement from "./components/PerformanceResultsManagement";
 import ItaManagement from "./components/ItaManagement";
 import PostTypeManagement from "./components/PostTypeManagement";
@@ -133,7 +134,13 @@ export default function AdminPage() {
       key: "basic-management",
       label: "การจัดการพื้นฐาน",
       type: "group",
-      children: [],
+      children: [
+        {
+          key: "people-management",
+          icon: <UserOutlined />,
+          label: "จัดการข้อมูลบุคลากร",
+        },
+      ],
     },
     {
       key: "performance-management",
@@ -286,6 +293,8 @@ export default function AdminPage() {
     switch (selectedKey) {
       case "staff-management":
         return <StaffManagement />;
+      case "people-management":
+        return <PeopleManagement />;
       case "performance-results":
         return <PerformanceResultsManagement />;
       case "ita-management":
