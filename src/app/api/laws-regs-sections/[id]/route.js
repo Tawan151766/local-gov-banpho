@@ -1,187 +1,69 @@
-import { NextResponse } from 'next/server';
-import mysql from 'mysql2/promise';
+import { NextResponse } from "next/server";
+import { prisma } from "@/lib/prisma";
 
-// Database connection
-const dbConfig = {
-  host: process.env.DB_HOST,
-  port: process.env.DB_PORT ? parseInt(process.env.DB_PORT) : 3306,
-  user: process.env.DB_USER,
-  password: process.env.DB_PASSWORD,
-  database: process.env.DB_NAME
-};
-
-// GET /api/laws-regs-sections/[id] - ดึงข้อมูล laws regs section เดียว
 export async function GET(request, { params }) {
-  let connection;
-  
   try {
     const { id } = params;
-    const { searchParams } = new URL(request.url);
-    const withFiles = searchParams.get('withFiles') === 'true';
 
-    connection = await mysql.createConnection(dbConfig);
-
-    // Get laws regs section with type info
-    const [sections] = await connection.execute(
-      `SELECT lrs.*, lrt.type_name 
-       FROM laws_regs_sections lrs 
-       LEFT JOIN laws_regs_types lrt ON lrs.type_id = lrt.id 
-       WHERE lrs.id = ?`,
-      [parseInt(id)]
-    );
-
-    if (sections.length === 0) {
+    if (!id) {
       return NextResponse.json(
-        { success: false, error: 'Laws regs section not found' },
-        { status: 404 }
-      );
-    }
-
-    let section = sections[0];
-
-    // If withFiles is true, get files
-    if (withFiles) {
-      const [files] = await connection.execute(
-        'SELECT * FROM laws_regs_files WHERE section_id = ? ORDER BY created_at ASC',
-        [parseInt(id)]
-      );
-      section.files = files;
-    }
-
-    return NextResponse.json({
-      success: true,
-      data: section
-    });
-
-  } catch (error) {
-    console.error('Error fetching laws regs section:', error);
-    return NextResponse.json(
-      { success: false, error: 'Failed to fetch laws regs section', details: error.message },
-      { status: 500 }
-    );
-  } finally {
-    if (connection) {
-      await connection.end();
-    }
-  }
-}
-
-// PUT /api/laws-regs-sections/[id] - อัปเดต laws regs section
-export async function PUT(request, { params }) {
-  let connection;
-  
-  try {
-    const { id } = params;
-    const body = await request.json();
-    const { section_name } = body;
-
-    // Validation
-    if (!section_name) {
-      return NextResponse.json(
-        { success: false, error: 'Section name is required' },
+        { success: false, error: "Section ID is required" },
         { status: 400 }
       );
     }
 
-    connection = await mysql.createConnection(dbConfig);
+    // Get section with related data
+    const section = await prisma.laws_regs_sections.findUnique({
+      where: {
+        id: BigInt(id),
+      },
+      include: {
+        laws_regs_types: true,
+        laws_regs_files: {
+          orderBy: {
+            created_at: 'desc'
+          }
+        }
+      }
+    });
 
-    // Update laws regs section
-    const [result] = await connection.execute(
-      'UPDATE laws_regs_sections SET section_name = ?, updated_at = NOW() WHERE id = ?',
-      [section_name, parseInt(id)]
-    );
-
-    if (result.affectedRows === 0) {
+    if (!section) {
       return NextResponse.json(
-        { success: false, error: 'Laws regs section not found' },
+        { success: false, error: "Section not found" },
         { status: 404 }
       );
     }
 
-    // Get updated section
-    const [updatedSection] = await connection.execute(
-      `SELECT lrs.*, lrt.type_name 
-       FROM laws_regs_sections lrs 
-       LEFT JOIN laws_regs_types lrt ON lrs.type_id = lrt.id 
-       WHERE lrs.id = ?`,
-      [parseInt(id)]
-    );
+    // Transform data to match expected format
+    const transformedSection = {
+      id: Number(section.id),
+      section_name: section.section_name,
+      type_id: section.type_id ? Number(section.type_id) : null,
+      type_name: section.laws_regs_types?.type_name || "ไม่ระบุประเภท",
+      created_at: section.created_at,
+      updated_at: section.updated_at,
+      files: section.laws_regs_files.map(file => ({
+        id: Number(file.id),
+        files_path: file.files_path,
+        files_type: file.files_type,
+        original_name: file.files_path?.split('/').pop() || `ไฟล์ ${file.id}`,
+        created_at: file.created_at
+      }))
+    };
 
     return NextResponse.json({
       success: true,
-      data: updatedSection[0],
-      message: 'Laws regs section updated successfully'
+      data: transformedSection,
     });
-
   } catch (error) {
-    console.error('Error updating laws regs section:', error);
+    console.error("Error fetching section detail:", error);
     return NextResponse.json(
-      { success: false, error: 'Failed to update laws regs section', details: error.message },
+      {
+        success: false,
+        error: "Failed to fetch section detail",
+        details: error.message,
+      },
       { status: 500 }
     );
-  } finally {
-    if (connection) {
-      await connection.end();
-    }
-  }
-}
-
-// DELETE /api/laws-regs-sections/[id] - ลบ laws regs section
-export async function DELETE(request, { params }) {
-  let connection;
-  
-  try {
-    const { id } = params;
-
-    connection = await mysql.createConnection(dbConfig);
-
-    // Start transaction
-    await connection.beginTransaction();
-
-    try {
-      // Delete files first (CASCADE will handle this, but we do it explicitly)
-      await connection.execute(
-        'DELETE FROM laws_regs_files WHERE section_id = ?',
-        [parseInt(id)]
-      );
-
-      // Delete laws regs section
-      const [result] = await connection.execute(
-        'DELETE FROM laws_regs_sections WHERE id = ?',
-        [parseInt(id)]
-      );
-
-      if (result.affectedRows === 0) {
-        await connection.rollback();
-        return NextResponse.json(
-          { success: false, error: 'Laws regs section not found' },
-          { status: 404 }
-        );
-      }
-
-      // Commit transaction
-      await connection.commit();
-
-      return NextResponse.json({
-        success: true,
-        message: 'Laws regs section deleted successfully'
-      });
-
-    } catch (error) {
-      // Rollback transaction on error
-      await connection.rollback();
-      throw error;
-    }
-
-  } catch (error) {
-    console.error('Error deleting laws regs section:', error);
-    return NextResponse.json(
-      { success: false, error: 'Failed to delete laws regs section', details: error.message },
-      { status: 500 }
-    );
-  } finally {
-    if (connection) {
-      await connection.end();
-    }
   }
 }
