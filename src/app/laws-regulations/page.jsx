@@ -1,65 +1,100 @@
 "use client";
-import React, { useEffect, useState } from "react";
-import { useRouter } from "next/navigation";
+import React, { useEffect, useState, Suspense } from "react";
+import { useRouter, useSearchParams } from "next/navigation";
 
-export default function LawsRegulationsPage() {
+// Component that uses useSearchParams wrapped in Suspense
+function LawsRegulationsContent() {
   const router = useRouter();
-  const [lawsRegs, setLawsRegs] = useState([]);
+  const searchParams = useSearchParams();
+  const [sections, setSections] = useState([]);
+  const [types, setTypes] = useState([]);
   const [loading, setLoading] = useState(true);
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
-  const [totalLawsRegs, setTotalLawsRegs] = useState(0);
-  const [searchText, setSearchText] = useState("");
-  const [selectedCategory, setSelectedCategory] = useState("");
-  const lawsRegsPerPage = 6;
+  const [totalSections, setTotalSections] = useState(0);
+  const [selectedType, setSelectedType] = useState("");
+  const [activeTab, setActiveTab] = useState("all");
+  const sectionsPerPage = 6;
 
-  // Categories for filtering
-  const categories = [
-    { value: "", label: "ทั้งหมด" },
-    { value: "กฎหมาย", label: "กฎหมาย" },
-    { value: "ระเบียบ", label: "ระเบียบ" },
-    { value: "ข้อบังคับ", label: "ข้อบังคับ" },
-    { value: "คำสั่ง", label: "คำสั่ง" },
-    { value: "ประกาศ", label: "ประกาศ" },
-    { value: "มติ", label: "มติ" },
-    { value: "นโยบาย", label: "นโยบาย" }
+  // Define tab categories based on actual law types in the system
+  const tabCategories = [
+    { key: "all", label: "ทั้งหมด", keywords: [] },
+    {
+      key: "laws-regulations-ministry",
+      label: "กฎหมาย ระเบียบ และประกาศกระทรวง",
+      keywords: ["กฎหมาย", "ระเบียบ", "ประกาศกระทรวง"],
+    },
+    {
+      key: "royal-acts-decrees",
+      label: "พระราชบัญญัติ และพระราชกฤษฎีกา",
+      keywords: ["พระราชบัญญัติ", "พระราชกฤษฎีกา"],
+    },
+    {
+      key: "local-ordinances",
+      label: "ข้อบัญญัติ",
+      keywords: ["ข้อบัญญัติ"],
+    },
   ];
 
   useEffect(() => {
-    fetchLawsRegs();
-  }, [currentPage, searchText, selectedCategory]);
+    fetchTypes();
 
-  const fetchLawsRegs = async () => {
+    // Check URL parameters for tab selection
+    const tabParam = searchParams.get("tab");
+    if (tabParam && tabCategories.find((tab) => tab.key === tabParam)) {
+      setActiveTab(tabParam);
+    }
+  }, []);
+
+  useEffect(() => {
+    fetchSections();
+  }, [currentPage, selectedType, activeTab]);
+
+  const fetchTypes = async () => {
+    try {
+      const response = await fetch("/api/laws-regs-types-prisma");
+      const result = await response.json();
+      if (result.success) {
+        setTypes(result.data || []);
+      }
+    } catch (error) {
+      console.error("Error fetching types:", error);
+    }
+  };
+
+  const fetchSections = async () => {
     setLoading(true);
     try {
-      // Build query parameters
       const params = new URLSearchParams({
         page: currentPage.toString(),
-        limit: lawsRegsPerPage.toString(),
-        withSections: 'true'
+        limit: sectionsPerPage.toString(),
       });
 
-      if (searchText.trim()) {
-        params.append('search', searchText.trim());
+      if (selectedType) {
+        // Find type ID from selected type name
+        const selectedTypeObj = types.find(type => type.type_name === selectedType);
+        if (selectedTypeObj) {
+          params.append('typeId', selectedTypeObj.id.toString());
+        }
       }
 
-      if (selectedCategory) {
-        params.append('category', selectedCategory);
+      if (activeTab !== "all") {
+        params.append('tab', activeTab);
       }
 
-      const response = await fetch(`/api/laws-regs-types?${params.toString()}`);
+      const response = await fetch(`/api/laws-regs-sections?${params.toString()}`);
       const result = await response.json();
       
       if (result.success) {
-        setLawsRegs(result.data || []);
-        setTotalLawsRegs(result.pagination?.total || result.data?.length || 0);
-        setTotalPages(Math.ceil((result.pagination?.total || result.data?.length || 0) / lawsRegsPerPage));
+        setSections(result.data || []);
+        setTotalSections(result.pagination?.total || result.data?.length || 0);
+        setTotalPages(Math.ceil((result.pagination?.total || result.data?.length || 0) / sectionsPerPage));
       } else {
-        setLawsRegs([]);
+        setSections([]);
       }
     } catch (error) {
-      console.error("Error fetching laws and regulations:", error);
-      setLawsRegs([]);
+      console.error("Error fetching laws and regulations sections:", error);
+      setSections([]);
     } finally {
       setLoading(false);
     }
@@ -98,35 +133,86 @@ export default function LawsRegulationsPage() {
     }
   };
 
-  const handleShowDetail = (lawReg) => {
-    router.push(`/laws-regulations/detail/${lawReg.id}`);
-  };
-
-  const handleSearch = (value) => {
-    setSearchText(value);
-    setCurrentPage(1); // Reset to first page when searching
-  };
-
-  const handleCategoryFilter = (category) => {
-    setSelectedCategory(category);
-    setCurrentPage(1); // Reset to first page when filtering
-  };
-
-  const clearFilters = () => {
-    setSearchText("");
-    setSelectedCategory("");
+  const handleTypeFilter = (typeName) => {
+    setSelectedType(typeName);
     setCurrentPage(1);
+  };
+
+  const handleTabChange = (tabKey) => {
+    setActiveTab(tabKey);
+    setCurrentPage(1);
+    setSelectedType(""); // Reset type filter when changing tabs
+
+    // Update URL without page reload
+    const url = new URL(window.location);
+    if (tabKey === "all") {
+      url.searchParams.delete("tab");
+    } else {
+      url.searchParams.set("tab", tabKey);
+    }
+    window.history.pushState({}, "", url);
+  };
+
+  const getFilteredTypes = () => {
+    if (activeTab === "all") return types;
+
+    const currentTabCategory = tabCategories.find(
+      (tab) => tab.key === activeTab
+    );
+    if (!currentTabCategory) return types;
+
+    return types.filter((type) =>
+      currentTabCategory.keywords.some((keyword) =>
+        type.type_name.includes(keyword)
+      )
+    );
+  };
+
+  const handleShowDetail = (section) => {
+    router.push(`/laws-regulations/detail/${section.id}`);
+  };
+
+  const handleFileDownload = (filePath, fileName) => {
+    const baseUrl = "https://banpho.sosmartsolution.com/storage/";
+    const fileUrl = filePath?.startsWith("http")
+      ? filePath
+      : `${baseUrl}${filePath}`;
+
+    const link = document.createElement("a");
+    link.href = fileUrl;
+    link.download = fileName || filePath.split("/").pop();
+    link.target = "_blank";
+    document.body.appendChild(link);
+    link.click();
+    document.body.removeChild(link);
+  };
+
+  const getFileIcon = (fileType) => {
+    const type = fileType?.toLowerCase();
+    if (type?.includes("pdf")) return "📄";
+    if (
+      type?.includes("image") ||
+      type?.includes("jpg") ||
+      type?.includes("png")
+    )
+      return "🖼️";
+    if (type?.includes("video") || type?.includes("mp4")) return "🎥";
+    if (type?.includes("doc") || type?.includes("word")) return "📝";
+    if (type?.includes("excel") || type?.includes("xls")) return "📊";
+    return "📎";
   };
 
   const getLawRegColor = (typeName) => {
     if (!typeName) return "#01bdcc";
     
-    if (typeName.includes("กฎหมาย") || typeName.includes("พระราชบัญญัติ")) return "#dc3545";
-    if (typeName.includes("ระเบียบ") || typeName.includes("ข้อบังคับ")) return "#28a745";
-    if (typeName.includes("คำสั่ง") || typeName.includes("ประกาศ")) return "#ffc107";
-    if (typeName.includes("มติ") || typeName.includes("นโยบาย")) return "#6f42c1";
-    if (typeName.includes("แนวทาง") || typeName.includes("หลักเกณฑ์")) return "#fd7e14";
-    if (typeName.includes("มาตรฐาน") || typeName.includes("เกณฑ์")) return "#20c997";
+    // กฎหมาย ระเบียบ และประกาศกระทรวง
+    if (typeName.includes("กฎหมาย") || typeName.includes("ระเบียบ") || typeName.includes("ประกาศกระทรวง")) return "#dc3545";
+    
+    // พระราชบัญญัติ และพระราชกฤษฎีกา
+    if (typeName.includes("พระราชบัญญัติ") || typeName.includes("พระราชกฤษฎีกา")) return "#28a745";
+    
+    // ข้อบัญญัติ
+    if (typeName.includes("ข้อบัญญัติ")) return "#ffc107";
     
     return "#01bdcc";
   };
@@ -241,105 +327,10 @@ export default function LawsRegulationsPage() {
           {pages}
         </div>
         <div className="text-sm text-white bg-black bg-opacity-20 px-4 py-2 rounded-full backdrop-blur-sm">
-          แสดงหน้า {currentPage} จาก {totalPages} หน้า | ทั้งหมด {totalLawsRegs} กฎหมาย
-          {(searchText || selectedCategory) && (
-            <span className="ml-2">
-              ({searchText && `ค้นหา: "${searchText}"`}
-              {searchText && selectedCategory && ", "}
-              {selectedCategory && `ประเภท: ${categories.find(c => c.value === selectedCategory)?.label}`})
-            </span>
-          )}
+          แสดงหน้า {currentPage} จาก {totalPages} หน้า | ทั้งหมด {totalSections} มาตรา
         </div>
 
-        {/* Filter Section */}
-        <div className="bg-white bg-opacity-90 rounded-2xl shadow-md p-4 backdrop-blur-sm">
-          <h3 className="text-lg font-semibold text-gray-800 mb-3">ค้นหาและกรอง</h3>
-          
-          {/* Search Bar */}
-          <div className="mb-4">
-            <div className="relative">
-              <input
-                type="text"
-                placeholder="ค้นหากฎหมาย ระเบียบ ข้อบังคับ..."
-                value={searchText}
-                onChange={(e) => setSearchText(e.target.value)}
-                onKeyPress={(e) => {
-                  if (e.key === 'Enter') {
-                    handleSearch(e.target.value);
-                  }
-                }}
-                className="w-full px-4 py-2 pr-10 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#01bdcc] focus:border-transparent"
-              />
-              <button
-                onClick={() => handleSearch(searchText)}
-                className="absolute right-2 top-1/2 transform -translate-y-1/2 text-gray-400 hover:text-[#01bdcc]"
-              >
-                🔍
-              </button>
-            </div>
-          </div>
 
-          {/* Category Filter */}
-          <div className="mb-4">
-            <label className="block text-sm font-medium text-gray-700 mb-2">กรองตามประเภท</label>
-            <div className="flex flex-wrap gap-2">
-              {categories.map((category) => (
-                <button
-                  key={category.value}
-                  onClick={() => handleCategoryFilter(category.value)}
-                  className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
-                    selectedCategory === category.value
-                      ? 'text-white shadow-md'
-                      : 'bg-white text-gray-700 border border-gray-300 hover:bg-gray-50'
-                  }`}
-                  style={{
-                    backgroundColor: selectedCategory === category.value 
-                      ? getLawRegColor(category.value || 'default') 
-                      : undefined
-                  }}
-                >
-                  {category.label}
-                </button>
-              ))}
-            </div>
-          </div>
-
-          {/* Active Filters & Clear */}
-          {(searchText || selectedCategory) && (
-            <div className="flex items-center justify-between pt-3 border-t border-gray-200">
-              <div className="flex flex-wrap gap-2">
-                {searchText && (
-                  <span className="inline-flex items-center gap-1 px-3 py-1 bg-blue-100 text-blue-800 rounded-full text-sm">
-                    ค้นหา: "{searchText}"
-                    <button
-                      onClick={() => handleSearch("")}
-                      className="ml-1 text-blue-600 hover:text-blue-800"
-                    >
-                      ×
-                    </button>
-                  </span>
-                )}
-                {selectedCategory && (
-                  <span className="inline-flex items-center gap-1 px-3 py-1 bg-purple-100 text-purple-800 rounded-full text-sm">
-                    ประเภท: {categories.find(c => c.value === selectedCategory)?.label}
-                    <button
-                      onClick={() => handleCategoryFilter("")}
-                      className="ml-1 text-purple-600 hover:text-purple-800"
-                    >
-                      ×
-                    </button>
-                  </span>
-                )}
-              </div>
-              <button
-                onClick={clearFilters}
-                className="px-3 py-1 text-sm text-gray-600 hover:text-gray-800 border border-gray-300 rounded-lg hover:bg-gray-50"
-              >
-                ล้างตัวกรอง
-              </button>
-            </div>
-          )}
-        </div>
       </div>
     );
   };
@@ -376,6 +367,32 @@ export default function LawsRegulationsPage() {
             </span>
           </div>
         </div>
+
+        {/* Tab Navigation */}
+        <div className="bg-white bg-opacity-90 rounded-2xl shadow-md p-4 backdrop-blur-sm mb-4">
+          <h3 className="text-lg font-semibold text-gray-800 mb-3">
+            หมวดหมู่กฎหมาย
+          </h3>
+          <div className="flex flex-wrap gap-2">
+            {tabCategories.map((tab) => (
+              <button
+                key={tab.key}
+                onClick={() => handleTabChange(tab.key)}
+                className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
+                  activeTab === tab.key
+                    ? "text-white shadow-md"
+                    : "bg-white text-gray-700 border border-gray-300 hover:bg-gray-50"
+                }`}
+                style={{
+                  backgroundColor:
+                    activeTab === tab.key ? getLawRegColor(tab.label) : undefined,
+                }}
+              >
+                {tab.label}
+              </button>
+            ))}
+          </div>
+        </div>
       </div>
 
       {/* Content Section */}
@@ -397,20 +414,20 @@ export default function LawsRegulationsPage() {
               <div className="h-4 bg-gray-300 rounded w-24"></div>
             </div>
           ))
-        ) : lawsRegs.length > 0 ? (
-          lawsRegs.map((lawReg) => (
+        ) : sections.length > 0 ? (
+          sections.map((section) => (
             <div
-              key={lawReg.id}
+              key={section.id}
               className="bg-white bg-opacity-95 rounded-[29px] border-4 border-[#01bdcc] shadow-lg p-6 flex flex-col gap-3 relative cursor-pointer hover:shadow-xl hover:bg-opacity-100 transition-all duration-300 transform hover:-translate-y-1 backdrop-blur-sm"
-              onClick={() => handleShowDetail(lawReg)}
+              onClick={() => handleShowDetail(section)}
             >
               {/* Header */}
               <div className="flex items-start justify-between mb-2">
                 <h2 className="text-xl font-bold text-[#01385f] line-clamp-2 flex-1">
-                  {lawReg.type_name}
+                  {section.section_name}
                 </h2>
                 <div className="ml-2 bg-blue-100 text-blue-600 px-2 py-1 rounded-full text-xs font-medium">
-                  ID: {lawReg.id}
+                  ID: {section.id}
                 </div>
               </div>
 
@@ -418,19 +435,19 @@ export default function LawsRegulationsPage() {
               <div className="mb-3">
                 <span 
                   className="inline-block px-3 py-1 rounded-full text-white text-sm font-medium"
-                  style={{ backgroundColor: getLawRegColor(lawReg.type_name) }}
+                  style={{ backgroundColor: getLawRegColor(section.type_name) }}
                 >
-                  กฎหมายและระเบียบ
+                  {section.type_name}
                 </span>
               </div>
 
               {/* Stats */}
               <div className="flex flex-wrap gap-2 mb-4">
-                <span className="bg-green-100 text-green-600 px-3 py-1 rounded-full text-xs font-medium">
-                  📄 {lawReg.sections?.length || 0} มาตรา
+                <span className="bg-blue-100 text-blue-600 px-3 py-1 rounded-full text-xs font-medium">
+                  📄 {section.files_count || 0} ไฟล์
                 </span>
                 <span className="bg-purple-100 text-purple-600 px-3 py-1 rounded-full text-xs font-medium">
-                  ⚖️ กฎหมาย
+                  ⚖️ มาตรา
                 </span>
               </div>
 
@@ -438,30 +455,37 @@ export default function LawsRegulationsPage() {
               <div className="text-sm text-gray-600 space-y-1">
                 <div className="flex items-center gap-2">
                   <span className="text-gray-500">สร้างเมื่อ:</span>
-                  <span className="font-medium">{formatDate(lawReg.created_at)}</span>
+                  <span className="font-medium">{formatDate(section.created_at)}</span>
                 </div>
-                {lawReg.updated_at && (
+                {section.updated_at && (
                   <div className="flex items-center gap-2">
                     <span className="text-gray-500">อัพเดท:</span>
-                    <span className="font-medium">{formatDate(lawReg.updated_at)}</span>
+                    <span className="font-medium">{formatDate(section.updated_at)}</span>
                   </div>
                 )}
               </div>
 
-              {/* Preview of recent sections */}
-              {lawReg.sections && lawReg.sections.length > 0 && (
+              {/* Preview of recent files */}
+              {section.recent_files && section.recent_files.length > 0 && (
                 <div className="mt-3 pt-3 border-t border-gray-100">
-                  <p className="text-xs text-gray-500 mb-2">มาตราล่าสุด:</p>
+                  <p className="text-xs text-gray-500 mb-2">ไฟล์ล่าสุด:</p>
                   <div className="space-y-1">
-                    {lawReg.sections.slice(0, 2).map((section, idx) => (
-                      <div key={idx} className="text-sm text-gray-700 bg-gray-50 px-2 py-1 rounded truncate flex items-center gap-1">
-                        <span>⚖️</span>
-                        <span>{section.section_name}</span>
+                    {section.recent_files.slice(0, 2).map((file, idx) => (
+                      <div
+                        key={idx}
+                        className="text-sm text-gray-700 bg-gray-50 px-2 py-1 rounded truncate flex items-center gap-1"
+                      >
+                        <span>{getFileIcon(file.files_type)}</span>
+                        <span>
+                          {file.original_name ||
+                            file.files_path?.split("/").pop() ||
+                            `ไฟล์ ${idx + 1}`}
+                        </span>
                       </div>
                     ))}
-                    {lawReg.sections.length > 2 && (
+                    {section.files_count > 2 && (
                       <div className="text-xs text-gray-400">
-                        และอีก {lawReg.sections.length - 2} มาตรา...
+                        และอีก {section.files_count - 2} ไฟล์...
                       </div>
                     )}
                   </div>
@@ -482,20 +506,18 @@ export default function LawsRegulationsPage() {
             <div className="bg-white bg-opacity-90 rounded-xl p-8 text-center shadow-lg backdrop-blur-sm">
               <div className="text-gray-400 text-6xl mb-4">⚖️</div>
               <div className="text-gray-500 text-xl mb-2">
-                {searchText || selectedCategory 
-                  ? "ไม่พบกฎหมายและระเบียบที่ตรงกับการค้นหา" 
-                  : "ไม่มีข้อมูลกฎหมายและระเบียบ"
-                }
+                {selectedType
+                  ? "ไม่พบข้อมูลกฎหมายและระเบียบในประเภทที่เลือก"
+                  : "ไม่มีข้อมูลกฎหมายและระเบียบ"}
               </div>
               <div className="text-gray-400 text-sm mb-4">
-                {searchText || selectedCategory 
-                  ? "ลองเปลี่ยนคำค้นหาหรือตัวกรองใหม่" 
-                  : "กรุณาเพิ่มข้อมูลกฎหมายในระบบจัดการ"
-                }
+                {selectedType
+                  ? "ลองเลือกประเภทอื่น หรือดูทั้งหมด"
+                  : "กรุณาเพิ่มข้อมูลกฎหมายในระบบจัดการ"}
               </div>
-              {(searchText || selectedCategory) && (
+              {selectedType && (
                 <button
-                  onClick={clearFilters}
+                  onClick={() => handleTypeFilter("")}
                   className="px-4 py-2 bg-[#01bdcc] text-white rounded-lg hover:bg-[#01a5b3] transition-colors"
                 >
                   ดูทั้งหมด
@@ -509,5 +531,48 @@ export default function LawsRegulationsPage() {
       {/* Pagination */}
       {renderPagination()}
     </div>
+  );
+}
+
+// Loading component for Suspense fallback
+function LoadingFallback() {
+  return (
+    <div
+      className="w-full min-h-screen py-8 px-2 md:px-8 flex flex-col items-center bg-transparent"
+      style={{
+        backgroundImage:
+          'linear-gradient(180deg, rgba(239, 228, 212, 0.6) 0%, rgba(1, 189, 204, 0.6) 100%), url("/image/Boat.jpg")',
+        backgroundSize: "cover",
+        backgroundPosition: "center",
+        backgroundRepeat: "no-repeat",
+        backgroundAttachment: "fixed",
+      }}
+    >
+      <div className="w-full max-w-[1268px] flex flex-col gap-4 mb-8">
+        <div className="bg-white bg-opacity-95 rounded-2xl shadow-lg p-8 backdrop-blur-sm animate-pulse">
+          <div className="flex items-center gap-4 mb-6">
+            <div className="h-8 bg-gray-300 rounded w-32"></div>
+            <div className="h-6 bg-gray-300 rounded w-24"></div>
+          </div>
+          <div className="h-8 bg-gray-300 rounded w-full mb-4"></div>
+          <div className="h-4 bg-gray-300 rounded w-3/4 mb-2"></div>
+          <div className="h-4 bg-gray-300 rounded w-1/2 mb-6"></div>
+          <div className="space-y-4">
+            <div className="h-16 bg-gray-300 rounded"></div>
+            <div className="h-16 bg-gray-300 rounded"></div>
+            <div className="h-16 bg-gray-300 rounded"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+}
+
+// Main component with Suspense wrapper
+export default function LawsRegulationsPage() {
+  return (
+    <Suspense fallback={<LoadingFallback />}>
+      <LawsRegulationsContent />
+    </Suspense>
   );
 }
