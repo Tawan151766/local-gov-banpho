@@ -17,6 +17,11 @@ const geistMono = Geist_Mono({
 export const metadata = {
   title: "เทศบาลตำบลบ้านโพธิ์",
   description: "เว็บไซต์เทศบาลตำบลบ้านโพธิ์ อำเภอบ้านโพธิ์ จังหวัดฉะเชิงเทรา",
+  icons: {
+    icon: [
+      { url: "/logobanpho.png", type: "image/png" }
+    ]
+  }
 };
 
 export default function RootLayout({ children }) {
