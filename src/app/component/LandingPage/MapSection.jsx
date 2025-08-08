@@ -3,17 +3,12 @@ import React from "react";
 export default function MapsSection() {
   return (
     <div className="relative w-full h-full">
-      {/* Background Video */}
-      <video
-        autoPlay
-        loop
-        muted
-        playsInline
+      {/* Background image */}
+      <img
+        src="/image/map_new-01.jpg"
+        alt="map image"
         className="w-full h-full object-cover"
-      >
-        <source src="/image/map_video.mp4" type="video/mp4" />
-        Your browser does not support the video tag.
-      </video>
+      />
 
       {/* Overlay Text */}
       <div className="absolute inset-0 flex  justify-center md:top-20 top-5">
