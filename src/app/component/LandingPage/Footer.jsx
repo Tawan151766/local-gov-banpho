@@ -2,18 +2,18 @@ import React from "react";
 
 export default function Footer() {
   return (
-<footer className="w-full bg-gradient-to-b from-[#05c5ff] to-[#0383aa] relative overflow-hidden shadow-lg">
-  {/* Background image ซ้อนทับ */}
-  <img
-    src="/image/white_tree.png"
-    alt="white tree"
-    className="absolute top-0 left-0 w-full h-full object-cover pointer-events-none z-0"
-  />
-  <img
-  src="/image/white_tree.png"
-  alt="white tree"
-  className="absolute top-0 left-0 w-full h-full object-cover pointer-events-none z-0 scale-x-[-1]"
-/>
+    <footer className="w-full bg-gradient-to-b from-[#05c5ff] to-[#0383aa] relative overflow-hidden shadow-lg">
+      {/* Background image ซ้อนทับ */}
+      <img
+        src="/image/white_tree.png"
+        alt="white tree"
+        className="absolute top-0 left-0 w-full h-full object-cover pointer-events-none z-0"
+      />
+      <img
+        src="/image/white_tree.png"
+        alt="white tree"
+        className="absolute top-0 left-0 w-full h-full object-cover pointer-events-none z-0 scale-x-[-1]"
+      />
 
       <div className="max-w-[1400px] mx-auto px-4 py-8 relative">
         {/* Top Navigation Links */}
@@ -49,8 +49,12 @@ export default function Footer() {
 
           {/* Organization Info - จัดกึ่งกลางใน mobile */}
           <div className="flex-1 text-center lg:text-left text-white order-2 lg:order-2">
-            <h2 className="md:text-[36px] text-[20px] text-[#01385F] font-bold mb-2">เทศบาลตำบลบ้านโพธิ์</h2>
-            <p className="md:text-[16px] text-[12px] text-[#01385F] mb-1">Ban Pho Subdistrict, Chachoengsao</p>
+            <h2 className="md:text-[36px] text-[20px] text-[#01385F] font-bold mb-2">
+              เทศบาลตำบลบ้านโพธิ์
+            </h2>
+            <p className="md:text-[16px] text-[12px] text-[#01385F] mb-1">
+              Ban Pho Subdistrict, Municipality
+            </p>
             <p className="md:text-[14px] text-[11px] text-[#01385F] leading-relaxed">
               222 หมู่ 1 ตำบลบ้านโพธิ์ อำเภอบ้านโพธิ์ จังหวัดฉะเชิงเทรา 24140
             </p>
@@ -60,7 +64,9 @@ export default function Footer() {
           <div className="w-full lg:w-auto flex flex-col lg:flex-row gap-6 lg:gap-12 order-3 lg:order-3">
             {/* Contact Info */}
             <div className="flex flex-col gap-3 text-white">
-              <h3 className="text-[16px] font-semibold mb-2 text-center lg:text-left">ติดต่อเรา</h3>
+              <h3 className="text-[16px] font-semibold mb-2 text-center lg:text-left">
+                ติดต่อเรา
+              </h3>
               <div className="flex flex-col gap-3">
                 <div className="flex items-center justify-center lg:justify-start gap-2">
                   <svg
@@ -77,7 +83,9 @@ export default function Footer() {
                       fill="white"
                     />
                   </svg>
-                  <span className="text-[13px] lg:text-[14px]">โทรศัพท์ : 038-587308</span>
+                  <span className="text-[13px] lg:text-[14px]">
+                    โทรศัพท์ : 038-587308
+                  </span>
                 </div>
                 <div className="flex items-center justify-center lg:justify-start gap-2">
                   <svg
@@ -92,7 +100,9 @@ export default function Footer() {
                       fill="white"
                     />
                   </svg>
-                  <span className="text-[13px] lg:text-[14px]">โทรสาร : 038-587308 ต่อ 103</span>
+                  <span className="text-[13px] lg:text-[14px]">
+                    โทรสาร : 038-587308 ต่อ 103
+                  </span>
                 </div>
                 <div className="flex items-center justify-center lg:justify-start gap-2">
                   <svg
@@ -111,16 +121,22 @@ export default function Footer() {
                       fill="white"
                     />
                   </svg>
-                  <span className="text-[13px] lg:text-[14px]">Email : admin@banphocity.go.th</span>
+                  <span className="text-[13px] lg:text-[14px]">
+                    Email : admin@banphocity.go.th
+                  </span>
                 </div>
               </div>
             </div>
 
             {/* Quick Links */}
             <div className="flex flex-col gap-3 text-white">
-              <h3 className="text-[16px] font-semibold mb-2 text-center lg:text-left">เมนูด่วน</h3>
+              <h3 className="text-[16px] font-semibold mb-2 text-center lg:text-left">
+                เมนูด่วน
+              </h3>
               <div className="flex flex-col gap-3">
+
                 <a href="http://webmail.banphocity.go.th/" className="flex items-center justify-center lg:justify-start gap-2 hover:underline">
+
                   <svg
                     width="23"
                     height="23"
@@ -137,9 +153,13 @@ export default function Footer() {
                       fill="white"
                     />
                   </svg>
-                  <span className="text-[13px] lg:text-[14px]">ตรวจสอบ Email</span>
+                  <span className="text-[13px] lg:text-[14px]">
+                    ตรวจสอบ Email
+                  </span>
                 </a>
+
                 <a href="http://webmail.banphocity.go.th/" className="flex items-center justify-center lg:justify-start gap-2 hover:underline">
+
                   <svg
                     width="24"
                     height="24"
@@ -152,9 +172,13 @@ export default function Footer() {
                       fill="white"
                     />
                   </svg>
-                  <span className="text-[13px] lg:text-[14px]">เว็บเพื่อนบ้าน</span>
+                  <span className="text-[13px] lg:text-[14px]">
+                    เว็บเพื่อนบ้าน
+                  </span>
                 </a>
+
                 <a href="http://webmail.banphocity.go.th/" className="flex items-center justify-center lg:justify-start gap-2 hover:underline">
+
                   <svg
                     width="24"
                     height="24"
@@ -167,9 +191,13 @@ export default function Footer() {
                       fill="white"
                     />
                   </svg>
-                  <span className="text-[13px] lg:text-[14px]">เว็บมาสเตอร์</span>
+                  <span className="text-[13px] lg:text-[14px]">
+                    เว็บมาสเตอร์
+                  </span>
                 </a>
+
                 <a href="http://webmail.banphocity.go.th/" className="flex items-center justify-center lg:justify-start gap-2 hover:underline">
+
                   <svg
                     width="24"
                     height="24"
@@ -182,7 +210,9 @@ export default function Footer() {
                       fill="white"
                     />
                   </svg>
-                  <span className="text-[13px] lg:text-[14px]">เข้าสู่ระบบ Admin</span>
+                  <span className="text-[13px] lg:text-[14px]">
+                    เข้าสู่ระบบ Admin
+                  </span>
                 </a>
               </div>
             </div>
@@ -241,14 +271,13 @@ export default function Footer() {
                 xmlns="http://www.w3.org/2000/svg"
               >
                 <path
-                    fillRule="evenodd"
-                    clipRule="evenodd"
+                  fillRule="evenodd"
+                  clipRule="evenodd"
                   d="M3.22913 15.4996C3.2299 12.9056 4.05269 10.3786 5.57935 8.28143C7.10601 6.18426 9.258 4.62483 11.7263 3.8271C14.1946 3.02936 16.8522 3.03435 19.3174 3.84134C21.7827 4.64834 23.9288 6.21583 25.4476 8.31872C26.9664 10.4216 27.7797 12.9517 27.7707 15.5457C27.7618 18.1397 26.931 20.6641 25.3977 22.7564C23.8644 24.8487 21.7075 26.4014 19.2367 27.1913C16.7659 27.9812 14.1083 27.9678 11.6456 27.153L7.95405 28.3827C7.85701 28.415 7.75368 28.4238 7.65257 28.4084C7.55146 28.393 7.45546 28.3538 7.37247 28.294C7.28949 28.2342 7.22188 28.1556 7.17523 28.0646C7.12858 27.9735 7.10421 27.8727 7.10413 27.7705V24.4483C5.87973 23.3017 4.90397 21.9157 4.2374 20.3763C3.57082 18.837 3.22763 17.1771 3.22913 15.4996ZM19.0869 18.132L22.5098 13.0687C22.8483 12.5701 22.2063 12.0289 21.7155 12.3854L18.0239 14.9881C17.9004 15.0742 17.7534 15.1204 17.6028 15.1204C17.4522 15.1204 17.3052 15.0742 17.1817 14.9881L14.4485 13.0803C13.6309 12.5159 12.462 12.7225 11.913 13.513L8.49009 18.5764C8.15167 19.075 8.79363 19.6175 9.28446 19.2597L12.976 16.657C13.0996 16.5708 13.2465 16.5247 13.3971 16.5247C13.5477 16.5247 13.6947 16.5708 13.8182 16.657L16.5514 18.5325C17.369 19.1292 18.538 18.9225 19.0869 18.132Z"
                   fill="white"
                 />
               </svg>
             </a>
-            
           </div>
         </div>
       </div>

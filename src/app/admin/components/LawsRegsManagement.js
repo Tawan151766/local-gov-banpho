@@ -65,8 +65,7 @@ const LawsRegsFileUpload = ({
 }) => {
   const [uploading, setUploading] = useState(false);
   const [uploadProgress, setUploadProgress] = useState(0);
-
-  // Removed Form.useForm() from here. This component does not need its own form instance.
+  const { message } = App.useApp();
 
   const getFileIcon = (fileName) => {
     const extension = fileName.split(".").pop().toLowerCase();
@@ -90,18 +89,16 @@ const LawsRegsFileUpload = ({
     }
   };
 
-  const customUpload = async ({ file, onProgress, onSuccess, onError }) => {
+  const handleUpload = async (file) => {
     if (!sectionId) {
       console.error("กรุณาเลือกหมวดหมู่ก่อน");
-      onError(new Error("Section ID is required"));
-      return;
+      return false;
     }
 
-    // ป้องกันการ upload ซ้ำ - ถ้ากำลัง upload อยู่แล้วให้หยุด
+    // ป้องกันการ upload ซ้ำ
     if (uploading) {
-      console.log('Upload already in progress, skipping...');
-      onError(new Error('Upload already in progress'));
-      return;
+      console.log("Upload already in progress, skipping...");
+      return false;
     }
 
     const formData = new FormData();
@@ -115,45 +112,31 @@ const LawsRegsFileUpload = ({
       setUploading(true);
       setUploadProgress(0);
 
-      const progressInterval = setInterval(() => {
-        setUploadProgress((prev) => {
-          if (prev >= 90) {
-            clearInterval(progressInterval);
-            return prev;
-          }
-          return prev + 10;
-        });
-      }, 200);
-
       const response = await fetch("/api/laws-regs/upload-laravel", {
         method: "POST",
         body: formData,
       });
 
-      clearInterval(progressInterval);
-      setUploadProgress(100);
-
       const result = await response.json();
 
-      if (!response.ok) {
-        throw new Error(result.error || "Upload failed");
-      }
-
       if (result.success) {
+        setUploadProgress(100);
         if (onChange) {
           onChange(result.data.file_path, result.data);
         }
-        onSuccess(result.data, file);
+        message.success("อัพโหลดไฟล์สำเร็จ");
       } else {
-        throw new Error(result.error || "Upload failed");
+        message.error(result.error || "เกิดข้อผิดพลาดในการอัพโหลด");
       }
     } catch (error) {
       console.error("Upload error:", error);
-      onError(error);
+      message.error("เกิดข้อผิดพลาดในการอัพโหลด");
     } finally {
       setUploading(false);
       setUploadProgress(0);
     }
+
+    return false; // Prevent default upload
   };
 
   const handleRemove = () => {
@@ -164,7 +147,7 @@ const LawsRegsFileUpload = ({
 
   const uploadProps = {
     name: "file",
-    customRequest: customUpload,
+    beforeUpload: handleUpload,
     showUploadList: false,
     accept: accept,
     disabled: disabled || uploading,
@@ -341,19 +324,27 @@ export default function LawsRegsManagement() {
         page,
         limit: pagination.pageSize,
         search,
-        withSections: false,
+        withSections: true, // Include sections count
       });
 
       if (response.success) {
-        setTypes(response.data);
+        // Add sections count to each type
+        const typesWithCount = response.data.map((type) => ({
+          ...type,
+          sections_count: type.sections?.length || 0,
+        }));
+
+        setTypes(typesWithCount);
         setPagination((prev) => ({
           ...prev,
           current: response.pagination.page,
           total: response.pagination.total,
         }));
+      } else {
+        message.error(response.error || "ไม่สามารถโหลดข้อมูลประเภทกฎหมายได้");
       }
     } catch (error) {
-      message.error("ไม่สามารถโหลดข้อมูลประเภทกฎหมายได้");
+      message.error("เกิดข้อผิดพลาดในการโหลดข้อมูล");
       console.error("Error loading types:", error);
     } finally {
       setLoading(false);
@@ -370,11 +361,15 @@ export default function LawsRegsManagement() {
       });
 
       if (response.success) {
-        setSections(response.data);
+        setSections(response.data || []);
+      } else {
+        message.error(response.error || "ไม่สามารถโหลดข้อมูลหมวดหมู่ได้");
+        setSections([]);
       }
     } catch (error) {
-      message.error("ไม่สามารถโหลดข้อมูลหมวดหมู่ได้");
       console.error("Error loading sections:", error);
+      message.error("เกิดข้อผิดพลาดในการโหลดข้อมูลหมวดหมู่");
+      setSections([]);
     } finally {
       setSectionsLoading(false);
     }
@@ -390,11 +385,15 @@ export default function LawsRegsManagement() {
       });
 
       if (response.success) {
-        setFiles(response.data);
+        setFiles(response.data || []);
+      } else {
+        message.error(response.error || "ไม่สามารถโหลดข้อมูลไฟล์ได้");
+        setFiles([]);
       }
     } catch (error) {
-      message.error("ไม่สามารถโหลดข้อมูลไฟล์ได้");
       console.error("Error loading files:", error);
+      message.error("เกิดข้อผิดพลาดในการโหลดข้อมูลไฟล์");
+      setFiles([]);
     } finally {
       setFilesLoading(false);
     }
@@ -522,6 +521,13 @@ export default function LawsRegsManagement() {
   // Handle type form submit
   const handleTypeSubmit = async (values) => {
     try {
+      setLoading(true);
+
+      if (!values.type_name?.trim()) {
+        message.error("กรุณากรอกชื่อประเภทกฎหมาย");
+        return;
+      }
+
       if (editingType) {
         const response = await lawsRegsTypesAPI.updateType(
           editingType.id,
@@ -531,6 +537,8 @@ export default function LawsRegsManagement() {
           message.success("อัปเดตประเภทกฎหมายสำเร็จ");
           loadTypes(pagination.current, searchText);
           closeTypeModal();
+        } else {
+          message.error(response.error || "เกิดข้อผิดพลาดในการอัปเดต");
         }
       } else {
         const response = await lawsRegsTypesAPI.createType(values);
@@ -538,23 +546,42 @@ export default function LawsRegsManagement() {
           message.success("เพิ่มประเภทกฎหมายใหม่สำเร็จ");
           loadTypes(pagination.current, searchText);
           closeTypeModal();
+        } else {
+          message.error(response.error || "เกิดข้อผิดพลาดในการเพิ่มข้อมูล");
         }
       }
     } catch (error) {
-      message.error(error.message || "เกิดข้อผิดพลาด");
+      console.error("Type submit error:", error);
+      message.error(error.message || "เกิดข้อผิดพลาดในการบันทึกข้อมูล");
+    } finally {
+      setLoading(false);
     }
   };
 
   // Handle type delete
   const handleTypeDelete = async (id) => {
     try {
+      setLoading(true);
       const response = await lawsRegsTypesAPI.deleteType(id);
       if (response.success) {
         message.success("ลบประเภทกฎหมายสำเร็จ");
-        loadTypes(pagination.current, searchText);
+        // If current page becomes empty, go to previous page
+        const newTotal = pagination.total - 1;
+        const maxPage = Math.ceil(newTotal / pagination.pageSize);
+        const targetPage =
+          pagination.current > maxPage
+            ? Math.max(1, maxPage)
+            : pagination.current;
+
+        loadTypes(targetPage, searchText);
+      } else {
+        message.error(response.error || "ไม่สามารถลบประเภทกฎหมายได้");
       }
     } catch (error) {
-      message.error(error.message || "ไม่สามารถลบประเภทกฎหมายได้");
+      console.error("Delete type error:", error);
+      message.error(error.message || "เกิดข้อผิดพลาดในการลบข้อมูล");
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -665,14 +692,19 @@ export default function LawsRegsManagement() {
         }
       } else {
         // ตรวจสอบว่าไฟล์ถูก upload ผ่าน customUpload แล้วหรือไม่
-        if (values.files_path && values.files_path.includes('/storage/uploads/')) {
-          console.log('🚫 File already uploaded via customUpload, skipping API call');
+        if (
+          values.files_path &&
+          values.files_path.includes("/storage/uploads/")
+        ) {
+          console.log(
+            "🚫 File already uploaded via customUpload, skipping API call"
+          );
           message.success("เพิ่มไฟล์ใหม่สำเร็จ");
           loadFiles(selectedSection.id);
           closeFileModal();
           return;
         }
-        
+
         const response = await lawsRegsFilesAPI.createFile(fileData);
         if (response.success) {
           message.success("เพิ่มไฟล์ใหม่สำเร็จ");
@@ -765,27 +797,46 @@ export default function LawsRegsManagement() {
   const getColumns = () => {
     return [
       {
-        title: "ID",
-        dataIndex: "id",
-        key: "id",
+        title: "ลำดับ",
+        key: "index",
         width: 80,
+        render: (_, record, index) => {
+          // Calculate correct index based on pagination
+          return (pagination.current - 1) * pagination.pageSize + index + 1;
+        },
       },
       {
         title: "ชื่อประเภท",
         dataIndex: "type_name",
         key: "type_name",
         render: (name) => <Text strong>{name}</Text>,
+        ellipsis: true,
       },
       {
         title: "วันที่สร้าง",
         dataIndex: "created_at",
         key: "created_at",
-        render: (date) => new Date(date).toLocaleDateString("th-TH"),
+        width: 120,
+        render: (date) => {
+          return new Date(date).toLocaleDateString("th-TH", {
+            year: "numeric",
+            month: "2-digit",
+            day: "2-digit",
+          });
+        },
+      },
+      {
+        title: "จำนวนหมวดหมู่",
+        key: "sections_count",
+        width: 120,
+        render: (_, record) => (
+          <Tag color="blue">{record.sections_count || 0} หมวดหมู่</Tag>
+        ),
       },
       {
         title: "การจัดการ",
         key: "actions",
-        width: 250,
+        width: 280,
         render: (_, record) => (
           <Space>
             <Button
@@ -851,18 +902,34 @@ export default function LawsRegsManagement() {
   return (
     <Card>
       <Space direction="vertical" size="large" style={{ width: "100%" }}>
-        <div>
-          <Title level={3}>
-            <BookOutlined style={{ marginRight: 8 }} />
-            จัดการกฎหมายและระเบียบ
-          </Title>
-          <Text type="secondary">
-            จัดการประเภทกฎหมาย หมวดหมู่ และไฟล์เอกสารที่เกี่ยวข้อง
-          </Text>
+        <div
+          style={{
+            marginBottom: 16,
+            display: "flex",
+            justifyContent: "space-between",
+            alignItems: "center",
+          }}
+        >
+          <div>
+            <Title level={3} style={{ margin: 0 }}>
+              <BookOutlined style={{ marginRight: 8 }} />
+              จัดการกฎหมายและระเบียบ
+            </Title>
+            <Text type="secondary" style={{ fontSize: "14px" }}>
+              ทั้งหมด {pagination.total} ประเภท
+            </Text>
+          </div>
         </div>
 
-        <Row gutter={16} align="middle">
-          <Col flex="auto">
+        <div
+          style={{
+            marginBottom: 16,
+            display: "flex",
+            justifyContent: "space-between",
+            alignItems: "center",
+          }}
+        >
+          <div>
             <Search
               placeholder="ค้นหาชื่อประเภทกฎหมาย"
               allowClear
@@ -871,18 +938,19 @@ export default function LawsRegsManagement() {
               onSearch={handleSearch}
               style={{ width: 300 }}
             />
-          </Col>
-
-          <Col>
-            <Button
-              type="primary"
-              icon={<PlusOutlined />}
-              onClick={() => openTypeModal()}
-            >
-              เพิ่มประเภทใหม่
-            </Button>
-          </Col>
-        </Row>
+          </div>
+          <div>
+            <Space>
+              <Button
+                type="primary"
+                icon={<PlusOutlined />}
+                onClick={() => openTypeModal()}
+              >
+                เพิ่มประเภทใหม่
+              </Button>
+            </Space>
+          </div>
+        </div>
 
         <Table
           columns={getColumns()}
@@ -918,8 +986,10 @@ export default function LawsRegsManagement() {
 
             <div style={{ textAlign: "right", marginTop: 24 }}>
               <Space>
-                <Button onClick={closeTypeModal}>ยกเลิก</Button>
-                <Button type="primary" htmlType="submit">
+                <Button onClick={closeTypeModal} disabled={loading}>
+                  ยกเลิก
+                </Button>
+                <Button type="primary" htmlType="submit" loading={loading}>
                   {editingType ? "อัปเดต" : "เพิ่ม"}
                 </Button>
               </Space>
@@ -1115,8 +1185,10 @@ export default function LawsRegsManagement() {
 
             <div style={{ textAlign: "right", marginTop: 24 }}>
               <Space>
-                <Button onClick={closeSectionModal}>ยกเลิก</Button>
-                <Button type="primary" htmlType="submit">
+                <Button onClick={closeSectionModal} disabled={loading}>
+                  ยกเลิก
+                </Button>
+                <Button type="primary" htmlType="submit" loading={loading}>
                   {editingSection ? "อัปเดต" : "เพิ่ม"}
                 </Button>
               </Space>
@@ -1214,8 +1286,10 @@ export default function LawsRegsManagement() {
 
             <div style={{ textAlign: "right", marginTop: 24 }}>
               <Space>
-                <Button onClick={closeFileModal}>ยกเลิก</Button>
-                <Button type="primary" htmlType="submit">
+                <Button onClick={closeFileModal} disabled={loading}>
+                  ยกเลิก
+                </Button>
+                <Button type="primary" htmlType="submit" loading={loading}>
                   {editingFile ? "อัปเดต" : "เพิ่ม"}
                 </Button>
               </Space>

@@ -108,6 +108,22 @@ export default function Navbar() {
     },
   ];
 
+  const lawsRegulationsMenu = [
+    { href: "/laws-regulations", label: "ทั้งหมด" },
+    {
+      href: "/laws-regulations?tab=laws-regulations-ministry",
+      label: "กฎหมาย ระเบียบ และประกาศกระทรวง",
+    },
+    {
+      href: "/laws-regulations?tab=royal-acts-decrees",
+      label: "พระราชบัญญัติ และพระราชกฤษฎีกา",
+    },
+    {
+      href: "/laws-regulations?tab=local-ordinances",
+      label: "ข้อบัญญัติ",
+    },
+  ];
+
   const citizenMenu = [
     { href: "/citizen/complaints", label: "รับเรื่องราวร้องทุกข์" },
     {
@@ -563,13 +579,11 @@ export default function Navbar() {
                   items={localDevPlanMenu}
                   dropdownKey="local-dev-plan-mobile"
                 />
-                <a
-                  href="/laws-regulations"
-                  className="block text-white text-base font-medium py-4 px-4 rounded-lg hover:bg-white/20 transition-colors border-b border-white/30"
-                  onClick={() => setShowMenu(false)}
-                >
-                  กฎหมายและระเบียบ
-                </a>
+                <MobileMenuItem
+                  title="กฎหมายและระเบียบ"
+                  items={lawsRegulationsMenu}
+                  dropdownKey="laws-regulations-mobile"
+                />
 
                 <MobileMenuItem
                   title="เมนูสำหรับประชาชน"
@@ -606,12 +620,12 @@ export default function Navbar() {
             dropdownKey="local-dev-plan"
             width="w-64"
           />
-          <a
-            href="/laws-regulations"
-            className="text-white text-base font-medium hover:underline hover:text-[#01385F] hover:text-[20px] hover:text-bold transition-all duration-300"
-          >
-            กฎหมายและระเบียบ
-          </a>
+          <MenuItem
+            title="กฎหมายและระเบียบ"
+            items={lawsRegulationsMenu}
+            dropdownKey="laws-regulations"
+            width="w-80"
+          />
 
           <MenuItem
             title="เมนูสำหรับประชาชน"

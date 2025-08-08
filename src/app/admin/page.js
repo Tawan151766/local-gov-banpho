@@ -377,7 +377,7 @@ export default function AdminPage() {
                   fontSize: "12px",
                 }}
               >
-                อบต.บ้านโพธิ์
+                องค์การบริหารเทศบาลตำบลบ้านโพธิ์
               </Text>
             </>
           ) : (
