@@ -246,9 +246,11 @@ export default function PeopleManagement() {
     setModalVisible(true);
     setUploadedImagePath(record.img || null);
     setUploadedImageData(
-      record.img && record.img !== "/image/placeholder-person.svg"
+      record.img &&
+        record.img !== "/image/placeholder-person.svg" &&
+        record.img.startsWith("/uploads/")
         ? {
-            file_path: record.img,
+            file_path: `/storage${record.img}`, // Convert back to /storage format for consistency
             original_name: record.img.split("/").pop(),
           }
         : null
@@ -340,7 +342,7 @@ export default function PeopleManagement() {
       // Use uploaded image if available, otherwise use form value or default
       let imageUrl = "/image/placeholder-person.svg";
       if (uploadedImageData && uploadedImageData.file_path) {
-        // Remove /storage prefix if present
+        // Convert from /storage/uploads/filename to /uploads/filename
         imageUrl = uploadedImageData.file_path.replace("/storage", "");
       } else if (values.img?.trim()) {
         imageUrl = values.img.trim();
@@ -451,7 +453,10 @@ export default function PeopleManagement() {
 
         if (result.success) {
           setUploadProgress(100);
-          onChange(result.data.file_path, result.data);
+          // Convert file_path from /storage/uploads/filename to /uploads/filename
+          const cleanUrl = result.data.file_path.replace("/storage", "");
+          const modifiedData = { ...result.data, file_path: cleanUrl };
+          onChange(cleanUrl, modifiedData);
           notification.success({
             message: "สำเร็จ",
             description: "อัพโหลดรูปภาพสำเร็จ",
@@ -552,10 +557,26 @@ export default function PeopleManagement() {
       key: "img",
       width: 80,
       render: (img) => {
-        const imageUrl =
-          img && img !== "/image/placeholder-person.svg" && img.startsWith("/")
-            ? `https://banpho.sosmartsolution.com/storage${img}`
-            : img || "/image/placeholder-person.svg";
+        let imageUrl = "/image/placeholder-person.svg";
+
+        if (img && img !== "/image/placeholder-person.svg") {
+          if (img.startsWith("/uploads/")) {
+            // New format: /uploads/filename -> https://domain/storage/uploads/filename
+            imageUrl = `https://banpho.sosmartsolution.com/storage${encodeURI(img)}`;
+          } else if (img.startsWith("/storage/")) {
+            // Old format: /storage/uploads/filename -> https://domain/storage/uploads/filename
+            imageUrl = `https://banpho.sosmartsolution.com${encodeURI(img)}`;
+          } else if (img.startsWith("http")) {
+            // Full URL
+            imageUrl = encodeURI(img);
+          } else if (img.startsWith("/")) {
+            // Other absolute paths
+            imageUrl = encodeURI(img);
+          } else {
+            // Relative paths or other formats
+            imageUrl = encodeURI(img);
+          }
+        }
 
         return (
           <div
@@ -913,13 +934,21 @@ export default function PeopleManagement() {
                     }}
                   >
                     <img
-                      src={
-                        uploadedImagePath &&
-                        uploadedImagePath !== "/image/placeholder-person.svg" &&
-                        uploadedImagePath.startsWith("/")
-                          ? `https://banpho.sosmartsolution.com/storage${uploadedImagePath}`
-                          : uploadedImagePath || "/image/placeholder-person.svg"
-                      }
+                      src={(() => {
+                        if (
+                          !uploadedImagePath ||
+                          uploadedImagePath === "/image/placeholder-person.svg"
+                        ) {
+                          return "/image/placeholder-person.svg";
+                        }
+                        if (uploadedImagePath.startsWith("/uploads/")) {
+                          return `https://banpho.sosmartsolution.com/storage${encodeURI(uploadedImagePath)}`;
+                        }
+                        if (uploadedImagePath.startsWith("/storage/")) {
+                          return `https://banpho.sosmartsolution.com${encodeURI(uploadedImagePath)}`;
+                        }
+                        return encodeURI(uploadedImagePath);
+                      })()}
                       alt="Preview"
                       style={{
                         width: "100%",
