@@ -95,7 +95,7 @@ export default function AdminLogin() {
               <LoginOutlined style={{ marginRight: "8px" }} />
               เข้าสู่ระบบ
             </Title>
-            <Text type="secondary">องค์การบริหารส่วนตำบลบ้านโพธิ์</Text>
+            <Text type="secondary">องค์การบริหารเทศบาลตำบลบ้านโพธิ์</Text>
           </div>
 
           <Divider />
