@@ -14,7 +14,7 @@ export default function NewsSection() {
     try {
       setLoading(true);
       const response = await fetch(
-        "/api/post-details?page=1&limit=10&postTypeId=1&withMedia=true"
+        "/api/post-details?page=1&limit=5&postTypeId=1&withMedia=true"
       );
 
       if (!response.ok) {
@@ -197,7 +197,7 @@ export default function NewsSection() {
     >
       <div className="section-container-news flex flex-col lg:flex-row gap-6 lg:gap-8 justify-center items-start w-full">
         {/* ฝั่งซ้าย */}
-        <div className="left-container rounded-2xl sm:rounded-3xl w-full lg:w-[869px] min-h-[400px] lg:h-[1123px] bg-white/38 backdrop-blur-[80px] lg:backdrop-blur-[200px] shadow-[0_0_12px_0_rgba(0,0,0,0.13)] lg:shadow-[0_0_20.5px_0_rgba(0,0,0,0.2)] opacity-100">
+        <div className="left-container rounded-2xl sm:rounded-3xl w-full lg:w-[869px] bg-white/38 backdrop-blur-[80px] lg:backdrop-blur-[200px] shadow-[0_0_12px_0_rgba(0,0,0,0.13)] lg:shadow-[0_0_20.5px_0_rgba(0,0,0,0.2)] opacity-100">
           <div className="title relative text-center mb-8 sm:mb-12">
             <div className="text-2xl sm:text-3xl lg:text-[32px] font-semibold text-[#394D1C] inline-block mt-8 sm:mt-12">
               ข่าวประชาสัมพันธ์
@@ -284,14 +284,16 @@ export default function NewsSection() {
                 </a>
               ))
             )}
-            <button
-              onClick={() => {
-                window.location.href = "/news";
-              }}
-              className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors absolute bottom-5"
-            >
-              ดูเพิ่มเติม
-            </button>
+            <div className="h-20">
+              <button
+                onClick={() => {
+                  window.location.href = "/news";
+                }}
+                className=" px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors absolute bottom-5"
+              >
+                ดูเพิ่มเติม
+              </button>
+            </div>
           </div>
         </div>
 
