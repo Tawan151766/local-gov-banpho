@@ -336,21 +336,23 @@ export default function NewsSection() {
           </div>
 
           {/* ส่วนศูนย์พัฒนาเด็กเล็ก */}
-          <div className="flex items-center gap-2 sm:gap-4 h-[80px] sm:h-[120px] rounded-xl sm:rounded-[35px] bg-gradient-to-b from-[#B7D3FF] to-[#5A89D0] shadow-[0_2px_4px_rgba(0,0,0,0.18)] sm:shadow-[0_4px_4px_rgba(0,0,0,0.25)] text-white px-3 sm:px-5 w-full cursor-pointer transition-all duration-300 hover:scale-105">
-            <img
-              src="image/mom.png"
-              alt="Mom"
-              className="w-[60px] sm:w-[94px] h-[60px] sm:h-[94px] object-cover rounded"
-            />
-            <div className="flex flex-col justify-center items-start text-left">
-              <span className="text-base sm:text-[24px] font-semibold text-[#1E1E1E] whitespace-nowrap">
-                ศูนย์พัฒนาเด็กเล็ก
-              </span>
-              <span className="text-xs sm:text-[16px] font-normal text-white">
-                เทศบาลตำบลบ้านโพธิ์
-              </span>
+          <a href="/child-development">
+            <div className="flex items-center gap-2 sm:gap-4 h-[80px] sm:h-[120px] rounded-xl sm:rounded-[35px] bg-gradient-to-b from-[#B7D3FF] to-[#5A89D0] shadow-[0_2px_4px_rgba(0,0,0,0.18)] sm:shadow-[0_4px_4px_rgba(0,0,0,0.25)] text-white px-3 sm:px-5 w-full cursor-pointer transition-all duration-300 hover:scale-105">
+              <img
+                src="image/mom.png"
+                alt="Mom"
+                className="w-[60px] sm:w-[94px] h-[60px] sm:h-[94px] object-cover rounded"
+              />
+              <div className="flex flex-col justify-center items-start text-left">
+                <span className="text-base sm:text-[24px] font-semibold text-[#1E1E1E] whitespace-nowrap">
+                  ศูนย์พัฒนาเด็กเล็ก
+                </span>
+                <span className="text-xs sm:text-[16px] font-normal text-white">
+                  เทศบาลตำบลบ้านโพธิ์
+                </span>
+              </div>
             </div>
-          </div>
+          </a>
 
           {/* ปุ่มน้ำมัน */}
           <div className="service-button oil-price flex items-center gap-2 sm:gap-4 cursor-pointer bg-gradient-to-b from-[#B7D3FF] to-[#5A89D0] shadow-[0_2px_4px_rgba(0,0,0,0.18)] sm:shadow-[0_4px_4px_rgba(0,0,0,0.25)] rounded-xl sm:rounded-[35px] p-2 sm:p-2.5 md:p-5 box-border text-[#1E1E1E] w-full transition-all duration-300 hover:scale-105">
