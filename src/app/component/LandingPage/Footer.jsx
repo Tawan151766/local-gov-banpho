@@ -201,7 +201,7 @@ export default function Footer() {
                 </a>
 
                 <a
-                  href="http://webmail.banphocity.go.th/"
+                  href="#"
                   className="flex items-center justify-center lg:justify-start gap-2 hover:underline"
                 >
                   <svg
@@ -222,7 +222,7 @@ export default function Footer() {
                 </a>
 
                 <a
-                  href="http://webmail.banphocity.go.th/"
+                  href="#"
                   className="flex items-center justify-center lg:justify-start gap-2 hover:underline"
                 >
                   <svg
