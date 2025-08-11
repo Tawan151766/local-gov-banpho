@@ -38,7 +38,7 @@ export default function LandingPage() {
   const announcement = {
     id: 1,
     title: "เชิญชวนลงนามถวายพระพร พระบาทสมเด็จพระเจ้าอยู่หัว",
-    image: "/image/momday.jpg", // Replace with actual image path
+    image: "/image/Mom_Day.jpg", // Replace with actual image path
     isActive: true,
   };
 
@@ -137,19 +137,51 @@ export default function LandingPage() {
         zIndex={9999}
       >
         <div className="royal-announcement-content relative w-screen h-screen overflow-hidden">
-          {/* Close Button - Bottom Center */}
-          <div className="absolute bottom-8 left-1/2 transform -translate-x-1/2 z-50 flex gap-4">
+          <div className="absolute bottom-8 left-1/2 transform -translate-x-1/2 z-50 flex gap-8">
             <button
               onClick={handleClose}
-              className="px-6 py-3 bg-yellow-600 hover:bg-yellow-700 text-white rounded-lg transition-colors font-medium shadow-lg"
+              className="relative w-40 px-8 py-4 bg-gradient-to-r from-yellow-600 via-yellow-500 to-yellow-600 hover:from-yellow-700 hover:via-yellow-600 hover:to-yellow-700 text-white rounded-lg transition-all duration-300 font-medium shadow-xl border-2 border-yellow-400 hover:border-yellow-300 transform hover:scale-105 overflow-hidden group"
             >
-              ปิด
+              <div
+                className="absolute inset-0 opacity-30 group-hover:opacity-40 transition-opacity duration-300"
+                style={{
+                  backgroundImage: "url('/image/thai.png')",
+                  backgroundSize: "50px 50px",
+                  backgroundPosition: "center",
+                  backgroundRepeat: "repeat",
+                }}
+              />
+
+              <div className="absolute inset-0 border-2 border-yellow-300 rounded-lg shadow-inner" />
+
+              <span className="relative z-10 text-lg font-bold drop-shadow-md">
+                ปิด
+              </span>
+
+              <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white to-transparent opacity-0 group-hover:opacity-20 transform -skew-x-12 transition-all duration-500 group-hover:translate-x-full" />
             </button>
+
             <button
               onClick={handleAlwayClose}
-              className="px-6 py-3 bg-gray-600 hover:bg-gray-700 text-white rounded-lg transition-colors font-medium shadow-lg"
+              className="relative w-40 px-8 py-4 bg-gradient-to-r from-gray-600 via-gray-500 to-gray-600 hover:from-gray-700 hover:via-gray-600 hover:to-gray-700 text-white rounded-lg transition-all duration-300 font-medium shadow-xl border-2 border-gray-400 hover:border-gray-300 transform hover:scale-105 overflow-hidden group"
             >
-              ไม่แสดงอีก
+              <div
+                className="absolute inset-0 opacity-20 group-hover:opacity-30 transition-opacity duration-300"
+                style={{
+                  backgroundImage: "url('/image/thai.png')",
+                  backgroundSize: "50px 50px",
+                  backgroundPosition: "center",
+                  backgroundRepeat: "repeat",
+                }}
+              />
+
+              <div className="absolute inset-0 border-2 border-gray-300 rounded-lg shadow-inner" />
+
+              <span className="relative z-10 text-lg font-bold drop-shadow-md">
+                ไม่แสดงอีก
+              </span>
+
+              <div className="absolute inset-0 bg-gradient-to-r from-transparent via-white to-transparent opacity-0 group-hover:opacity-20 transform -skew-x-12 transition-all duration-500 group-hover:translate-x-full" />
             </button>
           </div>
 
