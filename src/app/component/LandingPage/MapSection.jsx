@@ -50,7 +50,7 @@ export default function MapsSection() {
                   alt={btn.imgAlt}
                   className="w-4 h-4 md:w-6 md:h-6 object-contain"
                 />
-                <span className="text-[#01385f] md:font-semibold font-medium text-[11px] md:text-lg whitespace-nowrap">
+                <span className="text-[#01385f] md:font-semibold font-medium text-[11px] md:text-lg ">
                   {btn.label}
                 </span>
               </div>
