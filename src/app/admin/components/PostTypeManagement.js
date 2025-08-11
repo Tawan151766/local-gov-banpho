@@ -87,6 +87,19 @@ const POST_TYPES = {
     icon: <FileTextOutlined />,
     color: "magenta",
   },
+  "child-development-center": {
+    title: "ศูนย์พัฒนาเด็กเล็ก",
+    type: "ศูนย์พัฒนาเด็กเล็ก",
+    icon: <FileTextOutlined />,
+    color: "green",
+  },
+  "internal-performance-evaluation": {
+    title: "การประเมิน ประสิทธิภาพภายใน",
+    type: "การประเมิน ประสิทธิภาพภายใน",
+    icon: <FileTextOutlined />,
+    color: "purple",
+  },
+
   announcement: {
     title: "ป้ายประกาศ",
     type: "ป้ายประกาศ",
@@ -1035,6 +1048,14 @@ export default function PostTypeManagement({ postType }) {
               ทั้งหมด {pagination.total} รายการ
             </Text>
           </div>
+          <Button
+            type="primary"
+            icon={<PlusOutlined />}
+            onClick={handleCreate}
+            style={{ minWidth: 120 }}
+          >
+            เพิ่ม{config.title}
+          </Button>
         </div>
 
         <Table
@@ -1287,10 +1308,15 @@ export default function PostTypeManagement({ postType }) {
                       >
                         <Space>
                           <FileTextOutlined style={{ color: "#1890ff" }} />
-                          <Button 
-                            type="link" 
+                          <Button
+                            type="link"
                             style={{ padding: 0 }}
-                            onClick={() => window.open(`https://banpho.sosmartsolution.com/storage${pdf.post_pdf_file}`, '_blank')}
+                            onClick={() =>
+                              window.open(
+                                `https://banpho.sosmartsolution.com/storage${pdf.post_pdf_file}`,
+                                "_blank"
+                              )
+                            }
                           >
                             {pdf.post_pdf_file.split("/").pop()}
                           </Button>
@@ -1337,10 +1363,15 @@ export default function PostTypeManagement({ postType }) {
                       >
                         <Space>
                           <EyeOutlined style={{ color: "#52c41a" }} />
-                          <Button 
-                            type="link" 
+                          <Button
+                            type="link"
                             style={{ padding: 0 }}
-                            onClick={() => window.open(`https://banpho.sosmartsolution.com/storage${photo.post_photo_file}`, '_blank')}
+                            onClick={() =>
+                              window.open(
+                                `https://banpho.sosmartsolution.com/storage${photo.post_photo_file}`,
+                                "_blank"
+                              )
+                            }
                           >
                             {photo.post_photo_file.split("/").pop()}
                           </Button>
@@ -1397,10 +1428,15 @@ export default function PostTypeManagement({ postType }) {
                       >
                         <Space>
                           <UploadOutlined style={{ color: "#722ed1" }} />
-                          <Button 
-                            type="link" 
+                          <Button
+                            type="link"
                             style={{ padding: 0 }}
-                            onClick={() => window.open(`https://banpho.sosmartsolution.com/storage${video.post_video_file}`, '_blank')}
+                            onClick={() =>
+                              window.open(
+                                `https://banpho.sosmartsolution.com/storage${video.post_video_file}`,
+                                "_blank"
+                              )
+                            }
                           >
                             {video.post_video_file.split("/").pop()}
                           </Button>
