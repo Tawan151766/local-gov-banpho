@@ -7,6 +7,23 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+model SystemInfo {
+  id         BigInt    @id @default(autoincrement()) @db.UnsignedBigInt
+  key        String    @unique @db.VarChar(255) // เช่น "phone", "email", "organization_name", "address"
+  value      String    @db.Text // ค่าของข้อมูล
+  name       String?   @db.VarChar(255) // ชื่อที่แสดงผล เช่น "เบอร์โทรศัพท์", "อีเมล"
+  description String?  @db.Text // คำอธิบายเพิ่มเติม
+  is_active  Boolean   @default(true) // สถานะการใช้งาน
+  created_by String?   @db.VarChar(255) // ผู้สร้าง
+  updated_by String?   @db.VarChar(255) // ผู้แก้ไขล่าสุด
+  created_at DateTime  @default(now()) @db.DateTime(0)
+  updated_at DateTime  @default(now()) @updatedAt @db.DateTime(0)
+
+  @@index([key], map: "idx_system_info_key")
+  @@index([is_active], map: "idx_system_info_active")
+  @@map("system_info")
+}
+
 model child_development_centers {
   id                              BigInt                               @id @default(autoincrement()) @db.UnsignedBigInt
   name                            String                               @db.VarChar(255)
