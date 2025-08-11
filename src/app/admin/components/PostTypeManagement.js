@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect, useCallback } from "react";
+import dayjs from "dayjs";
 import {
   Card,
   Table,
@@ -15,6 +16,10 @@ import {
   Progress,
   Typography,
   App,
+  Row,
+  Col,
+  Select,
+  DatePicker,
 } from "antd";
 import {
   PlusOutlined,
@@ -26,10 +31,15 @@ import {
   SnippetsOutlined,
   EyeInvisibleOutlined,
   UnorderedListOutlined,
+  SearchOutlined,
+  ReloadOutlined,
+  ClearOutlined,
 } from "@ant-design/icons";
 
-const { TextArea } = Input;
+const { TextArea, Search } = Input;
 const { Title, Text } = Typography;
+const { Option } = Select;
+const { RangePicker } = DatePicker;
 
 // Post type configurations
 const POST_TYPES = {
@@ -87,6 +97,19 @@ const POST_TYPES = {
     icon: <FileTextOutlined />,
     color: "magenta",
   },
+  "child-development-center": {
+    title: "ศูนย์พัฒนาเด็กเล็ก",
+    type: "ศูนย์พัฒนาเด็กเล็ก",
+    icon: <FileTextOutlined />,
+    color: "green",
+  },
+  "internal-performance-evaluation": {
+    title: "การประเมิน ประสิทธิภาพภายใน",
+    type: "การประเมิน ประสิทธิภาพภายใน",
+    icon: <FileTextOutlined />,
+    color: "purple",
+  },
+
   announcement: {
     title: "ป้ายประกาศ",
     type: "ป้ายประกาศ",
@@ -119,6 +142,16 @@ export default function PostTypeManagement({ postType }) {
 
   // Loading states
   const [loading, setLoading] = useState(false);
+
+  // Search states
+  const [searchFilters, setSearchFilters] = useState({
+    search: "",
+    fileSearch: "",
+    dateRange: null,
+    sortBy: "created_at",
+    sortOrder: "desc",
+    searchType: "content", // 'content' or 'files'
+  });
 
   // Modal states
   const [modalVisible, setModalVisible] = useState(false);
@@ -165,7 +198,7 @@ export default function PostTypeManagement({ postType }) {
   const config = POST_TYPES[postType] || POST_TYPES["general-news"];
 
   const loadPosts = useCallback(
-    async (page = 1, pageSize = 10) => {
+    async (page = 1, pageSize = 10, filters = searchFilters) => {
       try {
         setLoading(true);
         console.log(
@@ -174,20 +207,58 @@ export default function PostTypeManagement({ postType }) {
           "Page:",
           page,
           "PageSize:",
-          pageSize
+          pageSize,
+          "Filters:",
+          filters
         );
 
-        // Use pagination parameters from API
-        const encodedType = encodeURIComponent(config.type);
-        const response = await fetch(
-          `/api/posts?type=${encodedType}&page=${page}&limit=${pageSize}`,
-          {
-            method: "GET",
-            headers: {
-              "Content-Type": "application/json",
-            },
-          }
-        );
+        // Build query parameters
+        const params = new URLSearchParams({
+          type: config.type,
+          page: page.toString(),
+          limit: pageSize.toString(),
+        });
+
+        // Add search filters
+        if (filters.search && filters.search.trim()) {
+          params.append("search", filters.search.trim());
+        }
+
+        // Add file search
+        if (filters.fileSearch && filters.fileSearch.trim()) {
+          params.append("fileSearch", filters.fileSearch.trim());
+        }
+
+        // Add search type
+        if (filters.searchType) {
+          params.append("searchType", filters.searchType);
+        }
+
+        if (filters.dateRange && filters.dateRange.length === 2) {
+          params.append(
+            "startDate",
+            dayjs(filters.dateRange[0]).format("YYYY-MM-DD")
+          );
+          params.append(
+            "endDate",
+            dayjs(filters.dateRange[1]).format("YYYY-MM-DD")
+          );
+        }
+
+        if (filters.sortBy) {
+          params.append("sortBy", filters.sortBy);
+        }
+
+        if (filters.sortOrder) {
+          params.append("sortOrder", filters.sortOrder);
+        }
+
+        const response = await fetch(`/api/posts?${params.toString()}`, {
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json",
+          },
+        });
 
         if (!response.ok) {
           throw new Error(`HTTP error! status: ${response.status}`);
@@ -230,11 +301,11 @@ export default function PostTypeManagement({ postType }) {
         setLoading(false);
       }
     },
-    [config.type, notification]
+    [config.type, notification, searchFilters]
   );
 
   useEffect(() => {
-    loadPosts(1, 10);
+    loadPosts(1, 10, searchFilters);
 
     // Cleanup function to prevent memory leaks
     return () => {
@@ -243,12 +314,84 @@ export default function PostTypeManagement({ postType }) {
         form.resetFields();
       }
     };
-  }, [loadPosts, form]);
+  }, [loadPosts, form, searchFilters]);
 
   // Handle table pagination change
-  const handleTableChange = (paginationConfig) => {
+  const handleTableChange = (paginationConfig, filters, sorter) => {
     const { current, pageSize } = paginationConfig;
-    loadPosts(current, pageSize);
+
+    // Handle sorting
+    let newFilters = { ...searchFilters };
+    if (sorter && sorter.field) {
+      newFilters.sortBy = sorter.field;
+      newFilters.sortOrder = sorter.order === "ascend" ? "asc" : "desc";
+      setSearchFilters(newFilters);
+    }
+
+    loadPosts(current, pageSize, newFilters);
+  };
+
+  // Handle content search
+  const handleSearch = (value) => {
+    const newFilters = {
+      ...searchFilters,
+      search: value,
+      searchType: "content",
+    };
+    setSearchFilters(newFilters);
+    loadPosts(1, pagination.pageSize, newFilters);
+  };
+
+  // Handle file search
+  const handleFileSearch = (value) => {
+    const newFilters = {
+      ...searchFilters,
+      fileSearch: value,
+      searchType: "files",
+    };
+    setSearchFilters(newFilters);
+    loadPosts(1, pagination.pageSize, newFilters);
+  };
+
+  // Handle search type change
+  const handleSearchTypeChange = (type) => {
+    const newFilters = { ...searchFilters, searchType: type };
+    setSearchFilters(newFilters);
+    loadPosts(1, pagination.pageSize, newFilters);
+  };
+
+  // Handle date range change
+  const handleDateRangeChange = (dates) => {
+    const newFilters = { ...searchFilters, dateRange: dates };
+    setSearchFilters(newFilters);
+    loadPosts(1, pagination.pageSize, newFilters);
+  };
+
+  // Handle sort change
+  const handleSortChange = (value) => {
+    const [sortBy, sortOrder] = value.split("-");
+    const newFilters = { ...searchFilters, sortBy, sortOrder };
+    setSearchFilters(newFilters);
+    loadPosts(1, pagination.pageSize, newFilters);
+  };
+
+  // Clear all filters
+  const handleClearFilters = () => {
+    const newFilters = {
+      search: "",
+      fileSearch: "",
+      dateRange: null,
+      sortBy: "created_at",
+      sortOrder: "desc",
+      searchType: "content",
+    };
+    setSearchFilters(newFilters);
+    loadPosts(1, pagination.pageSize, newFilters);
+  };
+
+  // Refresh data
+  const handleRefresh = () => {
+    loadPosts(pagination.current, pagination.pageSize, searchFilters);
   };
 
   const handleCreate = () => {
@@ -329,7 +472,7 @@ export default function PostTypeManagement({ postType }) {
         });
 
         // Reload current page data
-        loadPosts(pagination.current, pagination.pageSize);
+        loadPosts(pagination.current, pagination.pageSize, searchFilters);
       } else {
         notification.error({
           message: "เกิดข้อผิดพลาด",
@@ -478,7 +621,7 @@ export default function PostTypeManagement({ postType }) {
         setUploadedFilePath(null);
         setUploadedFileData(null);
         setCurrentUploadRecord(null);
-        loadPosts(pagination.current, pagination.pageSize);
+        loadPosts(pagination.current, pagination.pageSize, searchFilters);
       } else {
         notification.error({
           message: "เกิดข้อผิดพลาด",
@@ -562,7 +705,7 @@ export default function PostTypeManagement({ postType }) {
         setUploadedImagePath(null);
         setUploadedImageData(null);
         setCurrentImageUploadRecord(null);
-        loadPosts(pagination.current, pagination.pageSize);
+        loadPosts(pagination.current, pagination.pageSize, searchFilters);
       } else {
         notification.error({
           message: "เกิดข้อผิดพลาด",
@@ -636,7 +779,7 @@ export default function PostTypeManagement({ postType }) {
         setUploadedVideoPath(null);
         setUploadedVideoData(null);
         setCurrentVideoUploadRecord(null);
-        loadPosts(pagination.current, pagination.pageSize);
+        loadPosts(pagination.current, pagination.pageSize, searchFilters);
       } else {
         notification.error({
           message: "เกิดข้อผิดพลาด",
@@ -735,7 +878,7 @@ export default function PostTypeManagement({ postType }) {
         await loadFilesList(currentFileListRecord.id);
 
         // Reload posts to update file counts
-        loadPosts(pagination.current, pagination.pageSize);
+        loadPosts(pagination.current, pagination.pageSize, searchFilters);
       } else {
         notification.error({
           message: "เกิดข้อผิดพลาด",
@@ -916,14 +1059,60 @@ export default function PostTypeManagement({ postType }) {
         return (
           <Space direction="vertical" size="small">
             {totalFiles > 0 ? (
-              <Button
-                size="small"
-                type="link"
-                icon={<UnorderedListOutlined />}
-                onClick={() => handleViewFileList(record)}
-              >
-                ดูรายการไฟล์
-              </Button>
+              <>
+                <Button
+                  size="small"
+                  type="link"
+                  icon={<UnorderedListOutlined />}
+                  onClick={() => handleViewFileList(record)}
+                >
+                  ดูรายการไฟล์
+                </Button>
+                <div style={{ fontSize: "12px", color: "#666" }}>
+                  <Space size={4}>
+                    {record.pdfs_count > 0 && (
+                      <Tag size="small" color="blue">
+                        PDF: {record.pdfs_count}
+                      </Tag>
+                    )}
+                    {record.photos_count > 0 && (
+                      <Tag size="small" color="green">
+                        รูป: {record.photos_count}
+                      </Tag>
+                    )}
+                    {record.videos_count > 0 && (
+                      <Tag size="small" color="purple">
+                        วิดีโอ: {record.videos_count}
+                      </Tag>
+                    )}
+                  </Space>
+                </div>
+                {/* Show matched file names if searching files */}
+                {searchFilters.searchType === "files" &&
+                  searchFilters.fileSearch &&
+                  record.matched_files && (
+                    <div
+                      style={{
+                        fontSize: "11px",
+                        color: "#1890ff",
+                        marginTop: 4,
+                      }}
+                    >
+                      <Text type="secondary">ไฟล์ที่ตรงกัน:</Text>
+                      <br />
+                      {record.matched_files.slice(0, 2).map((file, index) => (
+                        <div key={index} style={{ color: "#1890ff" }}>
+                          • {file.split("/").pop()}
+                        </div>
+                      ))}
+                      {record.matched_files.length > 2 && (
+                        <div style={{ color: "#666" }}>
+                          และอีก {record.matched_files.length - 2} ไฟล์
+                        </div>
+                      )}
+                    </div>
+                  )}
+              </>
             ) : (
               <Text type="secondary">ไม่มีไฟล์แนบ</Text>
             )}
@@ -1035,7 +1224,175 @@ export default function PostTypeManagement({ postType }) {
               ทั้งหมด {pagination.total} รายการ
             </Text>
           </div>
+          <Space>
+            <Button
+              icon={<ReloadOutlined />}
+              onClick={handleRefresh}
+              loading={loading}
+            >
+              รีเฟรช
+            </Button>
+            <Button
+              type="primary"
+              icon={<PlusOutlined />}
+              onClick={handleCreate}
+              style={{ minWidth: 120 }}
+            >
+              เพิ่ม{config.title}
+            </Button>
+          </Space>
         </div>
+
+        {/* Search and Filter Section */}
+        <Card
+          size="small"
+          style={{ marginBottom: 16, backgroundColor: "#fafafa" }}
+          title={
+            <Space>
+              <SearchOutlined />
+              <span>ค้นหาและกรอง</span>
+            </Space>
+          }
+        >
+          <Row gutter={[16, 16]}>
+            <Col xs={24} sm={12} md={6}>
+              <Select
+                placeholder="ประเภทการค้นหา"
+                style={{ width: "100%" }}
+                value={searchFilters.searchType}
+                onChange={handleSearchTypeChange}
+              >
+                <Option value="content">ค้นหาเนื้อหา</Option>
+                <Option value="files">ค้นหาจากไฟล์</Option>
+              </Select>
+            </Col>
+            <Col xs={24} sm={12} md={8}>
+              {searchFilters.searchType === "content" ? (
+                <Search
+                  placeholder="ค้นหาชื่อโพสต์หรือหัวข้อ..."
+                  allowClear
+                  enterButton={<SearchOutlined />}
+                  size="middle"
+                  value={searchFilters.search}
+                  onChange={(e) =>
+                    setSearchFilters((prev) => ({
+                      ...prev,
+                      search: e.target.value,
+                    }))
+                  }
+                  onSearch={handleSearch}
+                />
+              ) : (
+                <Search
+                  placeholder="ค้นหาชื่อไฟล์ PDF..."
+                  allowClear
+                  enterButton={<SearchOutlined />}
+                  size="middle"
+                  value={searchFilters.fileSearch}
+                  onChange={(e) =>
+                    setSearchFilters((prev) => ({
+                      ...prev,
+                      fileSearch: e.target.value,
+                    }))
+                  }
+                  onSearch={handleFileSearch}
+                />
+              )}
+            </Col>
+            <Col xs={24} sm={12} md={6}>
+              <RangePicker
+                placeholder={["วันที่เริ่มต้น", "วันที่สิ้นสุด"]}
+                style={{ width: "100%" }}
+                value={searchFilters.dateRange}
+                onChange={handleDateRangeChange}
+                format="DD/MM/YYYY"
+              />
+            </Col>
+            <Col xs={24} sm={12} md={4}>
+              <Button
+                icon={<ClearOutlined />}
+                onClick={handleClearFilters}
+                style={{ width: "100%" }}
+                disabled={
+                  !searchFilters.search &&
+                  !searchFilters.fileSearch &&
+                  !searchFilters.dateRange
+                }
+              >
+                ล้างตัวกรอง
+              </Button>
+            </Col>
+          </Row>
+
+          <Row gutter={[16, 16]} style={{ marginTop: 12 }}>
+            <Col xs={24} sm={12} md={8}>
+              <Select
+                placeholder="เรียงลำดับ"
+                style={{ width: "100%" }}
+                value={`${searchFilters.sortBy}-${searchFilters.sortOrder}`}
+                onChange={handleSortChange}
+              >
+                <Option value="created_at-desc">
+                  วันที่สร้าง (ใหม่ → เก่า)
+                </Option>
+                <Option value="created_at-asc">
+                  วันที่สร้าง (เก่า → ใหม่)
+                </Option>
+                <Option value="date-desc">วันที่โพสต์ (ใหม่ → เก่า)</Option>
+                <Option value="date-asc">วันที่โพสต์ (เก่า → ใหม่)</Option>
+                <Option value="title_name-asc">ชื่อโพสต์ (A → Z)</Option>
+                <Option value="title_name-desc">ชื่อโพสต์ (Z → A)</Option>
+              </Select>
+            </Col>
+          </Row>
+
+          {/* Active Filters Display */}
+          {(searchFilters.search ||
+            searchFilters.fileSearch ||
+            searchFilters.dateRange) && (
+            <div
+              style={{
+                marginTop: 12,
+                paddingTop: 12,
+                borderTop: "1px solid #e8e8e8",
+              }}
+            >
+              <Text
+                type="secondary"
+                style={{ fontSize: "12px", marginRight: 8 }}
+              >
+                ตัวกรองที่ใช้:
+              </Text>
+              <Space size={[4, 4]} wrap>
+                {searchFilters.search && (
+                  <Tag closable onClose={() => handleSearch("")} color="blue">
+                    ค้นหาเนื้อหา: {searchFilters.search}
+                  </Tag>
+                )}
+                {searchFilters.fileSearch && (
+                  <Tag
+                    closable
+                    onClose={() => handleFileSearch("")}
+                    color="orange"
+                  >
+                    ค้นหาไฟล์: {searchFilters.fileSearch}
+                  </Tag>
+                )}
+                {searchFilters.dateRange && (
+                  <Tag
+                    closable
+                    onClose={() => handleDateRangeChange(null)}
+                    color="green"
+                  >
+                    วันที่:{" "}
+                    {dayjs(searchFilters.dateRange[0]).format("DD/MM/YYYY")} -{" "}
+                    {dayjs(searchFilters.dateRange[1]).format("DD/MM/YYYY")}
+                  </Tag>
+                )}
+              </Space>
+            </div>
+          )}
+        </Card>
 
         <Table
           columns={columns}
@@ -1044,6 +1401,21 @@ export default function PostTypeManagement({ postType }) {
           loading={loading}
           pagination={pagination}
           onChange={handleTableChange}
+          locale={{
+            emptyText:
+              searchFilters.search ||
+              searchFilters.fileSearch ||
+              searchFilters.dateRange
+                ? `ไม่พบข้อมูลที่ตรงกับการค้นหา ${
+                    searchFilters.searchType === "files"
+                      ? `"${
+                          searchFilters.fileSearch || "ตามช่วงวันที่ที่เลือก"
+                        }" ในไฟล์ PDF`
+                      : `"${searchFilters.search || "ตามช่วงวันที่ที่เลือก"}"`
+                  }`
+                : `ยังไม่มี${config.title}`,
+          }}
+          scroll={{ x: 1200 }}
         />
       </Card>
 
@@ -1287,10 +1659,15 @@ export default function PostTypeManagement({ postType }) {
                       >
                         <Space>
                           <FileTextOutlined style={{ color: "#1890ff" }} />
-                          <Button 
-                            type="link" 
+                          <Button
+                            type="link"
                             style={{ padding: 0 }}
-                            onClick={() => window.open(`https://banpho.sosmartsolution.com/storage${pdf.post_pdf_file}`, '_blank')}
+                            onClick={() =>
+                              window.open(
+                                `https://banpho.sosmartsolution.com/storage${pdf.post_pdf_file}`,
+                                "_blank"
+                              )
+                            }
                           >
                             {pdf.post_pdf_file.split("/").pop()}
                           </Button>
@@ -1337,10 +1714,15 @@ export default function PostTypeManagement({ postType }) {
                       >
                         <Space>
                           <EyeOutlined style={{ color: "#52c41a" }} />
-                          <Button 
-                            type="link" 
+                          <Button
+                            type="link"
                             style={{ padding: 0 }}
-                            onClick={() => window.open(`https://banpho.sosmartsolution.com/storage${photo.post_photo_file}`, '_blank')}
+                            onClick={() =>
+                              window.open(
+                                `https://banpho.sosmartsolution.com/storage${photo.post_photo_file}`,
+                                "_blank"
+                              )
+                            }
                           >
                             {photo.post_photo_file.split("/").pop()}
                           </Button>
@@ -1397,10 +1779,15 @@ export default function PostTypeManagement({ postType }) {
                       >
                         <Space>
                           <UploadOutlined style={{ color: "#722ed1" }} />
-                          <Button 
-                            type="link" 
+                          <Button
+                            type="link"
                             style={{ padding: 0 }}
-                            onClick={() => window.open(`https://banpho.sosmartsolution.com/storage${video.post_video_file}`, '_blank')}
+                            onClick={() =>
+                              window.open(
+                                `https://banpho.sosmartsolution.com/storage${video.post_video_file}`,
+                                "_blank"
+                              )
+                            }
                           >
                             {video.post_video_file.split("/").pop()}
                           </Button>

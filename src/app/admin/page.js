@@ -24,6 +24,7 @@ import PerformanceResultsManagement from "./components/PerformanceResultsManagem
 import ItaManagement from "./components/ItaManagement";
 import PostTypeManagement from "./components/PostTypeManagement";
 import LawsRegsManagement from "./components/LawsRegsManagement";
+import SystemInfoManagement from "./components/SystemInfoManagement";
 import dynamic from "next/dynamic";
 
 const CorruptionComplaintsManagement = dynamic(
@@ -136,6 +137,11 @@ export default function AdminPage() {
       type: "group",
       children: [
         {
+          key: "system-info",
+          icon: <SnippetsOutlined />,
+          label: "ข้อมูลระบบ",
+        },
+        {
           key: "people-management",
           icon: <UserOutlined />,
           label: "จัดการข้อมูลบุคลากร",
@@ -178,12 +184,6 @@ export default function AdminPage() {
           key: "publish-docs",
           icon: <FileTextOutlined />,
           label: "เอกสารเผยแพร่",
-        },
-        {
-          key: "child-development-center",
-          icon: <UserOutlined />,
-          label: "ศูนย์พัฒนาเด็กเล็ก",
-          link: "/admin/child-development-center",
         },
         {
           key: "external-works",
@@ -239,6 +239,11 @@ export default function AdminPage() {
           label: "รายงานผลการจัดซื้อจัดจ้าง",
         },
         {
+          key: "child-development-center",
+          icon: <UserOutlined />,
+          label: "ศูนย์พัฒนาเด็กเล็ก",
+        },
+        {
           key: "announcement",
           icon: <SnippetsOutlined />,
           label: "ป้ายประกาศ",
@@ -252,6 +257,11 @@ export default function AdminPage() {
           key: "activities",
           icon: <BookOutlined />,
           label: "กิจกรรม",
+        },
+        {
+          key: "internal-performance-evaluation",
+          icon: <SnippetsOutlined />,
+          label: "การประเมิน ประสิทธิภาพภายใน",
         },
       ],
     },
@@ -291,6 +301,8 @@ export default function AdminPage() {
 
   const renderContent = () => {
     switch (selectedKey) {
+      case "system-info":
+        return <SystemInfoManagement />;
       case "staff-management":
         return <StaffManagement />;
       case "people-management":
@@ -320,7 +332,7 @@ export default function AdminPage() {
           <PostTypeManagement postType="procurement-announcements-reports" />
         );
       case "child-development-center":
-        return <ChildDevelopmentCenterManagement />;
+        return <PostTypeManagement postType="child-development-center" />;
       case "external-works":
         return <ExternalWorkManagement />;
       case "announcement":
@@ -329,6 +341,8 @@ export default function AdminPage() {
         return <PostTypeManagement postType="public-relations" />;
       case "activities":
         return <PostTypeManagement postType="activities" />;
+      case "internal-performance-evaluation":
+        return <PostTypeManagement postType="internal-performance-evaluation" />;
       case "publish-docs":
         return <PublishDocManagement />;
       case "laws-regulations":
