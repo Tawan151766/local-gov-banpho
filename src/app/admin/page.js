@@ -24,6 +24,7 @@ import PerformanceResultsManagement from "./components/PerformanceResultsManagem
 import ItaManagement from "./components/ItaManagement";
 import PostTypeManagement from "./components/PostTypeManagement";
 import LawsRegsManagement from "./components/LawsRegsManagement";
+import SystemInfoManagement from "./components/SystemInfoManagement";
 import dynamic from "next/dynamic";
 
 const CorruptionComplaintsManagement = dynamic(
@@ -135,6 +136,11 @@ export default function AdminPage() {
       label: "การจัดการพื้นฐาน",
       type: "group",
       children: [
+        {
+          key: "system-info",
+          icon: <SnippetsOutlined />,
+          label: "ข้อมูลระบบ",
+        },
         {
           key: "people-management",
           icon: <UserOutlined />,
@@ -295,6 +301,8 @@ export default function AdminPage() {
 
   const renderContent = () => {
     switch (selectedKey) {
+      case "system-info":
+        return <SystemInfoManagement />;
       case "staff-management":
         return <StaffManagement />;
       case "people-management":
