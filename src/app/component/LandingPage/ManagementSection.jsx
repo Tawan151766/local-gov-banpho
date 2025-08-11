@@ -276,7 +276,7 @@ export default function ManagementSection() {
     {
       icon: "/image/manage_item6.png",
       title: "การประเมิน ประสิทธิภาพภายใน",
-      path: "/internal-efficiency",
+      path: "/internal-performance-evaluation",
     },
   ];
 

@@ -180,12 +180,6 @@ export default function AdminPage() {
           label: "เอกสารเผยแพร่",
         },
         {
-          key: "child-development-center",
-          icon: <UserOutlined />,
-          label: "ศูนย์พัฒนาเด็กเล็ก",
-          link: "/admin/child-development-center",
-        },
-        {
           key: "external-works",
           icon: <FileTextOutlined />,
           label: "งานภายนอก",
@@ -239,6 +233,11 @@ export default function AdminPage() {
           label: "รายงานผลการจัดซื้อจัดจ้าง",
         },
         {
+          key: "child-development-center",
+          icon: <UserOutlined />,
+          label: "ศูนย์พัฒนาเด็กเล็ก",
+        },
+        {
           key: "announcement",
           icon: <SnippetsOutlined />,
           label: "ป้ายประกาศ",
@@ -252,6 +251,11 @@ export default function AdminPage() {
           key: "activities",
           icon: <BookOutlined />,
           label: "กิจกรรม",
+        },
+        {
+          key: "internal-performance-evaluation",
+          icon: <SnippetsOutlined />,
+          label: "การประเมิน ประสิทธิภาพภายใน",
         },
       ],
     },
@@ -320,7 +324,7 @@ export default function AdminPage() {
           <PostTypeManagement postType="procurement-announcements-reports" />
         );
       case "child-development-center":
-        return <ChildDevelopmentCenterManagement />;
+        return <PostTypeManagement postType="child-development-center" />;
       case "external-works":
         return <ExternalWorkManagement />;
       case "announcement":
@@ -329,6 +333,8 @@ export default function AdminPage() {
         return <PostTypeManagement postType="public-relations" />;
       case "activities":
         return <PostTypeManagement postType="activities" />;
+      case "internal-performance-evaluation":
+        return <PostTypeManagement postType="internal-performance-evaluation" />;
       case "publish-docs":
         return <PublishDocManagement />;
       case "laws-regulations":
