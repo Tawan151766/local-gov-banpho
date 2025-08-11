@@ -1,6 +1,20 @@
+"use client";
+
 import React from "react";
+import { useSystemInfoValues } from "@/hooks/useSystemInfo";
+
+// Define keys outside component to prevent re-creation
+const SYSTEM_INFO_KEYS = [
+  'organization_name',
+  'phone', 
+  'email',
+  'address',
+  'fax'
+];
 
 export default function Footer() {
+  // ดึงข้อมูลจาก System Info
+  const { values: systemInfo, loading } = useSystemInfoValues(SYSTEM_INFO_KEYS);
   return (
     <footer className="w-full bg-gradient-to-b from-[#05c5ff] to-[#0383aa] relative overflow-hidden shadow-lg">
       {/* Background image ซ้อนทับ */}
@@ -122,7 +136,7 @@ export default function Footer() {
                     />
                   </svg>
                   <span className="text-[13px] lg:text-[14px]">
-                    Email : admin@banphocity.go.th
+                    Email : {loading ? 'กำลังโหลด...' : (systemInfo.email || 'admin@banphocity.go.th')}
                   </span>
                 </div>
                 <div className="flex items-center justify-center lg:justify-start gap-2">
@@ -143,7 +157,7 @@ export default function Footer() {
                     />
                   </svg>
                   <span className="text-[13px] lg:text-[14px]">
-                    Email : office@banphocity.go.th
+                    Email : {loading ? 'กำลังโหลด...' : (systemInfo.email || 'office@banphocity.go.th')}
                   </span>
                 </div>
               </div>
