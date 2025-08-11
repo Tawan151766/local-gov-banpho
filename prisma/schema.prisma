@@ -1,87 +1,3 @@
-model child_development_centers {
-  id          BigInt    @id @default(autoincrement()) @db.UnsignedBigInt
-  name        String    @db.VarChar(255)
-  description String?   @db.Text
-  center_date DateTime? @db.Date
-  deleted_at  DateTime? @db.Timestamp(0)
-  created_at  DateTime? @default(now()) @db.Timestamp(0)
-  updated_at  DateTime? @db.Timestamp(0)
-
-  contents    child_development_centers_contents[]
-
-  @@map("child_development_centers")
-}
-
-model child_development_centers_contents {
-  id              BigInt    @id @default(autoincrement()) @db.UnsignedBigInt
-  url             String    @db.VarChar(500)
-  description     String?   @db.Text
-  child_center_id BigInt   @db.UnsignedBigInt
-  created_at      DateTime? @db.Timestamp(0)
-  updated_at      DateTime? @db.Timestamp(0)
-  deleted_at      DateTime? @db.Timestamp(0)
-
-  child_center    child_development_centers @relation(fields: [child_center_id], references: [id], onUpdate: Restrict, map: "child_development_centers_contents_child_center_id_foreign")
-
-  @@index([child_center_id], map: "child_development_centers_contents_child_center_id_foreign")
-  @@map("child_development_centers_contents")
-}
-model external_works {
-  id          BigInt    @id @default(autoincrement()) @db.UnsignedBigInt
-  name        String    @db.VarChar(255)
-  description String?   @db.Text
-  work_date   DateTime? @db.Date
-  deleted_at  DateTime? @db.Timestamp(0)
-  created_at  DateTime? @default(now()) @db.Timestamp(0)
-  updated_at  DateTime? @db.Timestamp(0)
-
-  contents    external_works_contents[]
-
-  @@map("external_works")
-}
-
-model external_works_contents {
-  id              BigInt    @id @default(autoincrement()) @db.UnsignedBigInt
-  url             String    @db.VarChar(500)
-  description     String?   @db.Text
-  external_work_id BigInt   @db.UnsignedBigInt
-  created_at      DateTime? @db.Timestamp(0)
-  updated_at      DateTime? @db.Timestamp(0)
-  deleted_at      DateTime? @db.Timestamp(0)
-
-  external_work   external_works @relation(fields: [external_work_id], references: [id], onUpdate: Restrict, map: "external_works_contents_external_work_id_foreign")
-
-  @@index([external_work_id], map: "external_works_contents_external_work_id_foreign")
-  @@map("external_works_contents")
-}
-model publish_docs {
-  id           BigInt    @id @default(autoincrement()) @db.UnsignedBigInt
-  link         String    @default("") @db.VarChar(500)
-  description  String?   @db.Text
-  publish_date DateTime? @db.Date
-  created_at   DateTime? @default(now()) @db.Timestamp(0)
-  updated_at   DateTime? @db.Timestamp(0)
-  deleted_at   DateTime? @db.Timestamp(0)
-
-  contents     publish_docs_contents[]
-
-  @@map("publish_docs")
-}
-
-model publish_docs_contents {
-  id            BigInt    @id @default(autoincrement()) @db.UnsignedBigInt
-  url           String    @db.VarChar(500)
-  description   String?   @db.Text
-  publish_doc_id BigInt   @db.UnsignedBigInt
-  created_at    DateTime? @db.Timestamp(0)
-  updated_at    DateTime? @db.Timestamp(0)
-  deleted_at    DateTime? @db.Timestamp(0)
-
-  publish_doc   publish_docs @relation(fields: [publish_doc_id], references: [id], onUpdate: Restrict, map: "publish_docs_contents_publish_doc_id_foreign")
-
-  @@index([publish_doc_id], map: "publish_docs_contents_publish_doc_id_foreign")
-  @@map("publish_docs_contents")
-}
 generator client {
   provider = "prisma-client-js"
 }
@@ -89,6 +5,105 @@ generator client {
 datasource db {
   provider = "mysql"
   url      = env("DATABASE_URL")
+}
+
+model SystemInfo {
+  id         BigInt    @id @default(autoincrement()) @db.UnsignedBigInt
+  key        String    @unique @db.VarChar(255) // เช่น "phone", "email", "organization_name", "address"
+  value      String    @db.Text // ค่าของข้อมูล
+  name       String?   @db.VarChar(255) // ชื่อที่แสดงผล เช่น "เบอร์โทรศัพท์", "อีเมล"
+  description String?  @db.Text // คำอธิบายเพิ่มเติม
+  is_active  Boolean   @default(true) // สถานะการใช้งาน
+  created_by String?   @db.VarChar(255) // ผู้สร้าง
+  updated_by String?   @db.VarChar(255) // ผู้แก้ไขล่าสุด
+  created_at DateTime  @default(now()) @db.DateTime(0)
+  updated_at DateTime  @default(now()) @updatedAt @db.DateTime(0)
+
+  @@index([key], map: "idx_system_info_key")
+  @@index([is_active], map: "idx_system_info_active")
+  @@map("system_info")
+}
+
+model child_development_centers {
+  id                              BigInt                               @id @default(autoincrement()) @db.UnsignedBigInt
+  name                            String                               @db.VarChar(255)
+  description                     String?                              @db.Text
+  center_date                     DateTime?                            @db.Date
+  deleted_at                      DateTime?                            @db.DateTime(0)
+  created_at                      DateTime                             @default(now()) @db.DateTime(0)
+  updated_at                      DateTime                             @default(now()) @db.DateTime(0)
+  contents                        child_development_centers_contents[]
+  child_development_centers_files child_development_centers_files[]
+
+  @@map("child_development_centers")
+}
+
+model child_development_centers_contents {
+  id              BigInt                    @id @default(autoincrement()) @db.UnsignedBigInt
+  url             String                    @db.VarChar(500)
+  description     String?                   @db.Text
+  child_center_id BigInt                    @db.UnsignedBigInt
+  created_at      DateTime?                 @db.DateTime(0)
+  updated_at      DateTime?                 @db.DateTime(0)
+  deleted_at      DateTime?                 @db.DateTime(0)
+  child_center    child_development_centers @relation(fields: [child_center_id], references: [id], onUpdate: Restrict, map: "child_development_centers_contents_child_center_id_foreign")
+
+  @@index([child_center_id], map: "child_development_centers_contents_child_center_id_foreign")
+  @@map("child_development_centers_contents")
+}
+
+model external_works {
+  id          BigInt                    @id @default(autoincrement()) @db.UnsignedBigInt
+  name        String                    @db.VarChar(255)
+  description String?                   @db.Text
+  work_date   DateTime?                 @db.Date
+  deleted_at  DateTime?                 @db.DateTime(0)
+  created_at  DateTime                  @default(now()) @db.DateTime(0)
+  updated_at  DateTime                  @default(now()) @db.DateTime(0)
+  contents    external_works_contents[]
+
+  @@map("external_works")
+}
+
+model external_works_contents {
+  id               BigInt         @id @default(autoincrement()) @db.UnsignedBigInt
+  url              String         @db.VarChar(500)
+  description      String?        @db.Text
+  external_work_id BigInt         @db.UnsignedBigInt
+  created_at       DateTime?      @db.DateTime(0)
+  updated_at       DateTime?      @db.DateTime(0)
+  deleted_at       DateTime?      @db.DateTime(0)
+  external_work    external_works @relation(fields: [external_work_id], references: [id], onUpdate: Restrict, map: "external_works_contents_external_work_id_foreign")
+
+  @@index([external_work_id], map: "external_works_contents_external_work_id_foreign")
+  @@map("external_works_contents")
+}
+
+model publish_docs {
+  id           BigInt                  @id @default(autoincrement()) @db.UnsignedBigInt
+  name         String                  @db.VarChar(255)
+  description  String?                 @db.Text
+  publish_date DateTime?               @db.Date
+  deleted_at   DateTime?               @db.DateTime(0)
+  created_at   DateTime                @default(now()) @db.DateTime(0)
+  updated_at   DateTime                @default(now()) @db.DateTime(0)
+  contents     publish_docs_contents[]
+
+  @@map("publish_docs")
+}
+
+model publish_docs_contents {
+  id             BigInt       @id @default(autoincrement()) @db.UnsignedBigInt
+  url            String       @db.VarChar(500)
+  description    String?      @db.Text
+  publish_doc_id BigInt       @db.UnsignedBigInt
+  created_at     DateTime?    @db.DateTime(0)
+  updated_at     DateTime?    @db.DateTime(0)
+  deleted_at     DateTime?    @db.DateTime(0)
+  publish_doc    publish_docs @relation(fields: [publish_doc_id], references: [id], onUpdate: Restrict, map: "publish_docs_contents_publish_doc_id_foreign")
+
+  @@index([publish_doc_id], map: "publish_docs_contents_publish_doc_id_foreign")
+  @@map("publish_docs_contents")
 }
 
 model User {
@@ -119,45 +134,27 @@ model Staff {
 }
 
 model PeopleManagement {
-  id             BigInt                    @id @default(autoincrement()) @db.UnsignedBigInt
-  full_name      String                    @db.VarChar(255)
-  position       String                    @db.VarChar(255)
-  phone          String?                   @db.VarChar(50)
-  email          String?                   @db.VarChar(255)
+  id             BigInt           @id @default(autoincrement()) @db.UnsignedBigInt
+  full_name      String           @db.VarChar(255)
+  position       String           @db.VarChar(255)
+  phone          String?          @db.VarChar(50)
+  email          String?          @db.VarChar(255)
   department     PeopleDepartment
-  sub_department String?                   @db.VarChar(255)
-  role_type      PeopleRoleType            @default(staff)
-  level          Int                       @default(0)
-  sort_order     Int                       @default(0)
-  district       String?                   @db.VarChar(100)
-  img            String?                   @db.VarChar(255)
-  is_empty       Boolean                   @default(false)
-  is_active      Boolean                   @default(true)
-  created_at     DateTime?                 @default(now()) @db.Timestamp(0)
-  updated_at     DateTime?                 @default(now()) @updatedAt @db.Timestamp(0)
+  sub_department String?          @db.VarChar(255)
+  role_type      PeopleRoleType   @default(staff)
+  level          Int              @default(0)
+  sort_order     Int              @default(0)
+  district       String?          @db.VarChar(100)
+  img            String?          @db.VarChar(255)
+  is_empty       Boolean          @default(false)
+  is_active      Boolean          @default(true)
+  created_at     DateTime?        @default(now()) @db.Timestamp(0)
+  updated_at     DateTime?        @default(now()) @updatedAt @db.Timestamp(0)
 
   @@index([department], map: "idx_department")
   @@index([sort_order], map: "idx_sort_order")
   @@index([level], map: "idx_level")
   @@map("people_management")
-}
-
-enum PeopleDepartment {
-  executive
-  council
-  clerk
-  finance
-  engineering
-  education
-  audit
-  councilOfficer
-}
-
-enum PeopleRoleType {
-  head
-  deputy
-  staff
-  worker
 }
 
 model PerfResultsType {
@@ -199,15 +196,17 @@ model PerfResultsSubTopic {
 }
 
 model Complaints {
-  id         BigInt   @id @default(autoincrement()) @db.UnsignedBigInt
-  senderName String   @db.VarChar(255)
-  senderEmail String  @db.VarChar(255)
-  phone      String?  @db.VarChar(50)
-  subject    String?  @db.VarChar(255)
-  message    String   @db.Text
-  captcha    String?  @db.VarChar(50)
-  created_at DateTime @default(now()) @db.Timestamp(0)
-  updated_at DateTime @updatedAt @db.Timestamp(0)
+  id          BigInt   @id @default(autoincrement()) @db.UnsignedBigInt
+  senderName  String   @db.VarChar(255)
+  senderEmail String   @db.VarChar(255)
+  phone       String?  @db.VarChar(50)
+  subject     String?  @db.VarChar(255)
+  message     String   @db.Text
+  captcha     String?  @db.VarChar(50)
+  ip_address  String?  @db.VarChar(45)
+  user_agent  String?  @db.Text
+  created_at  DateTime @default(now()) @db.Timestamp(0)
+  updated_at  DateTime @default(now()) @updatedAt @db.Timestamp(0)
 
   @@map("complaints")
 }
@@ -252,7 +251,7 @@ model ita_evaluations {
   ita_date    DateTime? @db.Date
   deleted_at  DateTime? @db.Timestamp(0)
   created_at  DateTime? @default(now()) @db.Timestamp(0)
-  updated_at  DateTime? @db.Timestamp(0)
+  updated_at  DateTime? @default(now()) @db.Timestamp(0)
 }
 
 model laws_regs_files {
@@ -292,6 +291,9 @@ model local_dev_plan_files {
   type_id              BigInt               @db.UnsignedBigInt
   files_path           String               @db.VarChar(255)
   files_type           String               @db.VarChar(255)
+  description          String?              @db.Text
+  file_size            BigInt?
+  original_name        String?              @db.VarChar(255)
   created_at           DateTime?            @db.Timestamp(0)
   updated_at           DateTime?            @db.Timestamp(0)
   local_dev_plan_types local_dev_plan_types @relation(fields: [type_id], references: [id], onDelete: Cascade, onUpdate: Restrict, map: "local_dev_plan_files_type_id_foreign")
@@ -444,47 +446,29 @@ model procurement_plan_types {
   procurement_plan_files procurement_plan_files[]
 }
 
-enum staff_role {
-  leader
-  coleader
-  employee
-}
-
 model CorruptionComplaint {
-  id                   BigInt                      @id @default(autoincrement()) @db.UnsignedBigInt
-  complaint_date       DateTime                    @db.Date
-  
-  // ข้อมูลผู้ร้องเรียน (Complainant Information)
-  complainant_name     String                      @db.VarChar(255)
-  complainant_id_card  String                      @db.VarChar(13)
-  complainant_address  String                      @db.Text
+  id                   BigInt                    @id @default(autoincrement()) @db.UnsignedBigInt
+  complaint_date       DateTime                  @db.Date
+  complainant_name     String                    @db.VarChar(255)
+  complainant_id_card  String                    @db.VarChar(13)
+  complainant_address  String                    @db.Text
   complainant_age      Int
-  complainant_phone    String                      @db.VarChar(20)
-  
-  // ข้อมูลผู้ถูกร้องเรียน (Accused Information)
-  accused_name         String                      @db.VarChar(255)
-  accused_position     String                      @db.VarChar(255)
-  accused_agency       String                      @db.VarChar(255)
-  accused_province     String                      @db.VarChar(100)
-  
-  // รายละเอียดการร้องเรียน (Complaint Details)
-  complaint_details    String                      @db.Text
-  attachments          String?                     @db.Text // JSON string of file attachments
-  
-  // สถานะการดำเนินการ (Status Management)
-  status               CorruptionComplaintStatus   @default(pending)
-  status_note          String?                     @db.Text
-  
-  // ข้อมูลการติดตาม (Tracking Information)
-  assigned_to          String?                     @db.VarChar(255)
-  investigation_result String?                     @db.Text
-  action_taken         String?                     @db.Text
-  
-  // ข้อมูลระบบ (System Information)
-  ip_address           String?                     @db.VarChar(45)
-  user_agent           String?                     @db.Text
-  created_at           DateTime?                   @default(now()) @db.Timestamp(0)
-  updated_at           DateTime?                   @default(now()) @updatedAt @db.Timestamp(0)
+  complainant_phone    String                    @db.VarChar(20)
+  accused_name         String                    @db.VarChar(255)
+  accused_position     String                    @db.VarChar(255)
+  accused_agency       String                    @db.VarChar(255)
+  accused_province     String                    @db.VarChar(100)
+  complaint_details    String                    @db.Text
+  status               CorruptionComplaintStatus @default(pending)
+  status_note          String?                   @db.Text
+  assigned_to          String?                   @db.VarChar(255)
+  investigation_result String?                   @db.Text
+  action_taken         String?                   @db.Text
+  ip_address           String?                   @db.VarChar(45)
+  user_agent           String?                   @db.Text
+  created_at           DateTime?                 @default(now()) @db.Timestamp(0)
+  updated_at           DateTime?                 @default(now()) @updatedAt @db.Timestamp(0)
+  attachments          String?                   @db.Text
 
   @@index([complaint_date], map: "idx_complaint_date")
   @@index([complainant_name], map: "idx_complainant_name")
@@ -492,6 +476,337 @@ model CorruptionComplaint {
   @@index([status], map: "idx_status")
   @@index([created_at], map: "idx_created_at")
   @@map("corruption_complaints")
+}
+
+model WaterSupportRequest {
+  id                     BigInt                     @id @default(autoincrement()) @db.UnsignedBigInt
+  request_date           DateTime                   @db.Date
+  requester_title        String                     @db.VarChar(20)
+  requester_name         String                     @db.VarChar(255)
+  requester_age          Int?
+  requester_house_number String                     @db.VarChar(50)
+  requester_village      String                     @db.VarChar(100)
+  requester_subdistrict  String                     @default("ตำบลบ้านโพธิ์") @db.VarChar(100)
+  requester_district     String                     @default("อำเภอบ้านโพธิ์") @db.VarChar(100)
+  requester_province     String                     @default("จังหวัดฉะเชิงเทรา") @db.VarChar(100)
+  requester_phone        String?                    @db.VarChar(20)
+  family_members         Int?
+  water_needs            String                     @db.Text
+  symptoms_description   String                     @db.Text
+  status                 WaterSupportRequestStatus? @default(pending)
+  status_note            String?                    @db.Text
+  captcha_answer         String?                    @db.VarChar(10)
+  ip_address             String?                    @db.VarChar(45)
+  user_agent             String?                    @db.Text
+  created_at             DateTime                   @default(now()) @db.Timestamp(0)
+  updated_at             DateTime                   @default(now()) @db.Timestamp(0)
+  requester_id_card      String?                    @db.VarChar(20)
+
+  @@index([request_date], map: "idx_water_request_date")
+  @@index([requester_name], map: "idx_water_requester_name")
+  @@index([status], map: "idx_water_status")
+  @@index([created_at], map: "idx_water_created_at")
+  @@map("water_support_requests")
+}
+
+model WastebinRequest {
+  id                     BigInt                 @id @default(autoincrement()) @db.UnsignedBigInt
+  request_date           DateTime               @db.Date
+  requester_title        String                 @db.VarChar(20)
+  requester_name         String                 @db.VarChar(255)
+  requester_age          Int
+  requester_house_number String                 @db.VarChar(50)
+  requester_street       String?                @db.VarChar(100)
+  requester_village      String                 @db.VarChar(100)
+  requester_subdistrict  String                 @default("ตำบลบ้านโพธิ์") @db.VarChar(100)
+  requester_district     String                 @default("อำเภอบ้านโพธิ์") @db.VarChar(100)
+  requester_province     String                 @default("จังหวัดฉะเชิงเทรา") @db.VarChar(100)
+  bin_quantity           Int
+  delivery_house_number  String                 @db.VarChar(50)
+  delivery_village       String                 @db.VarChar(100)
+  house_registration     String?                @db.VarChar(255)
+  id_card                String?                @db.VarChar(255)
+  document1              String?                @db.VarChar(255)
+  document2              String?                @db.VarChar(255)
+  document3              String?                @db.VarChar(255)
+  status                 WastebinRequestStatus? @default(pending)
+  status_note            String?                @db.Text
+  captcha_answer         String?                @db.VarChar(10)
+  ip_address             String?                @db.VarChar(45)
+  user_agent             String?                @db.Text
+  created_at             DateTime               @default(now()) @db.Timestamp(0)
+  updated_at             DateTime               @default(now()) @db.Timestamp(0)
+  requester_id_card      String?                @db.VarChar(20)
+
+  @@index([request_date], map: "idx_wastebin_request_date")
+  @@index([requester_name], map: "idx_wastebin_requester_name")
+  @@index([status], map: "idx_wastebin_status")
+  @@index([created_at], map: "idx_wastebin_created_at")
+  @@map("wastebin_requests")
+}
+
+model WasteCollectionRequest {
+  id                     BigInt                        @id @default(autoincrement()) @db.UnsignedBigInt
+  request_date           DateTime                      @db.Date
+  requester_title        String                        @db.VarChar(20)
+  requester_name         String                        @db.VarChar(255)
+  requester_age          Int
+  requester_house_number String                        @db.VarChar(50)
+  requester_village      String                        @db.VarChar(100)
+  requester_subdistrict  String                        @default("ตำบลบ้านโพธิ์") @db.VarChar(100)
+  requester_district     String                        @default("อำเภอบ้านโพธิ์") @db.VarChar(100)
+  requester_province     String                        @default("จังหวัดฉะเชิงเทรา") @db.VarChar(100)
+  requester_phone        String?                       @db.VarChar(20)
+  waste_type_household   Boolean?                      @default(false)
+  waste_type_rental      Boolean?                      @default(false)
+  waste_type_shop        Boolean?                      @default(false)
+  waste_type_factory     Boolean?                      @default(false)
+  other_waste_type       String?                       @db.Text
+  collection_details     String                        @db.Text
+  reason_for_request     String                        @db.Text
+  status                 WasteCollectionRequestStatus? @default(pending)
+  status_note            String?                       @db.Text
+  captcha_answer         String?                       @db.VarChar(10)
+  ip_address             String?                       @db.VarChar(45)
+  user_agent             String?                       @db.Text
+  created_at             DateTime                      @default(now()) @db.Timestamp(0)
+  updated_at             DateTime                      @default(now()) @db.Timestamp(0)
+  requester_id_card      String?                       @db.VarChar(20)
+
+  @@index([request_date], map: "idx_waste_collection_request_date")
+  @@index([requester_name], map: "idx_waste_collection_requester_name")
+  @@index([status], map: "idx_waste_collection_status")
+  @@index([created_at], map: "idx_waste_collection_created_at")
+  @@map("waste_collection_requests")
+}
+
+model child_development_centers_files {
+  id                        BigInt                    @id @default(autoincrement()) @db.UnsignedBigInt
+  child_center_id           BigInt                    @db.UnsignedBigInt
+  file_name                 String                    @db.VarChar(255)
+  file_path                 String                    @db.VarChar(500)
+  file_type                 String                    @db.VarChar(100)
+  file_size                 BigInt?                   @db.UnsignedBigInt
+  description               String?                   @db.Text
+  created_at                DateTime?                 @default(now()) @db.DateTime(0)
+  updated_at                DateTime?                 @default(now()) @db.DateTime(0)
+  deleted_at                DateTime?                 @db.DateTime(0)
+  child_development_centers child_development_centers @relation(fields: [child_center_id], references: [id], onDelete: Cascade, onUpdate: Restrict, map: "child_development_centers_files_child_center_id_foreign")
+
+  @@index([child_center_id], map: "child_development_centers_files_child_center_id_foreign")
+}
+
+model general_requests {
+  id                     BigInt                           @id @default(autoincrement()) @db.UnsignedBigInt
+  request_date           DateTime                         @db.Date
+  requester_title        general_requests_requester_title
+  requester_name         String                           @db.VarChar(255)
+  requester_age          Int
+  requester_nationality  String                           @default("ไทย") @db.VarChar(100)
+  requester_house_number String                           @db.VarChar(50)
+  requester_village      String?                          @db.VarChar(100)
+  requester_subdistrict  String                           @db.VarChar(100)
+  requester_district     String                           @db.VarChar(100)
+  requester_province     String                           @db.VarChar(100)
+  requester_postal_code  String                           @db.VarChar(10)
+  requester_phone        String?                          @db.VarChar(20)
+  request_subject        String                           @db.VarChar(500)
+  request_details        String                           @db.Text
+  document_1             String?                          @db.VarChar(255)
+  document_2             String?                          @db.VarChar(255)
+  document_3             String?                          @db.VarChar(255)
+  other_document_1       String?                          @db.VarChar(255)
+  other_document_2       String?                          @db.VarChar(255)
+  captcha_answer         String?                          @db.VarChar(10)
+  ip_address             String?                          @db.VarChar(45)
+  user_agent             String?                          @db.Text
+  status                 general_requests_status?         @default(pending)
+  status_note            String?                          @db.Text
+  created_at             DateTime                         @default(now()) @db.Timestamp(0)
+  updated_at             DateTime                         @default(now()) @db.Timestamp(0)
+  requester_id_card      String?                          @db.VarChar(20)
+
+  @@index([created_at], map: "idx_created_at")
+  @@index([request_date], map: "idx_request_date")
+  @@index([requester_name], map: "idx_requester_name")
+  @@index([status], map: "idx_status")
+}
+
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+model manual_categories {
+  id                   BigInt         @id @default(autoincrement()) @db.UnsignedBigInt
+  category_name        String         @db.VarChar(255)
+  category_description String?        @db.Text
+  icon                 String?        @db.VarChar(100)
+  color                String?        @db.VarChar(7)
+  display_order        Int?           @default(0)
+  is_active            Boolean?       @default(true)
+  created_at           DateTime       @default(now()) @db.Timestamp(0)
+  updated_at           DateTime       @default(now()) @db.Timestamp(0)
+  manual_items         manual_items[]
+
+  @@index([category_name], map: "idx_category_name")
+  @@index([display_order], map: "idx_display_order")
+  @@index([is_active], map: "idx_is_active")
+}
+
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+model manual_files {
+  id            BigInt       @id @default(autoincrement()) @db.UnsignedBigInt
+  manual_id     BigInt       @db.UnsignedBigInt
+  files_path    String       @db.VarChar(255)
+  files_type    String       @db.VarChar(255)
+  original_name String?      @db.VarChar(255)
+  file_size     BigInt?
+  description   String?      @db.Text
+  display_order Int?         @default(0)
+  is_active     Boolean?     @default(true)
+  created_at    DateTime     @default(now()) @db.Timestamp(0)
+  updated_at    DateTime     @default(now()) @db.Timestamp(0)
+  manual_items  manual_items @relation(fields: [manual_id], references: [id], onDelete: Cascade, onUpdate: Restrict, map: "manual_files_ibfk_1")
+
+  @@index([created_at], map: "idx_created_at")
+  @@index([display_order], map: "idx_display_order")
+  @@index([files_type], map: "idx_files_type")
+  @@index([is_active], map: "idx_is_active")
+  @@index([manual_id], map: "idx_manual_id")
+}
+
+/// This model or at least one of its fields has comments in the database, and requires an additional setup for migrations: Read more: https://pris.ly/d/database-comments
+model manual_items {
+  id                BigInt            @id @default(autoincrement()) @db.UnsignedBigInt
+  category_id       BigInt            @db.UnsignedBigInt
+  title             String            @db.VarChar(500)
+  description       String?           @db.Text
+  content           String?           @db.LongText
+  file_path         String?           @db.VarChar(255)
+  tags              String?           @db.VarChar(500)
+  display_order     Int?              @default(0)
+  is_active         Boolean?          @default(true)
+  is_featured       Boolean?          @default(false)
+  view_count        Int?              @default(0)
+  created_at        DateTime          @default(now()) @db.Timestamp(0)
+  updated_at        DateTime          @default(now()) @db.Timestamp(0)
+  manual_files      manual_files[]
+  manual_categories manual_categories @relation(fields: [category_id], references: [id], onDelete: Cascade, onUpdate: Restrict, map: "manual_items_ibfk_1")
+
+  @@index([category_id], map: "idx_category_id")
+  @@index([display_order], map: "idx_display_order")
+  @@index([is_active], map: "idx_is_active")
+  @@index([is_featured], map: "idx_is_featured")
+  @@index([title], map: "idx_title")
+  @@index([view_count], map: "idx_view_count")
+  @@fulltext([title, content, tags], map: "idx_title_content")
+}
+
+model qa_categories {
+  id                   Int        @id @default(autoincrement())
+  category_name        String     @db.VarChar(255)
+  category_description String?    @db.Text
+  display_order        Int?       @default(0)
+  is_active            Boolean?   @default(true)
+  created_at           DateTime   @default(now()) @db.Timestamp(0)
+  updated_at           DateTime   @default(now()) @db.Timestamp(0)
+  qa_items             qa_items[]
+
+  @@index([display_order], map: "idx_display_order")
+  @@index([is_active], map: "idx_is_active")
+}
+
+model qa_comments {
+  id              BigInt   @id @default(autoincrement()) @db.UnsignedBigInt
+  qa_item_id      Int
+  comment_text    String   @db.Text
+  commenter_name  String?  @db.VarChar(255)
+  commenter_email String?  @db.VarChar(255)
+  rating          Int?     @db.UnsignedTinyInt
+  commenter_ip    String?  @db.VarChar(45)
+  is_approved     Boolean? @default(false)
+  created_at      DateTime @default(now()) @db.Timestamp(0)
+  updated_at      DateTime @default(now()) @db.Timestamp(0)
+  qa_items        qa_items @relation(fields: [qa_item_id], references: [id], onDelete: Cascade, onUpdate: Restrict, map: "qa_comments_ibfk_1")
+
+  @@index([created_at], map: "idx_created_at")
+  @@index([is_approved], map: "idx_is_approved")
+  @@index([qa_item_id], map: "idx_qa_item_id")
+}
+
+model qa_items {
+  id                   Int             @id @default(autoincrement())
+  category_id          Int?
+  question             String          @db.Text
+  answer               String          @db.LongText
+  display_order        Int?            @default(0)
+  is_active            Boolean?        @default(true)
+  view_count           Int?            @default(0)
+  is_featured          Boolean?        @default(false)
+  tags                 String?         @db.VarChar(500)
+  submitter_ip         String?         @db.VarChar(45)
+  submitter_user_agent String?         @db.Text
+  created_at           DateTime        @default(now()) @db.Timestamp(0)
+  updated_at           DateTime        @default(now()) @db.Timestamp(0)
+  qa_comments          qa_comments[]
+  qa_categories        qa_categories?  @relation(fields: [category_id], references: [id], onUpdate: Restrict, map: "qa_items_ibfk_1")
+  qa_submitters        qa_submitters[]
+
+  @@index([category_id], map: "idx_category_id")
+  @@index([display_order], map: "idx_display_order")
+  @@index([is_active], map: "idx_is_active")
+  @@index([is_featured], map: "idx_is_featured")
+  @@index([submitter_ip], map: "idx_submitter_ip")
+  @@fulltext([question, answer], map: "idx_question_answer")
+}
+
+model qa_submitters {
+  id              Int       @id @default(autoincrement())
+  qa_item_id      Int?
+  submitter_name  String?   @db.VarChar(255)
+  submitter_email String?   @db.VarChar(255)
+  submitter_phone String?   @db.VarChar(20)
+  created_at      DateTime  @default(now()) @db.Timestamp(0)
+  qa_items        qa_items? @relation(fields: [qa_item_id], references: [id], onDelete: Cascade, onUpdate: Restrict, map: "qa_submitters_ibfk_1")
+
+  @@index([qa_item_id], map: "idx_qa_item_id")
+  @@index([submitter_email], map: "idx_submitter_email")
+}
+
+model website_visits {
+  id         Int       @id @default(autoincrement())
+  ip_address String?   @db.VarChar(45)
+  user_agent String?   @db.Text
+  page_url   String?   @db.VarChar(500)
+  visit_date DateTime? @db.Date
+  visit_time DateTime? @default(now()) @db.DateTime(0)
+  session_id String?   @db.VarChar(100)
+  created_at DateTime  @default(now()) @db.Timestamp(0)
+
+  @@index([ip_address], map: "idx_ip_address")
+  @@index([visit_date], map: "idx_visit_date")
+  @@index([visit_time], map: "idx_visit_time")
+}
+
+enum PeopleDepartment {
+  executive
+  council
+  clerk
+  finance
+  engineering
+  education
+  audit
+  councilOfficer
+}
+
+enum PeopleRoleType {
+  head
+  deputy
+  staff
+  worker
+}
+
+enum staff_role {
+  leader
+  coleader
+  employee
 }
 
 enum CorruptionComplaintStatus {
@@ -507,95 +822,11 @@ enum menus_level {
   small_sub
 }
 
-model WaterSupportRequest {
-  id                    BigInt                     @id @default(autoincrement()) @db.UnsignedBigInt
-  request_date          DateTime                   @db.Date
-  
-  // ข้อมูลผู้ยื่นคำร้อง (Requester Information)
-  requester_id_card      String?                   @db.VarChar(20) // เลขบัตรประชาชน
-  requester_title       String                     @db.VarChar(20) // นาย, นาง, นางสาว
-  requester_name        String                     @db.VarChar(255)
-  requester_age         Int?
-  requester_house_number String                    @db.VarChar(50)
-  requester_village     String                     @db.VarChar(100)
-  requester_subdistrict String                     @default("ตำบลบ้านโพธิ์") @db.VarChar(100)
-  requester_district    String                     @default("อำเภอบ้านโพธิ์") @db.VarChar(100)
-  requester_province    String                     @default("จังหวัดฉะเชิงเทรา") @db.VarChar(100)
-  requester_phone       String?                    @db.VarChar(20)
-  family_members        Int?
-  
-  // รายละเอียดคำร้อง (Request Details)
-  water_needs           String                     @db.Text // ความต้องการใช้น้ำ
-  symptoms_description  String                     @db.Text // อาการและประเภท
-  
-  // สถานะการดำเนินการ (Status Management)
-  status                WaterSupportRequestStatus  @default(pending)
-  status_note           String?                    @db.Text
-  
-  // ข้อมูลระบบ (System Information)
-  captcha_answer        String?                    @db.VarChar(10)
-  ip_address            String?                    @db.VarChar(45)
-  user_agent            String?                    @db.Text
-  created_at            DateTime?                  @default(now()) @db.Timestamp(0)
-  updated_at            DateTime?                  @default(now()) @db.Timestamp(0)
-
-  @@index([request_date], map: "idx_water_request_date")
-  @@index([requester_name], map: "idx_water_requester_name")
-  @@index([status], map: "idx_water_status")
-  @@index([created_at], map: "idx_water_created_at")
-  @@map("water_support_requests")
-}
-
 enum WaterSupportRequestStatus {
   pending
   processing
   completed
   rejected
-}
-
-model WastebinRequest {
-  id                      BigInt                @id @default(autoincrement()) @db.UnsignedBigInt
-  request_date            DateTime              @db.Date
-  
-  // ข้อมูลผู้ยื่นคำร้อง (Requester Information)
-  requester_title         String                @db.VarChar(20) // นาย, นาง, นางสาว, หน่วยงาน
-  requester_name          String                @db.VarChar(255)
-  requester_age           Int
-  requester_house_number  String                @db.VarChar(50)
-  requester_street        String?               @db.VarChar(100)
-  requester_village       String                @db.VarChar(100)
-  requester_subdistrict   String                @default("ตำบลบ้านโพธิ์") @db.VarChar(100)
-  requester_district      String                @default("อำเภอบ้านโพธิ์") @db.VarChar(100)
-  requester_province      String                @default("จังหวัดฉะเชิงเทรา") @db.VarChar(100)
-  
-  // รายละเอียดคำร้อง (Request Details)
-  bin_quantity            Int                   // จำนวนถังขยะที่ต้องการ
-  delivery_house_number   String                @db.VarChar(50)
-  delivery_village        String                @db.VarChar(100)
-  
-  // เอกสารประกอบ (Documents)
-  house_registration     String?               @db.VarChar(255) // path สำเนาทะเบียนบ้าน
-  id_card                String?               @db.VarChar(255) // path สำเนาบัตรประชาชน
-  document1              String?               @db.VarChar(255) // path เอกสารประกอบ 1
-  document2              String?               @db.VarChar(255) // path เอกสารประกอบ 2
-  document3              String?               @db.VarChar(255) // path เอกสารประกอบ 3
-  
-  // สถานะการดำเนินการ (Status Management)
-  status                 WastebinRequestStatus @default(pending)
-  status_note            String?               @db.Text
-  
-  // ข้อมูลระบบ (System Information)
-  captcha_answer         String?               @db.VarChar(10)
-  ip_address             String?               @db.VarChar(45)
-  user_agent             String?               @db.Text
-  created_at             DateTime?             @default(now()) @db.Timestamp(0)
-  updated_at             DateTime?             @default(now()) @db.Timestamp(0)
-
-  @@index([request_date], map: "idx_wastebin_request_date")
-  @@index([requester_name], map: "idx_wastebin_requester_name")
-  @@index([status], map: "idx_wastebin_status")
-  @@index([created_at], map: "idx_wastebin_created_at")
-  @@map("wastebin_requests")
 }
 
 enum WastebinRequestStatus {
@@ -605,50 +836,6 @@ enum WastebinRequestStatus {
   rejected
 }
 
-model WasteCollectionRequest {
-  id                      BigInt                      @id @default(autoincrement()) @db.UnsignedBigInt
-  request_date            DateTime                    @db.Date
-  
-  // ข้อมูลผู้ยื่นคำร้อง (Requester Information)
-  requester_title         String                      @db.VarChar(20) // นาย, นาง, นางสาว, หน่วยงาน
-  requester_name          String                      @db.VarChar(255)
-  requester_age           Int
-  requester_house_number  String                      @db.VarChar(50)
-  requester_village       String                      @db.VarChar(100)
-  requester_subdistrict   String                      @default("ตำบลบ้านโพธิ์") @db.VarChar(100)
-  requester_district      String                      @default("อำเภอบ้านโพธิ์") @db.VarChar(100)
-  requester_province      String                      @default("จังหวัดฉะเชิงเทรา") @db.VarChar(100)
-  requester_phone         String?                     @db.VarChar(20)
-  
-  // ประเภทขยะ (Waste Types)
-  waste_type_household    Boolean                     @default(false) // บ้านที่อยู่อาศัย
-  waste_type_rental       Boolean                     @default(false) // บ้านเจ้า/อาคารให้เช่า
-  waste_type_shop         Boolean                     @default(false) // ร้านค้า
-  waste_type_factory      Boolean                     @default(false) // โรงงาน/ประกอบธุรกิจ
-  other_waste_type        String?                     @db.Text // อื่นๆ
-  
-  // รายละเอียดคำร้อง (Request Details)
-  collection_details      String                      @db.Text // รายละเอียดการจัดเก็บ
-  reason_for_request      String                      @db.Text // เหตุผลความจำเป็น
-  
-  // สถานะการดำเนินการ (Status Management)
-  status                  WasteCollectionRequestStatus @default(pending)
-  status_note             String?                     @db.Text
-  
-  // ข้อมูลระบบ (System Information)
-  captcha_answer          String?                     @db.VarChar(10)
-  ip_address              String?                     @db.VarChar(45)
-  user_agent              String?                     @db.Text
-  created_at              DateTime?                   @default(now()) @db.Timestamp(0)
-  updated_at              DateTime?                   @default(now()) @db.Timestamp(0)
-
-  @@index([request_date], map: "idx_waste_collection_request_date")
-  @@index([requester_name], map: "idx_waste_collection_requester_name")
-  @@index([status], map: "idx_waste_collection_status")
-  @@index([created_at], map: "idx_waste_collection_created_at")
-  @@map("waste_collection_requests")
-}
-
 enum WasteCollectionRequestStatus {
   pending
   processing
@@ -656,4 +843,15 @@ enum WasteCollectionRequestStatus {
   rejected
 }
 
+enum general_requests_requester_title {
+  MR @map("นาย")
+  MRS @map("นาง")
+  MISS @map("นางสาว")
+}
 
+enum general_requests_status {
+  pending
+  processing
+  completed
+  rejected
+}
