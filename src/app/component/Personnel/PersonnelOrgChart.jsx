@@ -183,6 +183,19 @@ const PersonnelOrgChart = () => {
   // Filter function to show specific sections
   const shouldShowSection = (sectionName) => {
     if (activeSection === "all") return true;
+
+    // When departments is selected, only show departments section (not individual department sections)
+    if (activeSection === "departments") {
+      return sectionName === "departments";
+    }
+
+    // For individual department sections, don't show when "all" or "departments" is selected
+    if (
+      ["clerk", "finance", "engineering", "education"].includes(sectionName)
+    ) {
+      return activeSection === sectionName;
+    }
+
     return activeSection === sectionName;
   };
 
@@ -195,7 +208,7 @@ const PersonnelOrgChart = () => {
       clerk: { name: "สำนักปลัดเทศบาล" },
       finance: { name: "กองคลัง" },
       engineering: { name: "กองช่าง" },
-      education: { name: "กองการศึกษาฯ" },
+      education: { name: "กองการศึกษา" },
       audit: { name: "หน่วยตรวจสอบภายใน" },
     };
     return deptMap[deptKey] || { name: "ไม่ระบุ" };
@@ -348,14 +361,78 @@ const PersonnelOrgChart = () => {
             </button>
             <button
               onClick={() => {
-                setActiveSection("audit");
+                setActiveSection("clerk");
                 setHighlightedDepartment(null);
+                setTimeout(() => {
+                  window.scrollTo({ top: 0, behavior: "smooth" });
+                }, 100);
+              }}
+              className={`px-4 py-2 rounded-full text-sm font-medium transition-all ${
+                activeSection === "clerk"
+                  ? "bg-blue-600 text-white shadow-lg"
+                  : "bg-white text-gray-700 hover:bg-blue-100 border border-gray-200"
+              }`}
+            >
+              สำนักปลัดเทศบาล
+            </button>
+            <button
+              onClick={() => {
+                setActiveSection("finance");
+                setHighlightedDepartment(null);
+                setTimeout(() => {
+                  window.scrollTo({ top: 0, behavior: "smooth" });
+                }, 100);
+              }}
+              className={`px-4 py-2 rounded-full text-sm font-medium transition-all ${
+                activeSection === "finance"
+                  ? "bg-green-600 text-white shadow-lg"
+                  : "bg-white text-gray-700 hover:bg-green-100 border border-gray-200"
+              }`}
+            >
+              กองคลัง
+            </button>
+            <button
+              onClick={() => {
+                setActiveSection("engineering");
+                setHighlightedDepartment(null);
+                setTimeout(() => {
+                  window.scrollTo({ top: 0, behavior: "smooth" });
+                }, 100);
+              }}
+              className={`px-4 py-2 rounded-full text-sm font-medium transition-all ${
+                activeSection === "engineering"
+                  ? "bg-orange-600 text-white shadow-lg"
+                  : "bg-white text-gray-700 hover:bg-orange-100 border border-gray-200"
+              }`}
+            >
+              กองช่าง
+            </button>
+            <button
+              onClick={() => {
+                setActiveSection("education");
+                setHighlightedDepartment(null);
+                setTimeout(() => {
+                  window.scrollTo({ top: 0, behavior: "smooth" });
+                }, 100);
+              }}
+              className={`px-4 py-2 rounded-full text-sm font-medium transition-all ${
+                activeSection === "education"
+                  ? "bg-purple-600 text-white shadow-lg"
+                  : "bg-white text-gray-700 hover:bg-purple-100 border border-gray-200"
+              }`}
+            >
+              กองการศึกษาฯ
+            </button>
+            <button
+              onClick={() => {
+                setActiveSection("audit");
+                setHighlightedDepartment("audit");
                 document
                   .getElementById("audit")
                   ?.scrollIntoView({ behavior: "smooth" });
               }}
               className={`px-4 py-2 rounded-full text-sm font-medium transition-all ${
-                activeSection === "audit"
+                activeSection === "audit" || highlightedDepartment === "audit"
                   ? "bg-red-600 text-white shadow-lg"
                   : "bg-white text-gray-700 hover:bg-red-100 border border-gray-200"
               }`}
@@ -663,561 +740,37 @@ const PersonnelOrgChart = () => {
               </div>
             </div>
 
-            {/* สำนักปลัดเทศบาล - Special Layout */}
-            <div className="mb-12">
-              <div
-                id="clerk"
-                className={`bg-white rounded-2xl shadow-xl overflow-hidden border border-gray-100 transition-all duration-500 ${
-                  highlightedDepartment === "clerk"
-                    ? "ring-4 ring-yellow-400 ring-opacity-75"
-                    : ""
-                }`}
-              >
-                {/* Department Header */}
-                <div className="bg-gradient-to-r from-blue-500 to-blue-600 p-6 text-white">
-                  <div className="flex items-center gap-4">
-                    <div className="bg-white/20 rounded-lg w-16 h-16 flex items-center justify-center">
-                      <div className="w-8 h-8 bg-white/30 rounded"></div>
-                    </div>
-                    <div>
-                      <h3 className="text-2xl font-bold">สำนักปลัดเทศบาล</h3>
-                      <p className="text-white/80">
-                        หน่วยงานบริหารงานทั่วไปและสนับสนุน
-                      </p>
-                    </div>
-                  </div>
-                </div>
-
-                {/* Department Content */}
-                <div className="p-8">
-                  {/* หัวหน้าสำนักปลัดเทศบาล */}
-                  <div className="mb-8">
-                    <div className="flex justify-center">
-                      <PersonCard
-                        person={personnelData.departments.clerk.head}
-                        isHead={true}
-                      />
-                    </div>
-                  </div>
-
-                  {/* Connection Lines */}
-                  <div className="flex justify-center mb-8">
-                    <div className="flex flex-col items-center">
-                      <ConnectionLine vertical />
-                      <div className="w-4 h-4 bg-gradient-to-r from-[#0383AA] to-[#05C5FF] rounded-full"></div>
-                      <ConnectionLine vertical />
-                    </div>
-                  </div>
-
-                  {/* หัวหน้าฝ่าย */}
-                  <div className="mb-8">
-                    <h4 className="text-lg font-semibold text-center mb-6 text-blue-700">
-                      หัวหน้าฝ่าย
-                    </h4>
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6 max-w-4xl mx-auto">
-                      <PersonCard
-                        person={personnelData.departments.clerk.staff[0]}
-                        isHead={true}
-                      />
-                      <PersonCard
-                        person={personnelData.departments.clerk.staff[1]}
-                        isHead={true}
-                      />
-                    </div>
-                  </div>
-
-                  {/* Connection Lines */}
-                  <div className="flex justify-center mb-8">
-                    <div className="flex flex-col items-center">
-                      <ConnectionLine vertical />
-                      <div className="w-4 h-4 bg-gradient-to-r from-[#0383AA] to-[#05C5FF] rounded-full"></div>
-                      <ConnectionLine vertical />
-                    </div>
-                  </div>
-
-                  {/* เจ้าหน้าที่และนักวิชาการ */}
-                  <div className="mb-8">
-                    {/* <h4 className="text-lg font-semibold text-center mb-6 text-blue-700">
-                      เจ้าหน้าที่และนักวิชาการ
-                    </h4> */}
-                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                      {personnelData.departments.clerk.staff
-                        ?.slice(2, 8)
-                        ?.map((person, index) => (
-                          <PersonCard key={index} person={person} />
-                        ))}
-                    </div>
-                  </div>
-
-                  {/* ผู้ช่วยเจ้าหน้าที่ */}
-                  <div className="mb-8">
-                    {/* <h4 className="text-lg font-semibold text-center mb-6 text-blue-700">
-                      ผู้ช่วยเจ้าหน้าที่
-                    </h4> */}
-                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-                      {personnelData.departments.clerk.staff
-                        ?.slice(8, 12)
-                        ?.map((person, index) => (
-                          <PersonCard key={index} person={person} />
-                        ))}
-                    </div>
-                  </div>
-
-                  {/* พนักงานขับรถและเครื่องจักร */}
-                  <div className="mb-8">
-                    {/* <h4 className="text-lg font-semibold text-center mb-6 text-blue-700">
-                      พนักงานขับรถและเครื่องจักร
-                    </h4> */}
-                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-                      {personnelData.departments.clerk.staff
-                        ?.slice(12, 16)
-                        ?.map((person, index) => (
-                          <PersonCard key={index} person={person} />
-                        ))}
-                    </div>
-                  </div>
-
-                  {/* คนงานและพนักงานทั่วไป */}
-                  <div>
-                    {/* <h4 className="text-lg font-semibold text-center mb-6 text-blue-700">
-                      คนงานและพนักงานทั่วไป
-                    </h4> */}
-                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4">
-                      {personnelData.departments.clerk.staff
-                        ?.slice(16)
-                        ?.map((person, index) => (
-                          <PersonCard key={index} person={person} />
-                        ))}
-                    </div>
-                  </div>
-                </div>
-              </div>
+            {/* สรุปข้อมูลพนักงานเทศบาล */}
+            <div className="text-center">
+              <p className="text-gray-600 text-lg">
+                กดปุ่มแผนกเฉพาะเพื่อดูรายละเอียดบุคลากรในแต่ละหน่วยงาน
+              </p>
             </div>
+          </section>
+        )}
 
-            {/* กองคลัง - Special Layout */}
-            <div className="mb-12">
-              <div
-                id="finance"
-                className={`bg-white rounded-2xl shadow-xl overflow-hidden border border-gray-100 transition-all duration-500 ${
-                  highlightedDepartment === "finance"
-                    ? "ring-4 ring-yellow-400 ring-opacity-75"
-                    : ""
-                }`}
-              >
-                {/* Department Header */}
-                <div className="bg-gradient-to-r from-green-500 to-green-600 p-6 text-white">
-                  <div className="flex items-center gap-4">
-                    <div className="bg-white/20 rounded-lg w-16 h-16 flex items-center justify-center">
-                      <div className="w-8 h-8 bg-white/30 rounded"></div>
-                    </div>
-                    <div>
-                      <h3 className="text-2xl font-bold">กองคลัง</h3>
-                      <p className="text-white/80">
-                        หน่วยงานการเงิน การคลัง และพัสดุ
-                      </p>
-                    </div>
-                  </div>
-                </div>
-
-                {/* Department Content */}
-                <div className="p-8">
-                  {/* ผู้อำนวยการกองคลัง */}
-                  <div className="mb-8">
-                    <div className="flex justify-center">
-                      <PersonCard
-                        person={personnelData.departments.finance.head}
-                        isHead={true}
-                      />
-                    </div>
-                  </div>
-
-                  {/* Connection Lines */}
-                  <div className="flex justify-center mb-8">
-                    <div className="flex flex-col items-center">
-                      <ConnectionLine vertical />
-                      <div className="w-4 h-4 bg-gradient-to-r from-[#0383AA] to-[#05C5FF] rounded-full"></div>
-                      <ConnectionLine vertical />
-                    </div>
-                  </div>
-
-                  {/* หัวหน้าฝ่าย */}
-                  <div className="mb-8">
-                    <h4 className="text-lg font-semibold text-center mb-6 text-green-700">
-                      หัวหน้าฝ่าย
-                    </h4>
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6 max-w-4xl mx-auto">
-                      <PersonCard
-                        person={personnelData.departments.finance.staff[0]}
-                        isHead={true}
-                      />
-                      <PersonCard
-                        person={personnelData.departments.finance.staff[1]}
-                        isHead={true}
-                      />
-                    </div>
-                  </div>
-
-                  {/* Connection Lines */}
-                  <div className="flex justify-center mb-8">
-                    <div className="flex flex-col items-center">
-                      <ConnectionLine vertical />
-                      <div className="w-4 h-4 bg-gradient-to-r from-[#0383AA] to-[#05C5FF] rounded-full"></div>
-                      <ConnectionLine vertical />
-                    </div>
-                  </div>
-
-                  {/* นักวิชาการและเจ้าหน้าที่ชำนาญการ */}
-                  <div className="mb-8">
-                    {/* <h4 className="text-lg font-semibold text-center mb-6 text-green-700">
-                      นักวิชาการและเจ้าหน้าที่ชำนาญการ
-                    </h4> */}
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                      <PersonCard
-                        person={personnelData.departments.finance.staff[2]}
-                      />
-                      <PersonCard
-                        person={personnelData.departments.finance.staff[3]}
-                      />
-                    </div>
-                  </div>
-
-                  {/* นักวิชาการและเจ้าพนักงาน */}
-                  <div className="mb-8">
-                    {/* <h4 className="text-lg font-semibold text-center mb-6 text-green-700">
-                      นักวิชาการและเจ้าพนักงาน
-                    </h4> */}
-                    <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                      <PersonCard
-                        person={personnelData.departments.finance.staff[4]}
-                      />
-                      <PersonCard
-                        person={personnelData.departments.finance.staff[5]}
-                      />
-                      <PersonCard
-                        person={personnelData.departments.finance.staff[6]}
-                      />
-                    </div>
-                  </div>
-
-                  {/* ผู้ช่วยเจ้าพนักงาน */}
-                  <div>
-                    {/* <h4 className="text-lg font-semibold text-center mb-6 text-green-700">
-                      ผู้ช่วยเจ้าพนักงาน
-                    </h4> */}
-                    <div className="flex justify-center">
-                      <PersonCard
-                        person={personnelData.departments.finance.staff[7]}
-                      />
-                    </div>
-                  </div>
-                </div>
+        {/* หน่วยตรวจสอบภายใน */}
+        {shouldShowSection("audit") && (
+          <section
+            id="audit"
+            className={`mb-20 transition-all duration-500 ${
+              highlightedDepartment === "audit"
+                ? "ring-4 ring-yellow-400 ring-opacity-50 rounded-2xl p-6"
+                : ""
+            }`}
+          >
+            <div className="text-center mb-12">
+              <div className="inline-flex items-center gap-3 bg-gradient-to-r from-red-100 to-pink-100 rounded-full px-6 py-3 mb-4">
+                <h2 className="text-3xl font-bold text-red-800">
+                  หน่วยตรวจสอบภายใน
+                </h2>
               </div>
-            </div>
-
-            {/* กองช่าง - Special Layout */}
-            <div className="mb-12">
-              <div
-                id="engineering"
-                className={`bg-white rounded-2xl shadow-xl overflow-hidden border border-gray-100 transition-all duration-500 ${
-                  highlightedDepartment === "engineering"
-                    ? "ring-4 ring-yellow-400 ring-opacity-75"
-                    : ""
-                }`}
-              >
-                {/* Department Header */}
-                <div className="bg-gradient-to-r from-orange-500 to-orange-600 p-6 text-white">
-                  <div className="flex items-center gap-4">
-                    <div className="bg-white/20 rounded-lg w-16 h-16 flex items-center justify-center">
-                      <div className="w-8 h-8 bg-white/30 rounded"></div>
-                    </div>
-                    <div>
-                      <h3 className="text-2xl font-bold">กองช่าง</h3>
-                      <p className="text-white/80">
-                        หน่วยงานโครงสร้างพื้นฐานและสาธารณูปโภค
-                      </p>
-                    </div>
-                  </div>
-                </div>
-
-                {/* Department Content */}
-                <div className="p-8">
-                  {/* ผู้อำนวยการกองช่าง */}
-                  <div className="mb-8">
-                    <div className="flex justify-center">
-                      <PersonCard
-                        person={personnelData.departments.engineering.head}
-                        isHead={true}
-                      />
-                    </div>
-                  </div>
-
-                  {/* Connection Lines */}
-                  <div className="flex justify-center mb-8">
-                    <div className="flex flex-col items-center">
-                      <ConnectionLine vertical />
-                      <div className="w-4 h-4 bg-gradient-to-r from-[#0383AA] to-[#05C5FF] rounded-full"></div>
-                      <ConnectionLine vertical />
-                    </div>
-                  </div>
-
-                  {/* หัวหน้าฝ่ายและวิศวกร */}
-                  <div className="mb-8">
-                    {/* <h4 className="text-lg font-semibold text-center mb-6 text-orange-700">
-                      หัวหน้าฝ่ายและวิศวกร
-                    </h4> */}
-                    <div className="grid grid-cols-1 md:grid-cols-2 gap-6 max-w-4xl mx-auto">
-                      <PersonCard
-                        person={personnelData.departments.engineering.staff[0]}
-                        isHead={true}
-                      />
-                      <PersonCard
-                        person={personnelData.departments.engineering.staff[1]}
-                      />
-                    </div>
-                  </div>
-
-                  {/* Connection Lines */}
-                  <div className="flex justify-center mb-8">
-                    <div className="flex flex-col items-center">
-                      <ConnectionLine vertical />
-                      <div className="w-4 h-4 bg-gradient-to-r from-[#0383AA] to-[#05C5FF] rounded-full"></div>
-                      <ConnectionLine vertical />
-                    </div>
-                  </div>
-
-                  {/* ผู้ช่วยเจ้าพนักงานและพนักงานพิเศษ */}
-                  <div className="mb-8">
-                    {/* <h4 className="text-lg font-semibold text-center mb-6 text-orange-700">
-                      ผู้ช่วยเจ้าพนักงานและพนักงานพิเศษ
-                    </h4> */}
-                    <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                      <PersonCard
-                        person={personnelData.departments.engineering.staff[2]}
-                      />
-                      <PersonCard
-                        person={personnelData.departments.engineering.staff[4]}
-                      />
-                      <PersonCard
-                        person={personnelData.departments.engineering.staff[10]}
-                      />
-                    </div>
-                  </div>
-
-                  {/* คนงานทั่วไป */}
-                  <div className="mb-8">
-                    {/* <h4 className="text-lg font-semibold text-center mb-6 text-orange-700">
-                      คนงานทั่วไป
-                    </h4> */}
-                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-                      <PersonCard
-                        person={personnelData.departments.engineering.staff[3]}
-                      />
-                      <PersonCard
-                        person={personnelData.departments.engineering.staff[5]}
-                      />
-                      <PersonCard
-                        person={personnelData.departments.engineering.staff[6]}
-                      />
-                      <PersonCard
-                        person={personnelData.departments.engineering.staff[7]}
-                      />
-                    </div>
-                  </div>
-
-                  {/* คนงานและพนักงานจ้างเหมา */}
-                  <div>
-                    <h4 className="text-lg font-semibold text-center mb-6 text-orange-700">
-                      คนงานและพนักงานจ้างเหมา
-                    </h4>
-                    <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                      <PersonCard
-                        person={personnelData.departments.engineering.staff[8]}
-                      />
-                      <PersonCard
-                        person={personnelData.departments.engineering.staff[9]}
-                      />
-                      <PersonCard
-                        person={personnelData.departments.engineering.staff[11]}
-                      />
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            {/* กองการศึกษา - Special Layout */}
-            <div className="mb-12">
-              <div
-                id="education"
-                className={`bg-white rounded-2xl shadow-xl overflow-hidden border border-gray-100 transition-all duration-500 ${
-                  highlightedDepartment === "education"
-                    ? "ring-4 ring-yellow-400 ring-opacity-75"
-                    : ""
-                }`}
-              >
-                {/* Department Header */}
-                <div className="bg-gradient-to-r from-purple-500 to-purple-600 p-6 text-white">
-                  <div className="flex items-center gap-4">
-                    <div className="bg-white/20 rounded-lg w-16 h-16 flex items-center justify-center">
-                      <div className="w-8 h-8 bg-white/30 rounded"></div>
-                    </div>
-                    <div>
-                      <h3 className="text-2xl font-bold">กองการศึกษาฯ</h3>
-                      <p className="text-white/80">
-                        หน่วยงานการศึกษา ศาสนา และวัฒนธรรม
-                      </p>
-                    </div>
-                  </div>
-                </div>
-
-                {/* Department Content */}
-                <div className="p-8">
-                  {/* ผู้อำนวยการกองการศึกษา */}
-                  <div className="mb-8">
-                    <div className="flex justify-center">
-                      <PersonCard
-                        person={personnelData.departments.education.head}
-                        isHead={true}
-                      />
-                    </div>
-                  </div>
-
-                  {/* Connection Lines */}
-                  <div className="flex justify-center mb-8">
-                    <div className="flex flex-col items-center">
-                      <ConnectionLine vertical />
-                      <div className="w-4 h-4 bg-gradient-to-r from-[#0383AA] to-[#05C5FF] rounded-full"></div>
-                      <ConnectionLine vertical />
-                    </div>
-                  </div>
-
-                  {/* หัวหน้าฝ่าย */}
-                  <div className="mb-8">
-                    {/* <h4 className="text-lg font-semibold text-center mb-6 text-purple-700">
-                      หัวหน้าฝ่าย
-                    </h4> */}
-                    <div className="flex justify-center">
-                      <PersonCard
-                        person={personnelData.departments.education.staff[0]}
-                        isHead={true}
-                      />
-                    </div>
-                  </div>
-
-                  {/* Connection Lines */}
-                  <div className="flex justify-center mb-8">
-                    <div className="flex flex-col items-center">
-                      <ConnectionLine vertical />
-                      <div className="w-4 h-4 bg-gradient-to-r from-[#0383AA] to-[#05C5FF] rounded-full"></div>
-                      <ConnectionLine vertical />
-                    </div>
-                  </div>
-
-                  {/* นักวิชาการและเจ้าหน้าที่ */}
-                  <div>
-                    {/* <h4 className="text-lg font-semibold text-center mb-6 text-purple-700">
-                      นักวิชาการและเจ้าหน้าที่
-                    </h4> */}
-                    <div className="grid grid-cols-1 md:grid-cols-3 gap-6 max-w-4xl mx-auto">
-                      <PersonCard
-                        person={personnelData.departments.education.staff[1]}
-                      />
-                      <PersonCard
-                        person={personnelData.departments.education.staff[2]}
-                      />
-                      <PersonCard
-                        person={personnelData.departments.education.staff[3]}
-                      />
-                    </div>
-                    <div className="grid grid-cols-1 md:grid-cols-2 mt-6 gap-6 max-w-4xl mx-auto">
-                      <PersonCard
-                        person={personnelData.departments.education.staff[4]}
-                      />
-                      <PersonCard
-                        person={personnelData.departments.education.staff[5]}
-                      />
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
-
-            {/* Other Departments */}
-            <div className="grid grid-cols-1 lg:grid-cols-2 gap-8">
-              {Object.entries(personnelData.departments)
-                .filter(
-                  ([key]) =>
-                    key !== "clerk" &&
-                    key !== "finance" &&
-                    key !== "engineering" &&
-                    key !== "education"
-                )
-                .map(([key, dept]) => (
-                  <div
-                    key={key}
-                    id={key}
-                    className={`bg-white rounded-2xl shadow-xl overflow-hidden border border-gray-100 transition-all duration-500 ${
-                      highlightedDepartment === key
-                        ? "ring-4 ring-yellow-400 ring-opacity-75 scale-105"
-                        : ""
-                    }`}
-                  >
-                    {/* Department Header */}
-                    <div
-                      className={`bg-gradient-to-r ${dept.color} p-6 text-white`}
-                    >
-                      <div className="flex items-center gap-4">
-                        <div className="bg-white/20 rounded-lg w-16 h-16 flex items-center justify-center">
-                          <div className="w-8 h-8 bg-white/30 rounded"></div>
-                        </div>
-                        <div>
-                          <h3 className="text-2xl font-bold">{dept.title}</h3>
-                          <p className="text-white/80">หน่วยงานบริการประชาชน</p>
-                        </div>
-                      </div>
-                    </div>
-
-                    {/* Department Content */}
-                    <div className="p-8">
-                      {/* หัวหน้าส่วน */}
-                      <div className="mb-8">
-                        <div className="flex justify-center">
-                          {dept.head && (
-                            <PersonCard person={dept.head} isHead={true} />
-                          )}
-                        </div>
-                      </div>
-
-                      {/* Connection Lines */}
-                      <div className="flex justify-center mb-8">
-                        <div className="flex flex-col items-center">
-                          <ConnectionLine vertical />
-                          <div className="w-4 h-4 bg-gradient-to-r from-[#0383AA] to-[#05C5FF] rounded-full"></div>
-                          <ConnectionLine vertical />
-                        </div>
-                      </div>
-
-                      {/* พนักงาน */}
-                      <div className="grid grid-cols-1 gap-6">
-                        {dept.staff?.map((person, index) => (
-                          <PersonCard key={index} person={person} />
-                        ))}
-                      </div>
-                    </div>
-                  </div>
-                ))}
+              <p className="text-gray-600">หน่วยงานตรวจสอบและควบคุมภายใน</p>
             </div>
 
             {/* หน่วยตรวจสอบภายใน - Special Layout */}
             <div className="mb-12">
-              <div
-                id="audit"
-                className={`bg-white rounded-2xl shadow-xl overflow-hidden border border-gray-100 transition-all duration-500 ${
-                  highlightedDepartment === "audit"
-                    ? "ring-4 ring-yellow-400 ring-opacity-75"
-                    : ""
-                }`}
-              >
+              <div className="bg-white rounded-2xl shadow-xl overflow-hidden border border-gray-100">
                 {/* Department Header */}
                 <div className="bg-gradient-to-r from-red-500 to-red-600 p-6 text-white">
                   <div className="flex items-center gap-4">
@@ -1246,6 +799,430 @@ const PersonnelOrgChart = () => {
                       )}
                     </div>
                   </div>
+                </div>
+              </div>
+            </div>
+          </section>
+        )}
+
+        {/* สำนักปลัดเทศบาล - Individual Section */}
+        {shouldShowSection("clerk") && (
+          <section id="clerk-section" className="mb-20">
+            <div className="text-center mb-12">
+              <div className="inline-flex items-center gap-3 bg-gradient-to-r from-blue-100 to-indigo-100 rounded-full px-6 py-3 mb-4">
+                <h2 className="text-3xl font-bold text-blue-800">
+                  สำนักปลัดเทศบาล
+                </h2>
+              </div>
+              <p className="text-gray-600">
+                หน่วยงานบริหารงานทั่วไปและสนับสนุน
+              </p>
+            </div>
+
+            <div className="bg-white rounded-2xl shadow-xl overflow-hidden border border-gray-100">
+              <div className="bg-gradient-to-r from-blue-500 to-blue-600 p-6 text-white">
+                <div className="flex items-center gap-4">
+                  <div className="bg-white/20 rounded-lg w-16 h-16 flex items-center justify-center">
+                    <div className="w-8 h-8 bg-white/30 rounded"></div>
+                  </div>
+                  <div>
+                    <h3 className="text-2xl font-bold">สำนักปลัดเทศบาล</h3>
+                    <p className="text-white/80">
+                      หน่วยงานบริหารงานทั่วไปและสนับสนุน
+                    </p>
+                  </div>
+                </div>
+              </div>
+
+              <div className="p-8">
+                {/* หัวหน้าสำนักปลัดเทศบาล */}
+                <div className="mb-8">
+                  <div className="flex justify-center">
+                    <PersonCard
+                      person={personnelData.departments.clerk.head}
+                      isHead={true}
+                    />
+                  </div>
+                </div>
+
+                {/* Connection Lines */}
+                <div className="flex justify-center mb-8">
+                  <div className="flex flex-col items-center">
+                    <ConnectionLine vertical />
+                    <div className="w-4 h-4 bg-gradient-to-r from-[#0383AA] to-[#05C5FF] rounded-full"></div>
+                    <ConnectionLine vertical />
+                  </div>
+                </div>
+
+                {/* หัวหน้าฝ่าย */}
+                <div className="mb-8">
+                  <h4 className="text-lg font-semibold text-center mb-6 text-blue-700">
+                    หัวหน้าฝ่าย
+                  </h4>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6 max-w-4xl mx-auto">
+                    <PersonCard
+                      person={personnelData.departments.clerk.staff[0]}
+                      isHead={true}
+                    />
+                    <PersonCard
+                      person={personnelData.departments.clerk.staff[1]}
+                      isHead={true}
+                    />
+                  </div>
+                </div>
+
+                {/* Connection Lines */}
+                <div className="flex justify-center mb-8">
+                  <div className="flex flex-col items-center">
+                    <ConnectionLine vertical />
+                    <div className="w-4 h-4 bg-gradient-to-r from-[#0383AA] to-[#05C5FF] rounded-full"></div>
+                    <ConnectionLine vertical />
+                  </div>
+                </div>
+
+                {/* เจ้าหน้าที่และนักวิชาการ */}
+                <div className="mb-8">
+                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                    {personnelData.departments.clerk.staff
+                      ?.slice(2, 8)
+                      ?.map((person, index) => (
+                        <PersonCard key={index} person={person} />
+                      ))}
+                  </div>
+                </div>
+
+                {/* ผู้ช่วยเจ้าหน้าที่ */}
+                <div className="mb-8">
+                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+                    {personnelData.departments.clerk.staff
+                      ?.slice(8, 12)
+                      ?.map((person, index) => (
+                        <PersonCard key={index} person={person} />
+                      ))}
+                  </div>
+                </div>
+
+                {/* พนักงานขับรถและเครื่องจักร */}
+                <div className="mb-8">
+                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+                    {personnelData.departments.clerk.staff
+                      ?.slice(12, 16)
+                      ?.map((person, index) => (
+                        <PersonCard key={index} person={person} />
+                      ))}
+                  </div>
+                </div>
+
+                {/* คนงานและพนักงานทั่วไป */}
+                <div>
+                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-5 gap-4">
+                    {personnelData.departments.clerk.staff
+                      ?.slice(16)
+                      ?.map((person, index) => (
+                        <PersonCard key={index} person={person} />
+                      ))}
+                  </div>
+                </div>
+              </div>
+            </div>
+          </section>
+        )}
+
+        {/* กองคลัง - Individual Section */}
+        {shouldShowSection("finance") && (
+          <section id="finance-section" className="mb-20">
+            <div className="text-center mb-12">
+              <div className="inline-flex items-center gap-3 bg-gradient-to-r from-green-100 to-emerald-100 rounded-full px-6 py-3 mb-4">
+                <h2 className="text-3xl font-bold text-green-800">กองคลัง</h2>
+              </div>
+              <p className="text-gray-600">หน่วยงานการเงิน การคลัง และพัสดุ</p>
+            </div>
+
+            <div className="bg-white rounded-2xl shadow-xl overflow-hidden border border-gray-100">
+              <div className="bg-gradient-to-r from-green-500 to-green-600 p-6 text-white">
+                <div className="flex items-center gap-4">
+                  <div className="bg-white/20 rounded-lg w-16 h-16 flex items-center justify-center">
+                    <div className="w-8 h-8 bg-white/30 rounded"></div>
+                  </div>
+                  <div>
+                    <h3 className="text-2xl font-bold">กองคลัง</h3>
+                    <p className="text-white/80">
+                      หน่วยงานการเงิน การคลัง และพัสดุ
+                    </p>
+                  </div>
+                </div>
+              </div>
+
+              <div className="p-8">
+                {/* ผู้อำนวยการกองคลัง */}
+                <div className="mb-8">
+                  <div className="flex justify-center">
+                    <PersonCard
+                      person={personnelData.departments.finance.head}
+                      isHead={true}
+                    />
+                  </div>
+                </div>
+
+                {/* Connection Lines */}
+                <div className="flex justify-center mb-8">
+                  <div className="flex flex-col items-center">
+                    <ConnectionLine vertical />
+                    <div className="w-4 h-4 bg-gradient-to-r from-[#0383AA] to-[#05C5FF] rounded-full"></div>
+                    <ConnectionLine vertical />
+                  </div>
+                </div>
+
+                {/* หัวหน้าฝ่าย */}
+                <div className="mb-8">
+                  <h4 className="text-lg font-semibold text-center mb-6 text-green-700">
+                    หัวหน้าฝ่าย
+                  </h4>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6 max-w-4xl mx-auto">
+                    <PersonCard
+                      person={personnelData.departments.finance.staff[0]}
+                      isHead={true}
+                    />
+                    <PersonCard
+                      person={personnelData.departments.finance.staff[1]}
+                      isHead={true}
+                    />
+                  </div>
+                </div>
+
+                {/* Connection Lines */}
+                <div className="flex justify-center mb-8">
+                  <div className="flex flex-col items-center">
+                    <ConnectionLine vertical />
+                    <div className="w-4 h-4 bg-gradient-to-r from-[#0383AA] to-[#05C5FF] rounded-full"></div>
+                    <ConnectionLine vertical />
+                  </div>
+                </div>
+
+                {/* นักวิชาการและเจ้าหน้าที่ชำนาญการ */}
+                <div className="mb-8">
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <PersonCard
+                      person={personnelData.departments.finance.staff[2]}
+                    />
+                    <PersonCard
+                      person={personnelData.departments.finance.staff[3]}
+                    />
+                  </div>
+                </div>
+
+                {/* นักวิชาการและเจ้าพนักงาน */}
+                <div className="mb-8">
+                  <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                    <PersonCard
+                      person={personnelData.departments.finance.staff[4]}
+                    />
+                    <PersonCard
+                      person={personnelData.departments.finance.staff[5]}
+                    />
+                    <PersonCard
+                      person={personnelData.departments.finance.staff[6]}
+                    />
+                  </div>
+                </div>
+
+                {/* ผู้ช่วยเจ้าพนักงาน */}
+                <div>
+                  <div className="flex justify-center">
+                    <PersonCard
+                      person={personnelData.departments.finance.staff[7]}
+                    />
+                  </div>
+                </div>
+              </div>
+            </div>
+          </section>
+        )}
+
+        {/* กองช่าง - Individual Section */}
+        {shouldShowSection("engineering") && (
+          <section id="engineering-section" className="mb-20">
+            <div className="text-center mb-12">
+              <div className="inline-flex items-center gap-3 bg-gradient-to-r from-orange-100 to-amber-100 rounded-full px-6 py-3 mb-4">
+                <h2 className="text-3xl font-bold text-orange-800">กองช่าง</h2>
+              </div>
+              <p className="text-gray-600">
+                หน่วยงานโครงสร้างพื้นฐานและสาธารณูปโภค
+              </p>
+            </div>
+
+            <div className="bg-white rounded-2xl shadow-xl overflow-hidden border border-gray-100">
+              <div className="bg-gradient-to-r from-orange-500 to-orange-600 p-6 text-white">
+                <div className="flex items-center gap-4">
+                  <div className="bg-white/20 rounded-lg w-16 h-16 flex items-center justify-center">
+                    <div className="w-8 h-8 bg-white/30 rounded"></div>
+                  </div>
+                  <div>
+                    <h3 className="text-2xl font-bold">กองช่าง</h3>
+                    <p className="text-white/80">
+                      หน่วยงานโครงสร้างพื้นฐานและสาธารณูปโภค
+                    </p>
+                  </div>
+                </div>
+              </div>
+
+              <div className="p-8">
+                {/* ผู้อำนวยการกองช่าง */}
+                <div className="mb-8">
+                  <div className="flex justify-center">
+                    <PersonCard
+                      person={personnelData.departments.engineering.head}
+                      isHead={true}
+                    />
+                  </div>
+                </div>
+
+                {/* Connection Lines */}
+                <div className="flex justify-center mb-8">
+                  <div className="flex flex-col items-center">
+                    <ConnectionLine vertical />
+                    <div className="w-4 h-4 bg-gradient-to-r from-[#0383AA] to-[#05C5FF] rounded-full"></div>
+                    <ConnectionLine vertical />
+                  </div>
+                </div>
+
+                {/* หัวหน้าฝ่ายและวิศวกร */}
+                <div className="mb-8">
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6 max-w-4xl mx-auto">
+                    <PersonCard
+                      person={personnelData.departments.engineering.staff[0]}
+                      isHead={true}
+                    />
+                    <PersonCard
+                      person={personnelData.departments.engineering.staff[1]}
+                    />
+                  </div>
+                </div>
+
+                {/* Connection Lines */}
+                <div className="flex justify-center mb-8">
+                  <div className="flex flex-col items-center">
+                    <ConnectionLine vertical />
+                    <div className="w-4 h-4 bg-gradient-to-r from-[#0383AA] to-[#05C5FF] rounded-full"></div>
+                    <ConnectionLine vertical />
+                  </div>
+                </div>
+
+                {/* ผู้ช่วยเจ้าพนักงานและพนักงานพิเศษ */}
+                <div className="mb-8">
+                  <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                    <PersonCard
+                      person={personnelData.departments.engineering.staff[2]}
+                    />
+                    <PersonCard
+                      person={personnelData.departments.engineering.staff[4]}
+                    />
+                    <PersonCard
+                      person={personnelData.departments.engineering.staff[10]}
+                    />
+                  </div>
+                </div>
+
+                {/* คนงานทั่วไป */}
+                <div className="mb-8">
+                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
+                    <PersonCard
+                      person={personnelData.departments.engineering.staff[3]}
+                    />
+                    <PersonCard
+                      person={personnelData.departments.engineering.staff[5]}
+                    />
+                    <PersonCard
+                      person={personnelData.departments.engineering.staff[6]}
+                    />
+                    <PersonCard
+                      person={personnelData.departments.engineering.staff[7]}
+                    />
+                  </div>
+                </div>
+
+                {/* คนงานและพนักงานจ้างเหมา */}
+                <div>
+                  <h4 className="text-lg font-semibold text-center mb-6 text-orange-700">
+                    คนงานและพนักงานจ้างเหมา
+                  </h4>
+                  <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                    <PersonCard
+                      person={personnelData.departments.engineering.staff[8]}
+                    />
+                    <PersonCard
+                      person={personnelData.departments.engineering.staff[9]}
+                    />
+                    {personnelData.departments.engineering.staff[11] && (
+                      <PersonCard
+                        person={personnelData.departments.engineering.staff[11]}
+                      />
+                    )}
+                  </div>
+                </div>
+              </div>
+            </div>
+          </section>
+        )}
+
+        {/* กองการศึกษาฯ - Individual Section */}
+        {shouldShowSection("education") && (
+          <section id="education-section" className="mb-20">
+            <div className="text-center mb-12">
+              <div className="inline-flex items-center gap-3 bg-gradient-to-r from-purple-100 to-violet-100 rounded-full px-6 py-3 mb-4">
+                <h2 className="text-3xl font-bold text-purple-800">
+                  กองการศึกษา
+                </h2>
+              </div>
+              <p className="text-gray-600">หน่วยงานการศึกษา</p>
+            </div>
+
+            <div className="bg-white rounded-2xl shadow-xl overflow-hidden border border-gray-100">
+              <div className="bg-gradient-to-r from-purple-500 to-purple-600 p-6 text-white">
+                <div className="flex items-center gap-4">
+                  <div className="bg-white/20 rounded-lg w-16 h-16 flex items-center justify-center">
+                    <div className="w-8 h-8 bg-white/30 rounded"></div>
+                  </div>
+                  <div>
+                    <h3 className="text-2xl font-bold">
+                      กองการศึกษา ศาสนาและวัฒนธรรม
+                    </h3>
+                    <p className="text-white/80">
+                      หน่วยงานการศึกษา ศาสนา และวัฒนธรรม
+                    </p>
+                  </div>
+                </div>
+              </div>
+
+              <div className="p-8">
+                {/* ผู้อำนวยการกองการศึกษา */}
+                <div className="mb-8">
+                  <div className="flex justify-center">
+                    {personnelData.departments.education?.head && (
+                      <PersonCard
+                        person={personnelData.departments.education.head}
+                        isHead={true}
+                      />
+                    )}
+                  </div>
+                </div>
+
+                {/* Connection Lines */}
+                <div className="flex justify-center mb-8">
+                  <div className="flex flex-col items-center">
+                    <ConnectionLine vertical />
+                    <div className="w-4 h-4 bg-gradient-to-r from-[#0383AA] to-[#05C5FF] rounded-full"></div>
+                    <ConnectionLine vertical />
+                  </div>
+                </div>
+
+                {/* พนักงาน */}
+                <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                  {personnelData.departments.education?.staff?.map(
+                    (person, index) => (
+                      <PersonCard key={index} person={person} />
+                    )
+                  )}
                 </div>
               </div>
             </div>
