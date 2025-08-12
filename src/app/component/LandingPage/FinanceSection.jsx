@@ -24,7 +24,7 @@ export default function FinanceSection() {
       setError(null);
 
       let apiUrl = "";
-      
+
       // กำหนด API endpoint ตาม category
       switch (activeCategory) {
         case "procurement":
@@ -64,18 +64,37 @@ export default function FinanceSection() {
 
       if (result.success && result.data && Array.isArray(result.data)) {
         // Transform the data to match expected format
-        const transformedPosts = result.data.map((post) => ({
-          deptsub_id: (post.id || post.deptsub_id || Math.random().toString()).toString(),
-          announce_type: getAnnounceType(post.type_name || getCategoryTypeName(activeCategory)),
-          title: post.title_name || post.title,
-          pub_date: formatApiDate(post.date || post.pub_date),
-          link: post.link || `/post/${post.id || post.deptsub_id}`,
-          original_type: post.type_name
-        }));
+        const transformedPosts = result.data.map((post) => {
+          const originalType =
+            post.type_name || getCategoryTypeName(activeCategory);
+          const announceType = getAnnounceType(originalType);
+
+          console.log(`Post transformation:`, {
+            id: post.id,
+            original_type: originalType,
+            announce_type: announceType,
+            title: post.title_name,
+          });
+
+          return {
+            deptsub_id: (
+              post.id ||
+              post.deptsub_id ||
+              Math.random().toString()
+            ).toString(),
+            announce_type: announceType,
+            title: post.title_name || post.title,
+            pub_date: formatApiDate(post.date || post.pub_date),
+            link: post.link || `/post/${post.id || post.deptsub_id}`,
+            original_type: originalType,
+          };
+        });
 
         setPosts(transformedPosts);
         setRetryCount(0);
-        console.log(`Successfully loaded ${transformedPosts.length} posts for ${activeCategory}`);
+        console.log(
+          `Successfully loaded ${transformedPosts.length} posts for ${activeCategory}`
+        );
       } else {
         console.warn("API returned unexpected format:", result);
         setPosts([]);
@@ -118,9 +137,16 @@ export default function FinanceSection() {
   const getAnnounceType = (typeName) => {
     if (!typeName) return "W0";
 
-    if (typeName.includes("ประกาศจัดซื้อจัดจ้าง")) return "P0";
+    // ตรวจสอบแบบเจาะจงมากขึ้น
+    if (typeName === "ผลประกาศจัดซื้อจัดจ้าง") return "D0";
+    if (typeName === "รายงานผลการจัดซื้อจัดจ้าง") return "W0";
+    if (typeName === "ประกาศจัดซื้อจัดจ้าง") return "P0";
+    if (typeName === "ประกาศราคากลาง") return "M0";
+
+    // ตรวจสอบแบบ contains สำหรับกรณีที่มีข้อความเพิ่มเติม
     if (typeName.includes("ผลประกาศจัดซื้อจัดจ้าง")) return "D0";
     if (typeName.includes("รายงานผลการจัดซื้อจัดจ้าง")) return "W0";
+    if (typeName.includes("ประกาศจัดซื้อจัดจ้าง")) return "P0";
     if (typeName.includes("ประกาศราคากลาง")) return "M0";
     if (typeName.includes("EGP")) return "15";
 
@@ -134,7 +160,7 @@ export default function FinanceSection() {
   };
 
   const filterPostsByCategory = () => {
-    // เนื่องจากเราดึงข้อมูลแยกตาม category แล้ว 
+    // เนื่องจากเราดึงข้อมูลแยกตาม category แล้ว
     // เราจึงแสดงข้อมูลทั้งหมดที่ได้มา (แต่จำกัดที่ 4 รายการ)
     setFilteredPosts(posts.slice(0, 4));
   };
@@ -144,8 +170,18 @@ export default function FinanceSection() {
 
     const date = new Date(dateString);
     const thaiMonths = [
-      "ม.ค.", "ก.พ.", "มี.ค.", "เม.ย.", "พ.ค.", "มิ.ย.",
-      "ก.ค.", "ส.ค.", "ก.ย.", "ต.ค.", "พ.ย.", "ธ.ค.",
+      "ม.ค.",
+      "ก.พ.",
+      "มี.ค.",
+      "เม.ย.",
+      "พ.ค.",
+      "มิ.ย.",
+      "ก.ค.",
+      "ส.ค.",
+      "ก.ย.",
+      "ต.ค.",
+      "พ.ย.",
+      "ธ.ค.",
     ];
 
     const day = date.getDate();
@@ -155,19 +191,42 @@ export default function FinanceSection() {
     return `${day} ${month} ${year}`;
   };
 
-  const getPostTypeColor = (announceType) => {
+  const getPostTypeColor = (announceType, originalType) => {
+    // ใช้ original_type ก่อนถ้ามี
+    if (originalType) {
+      if (originalType.includes("ผลประกาศจัดซื้อจัดจ้าง")) return "#f39c12"; // สีส้ม
+      if (originalType.includes("รายงานผลการจัดซื้อจัดจ้าง")) return "#3498db"; // สีน้ำเงิน
+      if (originalType.includes("ประกาศจัดซื้อจัดจ้าง")) return "#73cc6b"; // สีเขียว
+      if (originalType.includes("ประกาศราคากลาง")) return "#9b59b6"; // สีม่วง
+      if (originalType.includes("EGP")) return "#e74c3c"; // สีแดง
+    }
+
+    // Fallback ใช้ announceType
     if (!announceType) return "#73cc6b";
 
-    if (announceType === "15") return "#e74c3c";
-    if (announceType.startsWith("P")) return "#73cc6b";
-    if (announceType.startsWith("D")) return "#f39c12";
-    if (announceType.startsWith("M")) return "#9b59b6";
-    if (announceType.startsWith("W")) return "#3498db";
+    if (announceType === "15") return "#e74c3c"; // EGP - สีแดง
+    if (announceType.startsWith("P")) return "#73cc6b"; // ประกาศจัดซื้อจัดจ้าง - สีเขียว
+    if (announceType.startsWith("D")) return "#f39c12"; // ผลประกาศจัดซื้อจัดจ้าง - สีส้ม
+    if (announceType.startsWith("M")) return "#9b59b6"; // ประกาศราคากลาง - สีม่วง
+    if (announceType.startsWith("W")) return "#3498db"; // รายงานผล - สีน้ำเงิน
 
     return "#73cc6b";
   };
 
-  const getPostTypeName = (announceType) => {
+  const getPostTypeName = (announceType, originalType) => {
+    // ใช้ original_type ก่อนถ้ามี
+    if (originalType) {
+      if (originalType.includes("ผลประกาศจัดซื้อจัดจ้าง"))
+        return "ผลประกาศจัดซื้อจัดจ้าง";
+      if (originalType.includes("รายงานผลการจัดซื้อจัดจ้าง"))
+        return "รายงานผลจัดซื้อจัดจ้าง";
+      if (originalType.includes("ประกาศจัดซื้อจัดจ้าง"))
+        return "ประกาศจัดซื้อจัดจ้าง";
+      if (originalType.includes("ประกาศราคากลาง")) return "ประกาศราคากลาง";
+      if (originalType.includes("EGP")) return "ประกาศ EGP";
+    }
+
+    // Fallback ใช้ announceType
     if (!announceType) return "ประกาศ";
 
     if (announceType === "15") return "ประกาศ EGP";
@@ -221,7 +280,6 @@ export default function FinanceSection() {
       <div className="w-full max-w-[1268px] flex flex-col gap-4 mb-8">
         <div className="bg-gradient-to-r from-[#03bdca] to-[#01bdcc] rounded-[36px] shadow-lg w-full flex flex-col md:flex-row items-center px-3 sm:px-4 md:px-6 py-4 sm:py-5 md:py-6 relative">
           <div className="flex-1 flex flex-wrap flex-row items-center justify-center gap-2 sm:gap-3 md:gap-4 lg:gap-6">
-
             {/* EGP Category */}
             {activeCategory === "egp" ? (
               <div className="bg-white rounded-full shadow-md h-10 flex items-center justify-center border-2 border-[#01bdcc]">
@@ -292,7 +350,7 @@ export default function FinanceSection() {
         {activeCategory === "egp" && (
           <div className="bg-white rounded-xl shadow-md p-4 flex flex-col sm:flex-row items-center gap-4">
             <label className="text-[#01385f] font-semibold text-sm sm:text-base whitespace-nowrap">
-              EGP ID:
+              EGP
             </label>
             <div className="flex-1 flex flex-col sm:flex-row gap-2">
               <input
@@ -308,9 +366,6 @@ export default function FinanceSection() {
               >
                 ค้นหา
               </button>
-            </div>
-            <div className="text-xs text-gray-500">
-              Current ID: {egpId}
             </div>
           </div>
         )}
@@ -363,10 +418,13 @@ export default function FinanceSection() {
                 <span
                   className="rounded px-4 py-1 text-white text-base font-medium shadow-sm"
                   style={{
-                    backgroundColor: getPostTypeColor(post.announce_type),
+                    backgroundColor: getPostTypeColor(
+                      post.announce_type,
+                      post.original_type
+                    ),
                   }}
                 >
-                  {getPostTypeName(post.announce_type)}
+                  {getPostTypeName(post.announce_type, post.original_type)}
                 </span>
               </div>
 
@@ -408,23 +466,36 @@ export default function FinanceSection() {
           <div className="col-span-full flex flex-col items-center justify-center py-12">
             <div className="text-gray-500 text-lg mb-2">
               ไม่มีข้อมูล{getCategoryTypeName(activeCategory)}
-              {activeCategory === "egp" && ` สำหรับ ID: ${egpId}`}
             </div>
-            <div className="text-gray-400 text-sm">
-              ไม่พบข้อมูลในหมวดหมู่นี้
+            <div className="text-gray-400 text-sm mb-4">
+              ไม่พบข้อมูลในหมวดหมู่นี้ในขณะนี้
             </div>
+            <button
+              onClick={() => fetchPosts()}
+              className="bg-[#01bdcc] text-white px-6 py-2 rounded-lg hover:bg-[#01a5b0] transition-colors duration-200 text-sm"
+            >
+              รีเฟรชข้อมูล
+            </button>
           </div>
         )}
       </div>
 
       {/* View All Button */}
       {filteredPosts.length > 0 && (
-        <div className="mt-8 flex justify-center">
+        <div className="mt-8 flex flex-col items-center gap-4">
+          <div className="text-center">
+            <div className="text-[#01385f] font-semibold text-lg mb-2">
+              แสดง {filteredPosts.length} จาก {posts.length} รายการ
+            </div>
+            <div className="text-gray-500 text-sm">
+              หมวดหมู่: {getCategoryTypeName(activeCategory)}
+            </div>
+          </div>
           <button
             onClick={() => (window.location.href = getViewAllUrl())}
             className="bg-[#01385f] text-white px-8 py-3 rounded-full font-semibold text-lg hover:bg-[#01385f]/90 hover:scale-105 transition-all duration-200 shadow-lg hover:shadow-xl"
           >
-            ดูข้อมูลทั้งหมด ({posts.length} รายการ)
+            ดูข้อมูลทั้งหมด
           </button>
         </div>
       )}
