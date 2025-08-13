@@ -135,7 +135,7 @@ const ManagementCard2 = ({
       ? "max-w-[180px] md:max-w-[360px] h-[260px] md:h-[500px]"
       : position === 2
       ? "max-w-[180px] md:max-w-[280px] h-[260px] md:h-[400px]"
-      : "max-w-[180px] md:max-w-[220px] h-[260px] md:h-[340px]";
+      : "max-w-[180px] md:max-w-[220px] h-[260px] md:h-[340px]"
 
   const boxSizeClass =
     position === 1
@@ -353,7 +353,7 @@ export default function ManagementSection() {
 
     {
       position: 6,
-      name: "ผู้อำนวยการกองการศึกษา",
+      name: "ปลัดเทศบาล รักษาราชการแทน ผู้อำนวยการกองการศึกษา	",
       title: "นายวรยศ กิจพานิช",
       phone: "099-261-2498",
       imageSrc: "/image/Avatar.png",
