@@ -234,6 +234,11 @@ export default function AdminPage() {
           label: "ผลประกาศจัดซื้อจัดจ้าง",
         },
         {
+          key: "public-document",
+          icon: <FileTextOutlined />,
+          label: "เอกสารเผยแพร่",
+        },
+        {
           key: "procurement-announcements-reports",
           icon: <AccountBookOutlined />,
           label: "รายงานผลการจัดซื้อจัดจ้าง",
@@ -327,6 +332,8 @@ export default function AdminPage() {
         return (
           <PostTypeManagement postType="procurement-announcements-results" />
         );
+      case "public-document":
+        return <PostTypeManagement postType="public-document" />;
       case "procurement-announcements-reports":
         return (
           <PostTypeManagement postType="procurement-announcements-reports" />
@@ -342,7 +349,9 @@ export default function AdminPage() {
       case "activities":
         return <PostTypeManagement postType="activities" />;
       case "internal-performance-evaluation":
-        return <PostTypeManagement postType="internal-performance-evaluation" />;
+        return (
+          <PostTypeManagement postType="internal-performance-evaluation" />
+        );
       case "publish-docs":
         return <PublishDocManagement />;
       case "laws-regulations":

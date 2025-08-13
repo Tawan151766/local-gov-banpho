@@ -64,7 +64,7 @@ export default function InsideBander() {
               {/* Card 2 */}
               <div
                 className="bg-white rounded-2xl shadow-md hover:shadow-lg transition-shadow duration-300 flex items-center gap-4 p-4 cursor-pointer"
-                onClick={() => (window.location.href = "/publish")}
+                onClick={() => (window.location.href = "/public-document")}
               >
                 <img
                   src="image/InsiderBander_2.png"
