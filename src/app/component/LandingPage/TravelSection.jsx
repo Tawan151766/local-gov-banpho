@@ -59,7 +59,7 @@ export default function TravelSection() {
 
       {/* Title */}
       <div className="absolute top-3 sm:top-4 lg:top-6 left-1/2 -translate-x-1/2 text-yellow-400 text-base sm:text-2xl lg:text-4xl font-semibold z-10 px-2 sm:px-4 text-center whitespace-nowrap">
-        ที่นี่เทศบาลบ้านโพธิ์
+      ที่นี่เทศบาลตำบลบ้านโพธิ์
       </div>
 
       {/* Card Container */}
