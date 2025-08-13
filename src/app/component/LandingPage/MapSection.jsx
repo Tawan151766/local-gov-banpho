@@ -5,7 +5,7 @@ export default function MapsSection() {
     <div className="relative w-full h-full">
       {/* Background image */}
       <img
-        src="/image/map_new-01.jpg"
+        src="/image/map_banpho_new.jpg"
         alt="map image"
         className="w-full h-full object-cover"
       />
