@@ -119,6 +119,7 @@ const ManagementCard2 = ({
   title = "ชื่อ........................",
 
   description = "",
+  description2="",
 
   phone = "เบอร์โทร...............",
   imageSrc = "/image/manager.png",
@@ -213,6 +214,11 @@ const ManagementCard2 = ({
             className={`opacity-90 leading-tight ${textColor} text-xs sm:text-sm mt-1 px-2`}
           >
             {description}
+          </div>
+          <div
+            className={`opacity-90 leading-tight ${textColor} text-xs sm:text-sm mt-1 px-2`}
+          >
+            {description2}
           </div>
 
 
@@ -365,7 +371,8 @@ export default function ManagementSection() {
     {
       position: 6,
       name: "ผู้อำนวยการกองการศึกษา",
-      description: "ปลัดเทศบาล รักษาราชการแทน",
+      description: "ปลัดเทศบาล รักษาราชการแทน ",
+      description2:"ผู้อำนวยการกองการศึกษา",
       title: "นายวรยศ กิจพานิช",
       phone: "099-261-2498",
       imageSrc: "/image/Avatar.png",
