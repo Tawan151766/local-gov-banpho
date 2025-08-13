@@ -787,19 +787,49 @@ const PersonnelOrgChart = () => {
                     </div>
                   </div>
                 </div>
-
-                {/* Department Content */}
                 <div className="p-8">
-                  {/* นักวิชาการตรวจสอบภายใน */}
-                  <div>
-                    <h4 className="text-lg font-semibold text-center mb-6 text-red-700">
-                      นักวิชาการตรวจสอบภายใน
-                    </h4>
+                  {/* ผู้อำนวยการกองช่าง */}
+                  <div className="mb-8">
                     <div className="flex justify-center">
-                      {personnelData.audit[0] && (
-                        <PersonCard person={personnelData.audit[0]} />
-                      )}
+                      <div>
+                        <div className="flex justify-center">
+                          {personnelData.audit[0] && (
+                            <PersonCard person={personnelData.audit[0]} />
+                          )}
+                        </div>
+                      </div>{" "}
                     </div>
+                  </div>
+
+                  {/* Connection Lines */}
+                  <div className="flex justify-center mb-8">
+                    <div className="flex flex-col items-center">
+                      <ConnectionLine vertical />
+                      <div className="w-4 h-4 bg-gradient-to-r from-[#0383AA] to-[#05C5FF] rounded-full"></div>
+                      <ConnectionLine vertical />
+                    </div>
+                  </div>
+                  {/* Department Content */}
+                  <div className="p-8">
+                    {/* นักวิชาการตรวจสอบภายใน */}
+                    <div>
+                      <div className="flex justify-center">
+                        {personnelData.audit[1] && (
+                          <PersonCard person={personnelData.audit[1]} />
+                        )}
+                      </div>
+                    </div>
+                  </div>
+                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+                    {personnelData.audit.slice(2) &&
+                      personnelData.audit
+                        .slice(2) // เอาข้อมูลตั้งแต่ index 7 เป็นต้นไป
+                        .map((person, index) => (
+                          <PersonCard
+                            key={person.id || index + 2} // ใช้ person.id หรือ index + 7 เป็น key
+                            person={person}
+                          />
+                        ))}
                   </div>
                 </div>
               </div>
@@ -1014,28 +1044,28 @@ const PersonnelOrgChart = () => {
                 </div>
 
                 {/* นักวิชาการและเจ้าพนักงาน */}
+
                 <div className="mb-8">
                   <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                    <PersonCard
-                      person={personnelData.departments.finance.staff[4]}
-                    />
-                    <PersonCard
-                      person={personnelData.departments.finance.staff[5]}
-                    />
-                    <PersonCard
-                      person={personnelData.departments.finance.staff[6]}
-                    />
+                    {personnelData.departments.finance.staff
+                      .slice(4) // เอาข้อมูลตั้งแต่ index 7 เป็นต้นไป
+                      .map((person, index) => (
+                        <PersonCard
+                          key={person.id || index + 4} // ใช้ person.id หรือ index + 7 เป็น key
+                          person={person}
+                        />
+                      ))}
                   </div>
                 </div>
 
                 {/* ผู้ช่วยเจ้าพนักงาน */}
-                <div>
+                {/* <div>
                   <div className="flex justify-center">
                     <PersonCard
                       person={personnelData.departments.finance.staff[7]}
                     />
                   </div>
-                </div>
+                </div> */}
               </div>
             </div>
           </section>
@@ -1090,13 +1120,10 @@ const PersonnelOrgChart = () => {
 
                 {/* หัวหน้าฝ่ายและวิศวกร */}
                 <div className="mb-8">
-                  <div className="grid grid-cols-1 md:grid-cols-2 gap-6 max-w-4xl mx-auto">
+                  <div className="flex justify-center mb-8 max-w-4xl mx-auto">
                     <PersonCard
                       person={personnelData.departments.engineering.staff[0]}
                       isHead={true}
-                    />
-                    <PersonCard
-                      person={personnelData.departments.engineering.staff[1]}
                     />
                   </div>
                 </div>
@@ -1112,54 +1139,15 @@ const PersonnelOrgChart = () => {
 
                 {/* ผู้ช่วยเจ้าพนักงานและพนักงานพิเศษ */}
                 <div className="mb-8">
-                  <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                    <PersonCard
-                      person={personnelData.departments.engineering.staff[2]}
-                    />
-                    <PersonCard
-                      person={personnelData.departments.engineering.staff[4]}
-                    />
-                    <PersonCard
-                      person={personnelData.departments.engineering.staff[10]}
-                    />
-                  </div>
-                </div>
-
-                {/* คนงานทั่วไป */}
-                <div className="mb-8">
-                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-4">
-                    <PersonCard
-                      person={personnelData.departments.engineering.staff[3]}
-                    />
-                    <PersonCard
-                      person={personnelData.departments.engineering.staff[5]}
-                    />
-                    <PersonCard
-                      person={personnelData.departments.engineering.staff[6]}
-                    />
-                    <PersonCard
-                      person={personnelData.departments.engineering.staff[7]}
-                    />
-                  </div>
-                </div>
-
-                {/* คนงานและพนักงานจ้างเหมา */}
-                <div>
-                  <h4 className="text-lg font-semibold text-center mb-6 text-orange-700">
-                    คนงานและพนักงานจ้างเหมา
-                  </h4>
-                  <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                    <PersonCard
-                      person={personnelData.departments.engineering.staff[8]}
-                    />
-                    <PersonCard
-                      person={personnelData.departments.engineering.staff[9]}
-                    />
-                    {personnelData.departments.engineering.staff[11] && (
-                      <PersonCard
-                        person={personnelData.departments.engineering.staff[11]}
-                      />
-                    )}
+                  <div className="grid grid-cols-1 md:grid-cols-4 gap-4">
+                    {personnelData.departments.engineering.staff
+                      .slice(1)
+                      .map((person, index) => (
+                        <PersonCard
+                          key={person.id || index + 1}
+                          person={person}
+                        />
+                      ))}
                   </div>
                 </div>
               </div>
@@ -1217,14 +1205,30 @@ const PersonnelOrgChart = () => {
                     <ConnectionLine vertical />
                   </div>
                 </div>
-
+                <div className="mb-8">
+                  <div className="grid grid-cols-1 md:grid-cols-2  gap-4">
+                    {personnelData.departments.education.staff[0] && (
+                      <PersonCard
+                        person={personnelData.departments.education.staff[0]}
+                      />
+                    )}
+                    {personnelData.departments.education.staff[1] && (
+                      <PersonCard
+                        person={personnelData.departments.education.staff[1]}
+                      />
+                    )}
+                  </div>
+                </div>
                 {/* พนักงาน */}
                 <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                  {personnelData.departments.education?.staff?.map(
-                    (person, index) => (
-                      <PersonCard key={index} person={person} />
-                    )
-                  )}
+                  {personnelData.departments.education.staff
+                    .slice(2) // เอาข้อมูลตั้งแต่ index 7 เป็นต้นไป
+                    .map((person, index) => (
+                      <PersonCard
+                        key={person.id || index + 2} // ใช้ person.id หรือ index + 7 เป็น key
+                        person={person}
+                      />
+                    ))}
                 </div>
               </div>
             </div>
