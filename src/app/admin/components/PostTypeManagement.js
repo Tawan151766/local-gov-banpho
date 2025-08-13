@@ -85,6 +85,12 @@ const POST_TYPES = {
     icon: <FileTextOutlined />,
     color: "volcano",
   },
+  "public-document": {
+    title: "เอกสารเผยแพร่",
+    type: "เอกสารเผยแพร่",
+    icon: <FileTextOutlined />,
+    color: "volcano",
+  },
   "procurement-announcements-reports": {
     title: "รายงานผลการจัดซื้อจัดจ้าง",
     type: "รายงานผลการจัดซื้อจัดจ้าง",
