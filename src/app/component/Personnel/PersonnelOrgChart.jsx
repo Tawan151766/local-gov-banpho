@@ -1174,12 +1174,8 @@ const PersonnelOrgChart = () => {
                     <div className="w-8 h-8 bg-white/30 rounded"></div>
                   </div>
                   <div>
-                    <h3 className="text-2xl font-bold">
-                      กองการศึกษา ศาสนาและวัฒนธรรม
-                    </h3>
-                    <p className="text-white/80">
-                      หน่วยงานการศึกษา ศาสนา และวัฒนธรรม
-                    </p>
+                    <h3 className="text-2xl font-bold">กองการศึกษา</h3>
+                    <p className="text-white/80">หน่วยงานการศึกษา</p>
                   </div>
                 </div>
               </div>
