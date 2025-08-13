@@ -275,10 +275,10 @@ export default function LandmarkPage() {
       {/* Header */}
       <div className="w-full max-w-[1268px] mb-8">
         <div className="text-center">
-          <h1 className="text-3xl md:text-4xl font-bold text-white mb-2 drop-shadow-lg">
+          <h1 className="text-3xl md:text-4xl font-bold text-[#01385f] mb-2 drop-shadow-lg">
             สถานที่สำคัญในพื้นที่
           </h1>
-          <p className="text-lg text-white/90 drop-shadow-md">
+          <p className="text-lg text-[#01385f] drop-shadow-md">
             ตำบลบ้านโพธิ์ อำเภอบ้านโพธิ์ จังหวัดฉะเชิงเทรา
           </p>
         </div>
