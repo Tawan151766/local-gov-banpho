@@ -117,6 +117,7 @@ const ManagementCard2 = ({
   position,
   name = "ตำแหน่ง",
   title = "ชื่อ........................",
+  description = "",
   phone = "เบอร์โทร...............",
   imageSrc = "/image/manager.png",
   textColor = "text-white",
@@ -135,7 +136,7 @@ const ManagementCard2 = ({
       ? "max-w-[180px] md:max-w-[360px] h-[260px] md:h-[500px]"
       : position === 2
       ? "max-w-[180px] md:max-w-[280px] h-[260px] md:h-[400px]"
-      : "max-w-[180px] md:max-w-[220px] h-[260px] md:h-[340px]"
+      : "max-w-[180px] md:max-w-[220px] h-[260px] md:h-[340px]";
 
   const boxSizeClass =
     position === 1
@@ -204,6 +205,12 @@ const ManagementCard2 = ({
             className={`opacity-90 leading-tight ${textColor} text-xs sm:text-sm mt-1 px-2`}
           >
             {title}
+          </div>
+
+          <div
+            className={`opacity-90 leading-tight ${textColor} text-xs sm:text-sm mt-1 px-2`}
+          >
+            {description}
           </div>
         </div>
 
@@ -329,8 +336,9 @@ export default function ManagementSection() {
 
     {
       position: 3,
-      name: "หัวหน้าสำนักปลัด",
+      name: "หัวหน้าสำนักปลัดเทศบาล",
       title: "นางสาววิไลรัตน์ ขาวมรดก",
+      description: "ปลัดเทศบาล รักษาราชการแทน",
       phone: "092-459-0549",
       imageSrc: "/image/Avatar.png",
     },
@@ -353,7 +361,7 @@ export default function ManagementSection() {
 
     {
       position: 6,
-      name: "ปลัดเทศบาล รักษาราชการแทน ผู้อำนวยการกองการศึกษา	",
+      name: "ปลัดเทศบาล",
       title: "นายวรยศ กิจพานิช",
       phone: "099-261-2498",
       imageSrc: "/image/Avatar.png",
