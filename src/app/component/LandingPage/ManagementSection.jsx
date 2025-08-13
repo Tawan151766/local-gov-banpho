@@ -117,7 +117,9 @@ const ManagementCard2 = ({
   position,
   name = "ตำแหน่ง",
   title = "ชื่อ........................",
-  description = "รายละเอียด................",
+
+  description = "",
+
   phone = "เบอร์โทร...............",
   imageSrc = "/image/manager.png",
   textColor = "text-white",
@@ -136,7 +138,7 @@ const ManagementCard2 = ({
       ? "max-w-[180px] md:max-w-[360px] h-[260px] md:h-[500px]"
       : position === 2
       ? "max-w-[180px] md:max-w-[280px] h-[260px] md:h-[400px]"
-      : "max-w-[180px] md:max-w-[220px] h-[260px] md:h-[340px]"
+      : "max-w-[180px] md:max-w-[220px] h-[260px] md:h-[340px]";
 
   const boxSizeClass =
     position === 1
@@ -212,6 +214,7 @@ const ManagementCard2 = ({
           >
             {description}
           </div>
+
 
         </div>
 
