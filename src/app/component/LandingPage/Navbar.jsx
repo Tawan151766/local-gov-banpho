@@ -55,10 +55,10 @@ export default function Navbar() {
     { href: "/personnel?section=council", label: "สภาเทศบาล" },
     { href: "/personnel?section=departments", label: "พนักงานเทศบาล" },
     { href: "/personnel?section=departments", label: "หัวหน้าส่วนราชการ" },
-    { href: "/personnel?dept=clerk", label: "สำนักปลัดเทศบาล" },
-    { href: "/personnel?dept=finance", label: "กองคลัง" },
-    { href: "/personnel?dept=engineering", label: "กองช่าง" },
-    { href: "/personnel?dept=education", label: "กองการศึกษาฯ" },
+    { href: "/personnel?section=clerk", label: "สำนักปลัดเทศบาล" },
+    { href: "/personnel?section=finance", label: "กองคลัง" },
+    { href: "/personnel?section=engineering", label: "กองช่าง" },
+    { href: "/personnel?section=education", label: "กองการศึกษาฯ" },
     { href: "/personnel?section=audit", label: "หน่วยตรวจสอบภายใน" },
   ];
 

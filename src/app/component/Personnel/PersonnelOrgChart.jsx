@@ -142,40 +142,42 @@ const PersonnelOrgChart = () => {
 
     if (section) {
       setActiveSection(section);
+      setHighlightedDepartment(null);
+
       // Scroll to section after component mounts
       setTimeout(() => {
-        const element = document.getElementById(section);
-        if (element) {
-          element.scrollIntoView({ behavior: "smooth", block: "start" });
-          // Highlight the section temporarily
-          element.classList.add("ring-4", "ring-blue-400", "ring-opacity-50");
-          setTimeout(() => {
-            element.classList.remove(
-              "ring-4",
-              "ring-blue-400",
-              "ring-opacity-50"
-            );
-          }, 3000);
+        // For individual department sections, scroll to top
+        if (
+          ["clerk", "finance", "engineering", "education", "audit"].includes(
+            section
+          )
+        ) {
+          window.scrollTo({ top: 0, behavior: "smooth" });
+        } else {
+          // For main sections, scroll to the section element
+          const element = document.getElementById(section);
+          if (element) {
+            element.scrollIntoView({ behavior: "smooth", block: "start" });
+            // Highlight the section temporarily
+            element.classList.add("ring-4", "ring-blue-400", "ring-opacity-50");
+            setTimeout(() => {
+              element.classList.remove(
+                "ring-4",
+                "ring-blue-400",
+                "ring-opacity-50"
+              );
+            }, 3000);
+          }
         }
       }, 100);
     }
 
-    if (department) {
-      setHighlightedDepartment(department);
+    // Legacy support for dept parameter (convert to section)
+    if (department && !section) {
+      setActiveSection(department);
+      setHighlightedDepartment(null);
       setTimeout(() => {
-        const element = document.getElementById(department);
-        if (element) {
-          element.scrollIntoView({ behavior: "smooth", block: "center" });
-          // Highlight the department
-          element.classList.add("ring-4", "ring-yellow-400", "ring-opacity-75");
-          setTimeout(() => {
-            element.classList.remove(
-              "ring-4",
-              "ring-yellow-400",
-              "ring-opacity-75"
-            );
-          }, 4000);
-        }
+        window.scrollTo({ top: 0, behavior: "smooth" });
       }, 100);
     }
   }, [searchParams]);
