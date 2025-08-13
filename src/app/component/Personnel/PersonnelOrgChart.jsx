@@ -548,7 +548,7 @@ const PersonnelOrgChart = () => {
             {/* ประธาน และ รองประธานสภาเทศบาล */}
             <div className="mb-12">
               <h3 className="text-xl font-semibold text-center mb-6 text-blue-700">
-                ผู้นำสภาเทศบาล
+                ประธานสภา
               </h3>
               <div className="flex justify-center mb-6">
                 {personnelData.council.leadership[0] && (
