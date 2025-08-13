@@ -342,7 +342,6 @@ export default function ManagementSection() {
       position: 3,
       name: "หัวหน้าสำนักปลัดเทศบาล",
       title: "นางสาววิไลรัตน์ ขาวมรดก",
-      description: "ปลัดเทศบาล รักษาราชการแทน",
       phone: "092-459-0549",
       imageSrc: "/image/Avatar.png",
     },
@@ -365,7 +364,8 @@ export default function ManagementSection() {
 
     {
       position: 6,
-      name: "ปลัดเทศบาล",
+      name: "ผู้อำนวยการกองการศึกษา",
+      description: "ปลัดเทศบาล รักษาราชการแทน",
       title: "นายวรยศ กิจพานิช",
       phone: "099-261-2498",
       imageSrc: "/image/Avatar.png",
