@@ -476,7 +476,7 @@ export default function ManagementSection() {
 
         {/* Second Management Section */}
         <h2 className="text-center text-xl sm:text-2xl md:text-3xl lg:text-4xl font-bold pt-8 sm:pt-12 md:pt-16 pb-4 sm:pb-6 md:pb-8 text-[#01385F]">
-          ผู้บริหารส่วนราชการ
+          หัวหน้าส่วนราชการ
         </h2>
 
         {/* Management Team 2 - Fluid Responsive Layout */}
