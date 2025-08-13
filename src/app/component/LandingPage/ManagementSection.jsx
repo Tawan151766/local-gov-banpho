@@ -117,7 +117,9 @@ const ManagementCard2 = ({
   position,
   name = "ตำแหน่ง",
   title = "ชื่อ........................",
+
   description = "",
+
   phone = "เบอร์โทร...............",
   imageSrc = "/image/manager.png",
   textColor = "text-white",
@@ -212,6 +214,8 @@ const ManagementCard2 = ({
           >
             {description}
           </div>
+
+
         </div>
 
         <div
