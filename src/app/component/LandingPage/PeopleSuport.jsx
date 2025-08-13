@@ -36,7 +36,7 @@ export default function PeopleSupport() {
 
   return (
 <section
-  className="flex flex-col items-center justify-center py-8 px-2 sm:px-4 relative bg-cover bg-center overflow-hidden"
+  className="flex flex-col items-center justify-center py-8 px-2 sm:px-4 relative bg-cover bg-center overflow-hidden bg-[rgba(239,228,212,0.6)]"
   style={{
     backgroundImage: "url(/image/people_support_bg.png)",
     backgroundRepeat: "no-repeat",
@@ -47,7 +47,7 @@ export default function PeopleSupport() {
   <img
     src="/image/people_support.png"
     alt="งานบริการประชาชน"
-    className="w-[240px] sm:w-[180px] md:w-[400px] object-contain mb-4"
+    className="w-[240px] sm:w-[180px] md:w-[500px] object-contain mb-4"
   />
   <div className="w-full max-w-[1500px] mx-auto grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 md:gap-x-10 gap-x-6 gap-y-3 px-4 justify-items-center overflow-hidden">
     {cards.map((card, idx) => (
