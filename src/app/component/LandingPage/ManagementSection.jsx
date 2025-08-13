@@ -313,7 +313,7 @@ export default function ManagementSection() {
       position: 5,
       name: "เลขานุการนายกเทศมนตรี",
       title: "นายณัฐพล วงศ์วัฒน์",
-      phone: "-",
+      phone: "062-625-0766",
       imageSrc: "/image/Avatar.png",
     },
   ];
