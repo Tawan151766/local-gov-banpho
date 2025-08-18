@@ -41,19 +41,19 @@ function PostsPageContent() {
 
       switch (activeCategory) {
         case "procurement":
-          apiUrl = "/api/posts?type=ประกาศจัดซื้อจัดจ้าง";
+          apiUrl = "/api/posts?type=ประกาศจัดซื้อจัดจ้าง&sortBy=date&sortOrder=desc";
           break;
         case "result":
-          apiUrl = "/api/posts?type=ผลประกาศจัดซื้อจัดจ้าง";
+          apiUrl = "/api/posts?type=ผลประกาศจัดซื้อจัดจ้าง&sortBy=date&sortOrder=desc";
           break;
         case "report":
-          apiUrl = "/api/posts?type=รายงานผลการจัดซื้อจัดจ้าง";
+          apiUrl = "/api/posts?type=รายงานผลการจัดซื้อจัดจ้าง&sortBy=date&sortOrder=desc";
           break;
         case "egp":
           apiUrl = `/api/egp-proxy/${egpId}`;
           break;
         default:
-          apiUrl = "/api/posts?type=ประกาศจัดซื้อจัดจ้าง";
+          apiUrl = "/api/posts?type=ประกาศจัดซื้อจัดจ้าง&sortBy=date&sortOrder=desc";
       }
 
       const response = await fetch(apiUrl, {

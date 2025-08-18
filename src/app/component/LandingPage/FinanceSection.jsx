@@ -25,23 +25,23 @@ export default function FinanceSection() {
 
       let apiUrl = "";
 
-      // กำหนด API endpoint ตาม category
+      // กำหนด API endpoint ตาม category โดยใช้ table เดียวกับ PostTypeManagement
       switch (activeCategory) {
         case "procurement":
-          apiUrl = "/api/posts?type=ประกาศจัดซื้อจัดจ้าง";
+          apiUrl = "/api/posts?type=ประกาศจัดซื้อจัดจ้าง&limit=4&sortBy=date&sortOrder=desc";
           break;
         case "result":
-          apiUrl = "/api/posts?type=ผลประกาศจัดซื้อจัดจ้าง";
+          apiUrl = "/api/posts?type=ผลประกาศจัดซื้อจัดจ้าง&limit=4&sortBy=date&sortOrder=desc";
           break;
         case "report":
-          apiUrl = "/api/posts?type=รายงานผลการจัดซื้อจัดจ้าง";
+          apiUrl = "/api/posts?type=รายงานผลการจัดซื้อจัดจ้าง&limit=4&sortBy=date&sortOrder=desc";
           break;
         case "egp":
           // ใช้ EGP API แยก พร้อม ID parameter
           apiUrl = `/api/egp-proxy/${egpId}`;
           break;
         default:
-          apiUrl = "/api/posts?type=ประกาศจัดซื้อจัดจ้าง";
+          apiUrl = "/api/posts?type=ประกาศจัดซื้อจัดจ้าง&limit=4&sortBy=date&sortOrder=desc";
       }
 
       console.log(`Fetching from: ${apiUrl} for category: ${activeCategory}`);
