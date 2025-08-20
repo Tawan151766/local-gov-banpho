@@ -8,22 +8,24 @@ export default function VisionPage() {
     {
       id: "vision",
       title: "วิสัยทัศน์",
-      icon: "🔮"
+      icon: "🔮",
     },
     {
       id: "details",
       title: "รายละเอียดวิสัยทัศน์",
-      icon: "📋"
-    }
+      icon: "📋",
+    },
   ];
 
-  const visionStatement = "บ้านเมืองน่าอยู่คู่เมืองหลวง ปวงประชามีคุณภาพ สภาพเศรษฐกิจยืนยง มั่นคงรวมใจพัฒนา";
+  const visionStatement =
+    "บ้านเมืองน่าอยู่คู่เมืองหลวง ปวงประชามีคุณภาพ สภาพเศรษฐกิจยืนยง มั่นคงรวมใจพัฒนา";
 
   const visionDetails = [
     {
       id: "livable",
       title: "บ้านเมืองน่าอยู่คู่เมืองหลวง",
-      content: "เทศบาลตำบลบ้านโพธิ์ มีภูมิทัศน์สวยงามริมฝั่งแม่น้ำบางปะกง เป็นสถานที่ท่องเที่ยว มีสาธารณูปโภคครบครัน มีความปลอดภัยในชีวิตและทรัพย์สิน เป็นศูนย์ราชการ ตั้งอยู่ใกล้กรุงเทพมหานคร และสนามบินสุวรรณภูมิ",
+      content:
+        "เทศบาลตำบลบ้านโพธิ์ มีภูมิทัศน์สวยงามริมฝั่งแม่น้ำบางปะกง เป็นสถานที่ท่องเที่ยว มีสาธารณูปโภคครบครัน มีความปลอดภัยในชีวิตและทรัพย์สิน เป็นศูนย์ราชการ ตั้งอยู่ใกล้กรุงเทพมหานคร และสนามบินสุวรรณภูมิ",
       color: "#28a745",
       highlights: [
         "ภูมิทัศน์สวยงามริมฝั่งแม่น้ำบางปะกง",
@@ -31,44 +33,47 @@ export default function VisionPage() {
         "สาธารณูปโภคครบครัน",
         "ความปลอดภัยในชีวิตและทรัพย์สิน",
         "ศูนย์ราชการ",
-        "ใกล้กรุงเทพมหานคร และสนามบินสุวรรณภูมิ"
-      ]
+        "ใกล้กรุงเทพมหานคร และสนามบินสุวรรณภูมิ",
+      ],
     },
     {
       id: "quality",
       title: "ปวงประชามีคุณภาพ",
-      content: "ประชาชนมีการศึกษาดี มีความรู้ความสามารถสูง มีสุขภาพพลานามัยแข็งแรง สมบูรณ์และมีคุณธรรมประจำใจ",
+      content:
+        "ประชาชนมีการศึกษาดี มีความรู้ความสามารถสูง มีสุขภาพพลานามัยแข็งแรง สมบูรณ์และมีคุณธรรมประจำใจ",
       color: "#007bff",
       highlights: [
         "การศึกษาดี",
         "ความรู้ความสามารถสูง",
         "สุขภาพพลานามัยแข็งแรง",
-        "สมบูรณ์และมีคุณธรรมประจำใจ"
-      ]
+        "สมบูรณ์และมีคุณธรรมประจำใจ",
+      ],
     },
     {
       id: "economy",
       title: "สภาพเศรษฐกิจยืนยง",
-      content: "ประชาชนมีอาชีพหลักและอาชีพเสริม รู้จักใช้เทคโนโลยี มีฐานะของครัวเรือนมั่นคง",
+      content:
+        "ประชาชนมีอาชีพหลักและอาชีพเสริม รู้จักใช้เทคโนโลยี มีฐานะของครัวเรือนมั่นคง",
       color: "#ffc107",
       highlights: [
         "อาชีพหลักและอาชีพเสริม",
         "รู้จักใช้เทคโนโลยี",
-        "ฐานะของครัวเรือนมั่นคง"
-      ]
+        "ฐานะของครัวเรือนมั่นคง",
+      ],
     },
     {
       id: "development",
       title: "มั่นคงรวมใจพัฒนา",
-      content: "เทศบาลตำบลบ้านโพธิ์ เป็นชุมชนเมืองที่เข้มแข็ง ประชาชนร่วมคิด ร่วมทำ ร่วมปรับปรุง แก้ไขปัญหา ทำให้ท้องถิ่นเจริญก้าวหน้าอย่างยั่งยืนตลอดไป",
+      content:
+        "เทศบาลตำบลบ้านโพธิ์ เป็นชุมชนเมืองที่เข้มแข็ง ประชาชนร่วมคิด ร่วมทำ ร่วมปรับปรุง แก้ไขปัญหา ทำให้ท้องถิ่นเจริญก้าวหน้าอย่างยั่งยืนตลอดไป",
       color: "#dc3545",
       highlights: [
         "ชุมชนเมืองที่เข้มแข็ง",
         "ประชาชนร่วมคิด ร่วมทำ ร่วมปรับปรุง",
         "แก้ไขปัญหา",
-        "ท้องถิ่นเจริญก้าวหน้าอย่างยั่งยืน"
-      ]
-    }
+        "ท้องถิ่นเจริญก้าวหน้าอย่างยั่งยืน",
+      ],
+    },
   ];
 
   const visionPillars = [
@@ -76,26 +81,26 @@ export default function VisionPage() {
       title: "ด้านสังคม",
       description: "บ้านเมืองน่าอยู่ ปลอดภัย มีคุณภาพชีวิตที่ดี",
       icon: "🏘️",
-      color: "#28a745"
+      color: "#28a745",
     },
     {
       title: "ด้านการศึกษา",
       description: "ประชาชนมีการศึกษาดี มีความรู้ความสามารถสูง",
       icon: "📚",
-      color: "#007bff"
+      color: "#007bff",
     },
     {
       title: "ด้านเศรษฐกิจ",
       description: "เศรษฐกิจยั่งยืน มีอาชีพมั่นคง ใช้เทคโนโลยี",
       icon: "💰",
-      color: "#ffc107"
+      color: "#ffc107",
     },
     {
       title: "ด้านการพัฒนา",
       description: "ชุมชนเข้มแข็ง ประชาชนมีส่วนร่วม พัฒนาอย่างยั่งยืน",
       icon: "🤝",
-      color: "#dc3545"
-    }
+      color: "#dc3545",
+    },
   ];
 
   return (
@@ -104,10 +109,10 @@ export default function VisionPage() {
       style={{
         backgroundImage:
           'linear-gradient(180deg, rgba(239, 228, 212, 0.6) 0%, rgba(1, 189, 204, 0.6) 100%), url("/image/Boat.jpg")',
-        backgroundSize: 'cover',
-        backgroundPosition: 'center',
-        backgroundRepeat: 'no-repeat',
-        backgroundAttachment: 'fixed',
+        backgroundSize: "cover",
+        backgroundPosition: "center",
+        backgroundRepeat: "no-repeat",
+        backgroundAttachment: "fixed",
       }}
     >
       {/* Header Section */}
@@ -140,8 +145,8 @@ export default function VisionPage() {
                 onClick={() => setActiveSection(section.id)}
                 className={`px-6 py-3 rounded-lg text-sm font-medium transition-colors flex items-center gap-2 ${
                   activeSection === section.id
-                    ? 'bg-[#01bdcc] text-white shadow-md'
-                    : 'bg-white text-gray-700 border border-gray-300 hover:bg-gray-50'
+                    ? "bg-[#01bdcc] text-white shadow-md"
+                    : "bg-white text-gray-700 border border-gray-300 hover:bg-gray-50"
                 }`}
               >
                 <span className="text-lg">{section.icon}</span>
@@ -161,7 +166,7 @@ export default function VisionPage() {
               <h2 className="text-xl md:text-2xl font-bold text-[#01385f] mb-6">
                 วิสัยทัศน์เทศบาลตำบลบ้านโพธิ์
               </h2>
-              
+
               <div className="bg-gradient-to-r from-[#03bdca] to-[#01bdcc] rounded-xl p-8 text-white shadow-lg">
                 <div className="text-2xl md:text-3xl font-bold leading-relaxed">
                   "{visionStatement}"
@@ -172,15 +177,25 @@ export default function VisionPage() {
             {/* Vision Pillars */}
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
               {visionPillars.map((pillar, index) => (
-                <div key={index} className="bg-white bg-opacity-95 rounded-2xl shadow-lg p-6 backdrop-blur-sm text-center transform hover:scale-105 transition-transform duration-300">
-                  <div 
+                <div
+                  key={index}
+                  className="bg-white bg-opacity-95 rounded-2xl shadow-lg p-6 backdrop-blur-sm text-center transform hover:scale-105 transition-transform duration-300"
+                >
+                  <div
                     className="w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4 text-2xl"
-                    style={{ backgroundColor: `${pillar.color}20`, border: `2px solid ${pillar.color}` }}
+                    style={{
+                      backgroundColor: `${pillar.color}20`,
+                      border: `2px solid ${pillar.color}`,
+                    }}
                   >
                     <span>{pillar.icon}</span>
                   </div>
-                  <h3 className="text-lg font-bold text-gray-800 mb-2">{pillar.title}</h3>
-                  <p className="text-gray-600 text-sm leading-relaxed">{pillar.description}</p>
+                  <h3 className="text-lg font-bold text-gray-800 mb-2">
+                    {pillar.title}
+                  </h3>
+                  <p className="text-gray-600 text-sm leading-relaxed">
+                    {pillar.description}
+                  </p>
                 </div>
               ))}
             </div>
@@ -190,10 +205,12 @@ export default function VisionPage() {
               <h3 className="text-xl font-bold text-[#01385f] mb-6 text-center">
                 กรอบแนวคิดวิสัยทัศน์
               </h3>
-              
+
               <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
                 <div className="space-y-4">
-                  <h4 className="text-lg font-semibold text-gray-800">เป้าหมายหลัก</h4>
+                  <h4 className="text-lg font-semibold text-gray-800">
+                    เป้าหมายหลัก
+                  </h4>
                   <ul className="space-y-2 text-gray-700">
                     <li className="flex items-start gap-2">
                       <span className="text-[#01bdcc] font-bold">•</span>
@@ -213,9 +230,11 @@ export default function VisionPage() {
                     </li>
                   </ul>
                 </div>
-                
+
                 <div className="space-y-4">
-                  <h4 className="text-lg font-semibold text-gray-800">จุดเด่นของเทศบาล</h4>
+                  <h4 className="text-lg font-semibold text-gray-800">
+                    จุดเด่นของเทศบาล
+                  </h4>
                   <ul className="space-y-2 text-gray-700">
                     <li className="flex items-start gap-2">
                       <span className="text-green-600 font-bold">✓</span>
@@ -244,83 +263,108 @@ export default function VisionPage() {
           <div className="space-y-6">
             {/* Detailed Vision Explanation */}
             {visionDetails.map((detail, index) => (
-              <div key={detail.id} className="bg-white bg-opacity-95 rounded-2xl shadow-lg p-8 backdrop-blur-sm">
+              <div
+                key={detail.id}
+                className="bg-white bg-opacity-95 rounded-2xl shadow-lg p-8 backdrop-blur-sm"
+              >
                 <div className="flex items-center gap-4 mb-6">
-                  <div 
+                  <div
                     className="w-12 h-12 rounded-full flex items-center justify-center text-white font-bold"
                     style={{ backgroundColor: detail.color }}
                   >
                     {index + 1}
                   </div>
-                  <h3 className="text-xl font-bold text-gray-800">{detail.title}</h3>
+                  <h3 className="text-xl font-bold text-gray-800">
+                    {detail.title}
+                  </h3>
                 </div>
-                
+
                 <p className="text-gray-700 leading-relaxed mb-6 text-justify">
                   {detail.content}
                 </p>
-                
+
                 <div>
-                  <h4 className="text-lg font-semibold text-gray-800 mb-3">จุดเน้นสำคัญ</h4>
+                  <h4 className="text-lg font-semibold text-gray-800 mb-3">
+                    จุดเน้นสำคัญ
+                  </h4>
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
                     {detail.highlights.map((highlight, idx) => (
-                      <div key={idx} className="flex items-center gap-3 p-3 bg-gray-50 rounded-lg">
-                        <div 
+                      <div
+                        key={idx}
+                        className="flex items-center gap-3 p-3 bg-gray-50 rounded-lg"
+                      >
+                        <div
                           className="w-3 h-3 rounded-full flex-shrink-0"
                           style={{ backgroundColor: detail.color }}
                         ></div>
-                        <span className="text-gray-700 text-sm">{highlight}</span>
+                        <span className="text-gray-700 text-sm">
+                          {highlight}
+                        </span>
                       </div>
                     ))}
                   </div>
                 </div>
               </div>
             ))}
-            
+
             {/* Implementation Strategy */}
             <div className="bg-white bg-opacity-95 rounded-2xl shadow-lg p-8 backdrop-blur-sm">
               <h3 className="text-xl font-bold text-[#01385f] mb-6 text-center">
                 กลยุทธ์การขับเคลื่อนวิสัยทัศน์
               </h3>
-              
+
               <div className="grid grid-cols-1 md:grid-cols-3 gap-6">
                 <div className="text-center">
                   <div className="w-16 h-16 bg-blue-100 rounded-full flex items-center justify-center mx-auto mb-4">
                     <span className="text-2xl">🎯</span>
                   </div>
-                  <h4 className="font-semibold text-gray-800 mb-2">การวางแผน</h4>
-                  <p className="text-gray-600 text-sm">จัดทำแผนพัฒนาท้องถิ่นที่สอดคล้องกับวิสัยทัศน์</p>
+                  <h4 className="font-semibold text-gray-800 mb-2">
+                    การวางแผน
+                  </h4>
+                  <p className="text-gray-600 text-sm">
+                    จัดทำแผนพัฒนาท้องถิ่นที่สอดคล้องกับวิสัยทัศน์
+                  </p>
                 </div>
-                
+
                 <div className="text-center">
                   <div className="w-16 h-16 bg-green-100 rounded-full flex items-center justify-center mx-auto mb-4">
                     <span className="text-2xl">⚡</span>
                   </div>
-                  <h4 className="font-semibold text-gray-800 mb-2">การปฏิบัติ</h4>
-                  <p className="text-gray-600 text-sm">ดำเนินโครงการและกิจกรรมตามแผนที่กำหนด</p>
+                  <h4 className="font-semibold text-gray-800 mb-2">
+                    การปฏิบัติ
+                  </h4>
+                  <p className="text-gray-600 text-sm">
+                    ดำเนินโครงการและกิจกรรมตามแผนที่กำหนด
+                  </p>
                 </div>
-                
+
                 <div className="text-center">
                   <div className="w-16 h-16 bg-yellow-100 rounded-full flex items-center justify-center mx-auto mb-4">
                     <span className="text-2xl">📊</span>
                   </div>
-                  <h4 className="font-semibold text-gray-800 mb-2">การติดตาม</h4>
-                  <p className="text-gray-600 text-sm">ประเมินผลและปรับปรุงการดำเนินงานอย่างต่อเนื่อง</p>
+                  <h4 className="font-semibold text-gray-800 mb-2">
+                    การติดตาม
+                  </h4>
+                  <p className="text-gray-600 text-sm">
+                    ประเมินผลและปรับปรุงการดำเนินงานอย่างต่อเนื่อง
+                  </p>
                 </div>
               </div>
             </div>
           </div>
         )}
-      </div>
-
-      {/* Footer Information */}
-      <div className="w-full max-w-[1268px] mt-8">
-        <div className="bg-white bg-opacity-90 rounded-2xl shadow-md p-6 backdrop-blur-sm text-center">
-          <h4 className="text-lg font-semibold text-[#01385f] mb-2">
+        {/* Footer Information */}
+        <div className="bg-white bg-opacity-95 rounded-2xl shadow-lg p-8 backdrop-blur-sm text-center mt-8">
+          <h2 className="text-xl md:text-2xl font-bold text-[#01385f] mb-6">
             วิสัยทัศน์เทศบาลตำบลบ้านโพธิ์
-          </h4>
-          <p className="text-gray-600 text-sm">
-            มุ่งสู่การเป็นเมืองน่าอยู่ที่มีคุณภาพ เศรษฐกิจยั่งยืน และประชาชนมีส่วนร่วมในการพัฒนา
-          </p>
+          </h2>
+
+          <div className="bg-gradient-to-r from-[#03bdca] to-[#01bdcc] rounded-xl p-8 text-white shadow-lg">
+            <div className="text-2xl md:text-3xl font-bold leading-relaxed">
+              มุ่งสู่การเป็นเมืองน่าอยู่ที่มีคุณภาพ เศรษฐกิจยั่งยืน
+              และประชาชนมีส่วนร่วมในการพัฒนา
+            </div>
+          </div>
         </div>
       </div>
     </div>
