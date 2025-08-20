@@ -31,8 +31,7 @@ export default function NewsDetail({ news, loading, error, onRetry }) {
   };
 
   const getNewsImages = (news) => {
-    if (!news?.photos) return ['/image/Boat.jpg'];
-    
+    if (!news?.photos) return [];
     try {
       const photos = typeof news.photos === 'string' ? JSON.parse(news.photos) : news.photos;
       if (Array.isArray(photos) && photos.length > 0) {
@@ -41,14 +40,12 @@ export default function NewsDetail({ news, loading, error, onRetry }) {
           .map(photo => photo.post_photo_file)
           .filter(path => path && path.trim() !== '' && !path.includes('undefined') && !path.includes('null'))
           .map(path => getImageUrl(path));
-        
-        return validImages.length > 0 ? validImages : ['/image/Boat.jpg'];
+        return validImages;
       }
     } catch (error) {
       console.error('Error parsing photos:', error);
     }
-    
-    return ['/image/Boat.jpg'];
+    return [];
   };
 
   if (loading) {
@@ -164,6 +161,7 @@ export default function NewsDetail({ news, loading, error, onRetry }) {
             <span>›</span>
             <span className="text-yellow-300 font-medium">
               {news.title_name || news.title || 'รายละเอียดข่าว'}
+
             </span>
           </div>
         </nav>
@@ -172,57 +170,62 @@ export default function NewsDetail({ news, loading, error, onRetry }) {
         <article className="bg-white/38 backdrop-blur-[80px] rounded-3xl shadow-xl overflow-hidden hover:shadow-2xl transition-shadow duration-300">
           {/* Image Gallery */}
           <div className="relative">
-            <div className="w-full h-96 relative overflow-hidden">
-              <img
-                src={images[currentImageIndex]}
-                alt={news.title_name || news.title || 'ข่าวประชาสัมพันธ์'}
-                className="w-full h-full object-cover transition-transform duration-500"
-                onError={(e) => {
-                  e.target.src = '/image/Boat.jpg';
-                }}
-              />
-              <div className="absolute inset-0 bg-gradient-to-t from-black/30 to-transparent"></div>
-              
-              {/* Image Navigation */}
-              {images.length > 1 && (
-                <>
-                  <button
-                    onClick={() => setCurrentImageIndex(prev => prev === 0 ? images.length - 1 : prev - 1)}
-                    className="absolute left-4 top-1/2 transform -translate-y-1/2 bg-black/50 text-white p-2 rounded-full hover:bg-black/70 transition-colors"
-                  >
-                    <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
-                    </svg>
-                  </button>
-                  <button
-                    onClick={() => setCurrentImageIndex(prev => prev === images.length - 1 ? 0 : prev + 1)}
-                    className="absolute right-4 top-1/2 transform -translate-y-1/2 bg-black/50 text-white p-2 rounded-full hover:bg-black/70 transition-colors"
-                  >
-                    <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
-                    </svg>
-                  </button>
-                  
-                  {/* Image Indicators */}
-                  <div className="absolute bottom-4 left-1/2 transform -translate-x-1/2 flex space-x-2">
-                    {images.map((_, index) => (
+            {images.length > 0 ? (
+              <>
+                <div className="w-full h-96 relative overflow-hidden">
+                  <img
+                    src={images[currentImageIndex]}
+                    alt={news.title_name || news.title || 'ข่าวประชาสัมพันธ์'}
+                    className="w-full h-full object-cover transition-transform duration-500"
+                    onError={(e) => {
+                      e.target.src = '/image/Boat.jpg';
+                    }}
+                  />
+                  <div className="absolute inset-0 bg-gradient-to-t from-black/30 to-transparent"></div>
+                  {/* Image Navigation */}
+                  {images.length > 1 && (
+                    <>
                       <button
-                        key={index}
-                        onClick={() => setCurrentImageIndex(index)}
-                        className={`w-3 h-3 rounded-full transition-colors ${
-                          index === currentImageIndex ? 'bg-white' : 'bg-white/50'
-                        }`}
-                      />
-                    ))}
+                        onClick={() => setCurrentImageIndex(prev => prev === 0 ? images.length - 1 : prev - 1)}
+                        className="absolute left-4 top-1/2 transform -translate-y-1/2 bg-black/50 text-white p-2 rounded-full hover:bg-black/70 transition-colors"
+                      >
+                        <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
+                        </svg>
+                      </button>
+                      <button
+                        onClick={() => setCurrentImageIndex(prev => prev === images.length - 1 ? 0 : prev + 1)}
+                        className="absolute right-4 top-1/2 transform -translate-y-1/2 bg-black/50 text-white p-2 rounded-full hover:bg-black/70 transition-colors"
+                      >
+                        <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
+                        </svg>
+                      </button>
+                      {/* Image Indicators */}
+                      <div className="absolute bottom-4 left-1/2 transform -translate-x-1/2 flex space-x-2">
+                        {images.map((_, index) => (
+                          <button
+                            key={index}
+                            onClick={() => setCurrentImageIndex(index)}
+                            className={`w-3 h-3 rounded-full transition-colors ${
+                              index === currentImageIndex ? 'bg-white' : 'bg-white/50'
+                            }`}
+                          />
+                        ))}
+                      </div>
+                    </>
+                  )}
+                </div>
+                {/* Image Counter */}
+                {images.length > 1 && (
+                  <div className="absolute top-4 right-4 bg-black/50 text-white px-3 py-1 rounded-full text-sm">
+                    {currentImageIndex + 1} / {images.length}
                   </div>
-                </>
-              )}
-            </div>
-            
-            {/* Image Counter */}
-            {images.length > 1 && (
-              <div className="absolute top-4 right-4 bg-black/50 text-white px-3 py-1 rounded-full text-sm">
-                {currentImageIndex + 1} / {images.length}
+                )}
+              </>
+            ) : (
+              <div className="w-full h-96 flex items-center justify-center bg-gray-100 text-gray-400 text-xl">
+                ไม่มีรูปภาพประกอบ
               </div>
             )}
           </div>
@@ -357,7 +360,6 @@ export default function NewsDetail({ news, loading, error, onRetry }) {
               >
                 ดูข่าวอื่นๆ
               </Link>
-              
               <button 
                 onClick={() => window.history.back()}
                 className="px-8 py-3 bg-white border-2 border-[#0383AA] text-[#0383AA] rounded-full hover:bg-[#0383AA] hover:text-white transition-all duration-300 font-medium"
@@ -365,6 +367,83 @@ export default function NewsDetail({ news, loading, error, onRetry }) {
                 ย้อนกลับ
               </button>
             </div>
+
+            {/* PDF Files Section - Improved UI (moved to bottom) */}
+            {(news.pdfs && news.pdfs.length > 0) && (
+              <div className="mt-14">
+                <h3 className="text-xl font-bold text-[#01385f] mb-6 flex items-center gap-2">
+                  <svg className="w-7 h-7 text-orange-500" fill="currentColor" viewBox="0 0 24 24">
+                    <path d="M14,2H6A2,2 0 0,0 4,4V20A2,2 0 0,0 6,22H18A2,2 0 0,0 20,20V8L14,2M18,20H6V4H13V9H18V20Z" />
+                  </svg>
+                  เอกสาร PDF <span className="text-base font-normal text-gray-500">({news.pdfs.length} ไฟล์)</span>
+                </h3>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+                  {news.pdfs.map((pdf, idx) => (
+                    <div key={pdf.id || idx} className="flex items-center bg-white rounded-xl shadow border border-orange-100 p-4 gap-4 hover:shadow-lg transition">
+                      <div className="flex-shrink-0">
+                        <svg className="w-10 h-10 text-orange-500" fill="currentColor" viewBox="0 0 24 24">
+                          <path d="M14,2H6A2,2 0 0,0 4,4V20A2,2 0 0,0 6,22H18A2,2 0 0,0 20,20V8L14,2M18,20H6V4H13V9H18V20Z" />
+                        </svg>
+                      </div>
+                      <div className="flex-1 min-w-0">
+                        <div className="font-semibold text-[#01385f] truncate">{pdf.original_name || `PDF ${idx + 1}`}</div>
+                        {pdf.file_size && (
+                          <div className="text-xs text-gray-500 mt-1">{(Number(pdf.file_size)/1024).toFixed(1)} KB</div>
+                        )}
+                        {pdf.created_at && (
+                          <div className="text-xs text-gray-400">อัปโหลด: {new Date(pdf.created_at).toLocaleDateString('th-TH')}</div>
+                        )}
+                      </div>
+                      <a
+                        href={`https://banpho.sosmartsolution.com/storage/${pdf.post_pdf_file || pdf.files_path}`}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="ml-2 px-5 py-2 rounded-full bg-gradient-to-r from-orange-400 to-orange-600 text-white font-semibold shadow hover:from-orange-500 hover:to-orange-700 transition"
+                      >
+                        ดาวน์โหลด
+                      </a>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            {/* Video Files Section - Improved UI (moved to bottom) */}
+            {(news.videos && news.videos.length > 0) && (
+              <div className="mt-10">
+                <h3 className="text-xl font-bold text-[#01385f] mb-6 flex items-center gap-2">
+                  <svg className="w-7 h-7 text-red-500" fill="currentColor" viewBox="0 0 24 24">
+                    <path d="M8 5v14l11-7z" />
+                  </svg>
+                  วิดีโอ <span className="text-base font-normal text-gray-500">({news.videos.length} ไฟล์)</span>
+                </h3>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-5">
+                  {news.videos.map((video, idx) => (
+                    <div key={video.id || idx} className="flex items-center bg-white rounded-xl shadow border border-red-100 p-4 gap-4 hover:shadow-lg transition">
+                      <div className="flex-shrink-0">
+                        <svg className="w-10 h-10 text-red-500" fill="currentColor" viewBox="0 0 24 24">
+                          <path d="M8 5v14l11-7z" />
+                        </svg>
+                      </div>
+                      <div className="flex-1 min-w-0">
+                        <div className="font-semibold text-[#01385f] truncate">วิดีโอ {idx + 1}</div>
+                        {video.created_at && (
+                          <div className="text-xs text-gray-400">อัปโหลด: {new Date(video.created_at).toLocaleDateString('th-TH')}</div>
+                        )}
+                      </div>
+                      <a
+                        href={`https://banpho.sosmartsolution.com/storage/${video.post_video_file || video.files_path}`}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        className="ml-2 px-5 py-2 rounded-full bg-gradient-to-r from-red-400 to-red-600 text-white font-semibold shadow hover:from-red-500 hover:to-red-700 transition"
+                      >
+                        ดูวิดีโอ
+                      </a>
+                    </div>
+                  ))}
+                </div>
+              </div>
+            )}
           </div>
         </article>
       </div>

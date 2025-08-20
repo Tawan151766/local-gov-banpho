@@ -20,6 +20,7 @@ export default function ActivitiesPage() {
     try {
       const response = await fetch(`/api/posts?type=กิจกรรม&page=${currentPage}&limit=${activitiesPerPage}`);
       const result = await response.json();
+      console.log('กิจกรรมที่ได้จาก API:', result.data);
       if (result.success) {
         setActivities(result.data || []);
         setTotalActivities(result.pagination?.total || result.data?.length || 0);
@@ -57,11 +58,14 @@ export default function ActivitiesPage() {
   };
 
   const getImageUrl = (photos) => {
-    if (!photos || photos.length === 0) return "/image/Boat.jpg";
-    const photo = photos[0];
-    if (!photo?.post_photo_file) return "/image/Boat.jpg";
-    if (photo.post_photo_file.startsWith("http")) return photo.post_photo_file;
-    return `https://banpho.sosmartsolution.com${photo.post_photo_file}`;
+  if (!photos || !Array.isArray(photos) || photos.length === 0) return null;
+  const photo = photos[0];
+  if (!photo?.post_photo_file) return null;
+  // ถ้า path มี /storage/ อยู่แล้ว ไม่ต้องเติม
+  if (photo.post_photo_file.startsWith("http")) return photo.post_photo_file;
+  if (photo.post_photo_file.startsWith("/storage/")) return `https://banpho.sosmartsolution.com${photo.post_photo_file}`;
+  // ถ้า path ไม่มี /storage/ ให้เติม
+  return `https://banpho.sosmartsolution.com/storage/${photo.post_photo_file.replace(/^\/+/, "")}`;
   };
 
   const truncateText = (text, maxLength = 100) => {
@@ -163,8 +167,12 @@ export default function ActivitiesPage() {
             <div key={item.id} className="bg-white bg-opacity-95 rounded-[29px] border-4 border-[#01bdcc] shadow-lg p-6 flex flex-col gap-3 relative cursor-pointer hover:shadow-xl hover:bg-opacity-100 transition-all duration-300 transform hover:-translate-y-1 backdrop-blur-sm"
               onClick={() => handleShowDetail(item)}>
               {/* Header */}
-              <div className="w-full h-[180px] sm:h-[220px] md:h-[240px] lg:h-[260px] mb-2">
-                <img src={getImageUrl(item.photos)} alt={item.title_name || "กิจกรรม"} className="w-full h-full object-cover rounded-xl" onError={e => {e.target.src = "/image/Boat.jpg";}} />
+              <div className="w-full h-[180px] sm:h-[220px] md:h-[240px] lg:h-[260px] mb-2 flex items-center justify-center">
+                {getImageUrl(item.photos) ? (
+                  <img src={getImageUrl(item.photos)} alt={item.title_name || "กิจกรรม"} className="w-full h-full object-cover rounded-xl" />
+                ) : (
+                  <div className="w-full h-full flex items-center justify-center text-gray-400 bg-gray-100 rounded-xl text-lg">ไม่มีรูปภาพ</div>
+                )}
               </div>
               <div className="flex items-start justify-between mb-2">
                 <h2 className="text-xl font-bold text-[#01385f] line-clamp-2 flex-1">{item.topic_name || item.title_name || "ไม่มีหัวข้อ"}</h2>
