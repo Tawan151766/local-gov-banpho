@@ -91,7 +91,7 @@ export default function Navbar() {
   useEffect(() => {
     async function fetchTypes() {
       try {
-        const res = await fetch('/api/local-dev-plan-types');
+        const res = await fetch("/api/local-dev-plan-types");
         const data = await res.json();
         if (data.success && Array.isArray(data.data)) {
           setLocalDevPlanMenu(
@@ -130,12 +130,7 @@ export default function Navbar() {
       href: "/e-service/corruption-complaint",
       label: "รับแจ้งเรื่องราวร้องเรียนการทุจริตและประพฤติมิชอบ",
     },
-    { href: "/citizen/work-manual", label: "คู่มือปฏิบัติงาน" },
-    {
-      href: "/citizen/service-standards",
-      label: "คู่มือหรือมาตรฐานการให้บริการประชาชน",
-    },
-    { href: "/citizen/citizen-manual", label: "คู่มือประชาชน" },
+    { href: "/citizen/citizen-manual", label: "คู่มือ" },
     { href: "/citizen/documents", label: "เอกสารดาวน์โหลด/แบบฟอร์มต่างๆ" },
     { href: "/citizen/work-process", label: "ลดขั้นตอนการปฏิบัติงาน" },
   ];
