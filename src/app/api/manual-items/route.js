@@ -61,7 +61,26 @@ export async function GET(request) {
       ORDER BY mi.display_order ASC, mi.created_at DESC
       LIMIT ? OFFSET ?
     `, [...params, limit, offset]);
-    
+
+    // Get all manual_files for all items in this page
+    const itemIds = items.map(item => item.id);
+    let filesByItem = {};
+    if (itemIds.length > 0) {
+      const [files] = await connection.execute(
+        `SELECT * FROM manual_files WHERE manual_id IN (${itemIds.map(() => '?').join(',')}) AND is_active = TRUE ORDER BY display_order, id`,
+        itemIds
+      );
+      filesByItem = itemIds.reduce((acc, id) => {
+        acc[id] = files.filter(f => f.manual_id === id);
+        return acc;
+      }, {});
+    }
+    // Attach files to each item
+    const itemsWithFiles = items.map(item => ({
+      ...item,
+      files: filesByItem[item.id] || []
+    }));
+
     // Get total count
     const [countResult] = await connection.execute(`
       SELECT COUNT(*) as total
@@ -75,7 +94,7 @@ export async function GET(request) {
     
     return NextResponse.json({
       success: true,
-      data: items,
+      data: itemsWithFiles,
       pagination: {
         page,
         limit,
