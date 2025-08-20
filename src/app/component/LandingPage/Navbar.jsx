@@ -87,26 +87,26 @@ export default function Navbar() {
     },
   ];
 
-  const localDevPlanMenu = [
-    {
-      href: "/local-development-plan?tab=four-year-plan",
-      label: "แผนพัฒนาสี่ปี",
-    },
-    { href: "/local-development-plan?tab=action-plan", label: "แผนปฏิบัติการ" },
-    { href: "/local-development-plan?tab=community-plan", label: "แผนชุมชน" },
-    {
-      href: "/local-development-plan?tab=strategic-plan",
-      label: "แผนยุทธศาสตร์",
-    },
-    {
-      href: "/local-development-plan?tab=manpower-plan",
-      label: "แผนอัตรากำลัง",
-    },
-    {
-      href: "/local-development-plan?tab=procurement-plan",
-      label: "แผนการจัดหาพัสดุ",
-    },
-  ];
+  const [localDevPlanMenu, setLocalDevPlanMenu] = useState([]);
+  useEffect(() => {
+    async function fetchTypes() {
+      try {
+        const res = await fetch('/api/local-dev-plan-types');
+        const data = await res.json();
+        if (data.success && Array.isArray(data.data)) {
+          setLocalDevPlanMenu(
+            data.data.map((item) => ({
+              href: `/local-development-plan?tab=${item.id}`,
+              label: item.type_name,
+            }))
+          );
+        }
+      } catch (e) {
+        setLocalDevPlanMenu([]);
+      }
+    }
+    fetchTypes();
+  }, []);
 
   const lawsRegulationsMenu = [
     { href: "/laws-regulations", label: "ทั้งหมด" },

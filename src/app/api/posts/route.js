@@ -92,6 +92,7 @@ export async function GET(request) {
         pd.*,
         pt.type_name,
         (SELECT COUNT(*) FROM post_photos WHERE post_detail_id = pd.id) as photos_count,
+        (SELECT JSON_ARRAYAGG(JSON_OBJECT('post_photo_file', post_photo_file)) FROM post_photos WHERE post_detail_id = pd.id) as photos,
         (SELECT COUNT(*) FROM post_videos WHERE post_detail_id = pd.id) as videos_count,
         (SELECT COUNT(*) FROM post_pdfs WHERE post_detail_id = pd.id) as pdfs_count
     `;
@@ -141,6 +142,13 @@ export async function GET(request) {
           item.matched_files = JSON.parse(item.matched_files);
         } catch (e) {
           item.matched_files = [];
+        }
+      }
+      if (item.photos && typeof item.photos === "string") {
+        try {
+          item.photos = JSON.parse(item.photos);
+        } catch (e) {
+          item.photos = [];
         }
       }
       return item;

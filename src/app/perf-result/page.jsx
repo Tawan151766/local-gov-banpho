@@ -3,105 +3,235 @@ import { useState, useEffect, Suspense } from "react";
 import { useSearchParams } from "next/navigation";
 
 function PerfResultContent() {
-  const [sections, setSections] = useState([]);
   const [types, setTypes] = useState([]);
+  const [sections, setSections] = useState([]);
+  const [subTopics, setSubTopics] = useState([]);
+  const [files, setFiles] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [currentPage, setCurrentPage] = useState(1);
-  const [totalPages, setTotalPages] = useState(1);
-  const [totalSections, setTotalSections] = useState(0);
-  const [selectedType, setSelectedType] = useState("");
-  const [activeTab, setActiveTab] = useState("all");
-  const sectionsPerPage = 6;
-  const searchParams = useSearchParams();
+  const [sectionsLoading, setSectionsLoading] = useState(false);
+  const [subTopicsLoading, setSubTopicsLoading] = useState(false);
+  const [filesLoading, setFilesLoading] = useState(false);
 
-  // Define tab categories based on submenu
-  const tabCategories = [
-    { key: "all", label: "ทั้งหมด", keywords: [] },
-    {
-      key: "operation-report",
-      label: "รายงานผลการดำเนินงาน",
-      keywords: ["รายงานผลการดำเนินงาน"],
-    },
-    {
-      key: "procurement",
-      label: "การจัดซื้อจัดจ้าง",
-      keywords: ["การจัดซื้อจัดจ้าง", "การจัดหาพัสดุ"],
-    },
-    {
-      key: "financial-report",
-      label: "รายงานการคลัง",
-      keywords: ["รายงานการคลัง"],
-    },
-    {
-      key: "transparency-measures",
-      label: "มาตรการส่งเสริมความโปร่งใส",
-      keywords: ["มาตรการส่งเสริมความโปร่งใส"],
-    },
-    {
-      key: "hr-management",
-      label: "การบริหารและทรัพยากรบุคคล",
-      keywords: ["การบริหารและทรัพยากรบุคคล"],
-    },
-    {
-      key: "statistics",
-      label: "ข้อมูลเชิงสถิติ",
-      keywords: ["ข้อมูลเชิงสถิติ"],
-    },
-    {
-      key: "participation",
-      label: "การเปิดโอกาสให้เกิดการมีส่วนร่วม",
-      keywords: ["การเปิดโอกาสให้เกิดการมีส่วนร่วม"],
-    },
-  ];
-
-  useEffect(() => {
-    fetchTypes();
-
-    // Check URL parameters for tab selection
-    const tabParam = searchParams.get("tab");
-    if (tabParam && tabCategories.find((tab) => tab.key === tabParam)) {
-      setActiveTab(tabParam);
-    }
-  }, []);
-
-  useEffect(() => {
-    fetchSections();
-  }, [currentPage, selectedType, activeTab]);
-
-  const fetchTypes = async () => {
+  // Navigation states
+  const [currentLevel, setCurrentLevel] = useState("types"); // types, sections, subTopics, files
+  const [selectedType, setSelectedType] = useState(null);
+  const [selectedSection, setSelectedSection] = useState(null);
+  const [selectedSubTopic, setSelectedSubTopic] = useState(null);
+  // Load files for a specific sub topic
+  const loadFiles = async (subTopicId) => {
+    setFilesLoading(true);
     try {
-      const response = await fetch("/api/perf-result-types");
+      const response = await fetch(`/api/perf-results-files?subTopicId=${subTopicId}`);
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
       const result = await response.json();
       if (result.success) {
-        setTypes(result.data);
+        setFiles(result.data || []);
+        setTotalItems(result.data?.length || 0);
+        setTotalPages(Math.ceil((result.data?.length || 0) / itemsPerPage));
+      } else {
+        setFiles([]);
+        setTotalItems(0);
+        setTotalPages(1);
       }
     } catch (error) {
-      console.error("Error fetching types:", error);
+      setFiles([]);
+      setTotalItems(0);
+      setTotalPages(1);
+    } finally {
+      setFilesLoading(false);
     }
   };
 
-  const fetchSections = async () => {
+  const [currentPage, setCurrentPage] = useState(1);
+  const [totalPages, setTotalPages] = useState(1);
+  const [totalItems, setTotalItems] = useState(0);
+  const itemsPerPage = 6;
+  const searchParams = useSearchParams();
+
+  // Load functions
+  const loadTypes = async () => {
     setLoading(true);
     try {
-      const typeFilter = selectedType ? `&type_id=${selectedType}` : "";
-      const tabFilter = activeTab !== "all" ? `&tab=${activeTab}` : "";
-      const response = await fetch(
-        `/api/perf-result-sections?page=${currentPage}&limit=${sectionsPerPage}${typeFilter}${tabFilter}`
-      );
-      const result = await response.json();
+      const response = await fetch("/api/perf-results-types");
 
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+
+      const result = await response.json();
       if (result.success) {
-        setSections(result.data);
-        setTotalSections(result.pagination?.total || 0);
-        setTotalPages(
-          Math.ceil((result.pagination?.total || 0) / sectionsPerPage)
-        );
+        setTypes(result.data || []);
+        setTotalItems(result.data?.length || 0);
+        setTotalPages(Math.ceil((result.data?.length || 0) / itemsPerPage));
+      } else {
+        console.error("API returned error:", result.error);
+        setTypes([]);
+        setTotalItems(0);
+        setTotalPages(1);
       }
     } catch (error) {
-      console.error("Error fetching sections:", error);
+      console.error("Error fetching types:", error);
+      setTypes([]);
+      setTotalItems(0);
+      setTotalPages(1);
     } finally {
       setLoading(false);
     }
+  };
+
+  const loadSections = async (typeId) => {
+    setSectionsLoading(true);
+    try {
+      const response = await fetch(`/api/perf-results-sections-by-type?typeId=${typeId}`);
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+      const result = await response.json();
+      if (result.success) {
+        setSections(result.data || []);
+        setTotalItems(result.data?.length || 0);
+        setTotalPages(Math.ceil((result.data?.length || 0) / itemsPerPage));
+      } else {
+        setSections([]);
+        setTotalItems(0);
+        setTotalPages(1);
+      }
+    } catch (error) {
+      setSections([]);
+      setTotalItems(0);
+      setTotalPages(1);
+    } finally {
+      setSectionsLoading(false);
+    }
+  };
+
+  const loadSubTopics = async (sectionId) => {
+    setSubTopicsLoading(true);
+    try {
+      const response = await fetch(`/api/perf-results-sub-topics-by-section?sectionId=${sectionId}`);
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+      const result = await response.json();
+      if (result.success) {
+        setSubTopics(result.data || []);
+        setTotalItems(result.data?.length || 0);
+        setTotalPages(Math.ceil((result.data?.length || 0) / itemsPerPage));
+      } else {
+        setSubTopics([]);
+        setTotalItems(0);
+        setTotalPages(1);
+      }
+    } catch (error) {
+      setSubTopics([]);
+      setTotalItems(0);
+      setTotalPages(1);
+    } finally {
+      setSubTopicsLoading(false);
+    }
+  };
+
+  // Navigation functions
+  const navigateToSections = (type) => {
+    setSelectedType(type);
+    setCurrentLevel("sections");
+    setCurrentPage(1);
+    loadSections(type.id);
+  };
+
+
+  const navigateToSubTopics = (section) => {
+    setSelectedSection(section);
+    setCurrentLevel("subTopics");
+    setCurrentPage(1);
+    loadSubTopics(section.id);
+  };
+
+  const navigateToFiles = (subTopic) => {
+    setSelectedSubTopic(subTopic);
+    setCurrentLevel("files");
+    setCurrentPage(1);
+    loadFiles(subTopic.id);
+  };
+
+  const navigateBack = () => {
+    if (currentLevel === "files") {
+      setCurrentLevel("subTopics");
+      setSelectedSubTopic(null);
+      setFiles([]);
+      setCurrentPage(1);
+      if (selectedSection) {
+        loadSubTopics(selectedSection.id);
+      }
+    } else if (currentLevel === "subTopics") {
+      setCurrentLevel("sections");
+      setSelectedSection(null);
+      setSubTopics([]);
+      setCurrentPage(1);
+      if (selectedType) {
+        loadSections(selectedType.id);
+      }
+    } else if (currentLevel === "sections") {
+      setCurrentLevel("types");
+      setSelectedType(null);
+      setSections([]);
+      setCurrentPage(1);
+      loadTypes();
+    }
+  };
+
+  const navigateToTypes = () => {
+    setCurrentLevel("types");
+    setSelectedType(null);
+    setSelectedSection(null);
+    setSections([]);
+    setSubTopics([]);
+    setCurrentPage(1);
+    loadTypes();
+  };
+
+  useEffect(() => {
+    loadTypes();
+  }, []);
+
+  // Get breadcrumb items
+  const getBreadcrumbItems = () => {
+    const items = [
+      {
+        title: "ประเภทผลการดำเนินงาน",
+        onClick: navigateToTypes,
+      },
+    ];
+    if (selectedType) {
+      items.push({
+        title: selectedType.type_name,
+        onClick: () => {
+          setCurrentLevel("sections");
+          loadSections(selectedType.id);
+        },
+      });
+    }
+    if (selectedSection) {
+      items.push({
+        title: selectedSection.section_name,
+        onClick: () => {
+          setCurrentLevel("subTopics");
+          loadSubTopics(selectedSection.id);
+        },
+      });
+    }
+    if (selectedSubTopic) {
+      items.push({
+        title: selectedSubTopic.topic_name,
+        onClick: () => {
+          setCurrentLevel("files");
+          loadFiles(selectedSubTopic.id);
+        },
+      });
+    }
+    return items;
   };
 
   const formatDate = (dateString) => {
@@ -131,49 +261,34 @@ function PerfResultContent() {
   };
 
   const handlePageChange = (page) => {
-    if (page >= 1 && page <= totalPages) {
+    if (page >= 1 && page <= totalPages && page !== currentPage) {
       setCurrentPage(page);
       window.scrollTo({ top: 0, behavior: "smooth" });
     }
   };
 
-  const handleTypeFilter = (typeId) => {
-    setSelectedType(typeId);
-    setCurrentPage(1);
-  };
-
-  const handleTabChange = (tabKey) => {
-    setActiveTab(tabKey);
-    setCurrentPage(1);
-    setSelectedType(""); // Reset type filter when changing tabs
-
-    // Update URL without page reload
-    const url = new URL(window.location);
-    if (tabKey === "all") {
-      url.searchParams.delete("tab");
-    } else {
-      url.searchParams.set("tab", tabKey);
+  const handleItemClick = (item) => {
+    if (currentLevel === "types") {
+      navigateToSections(item);
+    } else if (currentLevel === "sections") {
+      navigateToSubTopics(item);
+    } else if (currentLevel === "subTopics") {
+      // ไปหน้าไฟล์ของ subTopic
+      navigateToFiles(item);
+    } else if (currentLevel === "files") {
+      // เปิดไฟล์ (ดาวน์โหลด/ดู)
+      if (item.files_path) {
+        let fullUrl = '';
+        if (item.files_path.startsWith('/storage/')) {
+          fullUrl = item.files_path.replace('/storage/', 'https://banpho.sosmartsolution.com/storage/');
+        } else if (item.files_path.startsWith('http')) {
+          fullUrl = item.files_path;
+        } else {
+          fullUrl = `https://banpho.sosmartsolution.com/storage/${item.files_path}`;
+        }
+        window.open(fullUrl, '_blank');
+      }
     }
-    window.history.pushState({}, "", url);
-  };
-
-  const getFilteredTypes = () => {
-    if (activeTab === "all") return types;
-
-    const currentTabCategory = tabCategories.find(
-      (tab) => tab.key === activeTab
-    );
-    if (!currentTabCategory) return types;
-
-    return types.filter((type) =>
-      currentTabCategory.keywords.some((keyword) =>
-        type.type_name.includes(keyword)
-      )
-    );
-  };
-
-  const handleSectionClick = (sectionId) => {
-    window.location.href = `/perf-result/detail/${sectionId}`;
   };
 
   const getTypeColor = (typeName) => {
@@ -192,6 +307,39 @@ function PerfResultContent() {
     if (typeName.includes("การเปิดโอกาสให้เกิดการมีส่วนร่วม")) return "#17a2b8";
 
     return "#01bdcc";
+  };
+
+  // Get current data based on level
+  const getCurrentData = () => {
+    if (currentLevel === "types") return types;
+    if (currentLevel === "sections") return sections;
+    if (currentLevel === "subTopics") return subTopics;
+    if (currentLevel === "files") return files;
+    return [];
+  };
+
+  const getCurrentLoading = () => {
+    if (currentLevel === "types") return loading;
+    if (currentLevel === "sections") return sectionsLoading;
+    if (currentLevel === "subTopics") return subTopicsLoading;
+    if (currentLevel === "files") return filesLoading;
+    return false;
+  };
+
+  const getCurrentTitle = () => {
+    if (currentLevel === "types") return "ประเภทผลการดำเนินงาน";
+    if (currentLevel === "sections") return "หมวดหมู่หัวข้อ";
+    if (currentLevel === "subTopics") return "หัวข้อย่อย";
+    if (currentLevel === "files") return "ไฟล์ผลการดำเนินงาน";
+    return "";
+  };
+
+  const getCurrentIcon = () => {
+    if (currentLevel === "types") return "📊";
+    if (currentLevel === "sections") return "📁";
+    if (currentLevel === "subTopics") return "📄";
+    if (currentLevel === "files") return "�";
+    return "�📊";
   };
 
   const renderPagination = () => {
@@ -304,8 +452,8 @@ function PerfResultContent() {
           {pages}
         </div>
         <div className="text-sm text-white bg-black bg-opacity-20 px-4 py-2 rounded-full backdrop-blur-sm">
-          แสดงหน้า {currentPage} จาก {totalPages} หน้า | ทั้งหมด {totalSections}{" "}
-          หมวด
+          แสดงหน้า {currentPage} จาก {totalPages} หน้า | ทั้งหมด {totalItems}{" "}
+          รายการ
         </div>
       </div>
     );
@@ -328,50 +476,53 @@ function PerfResultContent() {
         <div className="bg-gradient-to-r from-[#03bdca] to-[#01bdcc] rounded-[36px] shadow-lg w-full flex flex-col md:flex-row items-center px-6 py-6 relative backdrop-blur-sm">
           <div className="bg-white rounded-full shadow-md w-32 h-16 flex items-center justify-center mb-4 md:mb-0 md:absolute md:left-6 md:top-1/2 md:-translate-y-1/2 border-2 border-[#01bdcc]">
             <span className="text-[#01385f] font-bold text-2xl tracking-wide">
-              📊
+              {getCurrentIcon()}
             </span>
           </div>
           <div className="flex-1 flex flex-wrap flex-row items-center justify-center gap-6 md:gap-12 md:ml-40">
             <span className="text-white font-semibold text-lg md:text-2xl drop-shadow-lg">
+              {getCurrentTitle()}
+            </span>
+            <span className="text-white font-semibold text-lg md:text-2xl drop-shadow-lg">
               ผลการดำเนินงาน
             </span>
             <span className="text-white font-semibold text-lg md:text-2xl drop-shadow-lg">
-              รายงานหมวดหมู่
-            </span>
-            <span className="text-white font-semibold text-lg md:text-2xl drop-shadow-lg">
-              สถิติการปฏิบัติงาน
+              เทศบาลตำบลบ้านโพธิ์
             </span>
           </div>
         </div>
 
-        {/* Tab Navigation */}
-        <div className="bg-white bg-opacity-90 rounded-2xl shadow-md p-4 backdrop-blur-sm mb-4">
-          <h3 className="text-lg font-semibold text-gray-800 mb-3">หมวดหมู่</h3>
-          <div className="flex flex-wrap gap-2">
-            {tabCategories.map((tab) => (
+        {/* Breadcrumb Navigation */}
+        {currentLevel !== "types" && (
+          <div className="bg-white bg-opacity-90 rounded-2xl shadow-md p-4 backdrop-blur-sm">
+            <div className="flex items-center gap-2 text-sm">
+              {getBreadcrumbItems().map((item, index) => (
+                <div key={index} className="flex items-center gap-2">
+                  {index > 0 && <span className="text-gray-400">›</span>}
+                  <button
+                    onClick={item.onClick}
+                    className="text-blue-600 hover:text-blue-800 transition-colors hover:underline"
+                  >
+                    {item.title}
+                  </button>
+                </div>
+              ))}
+            </div>
+            <div className="mt-2">
               <button
-                key={tab.key}
-                onClick={() => handleTabChange(tab.key)}
-                className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
-                  activeTab === tab.key
-                    ? "text-white shadow-md"
-                    : "bg-white text-gray-700 border border-gray-300 hover:bg-gray-50"
-                }`}
-                style={{
-                  backgroundColor:
-                    activeTab === tab.key ? getTypeColor(tab.label) : undefined,
-                }}
+                onClick={navigateBack}
+                className="px-4 py-2 bg-gray-500 text-white rounded-lg hover:bg-gray-600 transition-colors text-sm"
               >
-                {tab.label}
+                ← ย้อนกลับ
               </button>
-            ))}
+            </div>
           </div>
-        </div>
+        )}
       </div>
 
       {/* Content Section */}
       <div className="w-full max-w-[1268px] grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 mb-4">
-        {loading ? (
+        {getCurrentLoading() ? (
           // Loading skeleton
           [...Array(6)].map((_, idx) => (
             <div
@@ -388,113 +539,168 @@ function PerfResultContent() {
               <div className="h-4 bg-gray-300 rounded w-24"></div>
             </div>
           ))
-        ) : sections.length > 0 ? (
-          sections.map((section) => (
-            <div
-              key={section.id}
-              className="bg-white bg-opacity-95 rounded-[29px] border-4 border-[#01bdcc] shadow-lg p-6 flex flex-col gap-3 relative cursor-pointer hover:shadow-xl hover:bg-opacity-100 transition-all duration-300 transform hover:-translate-y-1 backdrop-blur-sm"
-              onClick={() => handleSectionClick(section.id)}
-            >
-              {/* Header */}
-              <div className="flex items-start justify-between mb-2">
-                <h2 className="text-xl font-bold text-[#01385f] line-clamp-2 flex-1">
-                  {section.section_name}
-                </h2>
-                <div className="ml-2 bg-blue-100 text-blue-600 px-2 py-1 rounded-full text-xs font-medium">
-                  ID: {section.id}
+        ) : getCurrentData().length > 0 ? (
+          getCurrentData()
+            .slice((currentPage - 1) * itemsPerPage, currentPage * itemsPerPage)
+            .map((item) => (
+              <div
+                key={item.id}
+                className="bg-white bg-opacity-95 rounded-[29px] border-4 border-[#01bdcc] shadow-lg p-6 flex flex-col gap-3 relative cursor-pointer hover:shadow-xl hover:bg-opacity-100 transition-all duration-300 transform hover:-translate-y-1 backdrop-blur-sm"
+                onClick={() => handleItemClick(item)}
+              >
+                {/* Header */}
+                <div className="flex items-start justify-between mb-2">
+                  <h2 className="text-xl font-bold text-[#01385f] line-clamp-2 flex-1">
+                    {currentLevel === "types"
+                      ? item.type_name
+                      : currentLevel === "sections"
+                      ? item.section_name
+                      : currentLevel === "subTopics"
+                      ? item.topic_name
+                      : item.files_name || item.files_path}
+                  </h2>
+                  <div className="ml-2 bg-blue-100 text-blue-600 px-2 py-1 rounded-full text-xs font-medium">
+                    ID: {item.id}
+                  </div>
                 </div>
-              </div>
 
-              {/* Type Badge */}
-              <div className="mb-3">
-                <span
-                  className="inline-block px-3 py-1 rounded-full text-white text-sm font-medium"
-                  style={{ backgroundColor: getTypeColor(section.type_name) }}
-                >
-                  {section.type_name}
-                </span>
-              </div>
-
-              {/* Stats */}
-              <div className="flex flex-wrap gap-2 mb-4">
-                <span className="bg-blue-100 text-blue-600 px-3 py-1 rounded-full text-xs font-medium">
-                  📝 {section.sub_topics_count || 0} หัวข้อ
-                </span>
-                <span className="bg-purple-100 text-purple-600 px-3 py-1 rounded-full text-xs font-medium">
-                  📄 {section.files_count || 0} ไฟล์
-                </span>
-              </div>
-
-              {/* Dates */}
-              <div className="text-sm text-gray-600 space-y-1">
-                <div className="flex items-center gap-2">
-                  <span className="text-gray-500">วันที่:</span>
-                  <span className="font-medium">
-                    {formatDate(section.date)}
-                  </span>
-                </div>
-                <div className="flex items-center gap-2">
-                  <span className="text-gray-500">สร้างเมื่อ:</span>
-                  <span className="font-medium">
-                    {formatDate(section.created_at)}
-                  </span>
-                </div>
-              </div>
-
-              {/* Preview of sub topics */}
-              {section.recent_sub_topics &&
-                section.recent_sub_topics.length > 0 && (
-                  <div className="mt-3 pt-3 border-t border-gray-100">
-                    <p className="text-xs text-gray-500 mb-2">หัวข้อล่าสุด:</p>
-                    <div className="space-y-1">
-                      {section.recent_sub_topics
-                        .slice(0, 2)
-                        .map((subTopic, idx) => (
-                          <div
-                            key={idx}
-                            className="text-sm text-gray-700 bg-gray-50 px-2 py-1 rounded truncate"
-                          >
-                            📄 {subTopic.topic_name}
-                          </div>
-                        ))}
-                      {section.sub_topics_count > 2 && (
-                        <div className="text-xs text-gray-400">
-                          และอีก {section.sub_topics_count - 2} หัวข้อ...
-                        </div>
-                      )}
-                    </div>
+                {/* Type Badge */}
+                {currentLevel !== "types" && currentLevel !== "files" && (
+                  <div className="mb-3">
+                    <span
+                      className="inline-block px-3 py-1 rounded-full text-white text-sm font-medium"
+                      style={{
+                        backgroundColor: getTypeColor(
+                          item.type_name || selectedType?.type_name
+                        ),
+                      }}
+                    >
+                      {item.type_name || selectedType?.type_name}
+                    </span>
                   </div>
                 )}
 
-              {/* Action hint */}
-              <div className="mt-3 pt-2 border-t border-gray-100 text-center">
-                <span className="text-sm text-[#01385f] font-medium hover:underline">
-                  คลิกเพื่อดูรายละเอียด →
-                </span>
+                {/* Stats */}
+                <div className="flex flex-wrap gap-2 mb-4">
+                  {currentLevel === "types" && (
+                    <>
+                      <span className="bg-green-100 text-green-600 px-3 py-1 rounded-full text-xs font-medium">
+                        📁 {item.sections_count || 0} หมวดหมู่
+                      </span>
+                      <span className="bg-blue-100 text-blue-600 px-3 py-1 rounded-full text-xs font-medium">
+                        📝 {item.sub_topics_count || 0} หัวข้อ
+                      </span>
+                      <span className="bg-purple-100 text-purple-600 px-3 py-1 rounded-full text-xs font-medium">
+                        📄 {item.files_count || 0} ไฟล์
+                      </span>
+                    </>
+                  )}
+                  {currentLevel === "sections" && (
+                    <>
+                      <span className="bg-blue-100 text-blue-600 px-3 py-1 rounded-full text-xs font-medium">
+                        📝 {item.sub_topics_count || 0} หัวข้อ
+                      </span>
+                      <span className="bg-purple-100 text-purple-600 px-3 py-1 rounded-full text-xs font-medium">
+                        📄 {item.files_count || 0} ไฟล์
+                      </span>
+                    </>
+                  )}
+                  {currentLevel === "subTopics" && (
+                    <span className="bg-purple-100 text-purple-600 px-3 py-1 rounded-full text-xs font-medium">
+                      📄 {item.files_count || 0} ไฟล์
+                    </span>
+                  )}
+                  {currentLevel === "files" && (
+                    <>
+                      <span className="bg-gray-100 text-gray-600 px-3 py-1 rounded-full text-xs font-medium">
+                        {item.files_type ? `ประเภท: ${item.files_type}` : ''}
+                      </span>
+                      {item.description && (
+                        <span className="bg-blue-50 text-blue-600 px-3 py-1 rounded-full text-xs font-medium">
+                          {item.description}
+                        </span>
+                      )}
+                    </>
+                  )}
+                </div>
+
+                {/* Dates */}
+                <div className="text-sm text-gray-600 space-y-1">
+                  {item.date && (
+                    <div className="flex items-center gap-2">
+                      <span className="text-gray-500">วันที่:</span>
+                      <span className="font-medium">
+                        {formatDate(item.date)}
+                      </span>
+                    </div>
+                  )}
+                  <div className="flex items-center gap-2">
+                    <span className="text-gray-500">สร้างเมื่อ:</span>
+                    <span className="font-medium">
+                      {formatDate(item.created_at)}
+                    </span>
+                  </div>
+                </div>
+
+                {/* Preview of sub items */}
+                {currentLevel === "sections" &&
+                  item.recent_sub_topics &&
+                  item.recent_sub_topics.length > 0 && (
+                    <div className="mt-3 pt-3 border-t border-gray-100">
+                      <p className="text-xs text-gray-500 mb-2">
+                        หัวข้อล่าสุด:
+                      </p>
+                      <div className="space-y-1">
+                        {item.recent_sub_topics
+                          .slice(0, 2)
+                          .map((subTopic, idx) => (
+                            <div
+                              key={idx}
+                              className="text-sm text-gray-700 bg-gray-50 px-2 py-1 rounded truncate"
+                            >
+                              📄 {subTopic.topic_name}
+                            </div>
+                          ))}
+                        {item.sub_topics_count > 2 && (
+                          <div className="text-xs text-gray-400">
+                            และอีก {item.sub_topics_count - 2} หัวข้อ...
+                          </div>
+                        )}
+                      </div>
+                    </div>
+                  )}
+
+                {/* Action hint */}
+                <div className="mt-3 pt-2 border-t border-gray-100 text-center">
+                  <span className="text-sm text-[#01385f] font-medium hover:underline">
+                    {currentLevel === "subTopics"
+                      ? "คลิกเพื่อดูไฟล์ →"
+                      : currentLevel === "files"
+                      ? "คลิกเพื่อดาวน์โหลด/ดูไฟล์ →"
+                      : "คลิกเพื่อดูเพิ่มเติม →"}
+                  </span>
+                </div>
               </div>
-            </div>
-          ))
+            ))
         ) : (
           // No data message
           <div className="col-span-full flex flex-col items-center justify-center py-12">
             <div className="bg-white bg-opacity-90 rounded-xl p-8 text-center shadow-lg backdrop-blur-sm">
-              <div className="text-gray-400 text-6xl mb-4">📊</div>
+              <div className="text-gray-400 text-6xl mb-4">
+                {getCurrentIcon()}
+              </div>
               <div className="text-gray-500 text-xl mb-2">
-                {selectedType
-                  ? "ไม่พบข้อมูลหมวดหมู่ในประเภทที่เลือก"
-                  : "ไม่มีข้อมูลหมวดหมู่"}
+                ไม่มีข้อมูล{getCurrentTitle()}
               </div>
               <div className="text-gray-400 text-sm mb-4">
-                {selectedType
-                  ? "ลองเลือกประเภทอื่น หรือดูทั้งหมด"
-                  : "กรุณาเพิ่มข้อมูลในระบบจัดการ"}
+                กรุณาเพิ่มข้อมูลในระบบจัดการ
               </div>
-              {selectedType && (
+              {currentLevel !== "types" && (
                 <button
-                  onClick={() => handleTypeFilter("")}
+                  onClick={navigateBack}
                   className="px-4 py-2 bg-[#01bdcc] text-white rounded-lg hover:bg-[#01a5b3] transition-colors"
                 >
-                  ดูทั้งหมด
+                  ย้อนกลับ
                 </button>
               )}
             </div>
@@ -504,6 +710,27 @@ function PerfResultContent() {
 
       {/* Pagination */}
       {renderPagination()}
+
+      <style jsx>{`
+        .line-clamp-1 {
+          display: -webkit-box;
+          -webkit-line-clamp: 1;
+          -webkit-box-orient: vertical;
+          overflow: hidden;
+        }
+        .line-clamp-2 {
+          display: -webkit-box;
+          -webkit-line-clamp: 2;
+          -webkit-box-orient: vertical;
+          overflow: hidden;
+        }
+        .line-clamp-3 {
+          display: -webkit-box;
+          -webkit-line-clamp: 3;
+          -webkit-box-orient: vertical;
+          overflow: hidden;
+        }
+      `}</style>
     </div>
   );
 }
