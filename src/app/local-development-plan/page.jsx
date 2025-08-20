@@ -6,89 +6,57 @@ import { useRouter, useSearchParams } from "next/navigation";
 function LocalDevelopmentPlanContent() {
   const router = useRouter();
   const searchParams = useSearchParams();
-  const [plans, setPlans] = useState([]);
-  const [types, setTypes] = useState([]);
+  const [plans, setPlans] = useState([]); // ใช้สำหรับ all
+  const [files, setFiles] = useState([]); // ใช้สำหรับแสดงไฟล์ของ type
+  const [types, setTypes] = useState([]); // [{id, type_name}]
   const [loading, setLoading] = useState(true);
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
   const [totalPlans, setTotalPlans] = useState(0);
-  const [selectedType, setSelectedType] = useState("");
-  const [activeTab, setActiveTab] = useState("all");
+  const [activeTab, setActiveTab] = useState("all"); // id หรือ "all"
   const plansPerPage = 6;
-
-  // Define tab categories based on submenu
-  const tabCategories = [
-    { key: "all", label: "ทั้งหมด", keywords: [] },
-    {
-      key: "four-year-plan",
-      label: "แผนพัฒนาสี่ปี",
-      keywords: ["แผนพัฒนาสี่ปี"],
-    },
-    { key: "action-plan", label: "แผนปฏิบัติการ", keywords: ["แผนปฏิบัติการ"] },
-    { key: "community-plan", label: "แผนชุมชน", keywords: ["แผนชุมชน"] },
-    {
-      key: "strategic-plan",
-      label: "แผนยุทธศาสตร์",
-      keywords: ["แผนยุทธศาสตร์"],
-    },
-    {
-      key: "manpower-plan",
-      label: "แผนอัตรากำลัง",
-      keywords: ["แผนอัตรากำลัง"],
-    },
-    {
-      key: "procurement-plan",
-      label: "แผนการจัดหาพัสดุ",
-      keywords: ["แผนการจัดหาพัสดุ"],
-    },
-  ];
 
   useEffect(() => {
     fetchTypes();
-
-    // Check URL parameters for tab selection
-    const tabParam = searchParams.get("tab");
-    if (tabParam && tabCategories.find((tab) => tab.key === tabParam)) {
-      setActiveTab(tabParam);
-    }
   }, []);
 
   useEffect(() => {
-    fetchPlans();
-  }, [currentPage, selectedType, activeTab]);
+    // sync tab param from url
+    const tabParam = searchParams.get("tab");
+    if (tabParam && tabParam !== activeTab) {
+      setActiveTab(tabParam);
+      setCurrentPage(1);
+    }
+  }, [searchParams]);
+
+  useEffect(() => {
+    if (activeTab === "all") {
+      setFiles([]);
+      fetchPlans();
+    } else {
+      setPlans([]);
+      fetchFilesByType(activeTab);
+    }
+  }, [currentPage, activeTab]);
 
   const fetchTypes = async () => {
     try {
-      // สร้าง API endpoint สำหรับ types ถ้ายังไม่มี หรือใช้จาก plans ที่มี
-      const response = await fetch("/api/local-dev-plan");
+      const response = await fetch("/api/local-dev-plan-types");
       const result = await response.json();
-      if (result.success) {
-        // สร้าง unique types จากข้อมูลที่มี
-        const uniqueTypes = [
-          ...new Set(result.data.map((plan) => plan.type_name)),
-        ].map((typeName, index) => ({
-          id: index + 1,
-          type_name: typeName,
-        }));
-        setTypes(uniqueTypes);
+      if (result.success && Array.isArray(result.data)) {
+        setTypes(result.data);
       }
     } catch (error) {
-      console.error("Error fetching types:", error);
+      setTypes([]);
     }
   };
+
 
   const fetchPlans = async () => {
     setLoading(true);
     try {
-      const searchFilter = selectedType
-        ? `&search=${encodeURIComponent(selectedType)}`
-        : "";
-      const tabFilter = activeTab !== "all" ? `&tab=${activeTab}` : "";
-      const response = await fetch(
-        `/api/local-dev-plan?page=${currentPage}&limit=${plansPerPage}${searchFilter}${tabFilter}`
-      );
+      const response = await fetch(`/api/local-dev-plan?page=${currentPage}&limit=${plansPerPage}`);
       const result = await response.json();
-
       if (result.success) {
         setPlans(result.data || []);
         setTotalPlans(result.pagination?.total || result.data?.length || 0);
@@ -102,8 +70,30 @@ function LocalDevelopmentPlanContent() {
         setPlans([]);
       }
     } catch (error) {
-      console.error("Error fetching plans:", error);
       setPlans([]);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const fetchFilesByType = async (typeId) => {
+    setLoading(true);
+    try {
+      const response = await fetch(`/api/local-dev-plan-files-by-type?typeId=${typeId}`);
+      const result = await response.json();
+      if (result.success) {
+        setFiles(result.data || []);
+        setTotalPlans(result.data?.length || 0);
+        setTotalPages(Math.ceil((result.data?.length || 0) / plansPerPage));
+      } else {
+        setFiles([]);
+        setTotalPlans(0);
+        setTotalPages(1);
+      }
+    } catch (error) {
+      setFiles([]);
+      setTotalPlans(0);
+      setTotalPages(1);
     } finally {
       setLoading(false);
     }
@@ -142,50 +132,40 @@ function LocalDevelopmentPlanContent() {
     }
   };
 
-  const handleTypeFilter = (typeName) => {
-    setSelectedType(typeName);
+  const handleTabChange = (tabId) => {
+    setActiveTab(tabId);
     setCurrentPage(1);
-  };
-
-  const handleTabChange = (tabKey) => {
-    setActiveTab(tabKey);
-    setCurrentPage(1);
-    setSelectedType(""); // Reset type filter when changing tabs
-
-    // Update URL without page reload
+    // Update URL without reload
     const url = new URL(window.location);
-    if (tabKey === "all") {
+    if (tabId === "all") {
       url.searchParams.delete("tab");
     } else {
-      url.searchParams.set("tab", tabKey);
+      url.searchParams.set("tab", tabId);
     }
     window.history.pushState({}, "", url);
   };
 
-  const getFilteredTypes = () => {
-    if (activeTab === "all") return types;
-
-    const currentTabCategory = tabCategories.find(
-      (tab) => tab.key === activeTab
-    );
-    if (!currentTabCategory) return types;
-
-    return types.filter((type) =>
-      currentTabCategory.keywords.some((keyword) =>
-        type.type_name.includes(keyword)
-      )
-    );
-  };
+  // ไม่ต้องใช้ getFilteredTypes อีกต่อไป
 
   const handleShowDetail = (plan) => {
     router.push(`/local-development-plan/detail/${plan.id}`);
   };
 
   const handleFileDownload = (filePath, fileName) => {
-    const baseUrl = "https://banpho.sosmartsolution.com/storage/";
-    const fileUrl = filePath?.startsWith("http")
-      ? filePath
-      : `${baseUrl}${filePath}`;
+    // Normalize filePath to always have full URL
+    let fileUrl = filePath;
+    if (!filePath) return;
+
+    // If filePath starts with http(s), use as is
+    if (/^https?:\/\//.test(filePath)) {
+      fileUrl = filePath;
+    } else if (filePath.startsWith("/storage/")) {
+      // If filePath starts with /storage/, add domain
+      fileUrl = `https://banpho.sosmartsolution.com${filePath}`;
+    } else {
+      // Otherwise, assume it's a relative path under storage
+      fileUrl = `https://banpho.sosmartsolution.com/storage/${filePath.replace(/^\/?/, "")}`;
+    }
 
     const link = document.createElement("a");
     link.href = fileUrl;
@@ -380,21 +360,36 @@ function LocalDevelopmentPlanContent() {
             หมวดหมู่แผน
           </h3>
           <div className="flex flex-wrap gap-2">
-            {tabCategories.map((tab) => (
+            <button
+              key="all"
+              onClick={() => handleTabChange("all")}
+              className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
+                activeTab === "all"
+                  ? "text-white shadow-md"
+                  : "bg-white text-gray-700 border border-gray-300 hover:bg-gray-50"
+              }`}
+              style={{
+                backgroundColor:
+                  activeTab === "all" ? "#01bdcc" : undefined,
+              }}
+            >
+              ทั้งหมด
+            </button>
+            {types.map((type) => (
               <button
-                key={tab.key}
-                onClick={() => handleTabChange(tab.key)}
+                key={type.id}
+                onClick={() => handleTabChange(type.id)}
                 className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
-                  activeTab === tab.key
+                  activeTab == type.id
                     ? "text-white shadow-md"
                     : "bg-white text-gray-700 border border-gray-300 hover:bg-gray-50"
                 }`}
                 style={{
                   backgroundColor:
-                    activeTab === tab.key ? getPlanColor(tab.label) : undefined,
+                    activeTab == type.id ? getPlanColor(type.type_name) : undefined,
                 }}
               >
-                {tab.label}
+                {type.type_name}
               </button>
             ))}
           </div>
@@ -420,121 +415,166 @@ function LocalDevelopmentPlanContent() {
               <div className="h-4 bg-gray-300 rounded w-24"></div>
             </div>
           ))
-        ) : plans.length > 0 ? (
-          plans.map((plan) => (
-            <div
-              key={plan.id}
-              className="bg-white bg-opacity-95 rounded-[29px] border-4 border-[#01bdcc] shadow-lg p-6 flex flex-col gap-3 relative cursor-pointer hover:shadow-xl hover:bg-opacity-100 transition-all duration-300 transform hover:-translate-y-1 backdrop-blur-sm"
-              onClick={() => handleShowDetail(plan)}
-            >
-              {/* Header */}
-              <div className="flex items-start justify-between mb-2">
-                <h2 className="text-xl font-bold text-[#01385f] line-clamp-2 flex-1">
-                  {plan.type_name}
-                </h2>
-                <div className="ml-2 bg-blue-100 text-blue-600 px-2 py-1 rounded-full text-xs font-medium">
-                  ID: {plan.id}
+        ) : activeTab === "all" ? (
+          plans.length > 0 ? (
+            plans.map((plan) => (
+              <div
+                key={plan.id}
+                className="bg-white bg-opacity-95 rounded-[29px] border-4 border-[#01bdcc] shadow-lg p-6 flex flex-col gap-3 relative cursor-pointer hover:shadow-xl hover:bg-opacity-100 transition-all duration-300 transform hover:-translate-y-1 backdrop-blur-sm"
+                onClick={() => handleShowDetail(plan)}
+              >
+                {/* Header */}
+                <div className="flex items-start justify-between mb-2">
+                  <h2 className="text-xl font-bold text-[#01385f] line-clamp-2 flex-1">
+                    {plan.type_name}
+                  </h2>
+                  <div className="ml-2 bg-blue-100 text-blue-600 px-2 py-1 rounded-full text-xs font-medium">
+                    ID: {plan.id}
+                  </div>
                 </div>
-              </div>
-
-              {/* Type Badge */}
-              <div className="mb-3">
-                <span
-                  className="inline-block px-3 py-1 rounded-full text-white text-sm font-medium"
-                  style={{ backgroundColor: getPlanColor(plan.type_name) }}
-                >
-                  แผนพัฒนาท้องถิ่น
-                </span>
-              </div>
-
-              {/* Stats */}
-              <div className="flex flex-wrap gap-2 mb-4">
-                <span className="bg-blue-100 text-blue-600 px-3 py-1 rounded-full text-xs font-medium">
-                  📄 {plan.files_count || 0} ไฟล์
-                </span>
-                <span className="bg-purple-100 text-purple-600 px-3 py-1 rounded-full text-xs font-medium">
-                  📊 แผนงาน
-                </span>
-              </div>
-
-              {/* Dates */}
-              <div className="text-sm text-gray-600 space-y-1">
-                <div className="flex items-center gap-2">
-                  <span className="text-gray-500">สร้างเมื่อ:</span>
-                  <span className="font-medium">
-                    {formatDate(plan.created_at)}
+                {/* Type Badge */}
+                <div className="mb-3">
+                  <span
+                    className="inline-block px-3 py-1 rounded-full text-white text-sm font-medium"
+                    style={{ backgroundColor: getPlanColor(plan.type_name) }}
+                  >
+                    แผนพัฒนาท้องถิ่น
                   </span>
                 </div>
-                {plan.updated_at && (
+                {/* Stats */}
+                <div className="flex flex-wrap gap-2 mb-4">
+                  <span className="bg-blue-100 text-blue-600 px-3 py-1 rounded-full text-xs font-medium">
+                    📄 {plan.files_count || 0} ไฟล์
+                  </span>
+                  <span className="bg-purple-100 text-purple-600 px-3 py-1 rounded-full text-xs font-medium">
+                    📊 แผนงาน
+                  </span>
+                </div>
+                {/* Dates */}
+                <div className="text-sm text-gray-600 space-y-1">
                   <div className="flex items-center gap-2">
-                    <span className="text-gray-500">อัพเดท:</span>
+                    <span className="text-gray-500">สร้างเมื่อ:</span>
                     <span className="font-medium">
-                      {formatDate(plan.updated_at)}
+                      {formatDate(plan.created_at)}
                     </span>
                   </div>
-                )}
-              </div>
-
-              {/* Preview of recent files */}
-              {plan.recent_files && plan.recent_files.length > 0 && (
-                <div className="mt-3 pt-3 border-t border-gray-100">
-                  <p className="text-xs text-gray-500 mb-2">ไฟล์ล่าสุด:</p>
-                  <div className="space-y-1">
-                    {plan.recent_files.slice(0, 2).map((file, idx) => (
-                      <div
-                        key={idx}
-                        className="text-sm text-gray-700 bg-gray-50 px-2 py-1 rounded truncate flex items-center gap-1"
-                      >
-                        <span>{getFileIcon(file.files_type)}</span>
-                        <span>
-                          {file.original_name ||
-                            file.files_path?.split("/").pop() ||
-                            `ไฟล์ ${idx + 1}`}
-                        </span>
-                      </div>
-                    ))}
-                    {plan.files_count > 2 && (
-                      <div className="text-xs text-gray-400">
-                        และอีก {plan.files_count - 2} ไฟล์...
-                      </div>
-                    )}
-                  </div>
+                  {plan.updated_at && (
+                    <div className="flex items-center gap-2">
+                      <span className="text-gray-500">อัพเดท:</span>
+                      <span className="font-medium">
+                        {formatDate(plan.updated_at)}
+                      </span>
+                    </div>
+                  )}
                 </div>
-              )}
-
-              {/* Action hint */}
-              <div className="mt-3 pt-2 border-t border-gray-100 text-center">
-                <span className="text-sm text-[#01385f] font-medium hover:underline">
-                  คลิกเพื่อดูรายละเอียด →
-                </span>
+                {/* Preview of recent files */}
+                {plan.recent_files && plan.recent_files.length > 0 && (
+                  <div className="mt-3 pt-3 border-t border-gray-100">
+                    <p className="text-xs text-gray-500 mb-2">ไฟล์ล่าสุด:</p>
+                    <div className="space-y-1">
+                      {plan.recent_files.slice(0, 2).map((file, idx) => (
+                        <div
+                          key={idx}
+                          className="text-sm text-gray-700 bg-gray-50 px-2 py-1 rounded truncate flex items-center gap-1"
+                        >
+                          <span>{getFileIcon(file.files_type)}</span>
+                          <span>
+                            {file.original_name ||
+                              file.files_path?.split("/").pop() ||
+                              `ไฟล์ ${idx + 1}`}
+                          </span>
+                        </div>
+                      ))}
+                      {plan.files_count > 2 && (
+                        <div className="text-xs text-gray-400">
+                          และอีก {plan.files_count - 2} ไฟล์...
+                        </div>
+                      )}
+                    </div>
+                  </div>
+                )}
+                {/* Action hint */}
+                <div className="mt-3 pt-2 border-t border-gray-100 text-center">
+                  <span className="text-sm text-[#01385f] font-medium hover:underline">
+                    คลิกเพื่อดูรายละเอียด →
+                  </span>
+                </div>
+              </div>
+            ))
+          ) : (
+            // No data message
+            <div className="col-span-full flex flex-col items-center justify-center py-12">
+              <div className="bg-white bg-opacity-90 rounded-xl p-8 text-center shadow-lg backdrop-blur-sm">
+                <div className="text-gray-400 text-6xl mb-4">📋</div>
+                <div className="text-gray-500 text-xl mb-2">
+                  ไม่มีข้อมูลแผนพัฒนาท้องถิ่น
+                </div>
+                <div className="text-gray-400 text-sm mb-4">
+                  กรุณาเพิ่มข้อมูลแผนพัฒนาในระบบจัดการ
+                </div>
               </div>
             </div>
-          ))
+          )
         ) : (
-          // No data message
-          <div className="col-span-full flex flex-col items-center justify-center py-12">
-            <div className="bg-white bg-opacity-90 rounded-xl p-8 text-center shadow-lg backdrop-blur-sm">
-              <div className="text-gray-400 text-6xl mb-4">📋</div>
-              <div className="text-gray-500 text-xl mb-2">
-                {selectedType
-                  ? "ไม่พบข้อมูลแผนพัฒนาท้องถิ่นในประเภทที่เลือก"
-                  : "ไม่มีข้อมูลแผนพัฒนาท้องถิ่น"}
-              </div>
-              <div className="text-gray-400 text-sm mb-4">
-                {selectedType
-                  ? "ลองเลือกประเภทอื่น หรือดูทั้งหมด"
-                  : "กรุณาเพิ่มข้อมูลแผนพัฒนาในระบบจัดการ"}
-              </div>
-              {selectedType && (
+          files.length > 0 ? (
+            files.slice((currentPage-1)*plansPerPage, currentPage*plansPerPage).map((file) => (
+              <div
+                key={file.id}
+                className="bg-white bg-opacity-95 rounded-2xl border-2 border-[#01bdcc] shadow-lg p-5 flex flex-col gap-2 relative hover:shadow-xl hover:bg-opacity-100 transition-all duration-300 transform hover:-translate-y-1 backdrop-blur-sm"
+              >
+                <div className="flex items-center justify-between mb-2">
+                  <div className="flex items-center gap-2">
+                    <span className="text-2xl">
+                      {getFileIcon(file.files_type)}
+                    </span>
+                    <span className="text-lg font-semibold text-[#01385f] line-clamp-1">
+                      {file.original_name || file.files_path?.split("/").pop() || `ไฟล์`}
+                    </span>
+                  </div>
+                  <span className="bg-blue-100 text-blue-600 px-2 py-1 rounded-full text-xs font-medium">
+                    ID: {file.id}
+                  </span>
+                </div>
+                <div className="flex flex-wrap gap-2 mb-2">
+                  <span className="bg-[#01bdcc] text-white px-3 py-1 rounded-full text-xs font-medium">
+                    {file.files_type || 'ไฟล์'}
+                  </span>
+                  <span className="bg-gray-100 text-gray-600 px-3 py-1 rounded-full text-xs font-medium">
+                    {file.file_size ? `${(file.file_size/1024).toFixed(1)} KB` : 'ขนาดไม่ระบุ'}
+                  </span>
+                </div>
+                <div className="text-xs text-gray-600 flex flex-wrap gap-3 mb-2">
+                  <span>สร้างเมื่อ: <span className="font-medium">{formatDate(file.created_at)}</span></span>
+                  {file.updated_at && (
+                    <span>อัพเดท: <span className="font-medium">{formatDate(file.updated_at)}</span></span>
+                  )}
+                </div>
+                {file.description && (
+                  <div className="text-xs text-gray-500 mb-2">
+                    {file.description}
+                  </div>
+                )}
                 <button
-                  onClick={() => handleTypeFilter("")}
-                  className="px-4 py-2 bg-[#01bdcc] text-white rounded-lg hover:bg-[#01a5b3] transition-colors"
+                  onClick={() => handleFileDownload(file.files_path, file.original_name)}
+                  className="mt-2 px-4 py-2 bg-[#01bdcc] text-white rounded-lg hover:bg-[#01a5b3] transition-colors text-sm font-medium w-fit self-end"
                 >
-                  ดูทั้งหมด
+                  ดาวน์โหลด/ดูไฟล์
                 </button>
-              )}
+              </div>
+            ))
+          ) : (
+            <div className="col-span-full flex flex-col items-center justify-center py-12">
+              <div className="bg-white bg-opacity-90 rounded-xl p-8 text-center shadow-lg backdrop-blur-sm">
+                <div className="text-gray-400 text-6xl mb-4">📋</div>
+                <div className="text-gray-500 text-xl mb-2">
+                  ไม่มีไฟล์ในหมวดหมู่นี้
+                </div>
+                <div className="text-gray-400 text-sm mb-4">
+                  กรุณาเพิ่มไฟล์ในระบบจัดการ
+                </div>
+              </div>
             </div>
-          </div>
+          )
         )}
       </div>
 
